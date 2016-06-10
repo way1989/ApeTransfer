@@ -1,0 +1,6 @@
+<resources>
+    <dimen name="main_banner_height">210.0dip</dimen>
+    <dimen name="main_text_marginBottom">10.0dip</dimen>
+    <dimen name="main_text_marginTop">10.0dip</dimen>
+    <dimen name="subtitle_marginTop">5.0dip</dimen>
+</resources>

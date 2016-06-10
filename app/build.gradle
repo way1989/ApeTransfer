@@ -74,4 +74,5 @@ dependencies {
 
     //bugly
     compile "com.tencent.bugly:crashreport:$rootProject.buglyVersion"
+    compile "org.nanohttpd:nanohttpd:$rootProject.nanohttpdVersion"
 }

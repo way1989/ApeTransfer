@@ -37,4 +37,5 @@ ext {
     butterknifeVersion = '8.0.1'
     junitVersion = '4.12'
     buglyVersion = '2.1.5'
+    nanohttpdVersion = '2.3.0'
 }

@@ -4,4 +4,53 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+
+
+    <dimen name="main_banner_height">265.0dip</dimen>
+    <dimen name="main_text_marginBottom">25.0dip</dimen>
+    <dimen name="main_text_marginTop">18.0dip</dimen>
+    <dimen name="subtitle_marginTop">10.0dip</dimen>
+
+    <dimen name="textSize_h0">30.0sp</dimen>
+    <dimen name="textSize_h1">22.0sp</dimen>
+    <dimen name="textSize_h10">17.0sp</dimen>
+    <dimen name="textSize_h2">20.0sp</dimen>
+    <dimen name="textSize_h3">18.0sp</dimen>
+    <dimen name="textSize_h4">16.0sp</dimen>
+    <dimen name="textSize_h5">14.0sp</dimen>
+    <dimen name="textSize_h6">12.0sp</dimen>
+    <dimen name="textSize_h7">10.0sp</dimen>
+    <dimen name="textSize_h8">8.0sp</dimen>
+    <dimen name="textSize_h9">15.0sp</dimen>
+
+    <dimen name="iv_invite_tip_margin_left">8.0dip</dimen>
+    <dimen name="iv_invite_tip_margin_right">17.0dip</dimen>
+    <dimen name="qr_image_tip_width">17.0dip</dimen>
+    <dimen name="qr_image_tip_height">17.0dip</dimen>
+
+    <dimen name="qr_image_tip_margin_right">31.0dip</dimen>
+    <dimen name="iv_invite_tip_height">17.0dip</dimen>
+    <dimen name="iv_invite_tip_width">9.0dip</dimen>
+
+    <dimen name="main_btn_padding">20.0dip</dimen>
+    <dimen name="main_btn_width">85.0dip</dimen>
+    <dimen name="main_function_introduce_height">40.0dip</dimen>
+    <dimen name="about_logo_marginTop">30.0dip</dimen>
+    <dimen name="invite_btn_height">41.0dip</dimen>
+    <dimen name="invite_btn_marginTop">25.0dip</dimen>
+    <dimen name="invite_btn_width">210.0dip</dimen>
+    <dimen name="invite_code_height">137.0dip</dimen>
+    <dimen name="invite_code_intro_marginTop">10.0dip</dimen>
+    <dimen name="invite_code_marginTop">40.0dip</dimen>
+    <dimen name="invite_code_width">137.0dip</dimen>
+    <dimen name="invite_divider_width">246.0dip</dimen>
+    <dimen name="history_storage_height">50.0dip</dimen>
+    <dimen name="history_storage_padding">10.0dip</dimen>
+    <dimen name="aboutUs_listView_marginTop">37.5dip</dimen>
+    <dimen name="saveTraffic_txt_marginTop">5dp</dimen>
+    <dimen name="saveTraffic_step_marginTop">20dp</dimen>
+
+    <dimen name="saveTraffic_attention_padding">20.0dp</dimen>
+    <dimen name="saveTraffic_loading_marginbottom">20.0dip</dimen>
+    <dimen name="process_qrcode_height">40.0dip</dimen>
 </resources>

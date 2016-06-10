@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">ApeTransfer</string>
+    <string name="action_settings">设置</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="main_bottom_transfer">传送文件</string>
+    <string name="main_bottom_exchange">一键换机</string>
+
+    <string name="subtitle_es">零流量互传</string>
+    <string name="subtitle_exchange">手机搬家</string>
+    <string name="function_introduce_transfer">邀请好友下载互传</string>
+    <string name="creat_ap">创建群组</string>
+    <string name="connect_ap">搜索加入</string>
+
+    <string name="main_new_phone">我是新手机</string>
+    <string name="main_old_phone">我是旧手机</string>
+    <string name="main_exchange_info">一方生成二维码，一方扫描连接</string>
+
+    <string name="invite_friend">邀请好友</string>
+    <string name="invite_more">更多分享方式</string>
+    <string name="invite_share_ap">零流量热点分享</string>
+    <string name="invite_share_bluetooth">蓝牙分享</string>
+    <string name="invite_share_code">扫描二维码分享(需用好友流量)</string>
+    <string name="invite_share_to">分享到</string>
+
+    <string name="waiting_creating_ap">创建热点中...</string>
+    <string name="mobile_data_warning">数据网络开启可能偷跑流量哦~请手动去关闭 !</string>
+    <string name="saveTraffic_ap_close">抱歉,热点已被关闭！</string>
+    <string name="saveTraffic_code_intro">在有扫描二维码功能的浏览器中</string>
+    <string name="saveTraffic_code_san">扫描以下二维码:</string>
+    <string name="saveTraffic_create_ap_fail">抱歉,创建热点失败！</string>
+    <string name="saveTraffic_download_prompt">零流量，下载文件</string>
+    <string name="saveTraffic_download_text">下 载</string>
+    <string name="saveTraffic_download_title">互传-零流量下载</string>
+    <string name="saveTraffic_intro">创建热点时间过长，可能你WLAN的开启/关闭权限被禁用，请打开后再重新进入该页面</string>
+    <string name="saveTraffic_step1">第一步</string>
+    <string name="saveTraffic_step1_intro">请好友打开WLAN,连接我的热点:</string>
+    <string name="saveTraffic_step2">第二步</string>
+    <string name="saveTraffic_step2_intro">请好友打开浏览器,输入以下网址:</string>
+    <string name="saveTraffic_step2_other">或者</string>
+    <string name="scan_qrcode_to_connect">扫描连接</string>
+</resources>

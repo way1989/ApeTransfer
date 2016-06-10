@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.InviteFriendActivity">
+
+    <RelativeLayout
+        android:id="@+id/my_avatar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/about_logo_marginTop"
+        android:background="@android:color/transparent"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/bt_bluetooth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/invite_btn_marginTop"
+            android:backgroundTint="@color/accent"
+            android:minHeight="@dimen/invite_btn_height"
+            android:minWidth="@dimen/invite_btn_width"
+            android:padding="10.0dip"
+            android:text="@string/invite_share_bluetooth"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/textSize_h10" />
+
+        <Button
+            android:id="@+id/bt_saveTraffic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bt_bluetooth"
+            android:backgroundTint="@color/accent"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/invite_btn_marginTop"
+            android:minHeight="@dimen/invite_btn_height"
+            android:minWidth="@dimen/invite_btn_width"
+            android:padding="10.0dip"
+            android:text="@string/invite_share_ap"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/textSize_h10" />
+
+        <ImageView
+            android:id="@+id/iv_code"
+            android:layout_width="@dimen/invite_code_width"
+            android:layout_height="@dimen/invite_code_height"
+            android:layout_below="@id/bt_saveTraffic"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/invite_code_marginTop"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tv_code_intro"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_code"
+            android:layout_marginTop="@dimen/invite_code_intro_marginTop"
+            android:gravity="center"
+            android:text="@string/invite_share_code"
+            android:textColor="@color/black_light"
+            android:textSize="@dimen/textSize_h6" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/bt_more"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/history_storage_height"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="@string/invite_more"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/textSize_h9" />
+
+    <View
+        android:id="@+id/dividing_line"
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:layout_above="@id/bt_more"
+        android:layout_marginTop="@dimen/aboutUs_listView_marginTop"
+        android:background="@color/divider_bg" />
+</RelativeLayout>

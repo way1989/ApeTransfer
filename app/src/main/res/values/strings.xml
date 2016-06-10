@@ -2,4 +2,40 @@
     <string name="app_name">ApeTransfer</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="main_bottom_transfer">Transmit file</string>
+    <string name="main_bottom_exchange">One-touch device switch</string>
+
+    <string name="subtitle_es">Zero Traffic Transfer File</string>
+    <string name="subtitle_exchange">Mobile Moving</string>
+    <string name="creat_ap">Create group</string>
+    <string name="connect_ap">Search to join</string>
+    <string name="main_old_phone">"I'm Old"</string>
+    <string name="main_new_phone">"I'm New"</string>
+    <string name="main_transfer_info">Create groups while searching to join</string>
+    <string name="function_introduce_transfer">Invite friends to get EasyShare</string>
+    <string name="main_exchange_info">Generate QR code while scanning for connections</string>
+    <string name="invite_friend">Invite friends</string>
+    <string name="invite_more">More sharing options</string>
+    <string name="invite_share_ap">Sharing without flow</string>
+    <string name="invite_share_bluetooth">Sharing via Bluetooth</string>
+    <string name="invite_share_code">Scan QR code to share (your friend will use data traffic)</string>
+    <string name="invite_share_to">Share to</string>
+
+    <string name="mobile_data_warning">Please disable your network data because traffic may loss!</string>
+    <string name="saveTraffic_ap_close">Sorry, hotspot has been turned off!</string>
+    <string name="saveTraffic_code_intro">In a browser with the functionality to scan QR codes</string>
+    <string name="saveTraffic_code_san">Scan the following QR code:</string>
+    <string name="saveTraffic_create_ap_fail">Sorry, failed to create hotspot!</string>
+    <string name="saveTraffic_download_prompt">Zero data traffic, download file</string>
+    <string name="saveTraffic_download_text">Download</string>
+    <string name="saveTraffic_download_title">EasyShare - zero data traffic download</string>
+    <string name="saveTraffic_intro">Too much time spent creating the hotspot. Probably your WLAN on/off permission has been disabled, please enable it and re-enter this screen</string>
+    <string name="saveTraffic_step1">Step 1</string>
+    <string name="saveTraffic_step1_intro">Ask your friend to turn on WLAN and connect to my hotspot:</string>
+    <string name="saveTraffic_step2">Step 2</string>
+    <string name="saveTraffic_step2_intro">Ask your friend to open the browser and enter the following URL:</string>
+    <string name="saveTraffic_step2_other">Or</string>
+    <string name="scan_qrcode_to_connect">Scan connection</string>
+    <string name="waiting_creating_ap">Creating a hotspot...</string>
 </resources>

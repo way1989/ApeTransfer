@@ -1,4 +1,4 @@
-package com.ape.transfer;
+package com.ape.transfer.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -21,6 +21,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ape.transfer.R;
+import com.ape.transfer.fragment.ExchangeFragment;
+import com.ape.transfer.fragment.TransferFragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -35,8 +42,6 @@ public class MainActivity extends AppCompatActivity {
     AppBarLayout appbar;
     @BindView(R.id.container)
     ViewPager container;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
     @BindView(R.id.main_content)
     CoordinatorLayout mainContent;
     /**
@@ -47,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
      * may be best to switch to a
      * {@link FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private MainPagerAdapter mPagerAdapter;
 
 
     @Override
@@ -58,9 +63,11 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        mPagerAdapter.addFragment(TransferFragment.newInstance("", ""), getString(R.string.main_bottom_transfer));
+        mPagerAdapter.addFragment(ExchangeFragment.newInstance("", ""), getString(R.string.main_bottom_exchange));
 
-        container.setAdapter(mSectionsPagerAdapter);
+        container.setAdapter(mPagerAdapter);
 
         tabs.setupWithViewPager(container);
 
@@ -90,81 +97,41 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick(R.id.fab)
-    public void onFabClick() {
-        Snackbar.make(container, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public class MainPagerAdapter extends FragmentStatePagerAdapter {
+        private final List<Fragment> mFragments = new ArrayList<>();
+        private final List<String> mFragmentTitles = new ArrayList<>();
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        public MainPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
+        public void addFragment(Fragment fragment, String title) {
+            mFragments.add(fragment);
+            mFragmentTitles.add(title);
+        }
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            super.setPrimaryItem(container, position, object);
+            //mCurrentFragment = (Fragment) object;
+        }
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return mFragments.get(position);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return mFragments.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
+
+            return mFragmentTitles.get(position);
         }
     }
 }
