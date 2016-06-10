@@ -1,0 +1,77 @@
+apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.ape.transfer"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode VERSION_CODE.toInteger()
+        versionName VERSION_NAME
+    }
+    signingConfigs {
+        release {
+            def filePrivateProperties = file("../local.properties")
+            if (filePrivateProperties.exists()) {
+                Properties propsPrivate = new Properties()
+                propsPrivate.load(new FileInputStream(filePrivateProperties))
+
+                storeFile file(propsPrivate['key.store'])
+                keyAlias propsPrivate['key.alias']
+                storePassword propsPrivate['key.store.password']
+                keyPassword propsPrivate['key.alias.password']
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            // 显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            //是否开启BUGLY
+            buildConfigField "boolean", "BUGLY_ENABLED", "false"
+            resValue "string", "bugly_appid", BUGLY_APPID
+        }
+        release {
+            // 不显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            //是否开启ACRA
+            buildConfigField "boolean", "BUGLY_ENABLED", "true"
+            resValue "string", "bugly_appid", BUGLY_APPID
+            signingConfig signingConfigs.release
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all { variant ->//获取 variant 参数，就是 productFlavor x buildType
+        variant.outputs.each { output ->//获取输出文件
+            def file = output.outputFile//修改实例
+            if (file != null && file.name.endsWith('release.apk')) {//变种名以release.apk结尾时才修改名字
+                //def fileName = file.name.replace(file.name, "ApeScreenshot_V" + versionName + "_${buildTime()}.apk")
+                def fileName = file.name.replace(file.name, "ApeTransfer" + "_V" + variant.versionName + ".apk")
+                output.outputFile = new File(file.parentFile, fileName)
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile "junit:junit:$rootProject.junitVersion"
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:design:$rootProject.supportLibraryVersion"
+
+    compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+    apt "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
+
+    //bugly
+    compile "com.tencent.bugly:crashreport:$rootProject.buglyVersion"
+}
