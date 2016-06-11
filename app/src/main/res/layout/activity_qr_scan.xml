@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <SurfaceView
         android:id="@+id/capture_preview"
@@ -13,7 +14,7 @@
     <RelativeLayout
         android:id="@+id/capture_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/capture_mask_top"
@@ -28,7 +29,7 @@
             android:layout_height="200dp"
             android:layout_below="@id/capture_mask_top"
             android:layout_centerHorizontal="true"
-            android:background="@drawable/qr_capture" >
+            android:background="@drawable/qr_capture">
 
             <ImageView
                 android:id="@+id/capture_scan_line"
@@ -50,7 +51,7 @@
             android:layout_alignParentBottom="true"
             android:layout_below="@id/capture_crop_view"
             android:background="@drawable/qr_scan_mask" />
-        
+
         <TextView
             android:id="@+id/tv_tip"
             android:layout_width="wrap_content"
@@ -87,18 +88,31 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/white40"
+        android:background="#80000000"
         android:gravity="center"
-        android:padding="10dip" >
+        android:padding="10dip">
 
         <ImageView
             android:id="@+id/capture_flash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/flash_default"
+            android:background="@drawable/qb_scan_btn_flash_nor"
             android:clickable="true"
             android:tag="1" />
     </LinearLayout>
 
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    </android.support.design.widget.AppBarLayout>
 </RelativeLayout>

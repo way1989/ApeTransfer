@@ -73,5 +73,5 @@ dependencies {
     //bugly
     compile "com.tencent.bugly:crashreport:$rootProject.buglyVersion"
     compile "org.nanohttpd:nanohttpd:$rootProject.nanohttpdVersion"
-    compile project(':qrcode')
+    compile 'com.google.zxing:core:3.2.1'
 }

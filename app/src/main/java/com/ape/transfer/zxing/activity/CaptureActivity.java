@@ -15,15 +15,20 @@
  */
 package com.ape.transfer.zxing.activity;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.ClipboardManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -33,29 +38,17 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import cz.msebera.android.httpclient.Header;
+import android.widget.Toast;
 
-import com.dtr.zxing.camera.CameraManager;
-import com.dtr.zxing.decode.DecodeThread;
-import com.dtr.zxing.utils.BeepManager;
-import com.dtr.zxing.utils.CaptureActivityHandler;
-import com.dtr.zxing.utils.InactivityTimer;
+import com.ape.transfer.R;
+import com.ape.transfer.util.DialogHelp;
+import com.ape.transfer.util.StringUtils;
+import com.ape.transfer.zxing.camera.CameraManager;
+import com.ape.transfer.zxing.decode.DecodeThread;
+import com.ape.transfer.zxing.utils.BeepManager;
+import com.ape.transfer.zxing.utils.CaptureActivityHandler;
+import com.ape.transfer.zxing.utils.InactivityTimer;
 import com.google.zxing.Result;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
-import net.oschina.app.AppContext;
-import net.oschina.app.AppException;
-import net.oschina.app.R;
-import net.oschina.app.api.remote.OSChinaApi;
-import net.oschina.app.base.BaseActivity;
-import net.oschina.app.bean.BarCode;
-import net.oschina.app.bean.ResultBean;
-import net.oschina.app.bean.SingInResult;
-import net.oschina.app.util.DialogHelp;
-import net.oschina.app.util.StringUtils;
-import net.oschina.app.util.UIHelper;
-import net.oschina.app.util.XmlUtils;
-
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -69,7 +62,7 @@ import java.lang.reflect.Field;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CaptureActivity extends BaseActivity implements
+public final class CaptureActivity extends AppCompatActivity implements View.OnClickListener,
         SurfaceHolder.Callback {
 
     private static final String TAG = CaptureActivity.class.getSimpleName();
@@ -86,6 +79,8 @@ public final class CaptureActivity extends BaseActivity implements
     private ImageView mFlash;
 
     private Rect mCropRect = null;
+    private boolean isHasSurface = false;
+    private boolean flag;
 
     public Handler getHandler() {
         return handler;
@@ -95,8 +90,6 @@ public final class CaptureActivity extends BaseActivity implements
         return cameraManager;
     }
 
-    private boolean isHasSurface = false;
-
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -104,6 +97,9 @@ public final class CaptureActivity extends BaseActivity implements
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_qr_scan);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         scanPreview = (SurfaceView) findViewById(R.id.capture_preview);
         scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
@@ -126,17 +122,16 @@ public final class CaptureActivity extends BaseActivity implements
         scanLine.startAnimation(animation);
     }
 
-    @SuppressLint("NewApi")
     @Override
-    protected boolean hasActionBar() {
-
-        if (android.os.Build.VERSION.SDK_INT >= 11) {
-            getSupportActionBar().hide();
-            return true;
-        } else {
-            return false;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                break;
         }
-
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -250,19 +245,16 @@ public final class CaptureActivity extends BaseActivity implements
     }
 
     private void showUrlOption(final String url) {
-        if (url.contains("scan_login")) {
-            showConfirmLogin(url);
-            return;
-        }
-        if (url.contains("oschina.net")) {
-            UIHelper.showUrlRedirect(CaptureActivity.this, url);
-            finish();
-            return;
-        }
-        DialogHelp.getConfirmDialog(this, "可能存在风险，是否打开链接?</br>" + url, new DialogInterface.OnClickListener() {
+
+//        if (url.contains("oschina.net")) {
+//            UIHelper.showUrlRedirect(CaptureActivity.this, url);
+//            finish();
+//            return;
+//        }
+        DialogHelp.getConfirmDialog(this, "可能存在风险，是否打开链接? " + url, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                UIHelper.showUrlRedirect(CaptureActivity.this, url);
+                openURL(url);
                 finish();
             }
         }, new DialogInterface.OnClickListener() {
@@ -273,66 +265,22 @@ public final class CaptureActivity extends BaseActivity implements
         }).show();
     }
 
-    private void showConfirmLogin(final String url) {
-        if (!AppContext.getInstance().isLogin()) {
-            showLogin();
-            return;
+    final void openURL(String url) {
+        // Strangely, some Android browsers don't seem to register to handle HTTP:// or HTTPS://.
+        // Lower-case these as it should always be OK to lower-case these schemes.
+        if (url.startsWith("HTTP://")) {
+            url = "http" + url.substring(4);
+        } else if (url.startsWith("HTTPS://")) {
+            url = "https" + url.substring(5);
         }
-        DialogHelp.getConfirmDialog(this, "扫描成功，是否进行网页登陆", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                handleScanLogin(url);
-                finish();
-            }
-        }, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
-            }
-        }).show();
-    }
-
-    private void handleScanLogin(final String url) {
-        OSChinaApi.scanQrCodeLogin(url, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
-                ResultBean result = XmlUtils.toBean(ResultBean.class, arg2);
-                if (result != null && result.getResult() != null
-                        && result.getResult().OK()) {
-                    AppContext.showToast(result.getResult().getErrorMessage());
-                    finish();
-                } else {
-                    handler.sendEmptyMessage(R.id.restart_preview);
-                    AppContext.showToast(result != null
-                            && result.getResult() != null ? result.getResult()
-                            .getErrorMessage() : "登陆失败");
-                }
-            }
-
-            @Override
-            public void onFailure(int arg0, Header[] arg1, byte[] arg2,
-                                  Throwable arg3) {
-                handler.sendEmptyMessage(R.id.restart_preview);
-                if (arg2 != null) {
-                    AppContext.showToast(new String(arg2));
-                } else {
-                    AppContext.showToast("网页登陆失败");
-                }
-            }
-
-            @Override
-            public void onStart() {
-                super.onStart();
-                showWaitDialog("已扫描，正在登陆...");
-            }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                hideWaitDialog();
-            }
-        });
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        try {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            Log.d(TAG, "Launching intent: " + intent + " with extras: " + intent.getExtras());
+            startActivity(intent);
+        } catch (ActivityNotFoundException ignored) {
+            Log.w(TAG, "Nothing available to handle " + intent);
+        }
     }
 
     private void handleOtherText(final String text) {
@@ -340,67 +288,8 @@ public final class CaptureActivity extends BaseActivity implements
         if (!text.matches("^\\{.*")) {
             showCopyTextOption(text);
         } else {
-            try {
-                BarCode barcode = BarCode.parse(text);
-                int type = barcode.getType();
-                switch (type) {
-                    case BarCode.SIGN_IN:// 签到
-                        handleSignIn(barcode);
-                        break;
-                    default:
-                        break;
-                }
-            } catch (AppException e) {
-                showCopyTextOption(text);
-            }
+
         }
-    }
-
-    private void handleSignIn(BarCode barCode) {
-        if (barCode.isRequireLogin() && !AppContext.getInstance().isLogin()) {
-            showLogin();
-            return;
-        }
-        showWaitDialog("正在签到...");
-        AsyncHttpResponseHandler handler = new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int arg0, Header[] arg1, byte[] arg2) {
-                try {
-                    SingInResult res = SingInResult.parse(new String(arg2));
-                    if (res.isOk()) {
-                        DialogHelp.getMessageDialog(CaptureActivity.this, res.getMessage()).show();
-                    } else {
-                        DialogHelp.getMessageDialog(CaptureActivity.this, res.getErrorMes()).show();
-                    }
-                } catch (AppException e) {
-                    e.printStackTrace();
-                    onFailure(arg0, arg1, arg2, e);
-                }
-            }
-
-            @Override
-            public void onFailure(int arg0, Header[] arg1, byte[] arg2,
-                                  Throwable arg3) {
-                hideWaitDialog();
-                DialogHelp.getMessageDialog(CaptureActivity.this, arg3.getMessage()).show();
-            }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                hideWaitDialog();
-            }
-        };
-        OSChinaApi.singnIn(barCode.getUrl(), handler);
-    }
-
-    private void showLogin() {
-        DialogHelp.getConfirmDialog(this, "请先登录，再进行", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                UIHelper.showLoginActivity(CaptureActivity.this);
-            }
-        }).show();
     }
 
     private void showCopyTextOption(final String text) {
@@ -409,7 +298,7 @@ public final class CaptureActivity extends BaseActivity implements
             public void onClick(DialogInterface dialogInterface, int i) {
                 ClipboardManager cbm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 cbm.setText(text);
-                AppContext.showToast("复制成功");
+                Toast.makeText(CaptureActivity.this, "复制成功", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }, new DialogInterface.OnClickListener() {
@@ -531,7 +420,6 @@ public final class CaptureActivity extends BaseActivity implements
 
     @Override
     public void onClick(View v) {
-        // TODO Auto-generated method stub
         switch (v.getId()) {
             case R.id.capture_flash:
                 light();
@@ -542,31 +430,18 @@ public final class CaptureActivity extends BaseActivity implements
         }
     }
 
-    private boolean flag;
-
     protected void light() {
         if (flag == true) {
             flag = false;
             // 开闪光灯
             cameraManager.openLight();
-            mFlash.setBackgroundResource(R.drawable.flash_open);
+            mFlash.setBackgroundResource(R.drawable.qb_scan_btn_flash_down);
         } else {
             flag = true;
             // 关闪光灯
             cameraManager.offLight();
-            mFlash.setBackgroundResource(R.drawable.flash_default);
+            mFlash.setBackgroundResource(R.drawable.qb_scan_btn_flash_nor);
         }
     }
 
-    @Override
-    public void initView() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void initData() {
-        // TODO Auto-generated method stub
-
-    }
 }

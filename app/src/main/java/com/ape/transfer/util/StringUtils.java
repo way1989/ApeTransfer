@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 /**
  * 字符串操作工具包
- * 
+ *
  * @author liux (http://my.oschina.net/liux)
  * @version 1.0
  * @created 2012-3-21
@@ -44,7 +44,7 @@ public class StringUtils {
 
     /**
      * 将字符串转位日期类型
-     * 
+     *
      * @param sdate
      * @return
      */
@@ -66,7 +66,7 @@ public class StringUtils {
 
     /**
      * 以友好的方式显示时间
-     * 
+     *
      * @param sdate
      * @return
      */
@@ -133,7 +133,7 @@ public class StringUtils {
         if (isEmpty(sdate))
             return "";
 
-        String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
+        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
         String currentData = StringUtils.getDataTime("MM-dd");
         int currentDay = toInt(currentData.substring(3));
         int currentMoth = toInt(currentData.substring(0, 2));
@@ -252,7 +252,7 @@ public class StringUtils {
 
     /**
      * 获取当前日期是星期几<br>
-     * 
+     *
      * @param dt
      * @return 当前日期是星期几
      */
@@ -267,7 +267,7 @@ public class StringUtils {
 
     /**
      * 判断给定字符串时间是否为今日
-     * 
+     *
      * @param sdate
      * @return boolean
      */
@@ -287,7 +287,7 @@ public class StringUtils {
 
     /**
      * 返回long类型的今天的日期
-     * 
+     *
      * @return
      */
     public static long getToday() {
@@ -305,13 +305,11 @@ public class StringUtils {
 
     /***
      * 计算两个时间差，返回的是的秒s
-     * 
-     * @author 火蚁 2015-2-9 下午4:50:06
-     * 
-     * @return long
+     *
      * @param dete1
      * @param date2
      * @return
+     * @author 火蚁 2015-2-9 下午4:50:06
      */
     public static long calDateDifferent(String dete1, String date2) {
 
@@ -336,7 +334,7 @@ public class StringUtils {
 
     /**
      * 判断给定字符串是否空白串。 空白串是指由空格、制表符、回车符、换行符组成的字符串 若输入字符串为null或空字符串，返回true
-     * 
+     *
      * @param input
      * @return boolean
      */
@@ -355,7 +353,7 @@ public class StringUtils {
 
     /**
      * 判断是不是一个合法的电子邮件地址
-     * 
+     *
      * @param email
      * @return
      */
@@ -367,7 +365,7 @@ public class StringUtils {
 
     /**
      * 判断一个url是否为图片url
-     * 
+     *
      * @param url
      * @return
      */
@@ -379,7 +377,7 @@ public class StringUtils {
 
     /**
      * 判断是否为一个合法的url地址
-     * 
+     *
      * @param str
      * @return
      */
@@ -391,7 +389,7 @@ public class StringUtils {
 
     /**
      * 字符串转整数
-     * 
+     *
      * @param str
      * @param defValue
      * @return
@@ -406,7 +404,7 @@ public class StringUtils {
 
     /**
      * 对象转整数
-     * 
+     *
      * @param obj
      * @return 转换异常返回 0
      */
@@ -418,7 +416,7 @@ public class StringUtils {
 
     /**
      * 对象转整数
-     * 
+     *
      * @param obj
      * @return 转换异常返回 0
      */
@@ -432,7 +430,7 @@ public class StringUtils {
 
     /**
      * 字符串转布尔值
-     * 
+     *
      * @param b
      * @return 转换异常返回 false
      */
@@ -450,7 +448,7 @@ public class StringUtils {
 
     /**
      * 将一个InputStream流转换成字符串
-     * 
+     *
      * @param is
      * @return
      */
@@ -489,13 +487,10 @@ public class StringUtils {
 
     /***
      * 截取字符串
-     * 
-     * @param start
-     *            从那里开始，0算起
-     * @param num
-     *            截取多少个
-     * @param str
-     *            截取的字符串
+     *
+     * @param start 从那里开始，0算起
+     * @param num   截取多少个
+     * @param str   截取的字符串
      * @return
      */
     public static String getSubString(int start, int num, String str) {
@@ -521,7 +516,7 @@ public class StringUtils {
 
     /**
      * 获取当前时间为每年第几周
-     * 
+     *
      * @return
      */
     public static int getWeekOfYear() {
@@ -530,7 +525,7 @@ public class StringUtils {
 
     /**
      * 获取当前时间为每年第几周
-     * 
+     *
      * @param date
      * @return
      */

@@ -49,6 +49,7 @@ public class AndroidWebServer extends NanoHTTPD {
             "</div>\n" +
             "</body>\n" +
             "</html>";
+
     public AndroidWebServer(int port) {
         super(port);
     }
@@ -135,7 +136,7 @@ public class AndroidWebServer extends NanoHTTPD {
         return newFixedLengthResponse(builder.toString());
     }
 
-    public Response responseIndex(){
+    public Response responseIndex() {
 //        String msg = String.format(INDEX, "互传-零流量下载", "互传", "零流量，下载文件", APK_NAME, "下 载", BuildConfig.VERSION_NAME);
 //        return newFixedLengthResponse(msg);
         StringBuilder builder = new StringBuilder();
@@ -162,7 +163,7 @@ public class AndroidWebServer extends NanoHTTPD {
         builder.append("<div class='prompt' style='clear:both;'>" + "零流量，下载文件" + "</div>");
         builder.append("<div style=clear:both;></div>");
         builder.append("<button onclick=download('/ApeTransfer.apk');>");
-        builder.append("<div class='title'>"+"下 载" + "</div>");
+        builder.append("<div class='title'>" + "下 载" + "</div>");
         builder.append("<div class='version'>" + BuildConfig.VERSION_NAME + "</div>");
         builder.append("</button></div></body></html>");
         return newFixedLengthResponse(builder.toString());

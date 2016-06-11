@@ -39,9 +39,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/main_function_introduce_height"
                 android:layout_alignParentBottom="true"
-                android:focusable="true"
+                android:background="@drawable/main_invite_selector"
                 android:clickable="true"
-                android:background="@drawable/main_invite_selector">
+                android:focusable="true">
 
                 <TextView
                     android:id="@+id/tv_function_introduce"

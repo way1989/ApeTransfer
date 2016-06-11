@@ -11,16 +11,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.ape.qrcode.CaptureActivity;
 import com.ape.transfer.App;
 import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import java.io.File;
 import java.util.HashMap;
@@ -61,6 +60,7 @@ public class InviteFriendActivity extends AppCompatActivity {
                 break;
         }
     }
+
     @TargetApi(Build.VERSION_CODES.M)
     private void requestWriteSettings() {
         Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);

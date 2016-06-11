@@ -15,6 +15,7 @@ public class DialogHelp {
 
     /***
      * 获取一个dialog
+     *
      * @param context
      * @return
      */
@@ -25,6 +26,7 @@ public class DialogHelp {
 
     /***
      * 获取一个耗时等待对话框
+     *
      * @param context
      * @param message
      * @return
@@ -39,6 +41,7 @@ public class DialogHelp {
 
     /***
      * 获取一个信息对话框，注意需要自己手动调用show方法显示
+     *
      * @param context
      * @param message
      * @param onClickListener

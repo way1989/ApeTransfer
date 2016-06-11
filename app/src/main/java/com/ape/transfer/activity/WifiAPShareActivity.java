@@ -195,7 +195,7 @@ public class WifiAPShareActivity extends AppCompatActivity {
                         break;
 
                     case WifiManager.WIFI_STATE_ENABLING:
-                        Log.d(TAG, "venabling");
+                        Log.d(TAG, "wifi enabling");
                         break;
 
                     case WifiManager.WIFI_STATE_ENABLED:

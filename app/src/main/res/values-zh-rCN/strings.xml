@@ -39,4 +39,8 @@
     <string name="saveTraffic_step2_intro">请好友打开浏览器,输入以下网址:</string>
     <string name="saveTraffic_step2_other">或者</string>
     <string name="scan_qrcode_to_connect">扫描连接</string>
+
+    <string name="qr_scan_tips">将二维码/条码放入框内，即可自动扫描</string>
+    <string name="actionbar_title_qr_scan">二维码/条码</string>
+    <string name="main_transfer_info">一方创建群组，一方搜索加入</string>
 </resources>

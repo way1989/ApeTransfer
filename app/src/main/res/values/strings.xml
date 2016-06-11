@@ -38,4 +38,6 @@
     <string name="saveTraffic_step2_other">Or</string>
     <string name="scan_qrcode_to_connect">Scan connection</string>
     <string name="waiting_creating_ap">Creating a hotspot...</string>
+    <string name="actionbar_title_qr_scan">QR Code/ Bar Code</string>
+    <string name="qr_scan_tips">Place a barcode inside the viewfinder rectangle to scan it.</string>
 </resources>
