@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -16,7 +17,9 @@ import android.widget.TextView;
 import com.ape.transfer.R;
 import com.ape.transfer.util.AndroidWebServer;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
+import com.google.zxing.WriterException;
 
 import java.io.IOException;
 
@@ -78,6 +81,7 @@ public class WifiAPShareActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         mWifiApServerManager.setWifiApEnabled(null, false);
+        mNanoHTTPServer.stop();
     }
 
     private void initData() {
@@ -143,7 +147,6 @@ public class WifiAPShareActivity extends AppCompatActivity {
 
                     // 关闭NanoHTTPServer
                     mNanoHTTPServer.stop();
-
                     break;
 
                 case 2:
@@ -161,7 +164,14 @@ public class WifiAPShareActivity extends AppCompatActivity {
                         rlLoading.setVisibility(View.GONE);
                         tvStep2Ip.setText("192.168.43.1:8080");
                         tvSsid.setText(mWifiApServerManager.getWifiApConfiguration().SSID);
-                    } catch (IOException e) {
+                        Bitmap qrCode = QrCodeUtils.create2DCode("http://192.168.43.1:8080");
+                        if(qrCode != null) {
+                            ivCode.setVisibility(View.VISIBLE);
+                            ivCode.setImageBitmap(qrCode);
+                        }else {
+                            ivCode.setVisibility(View.GONE);
+                        }
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
