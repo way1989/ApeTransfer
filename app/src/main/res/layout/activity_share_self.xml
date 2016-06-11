@@ -53,7 +53,7 @@
 
         <TextView
             android:id="@+id/tv_code_intro"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/iv_code"
             android:layout_marginTop="@dimen/invite_code_intro_marginTop"

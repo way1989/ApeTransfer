@@ -11,9 +11,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
+import com.ape.qrcode.CaptureActivity;
 import com.ape.transfer.App;
 import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;
@@ -53,6 +56,8 @@ public class InviteFriendActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.bt_more:
+                Toast.makeText(this, "start qr scan...", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, CaptureActivity.class));
                 break;
         }
     }

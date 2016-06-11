@@ -27,8 +27,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.InviteFriendActivity" />
-        <activity android:name=".activity.WifiAPShareActivity"></activity>
+        <activity
+            android:name=".activity.InviteFriendActivity"
+            android:label="@string/invite_friend"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.WifiAPShareActivity"
+            android:label="@string/invite_share_ap"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
