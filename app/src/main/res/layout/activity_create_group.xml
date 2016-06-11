@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ape.transfer.activity.WifiAPShareActivity">
+    tools:context="com.ape.transfer.activity.CreateGroupActivity">
 
     <include
         android:id="@+id/mobile_data_warning"
@@ -18,7 +18,6 @@
         android:layout_below="@id/mobile_data_warning"
         android:layout_marginLeft="@dimen/invite_code_intro_marginTop"
         android:layout_marginRight="@dimen/invite_code_intro_marginTop"
-
         android:gravity="center_horizontal">
 
         <TextView
@@ -110,7 +109,7 @@
             android:id="@+id/tv_code_intro_san"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_code_intro"
+            android:layout_below="@+id/tv_code_intro"
             android:layout_marginTop="@dimen/invite_code_intro_marginTop"
             android:gravity="center"
             android:text="@string/saveTraffic_code_san"

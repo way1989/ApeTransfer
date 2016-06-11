@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -19,15 +18,12 @@ import com.ape.transfer.util.AndroidWebServer;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
-import com.google.zxing.WriterException;
-
-import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import fi.iki.elonen.NanoHTTPD;
 
-public class WifiAPShareActivity extends AppCompatActivity {
+public class WifiAPShareActivity extends BaseActivity {
 
     /* 数据段begin */
     private final String TAG = "WifiApServerActivity";
@@ -165,10 +161,10 @@ public class WifiAPShareActivity extends AppCompatActivity {
                         tvStep2Ip.setText("192.168.43.1:8080");
                         tvSsid.setText(mWifiApServerManager.getWifiApConfiguration().SSID);
                         Bitmap qrCode = QrCodeUtils.create2DCode("http://192.168.43.1:8080");
-                        if(qrCode != null) {
+                        if (qrCode != null) {
                             ivCode.setVisibility(View.VISIBLE);
                             ivCode.setImageBitmap(qrCode);
-                        }else {
+                        } else {
                             ivCode.setVisibility(View.GONE);
                         }
                     } catch (Exception e) {

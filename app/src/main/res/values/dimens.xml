@@ -53,4 +53,20 @@
     <dimen name="saveTraffic_attention_padding">20.0dp</dimen>
     <dimen name="saveTraffic_loading_marginbottom">20.0dip</dimen>
     <dimen name="process_qrcode_height">40.0dip</dimen>
+
+    <dimen name="scan_anim_width">296.0dip</dimen>
+    <dimen name="scan_anim_height">296.0dip</dimen>
+    <dimen name="scan_random_width">350.0dip</dimen>
+    <dimen name="scan_random_height">400.0dip</dimen>
+    <dimen name="scan_tip_marginBottom">18.0dip</dimen>
+    <dimen name="scan_name_marginTop">22.0dip</dimen>
+
+    <dimen name="iv_item_me_height">76.0dip</dimen>
+    <dimen name="iv_item_me_width">76.0dip</dimen>
+    <dimen name="creat_qrcode_tip_textsize">15.0dip</dimen>
+    <dimen name="creat_qrcode_tip_margintop">113.0dip</dimen>
+    <dimen name="qrcode_width">150.0dip</dimen>
+    <dimen name="main_margin_left">17.0dip</dimen>
+    <dimen name="qrcode_margintop">50.0dip</dimen>
+    <dimen name="waiting_icon_marginLeft">25.0dip</dimen>
 </resources>

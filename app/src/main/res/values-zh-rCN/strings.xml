@@ -43,4 +43,8 @@
     <string name="qr_scan_tips">将二维码/条码放入框内，即可自动扫描</string>
     <string name="actionbar_title_qr_scan">二维码/条码</string>
     <string name="main_transfer_info">一方创建群组，一方搜索加入</string>
+    <string name="text_connetion_tip">请确认对方手机是否已经创建群组</string>
+    <string name="main_me">我</string>
+    <string name="created_qrcode_tip">用其它手机扫描以下二维码连接设备</string>
+    <string name="creating_qrcode_tip">正在生成二维码，请等待...</string>
 </resources>

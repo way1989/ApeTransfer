@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ape.transfer.R;
+import com.ape.transfer.activity.ApScanActivity;
+import com.ape.transfer.activity.CreateGroupActivity;
 import com.ape.transfer.activity.InviteFriendActivity;
+import com.ape.transfer.activity.QrCodeActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -80,8 +83,11 @@ public class TransferFragment extends Fragment {
                 startActivity(new Intent(getActivity(), InviteFriendActivity.class));
                 break;
             case R.id.mainSendBtn:
+                startActivity(new Intent(getActivity(), QrCodeActivity.class));
+
                 break;
             case R.id.mainReceiveBtn:
+                startActivity(new Intent(getActivity(), ApScanActivity.class));
                 break;
         }
     }

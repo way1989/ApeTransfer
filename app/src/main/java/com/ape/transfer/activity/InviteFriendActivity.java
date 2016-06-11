@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -29,7 +28,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class InviteFriendActivity extends AppCompatActivity {
+public class InviteFriendActivity extends BaseActivity {
     private static final int BLUETOOTH_SHARE_REQUEST_CODE = 4098;
     private static final String TAG = "InviteFriendActivity";
     private static final int REQUEST_CODE_WRITE_SETTINGS = 2;

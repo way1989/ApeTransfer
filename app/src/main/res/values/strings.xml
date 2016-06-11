@@ -40,4 +40,9 @@
     <string name="waiting_creating_ap">Creating a hotspot...</string>
     <string name="actionbar_title_qr_scan">QR Code/ Bar Code</string>
     <string name="qr_scan_tips">Place a barcode inside the viewfinder rectangle to scan it.</string>
+    <string name="text_connetion_tip">Please make sure if a group has been created with the other phone</string>
+    <string name="main_me">Me</string>
+
+    <string name="created_qrcode_tip">Use another phone to scan the following QR code to connect devices</string>
+    <string name="creating_qrcode_tip">Generating QR code, please wait...</string>
 </resources>

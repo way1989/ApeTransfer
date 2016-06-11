@@ -14,11 +14,11 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
+
     <!--
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     -->
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -46,12 +46,22 @@
             android:label="@string/invite_share_ap"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".zxing.activity.CaptureActivity"
             android:label="@string/actionbar_title_qr_scan"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.ApScanActivity"
+            android:label="@string/connect_ap"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.CreateGroupActivity"></activity>
+        <activity android:name=".activity.QrCodeActivity"
+            android:label="@string/connect_ap"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            />
     </application>
 
 </manifest>

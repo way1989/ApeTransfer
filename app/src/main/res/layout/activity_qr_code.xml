@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ape.transfer.activity.QrCodeActivity">
+
+    <include
+        android:id="@+id/mobile_data_warning"
+        layout="@layout/subtitle_mobile_data"
+        android:layout_width="match_parent"
+        android:layout_height="25.0dip"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_qrcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/main_margin_left"
+        android:layout_marginRight="@dimen/main_margin_left"
+        android:layout_marginTop="@dimen/creat_qrcode_tip_margintop"
+        android:text="@string/creating_qrcode_tip"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/creat_qrcode_tip_textsize" />
+
+    <ImageView
+        android:id="@+id/ivQrcode"
+        android:layout_width="@dimen/qrcode_width"
+        android:layout_height="@dimen/qrcode_width"
+        android:layout_below="@id/tv_qrcode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/qrcode_margintop" />
+
+    <RelativeLayout
+        android:id="@id/rl_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:colorBackground"
+        android:layout_below="@id/mobile_data_warning"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@id/tv_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/creat_qrcode_tip_margintop"
+            android:gravity="center"
+            android:text="@string/creating_qrcode_tip"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/textSize_h4" />
+
+        <ProgressBar
+            android:id="@id/loading"
+            android:layout_width="@dimen/process_qrcode_height"
+            android:layout_height="@dimen/process_qrcode_height"
+            android:layout_below="@id/tv_loading"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/waiting_icon_marginLeft"
+            android:layout_marginTop="@dimen/qrcode_margintop" />
+
+        <TextView
+            android:id="@id/tv_prompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_loading"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.2"
+            android:padding="@dimen/saveTraffic_attention_padding"
+            android:text="@string/saveTraffic_intro"
+            android:textColor="@color/black_light"
+            android:textSize="@dimen/textSize_h4"
+            android:visibility="gone" />
+    </RelativeLayout>
+</RelativeLayout>
