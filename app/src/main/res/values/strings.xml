@@ -45,4 +45,7 @@
 
     <string name="created_qrcode_tip">Use another phone to scan the following QR code to connect devices</string>
     <string name="creating_qrcode_tip">Generating QR code, please wait...</string>
+    <string name="title_activity_user_info">UserInfoActivity</string>
+    <string name="nickname_info">Nickname will be generated randomly by EasyShare. You can modify it later.</string>
+    <string name="hint_input_username">Enter a name with no more than 16 characters</string>
 </resources>

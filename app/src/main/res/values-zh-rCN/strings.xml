@@ -47,4 +47,7 @@
     <string name="main_me">我</string>
     <string name="created_qrcode_tip">用其它手机扫描以下二维码连接设备</string>
     <string name="creating_qrcode_tip">正在生成二维码，请等待...</string>
+
+    <string name="nickname_info">互传随机生成昵称，您可以修改。</string>
+    <string name="hint_input_username">输入16个字符以内名称</string>
 </resources>

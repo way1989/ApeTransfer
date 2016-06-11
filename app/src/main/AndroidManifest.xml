@@ -56,12 +56,13 @@
             android:label="@string/connect_ap"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.CreateGroupActivity"></activity>
-        <activity android:name=".activity.QrCodeActivity"
+        <activity android:name=".activity.CreateGroupActivity" />
+        <activity
+            android:name=".activity.QrCodeActivity"
             android:label="@string/connect_ap"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.UserInfoActivity"></activity>
     </application>
 
 </manifest>

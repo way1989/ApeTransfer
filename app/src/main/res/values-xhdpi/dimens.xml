@@ -1,6 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="checkbox_marginBottomTop">8.0dip</dimen>
+    <dimen name="checkbox_marginLeft">15.0dip</dimen>
+    <dimen name="checkbox_paddingLeft">5.0dip</dimen>
+    <dimen name="checkbox_width">15.0dip</dimen>
+    <dimen name="dialog_btn_marginLeft">7.0dip</dimen>
+    <dimen name="dialog_btn_width">120.0dip</dimen>
+    <dimen name="dialog_width">300.0dip</dimen>
     <dimen name="main_banner_height">265.0dip</dimen>
     <dimen name="main_text_marginBottom">25.0dip</dimen>
     <dimen name="main_text_marginTop">18.0dip</dimen>
+    <dimen name="message_progress_bg_width">70.0dip</dimen>
     <dimen name="subtitle_marginTop">10.0dip</dimen>
+    <dimen name="welcome_title3_margin">220.0dip</dimen>
 </resources>
