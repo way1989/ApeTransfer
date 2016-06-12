@@ -41,6 +41,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.ape.transfer.R;
+import com.ape.transfer.activity.BaseActivity;
 import com.ape.transfer.util.DialogHelp;
 import com.ape.transfer.util.StringUtils;
 import com.ape.transfer.zxing.camera.CameraManager;
@@ -62,10 +63,10 @@ import java.lang.reflect.Field;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CaptureActivity extends AppCompatActivity implements View.OnClickListener,
+public final class CaptureActivity extends BaseActivity implements View.OnClickListener,
         SurfaceHolder.Callback {
 
-    private static final String TAG = CaptureActivity.class.getSimpleName();
+    private static final String TAG = "CaptureActivity";
 
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
@@ -97,9 +98,6 @@ public final class CaptureActivity extends AppCompatActivity implements View.OnC
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_qr_scan);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         scanPreview = (SurfaceView) findViewById(R.id.capture_preview);
         scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
@@ -120,18 +118,6 @@ public final class CaptureActivity extends AppCompatActivity implements View.OnC
         animation.setRepeatCount(-1);
         animation.setRepeatMode(Animation.RESTART);
         scanLine.startAnimation(animation);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -246,11 +232,11 @@ public final class CaptureActivity extends AppCompatActivity implements View.OnC
 
     private void showUrlOption(final String url) {
 
-//        if (url.contains("oschina.net")) {
-//            UIHelper.showUrlRedirect(CaptureActivity.this, url);
-//            finish();
-//            return;
-//        }
+        if (url.contains("192.168.43.1:8080")) {
+            openURL(url);
+            finish();
+            return;
+        }
         DialogHelp.getConfirmDialog(this, "可能存在风险，是否打开链接? " + url, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

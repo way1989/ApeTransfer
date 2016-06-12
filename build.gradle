@@ -17,6 +17,9 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url "https://jitpack.io"
+        }
     }
 }
 
@@ -38,4 +41,6 @@ ext {
     junitVersion = '4.12'
     buglyVersion = '2.1.5'
     nanohttpdVersion = '2.3.0'
+    zxingVersion = '3.2.1'
+    nammuVersion = '1.1.1'
 }

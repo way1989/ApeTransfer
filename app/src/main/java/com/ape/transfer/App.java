@@ -7,6 +7,8 @@ import android.text.format.Formatter;
 import com.ape.transfer.util.Log;
 import com.tencent.bugly.crashreport.CrashReport;
 
+import pl.tajchert.nammu.Nammu;
+
 /**
  * Created by way on 16/6/10.
  */
@@ -23,6 +25,8 @@ public class App extends Application {
         mContext = getApplicationContext();
         if (BuildConfig.BUGLY_ENABLED)
             CrashReport.initCrashReport(mContext, getString(R.string.bugly_appid), false);
+
+        Nammu.init(this);
 
         long maxMemory = Runtime.getRuntime().maxMemory();
         String result = Formatter.formatFileSize(mContext, maxMemory);

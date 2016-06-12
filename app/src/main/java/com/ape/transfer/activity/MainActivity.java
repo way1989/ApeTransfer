@@ -1,8 +1,15 @@
 package com.ape.transfer.activity;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +18,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.support.v7.widget.Toolbar;
@@ -27,19 +35,25 @@ import android.widget.TextView;
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
 import com.ape.transfer.fragment.TransferFragment;
+import com.ape.transfer.util.Log;
+import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import pl.tajchert.nammu.Nammu;
+import pl.tajchert.nammu.PermissionCallback;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener,
-        AdapterView.OnItemSelectedListener {
+        AdapterView.OnItemSelectedListener, PermissionCallback {
     private static final int PAGE_TRANSFER = 0;
     private static final int PAGE_EXCHANGE = 1;
-
+    private static final String TAG = "MainActivity";
+    private static final String PACKAGE_URI_PREFIX = "package:";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.nav_view)
@@ -50,7 +64,6 @@ public class MainActivity extends AppCompatActivity
     Spinner spinner;
     @BindView(R.id.container)
     ViewPager container;
-
     Runnable navigateTransfer = new Runnable() {
         public void run() {
             navView.getMenu().findItem(R.id.nav_transfer).setChecked(true);
@@ -65,8 +78,22 @@ public class MainActivity extends AppCompatActivity
             container.setCurrentItem(PAGE_EXCHANGE);
         }
     };
+    Runnable navigateShare = new Runnable() {
+        public void run() {
+            String url = "http://fir.im/capturer";
+            //url = getString(R.string.share_app, url);
+            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            sharingIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, url);
+            sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent chooserIntent = Intent.createChooser(sharingIntent, null);
+            startActivity(chooserIntent);
+        }
+    };
     private ActionBarDrawerToggle toggle;
     private MainPagerAdapter mPagerAdapter;
+    private long mRequestTimeMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,20 +102,26 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        setupNavView();
+
+        //setup viewpager
+        setupViewpager();
+
+        // Setup spinner
+        setupSpinner();
+
+        navigateTransfer.run();
+    }
+
+    private void setupNavView() {
         toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navView.setNavigationItemSelectedListener(this);
+    }
 
-        //setup viewpager
-        mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
-        mPagerAdapter.addFragment(TransferFragment.newInstance("", ""), getString(R.string.main_bottom_transfer));
-        mPagerAdapter.addFragment(ExchangeFragment.newInstance("", ""), getString(R.string.main_bottom_exchange));
-        container.setAdapter(mPagerAdapter);
-        container.addOnPageChangeListener(this);
-
-        // Setup spinner
+    private void setupSpinner() {
         spinner.setAdapter(new SpinnerAdapter(
                 toolbar.getContext(),
                 new String[]{
@@ -96,8 +129,14 @@ public class MainActivity extends AppCompatActivity
                         getResources().getString(R.string.main_bottom_exchange)
                 }));
         spinner.setOnItemSelectedListener(this);
+    }
 
-        navigateTransfer.run();
+    private void setupViewpager() {
+        mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        mPagerAdapter.addFragment(TransferFragment.newInstance("", ""), getString(R.string.main_bottom_transfer));
+        mPagerAdapter.addFragment(ExchangeFragment.newInstance("", ""), getString(R.string.main_bottom_exchange));
+        container.setAdapter(mPagerAdapter);
+        container.addOnPageChangeListener(this);
     }
 
     @Override
@@ -192,14 +231,95 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_exchange) {
             item.setChecked(true);
             navView.postDelayed(navigateExchange, 350L);
-
         } else if (id == R.id.nav_share) {
-
+            navView.postDelayed(navigateShare, 350L);
         } else if (id == R.id.nav_send) {
-
+            navView.postDelayed(navigateShare, 350L);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @OnClick(R.id.fab)
+    public void onClick() {
+        //startActivity(new Intent(this, CaptureActivity.class));
+        checkPermissionAndThenLoad();
+    }
+
+    private void checkPermissionAndThenLoad() {
+        //check for permission
+        if (Nammu.checkPermission(Manifest.permission.CAMERA)) {
+            Log.d(TAG, "checkPermissionAndThenLoad has permission...");
+            startActivity(new Intent(this, CaptureActivity.class));
+        } else {
+            if (Nammu.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                Log.d(TAG, "checkPermissionAndThenLoad shouldShowRequestPermissionRationale...");
+                new AlertDialog.Builder(this).setMessage(R.string.required_permissions_promo)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                tryRequestPermission();
+                            }
+                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).create().show();
+            } else {
+                Log.d(TAG, "checkPermissionAndThenLoad askForPermission...");
+                tryRequestPermission();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Nammu.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void tryRequestPermission() {
+        Nammu.askForPermission(this, Manifest.permission.CAMERA, this);
+        mRequestTimeMillis = SystemClock.elapsedRealtime();
+    }
+
+    private void startSettingsPermission() {
+        final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse(PACKAGE_URI_PREFIX + getPackageName()));
+        startActivity(intent);
+    }
+
+    @Override
+    public void permissionGranted() {
+        startActivity(new Intent(this, CaptureActivity.class));
+    }
+
+    @Override
+    public void permissionRefused() {
+        final long currentTimeMillis = SystemClock.elapsedRealtime();
+        // If the permission request completes very quickly, it must be because the system
+        // automatically denied. This can happen if the user had previously denied it
+        // and checked the "Never ask again" check box.
+        if ((currentTimeMillis - mRequestTimeMillis) < 250L) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.enable_permission_procedure)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startSettingsPermission();
+                        }
+                    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            }).create().show();
+
+        } else {
+            finish();
+        }
+
     }
 
     private static class SpinnerAdapter extends ArrayAdapter<String> implements ThemedSpinnerAdapter {

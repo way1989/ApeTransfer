@@ -54,8 +54,6 @@ public class InviteFriendActivity extends BaseActivity {
                 }
                 break;
             case R.id.bt_more:
-                Toast.makeText(this, "start qr scan...", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, CaptureActivity.class));
                 break;
         }
     }

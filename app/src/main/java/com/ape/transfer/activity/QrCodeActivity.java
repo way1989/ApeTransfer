@@ -116,6 +116,7 @@ public class QrCodeActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(mP2PManager != null)
         mP2PManager.stop();
     }
 }
