@@ -20,7 +20,7 @@
         android:layout_marginLeft="@dimen/main_margin_left"
         android:layout_marginRight="@dimen/main_margin_left"
         android:layout_marginTop="@dimen/creat_qrcode_tip_margintop"
-        android:text="@string/creating_qrcode_tip"
+        android:text="@string/created_qrcode_tip"
         android:textColor="@android:color/black"
         android:textSize="@dimen/creat_qrcode_tip_textsize" />
 

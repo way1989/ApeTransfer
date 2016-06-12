@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -22,7 +23,9 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pinterface.Melon_Callback;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.NetworkUtils;
+import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
+import com.google.zxing.WriterException;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -77,6 +80,7 @@ public class CreateGroupActivity extends ApBaseActivity {
     // 服务端MAC（本机）
     private String mMAC;
     private boolean isGetMAC;
+    private boolean isWifiDefaultEnabled;
 
     private P2PManager mP2PManager;
     private List<P2PNeighbor> neighbors = new ArrayList<>();
@@ -117,6 +121,7 @@ public class CreateGroupActivity extends ApBaseActivity {
         if (mWifiApUtils.isWifiApEnabled()) {
             return;
         }
+        isWifiDefaultEnabled = mWifiManager.isWifiEnabled();
 
         WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
         if (wifiInfo == null || wifiInfo.getMacAddress() == null) {
@@ -131,8 +136,14 @@ public class CreateGroupActivity extends ApBaseActivity {
             return;
         }
         isGetMAC = false;
-        mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
-                WifiApUtils.AuthenticationType.TYPE_NONE, "ApeTransfer", mMAC, null), true);
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
+                        WifiApUtils.AuthenticationType.TYPE_NONE, "ApeTransfer", mMAC, null), true);
+            }
+        }, 500L);
+
     }
 
     @Override
@@ -149,7 +160,10 @@ public class CreateGroupActivity extends ApBaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mWifiApUtils.setWifiApEnabled(null, false);
+        if(mWifiApUtils != null && mWifiApUtils.isWifiApEnabled()) {
+            mWifiApUtils.setWifiApEnabled(null, false);
+            mWifiManager.setWifiEnabled(isWifiDefaultEnabled);
+        }
     }
 
     private void initData() {
@@ -221,6 +235,18 @@ public class CreateGroupActivity extends ApBaseActivity {
             case WifiApUtils.WIFI_AP_STATE_ENABLED:
                 Log.d(TAG, "wifi ap enabled");
                 rlLoading.setVisibility(View.GONE);
+                Bitmap qrCode = null;
+                try {
+                    qrCode = QrCodeUtils.create2DCode("ApeTransfer");
+                } catch (WriterException e) {
+                    e.printStackTrace();
+                }
+                if (qrCode != null) {
+                    ivQrcode.setVisibility(View.VISIBLE);
+                    ivQrcode.setImageBitmap(qrCode);
+                } else {
+                    ivQrcode.setVisibility(View.GONE);
+                }
                 break;
             case WifiApUtils.WIFI_AP_STATE_FAILED:
                 Log.d(TAG, "wifi ap failed");
@@ -251,6 +277,7 @@ public class CreateGroupActivity extends ApBaseActivity {
                 // Wifi已上报MAC，关闭Wifi开关
                 mWifiManager.setWifiEnabled(false);
                 if(isGetMAC && !mWifiApUtils.isWifiApEnabled()){
+                    isWifiDefaultEnabled = mWifiManager.isWifiEnabled();
                     mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
                             WifiApUtils.AuthenticationType.TYPE_NONE, "ApeTransfer", mMAC, null), true);
                 }
