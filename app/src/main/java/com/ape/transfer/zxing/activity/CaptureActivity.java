@@ -25,13 +25,9 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -54,6 +50,10 @@ import com.google.zxing.Result;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * This activity opens the camera and does the actual scanning on a background
  * thread. It draws a viewfinder to help the user place the barcode correctly,
@@ -63,21 +63,25 @@ import java.lang.reflect.Field;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CaptureActivity extends BaseActivity implements View.OnClickListener,
-        SurfaceHolder.Callback {
-
+public final class CaptureActivity extends BaseActivity implements SurfaceHolder.Callback {
     private static final String TAG = "CaptureActivity";
+    @BindView(R.id.capture_preview)
+    SurfaceView capturePreview;
+    @BindView(R.id.capture_scan_line)
+    ImageView captureScanLine;
+    @BindView(R.id.capture_crop_view)
+    RelativeLayout captureCropView;
+    @BindView(R.id.capture_container)
+    RelativeLayout captureContainer;
+    @BindView(R.id.capture_flash)
+    ImageView captureFlash;
 
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
     private InactivityTimer inactivityTimer;
     private BeepManager beepManager;
+    private TranslateAnimation animation;
 
-    private SurfaceView scanPreview = null;
-    private RelativeLayout scanContainer;
-    private RelativeLayout scanCropView;
-    private ImageView scanLine;
-    private ImageView mFlash;
 
     private Rect mCropRect = null;
     private boolean isHasSurface = false;
@@ -98,18 +102,12 @@ public final class CaptureActivity extends BaseActivity implements View.OnClickL
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_qr_scan);
-
-        scanPreview = (SurfaceView) findViewById(R.id.capture_preview);
-        scanContainer = (RelativeLayout) findViewById(R.id.capture_container);
-        scanCropView = (RelativeLayout) findViewById(R.id.capture_crop_view);
-        scanLine = (ImageView) findViewById(R.id.capture_scan_line);
-        mFlash = (ImageView) findViewById(R.id.capture_flash);
-        mFlash.setOnClickListener(this);
+        ButterKnife.bind(this);
 
         inactivityTimer = new InactivityTimer(this);
         beepManager = new BeepManager(this);
 
-        TranslateAnimation animation = new TranslateAnimation(
+        animation = new TranslateAnimation(
                 Animation.RELATIVE_TO_PARENT, 0.0f,
                 Animation.RELATIVE_TO_PARENT, 0.0f,
                 Animation.RELATIVE_TO_PARENT, 0.0f,
@@ -117,7 +115,6 @@ public final class CaptureActivity extends BaseActivity implements View.OnClickL
         animation.setDuration(4500);
         animation.setRepeatCount(-1);
         animation.setRepeatMode(Animation.RESTART);
-        scanLine.startAnimation(animation);
     }
 
     @Override
@@ -139,13 +136,12 @@ public final class CaptureActivity extends BaseActivity implements View.OnClickL
             // The activity was paused but not stopped, so the surface still
             // exists. Therefore
             // surfaceCreated() won't be called, so init the camera here.
-            initCamera(scanPreview.getHolder());
+            initCamera(capturePreview.getHolder());
         } else {
             // Install the callback and wait for surfaceCreated() to init the
             // camera.
-            scanPreview.getHolder().addCallback(this);
+            capturePreview.getHolder().addCallback(this);
         }
-
         inactivityTimer.onResume();
     }
 
@@ -159,7 +155,7 @@ public final class CaptureActivity extends BaseActivity implements View.OnClickL
         beepManager.close();
         cameraManager.closeDriver();
         if (!isHasSurface) {
-            scanPreview.getHolder().removeCallback(this);
+            capturePreview.getHolder().removeCallback(this);
         }
         super.onPause();
     }
@@ -312,6 +308,7 @@ public final class CaptureActivity extends BaseActivity implements View.OnClickL
                 handler = new CaptureActivityHandler(this, cameraManager,
                         DecodeThread.ALL_MODE);
             }
+            captureScanLine.startAnimation(animation);
 
             initCrop();
         } catch (IOException ioe) {
@@ -365,17 +362,17 @@ public final class CaptureActivity extends BaseActivity implements View.OnClickL
 
         /** 获取布局中扫描框的位置信息 */
         int[] location = new int[2];
-        scanCropView.getLocationInWindow(location);
+        captureCropView.getLocationInWindow(location);
 
         int cropLeft = location[0];
         int cropTop = location[1] - getStatusBarHeight();
 
-        int cropWidth = scanCropView.getWidth();
-        int cropHeight = scanCropView.getHeight();
+        int cropWidth = captureCropView.getWidth();
+        int cropHeight = captureCropView.getHeight();
 
         /** 获取布局容器的宽高 */
-        int containerWidth = scanContainer.getWidth();
-        int containerHeight = scanContainer.getHeight();
+        int containerWidth = captureContainer.getWidth();
+        int containerHeight = captureContainer.getHeight();
 
         /** 计算最终截取的矩形的左上角顶点x坐标 */
         int x = cropLeft * cameraWidth / containerWidth;
@@ -404,30 +401,22 @@ public final class CaptureActivity extends BaseActivity implements View.OnClickL
         return 0;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.capture_flash:
-                light();
-                break;
-
-            default:
-                break;
-        }
-    }
-
     protected void light() {
         if (flag == true) {
             flag = false;
             // 开闪光灯
             cameraManager.openLight();
-            mFlash.setBackgroundResource(R.drawable.qb_scan_btn_flash_down);
+            captureFlash.setBackgroundResource(R.drawable.qb_scan_btn_flash_down);
         } else {
             flag = true;
             // 关闪光灯
             cameraManager.offLight();
-            mFlash.setBackgroundResource(R.drawable.qb_scan_btn_flash_nor);
+            captureFlash.setBackgroundResource(R.drawable.qb_scan_btn_flash_nor);
         }
     }
 
+    @OnClick(R.id.capture_flash)
+    public void onClick() {
+        light();
+    }
 }
