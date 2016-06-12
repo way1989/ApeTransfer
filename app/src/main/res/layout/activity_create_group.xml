@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ape.transfer.activity.CreateGroupActivity">
+    tools:context="com.ape.transfer.activity.QrCodeActivity">
 
     <include
         android:id="@+id/mobile_data_warning"
@@ -12,146 +12,53 @@
         android:layout_height="25.0dip"
         android:visibility="gone" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_qrcode"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/mobile_data_warning"
-        android:layout_marginLeft="@dimen/invite_code_intro_marginTop"
-        android:layout_marginRight="@dimen/invite_code_intro_marginTop"
-        android:gravity="center_horizontal">
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/main_margin_left"
+        android:layout_marginRight="@dimen/main_margin_left"
+        android:layout_marginTop="@dimen/creat_qrcode_tip_margintop"
+        android:text="@string/creating_qrcode_tip"
+        android:textColor="@android:color/black"
+        android:textSize="@dimen/creat_qrcode_tip_textsize" />
 
-        <TextView
-            android:id="@+id/tv_step1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/saveTraffic_step_marginTop"
-            android:gravity="center"
-            android:text="@string/saveTraffic_step1"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/textSize_h4" />
-
-        <TextView
-            android:id="@+id/tv_step1_intro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_step1"
-            android:layout_marginTop="@dimen/invite_code_intro_marginTop"
-            android:gravity="center"
-            android:text="@string/saveTraffic_step1_intro"
-            android:textColor="@color/black_light"
-            android:textSize="@dimen/textSize_h5" />
-
-        <TextView
-            android:id="@+id/tv_ssid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_step1_intro"
-            android:layout_marginTop="@dimen/invite_code_intro_marginTop"
-            android:gravity="center"
-            android:textColor="@color/accent"
-            android:textSize="@dimen/textSize_h5" />
-
-        <TextView
-            android:id="@+id/tv_step2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_ssid"
-            android:layout_marginTop="@dimen/saveTraffic_step_marginTop"
-            android:gravity="center"
-            android:text="@string/saveTraffic_step2"
-            android:textColor="@android:color/black"
-            android:textSize="@dimen/textSize_h4" />
-
-        <TextView
-            android:id="@+id/tv_step2_intro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_step2"
-            android:layout_marginTop="@dimen/invite_code_intro_marginTop"
-            android:gravity="center"
-            android:text="@string/saveTraffic_step2_intro"
-            android:textColor="@color/black_light"
-            android:textSize="@dimen/textSize_h5" />
-
-        <TextView
-            android:id="@+id/tv_step2_ip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_step2_intro"
-            android:layout_marginTop="@dimen/invite_code_intro_marginTop"
-            android:gravity="center"
-            android:textColor="@color/accent"
-            android:textSize="@dimen/textSize_h5" />
-
-        <TextView
-            android:id="@+id/tv_step2_other"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_step2_ip"
-            android:layout_marginTop="@dimen/invite_code_intro_marginTop"
-            android:gravity="center"
-            android:text="@string/saveTraffic_step2_other"
-            android:textColor="@color/black_light"
-            android:textSize="@dimen/textSize_h4" />
-
-        <TextView
-            android:id="@+id/tv_code_intro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_step2_other"
-            android:layout_marginTop="@dimen/invite_code_intro_marginTop"
-            android:gravity="center"
-            android:text="@string/saveTraffic_code_intro"
-            android:textColor="@color/black_light"
-            android:textSize="@dimen/textSize_h5" />
-
-        <TextView
-            android:id="@+id/tv_code_intro_san"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_code_intro"
-            android:layout_marginTop="@dimen/invite_code_intro_marginTop"
-            android:gravity="center"
-            android:text="@string/saveTraffic_code_san"
-            android:textColor="@color/accent"
-            android:textSize="@dimen/textSize_h5" />
-
-        <ImageView
-            android:id="@+id/iv_code"
-            android:layout_width="@dimen/invite_code_width"
-            android:layout_height="@dimen/invite_code_height"
-            android:layout_below="@id/tv_code_intro_san"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/saveTraffic_txt_marginTop"
-            android:visibility="gone" />
-    </RelativeLayout>
+    <ImageView
+        android:id="@+id/ivQrcode"
+        android:layout_width="@dimen/qrcode_width"
+        android:layout_height="@dimen/qrcode_width"
+        android:layout_below="@id/tv_qrcode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/qrcode_margintop" />
 
     <RelativeLayout
         android:id="@+id/rl_loading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/mobile_data_warning"
         android:background="?android:colorBackground"
+        android:layout_below="@id/mobile_data_warning"
         android:gravity="center_horizontal">
-
-        <ProgressBar
-            android:id="@+id/loading"
-            android:layout_width="@dimen/process_qrcode_height"
-            android:layout_height="@dimen/process_qrcode_height"
-            android:layout_above="@+id/tv_loading"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/saveTraffic_loading_marginbottom" />
 
         <TextView
             android:id="@+id/tv_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
+            android:layout_marginTop="@dimen/creat_qrcode_tip_margintop"
             android:gravity="center"
-            android:text="@string/waiting_creating_ap"
+            android:text="@string/creating_qrcode_tip"
             android:textColor="@android:color/black"
             android:textSize="@dimen/textSize_h4" />
+
+        <ProgressBar
+            android:id="@+id/loading"
+            android:layout_width="@dimen/process_qrcode_height"
+            android:layout_height="@dimen/process_qrcode_height"
+            android:layout_below="@+id/tv_loading"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="@dimen/waiting_icon_marginLeft"
+            android:layout_marginTop="@dimen/qrcode_margintop" />
 
         <TextView
             android:id="@+id/tv_prompt"

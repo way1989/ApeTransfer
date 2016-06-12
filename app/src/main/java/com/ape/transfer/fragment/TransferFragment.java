@@ -3,6 +3,7 @@ package com.ape.transfer.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +77,11 @@ public class TransferFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
     @OnClick({R.id.rl_invite, R.id.mainSendBtn, R.id.mainReceiveBtn})
     public void onClick(View view) {
         switch (view.getId()) {
@@ -83,7 +89,7 @@ public class TransferFragment extends Fragment {
                 startActivity(new Intent(getActivity(), InviteFriendActivity.class));
                 break;
             case R.id.mainSendBtn:
-                startActivity(new Intent(getActivity(), QrCodeActivity.class));
+                startActivity(new Intent(getActivity(), CreateGroupActivity.class));
 
                 break;
             case R.id.mainReceiveBtn:
