@@ -48,4 +48,7 @@
     <string name="title_activity_user_info">UserInfoActivity</string>
     <string name="nickname_info">Nickname will be generated randomly by EasyShare. You can modify it later.</string>
     <string name="hint_input_username">Enter a name with no more than 16 characters</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

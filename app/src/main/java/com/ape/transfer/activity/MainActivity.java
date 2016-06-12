@@ -1,20 +1,28 @@
 package com.ape.transfer.activity;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.TabLayout;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
@@ -26,28 +34,39 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener,
+        AdapterView.OnItemSelectedListener {
+    private static final int PAGE_TRANSFER = 0;
+    private static final int PAGE_EXCHANGE = 1;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.tabs)
-    TabLayout tabs;
-    @BindView(R.id.appbar)
-    AppBarLayout appbar;
+    @BindView(R.id.nav_view)
+    NavigationView navView;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+    @BindView(R.id.spinner)
+    Spinner spinner;
     @BindView(R.id.container)
     ViewPager container;
-    @BindView(R.id.main_content)
-    CoordinatorLayout mainContent;
-    /**
-     * The {@link PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link FragmentStatePagerAdapter}.
-     */
-    private MainPagerAdapter mPagerAdapter;
 
+    Runnable navigateTransfer = new Runnable() {
+        public void run() {
+            navView.getMenu().findItem(R.id.nav_transfer).setChecked(true);
+            spinner.setSelection(PAGE_TRANSFER, true);
+            container.setCurrentItem(PAGE_TRANSFER);
+        }
+    };
+    Runnable navigateExchange = new Runnable() {
+        public void run() {
+            navView.getMenu().findItem(R.id.nav_exchange).setChecked(true);
+            spinner.setSelection(PAGE_EXCHANGE, true);
+            container.setCurrentItem(PAGE_EXCHANGE);
+        }
+    };
+    private ActionBarDrawerToggle toggle;
+    private MainPagerAdapter mPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,19 +74,91 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toggle = new ActionBarDrawerToggle(
+                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        navView.setNavigationItemSelectedListener(this);
+
+        //setup viewpager
         mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
         mPagerAdapter.addFragment(TransferFragment.newInstance("", ""), getString(R.string.main_bottom_transfer));
         mPagerAdapter.addFragment(ExchangeFragment.newInstance("", ""), getString(R.string.main_bottom_exchange));
-
         container.setAdapter(mPagerAdapter);
+        container.addOnPageChangeListener(this);
 
-        tabs.setupWithViewPager(container);
+        // Setup spinner
+        spinner.setAdapter(new SpinnerAdapter(
+                toolbar.getContext(),
+                new String[]{
+                        getResources().getString(R.string.main_bottom_transfer),
+                        getResources().getString(R.string.main_bottom_exchange)
+                }));
+        spinner.setOnItemSelectedListener(this);
 
-
+        navigateTransfer.run();
     }
 
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        //viewpager do nothing
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        spinner.setSelection(position, true);
+        switch (position) {
+            case PAGE_TRANSFER:
+                navView.getMenu().findItem(R.id.nav_transfer).setChecked(true);
+                break;
+            case PAGE_EXCHANGE:
+                navView.getMenu().findItem(R.id.nav_exchange).setChecked(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        //viewpager do nothing
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (position) {
+            case PAGE_TRANSFER:
+                spinner.post(navigateTransfer);
+                break;
+            case PAGE_EXCHANGE:
+                spinner.post(navigateExchange);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        //spinner do nothing
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        drawerLayout.removeDrawerListener(toggle);
+        container.removeOnPageChangeListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,10 +182,63 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+        if (id == R.id.nav_transfer) {
+            item.setChecked(true);
+            navView.postDelayed(navigateTransfer, 350L);
+        } else if (id == R.id.nav_exchange) {
+            item.setChecked(true);
+            navView.postDelayed(navigateExchange, 350L);
+
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private static class SpinnerAdapter extends ArrayAdapter<String> implements ThemedSpinnerAdapter {
+        private final Helper mDropDownHelper;
+
+        public SpinnerAdapter(Context context, String[] objects) {
+            super(context, android.R.layout.simple_list_item_1, objects);
+            mDropDownHelper = new Helper(context);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            View view;
+
+            if (convertView == null) {
+                // Inflate the drop down using the helper's LayoutInflater
+                LayoutInflater inflater = mDropDownHelper.getDropDownViewInflater();
+                view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+            } else {
+                view = convertView;
+            }
+
+            TextView textView = (TextView) view.findViewById(android.R.id.text1);
+            textView.setText(getItem(position));
+
+            return view;
+        }
+
+        @Override
+        public Resources.Theme getDropDownViewTheme() {
+            return mDropDownHelper.getDropDownViewTheme();
+        }
+
+        @Override
+        public void setDropDownViewTheme(Resources.Theme theme) {
+            mDropDownHelper.setDropDownViewTheme(theme);
+        }
+    }
+
     public class MainPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragments = new ArrayList<>();
         private final List<String> mFragmentTitles = new ArrayList<>();
