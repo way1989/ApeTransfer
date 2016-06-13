@@ -1,49 +1,77 @@
 package com.ape.transfer.activity;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.Settings;
 
+import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.Log;
 
 public abstract class ApBaseActivity extends BaseActivity {
     private static final String TAG = "ApBaseActivity";
     private static final int REQUEST_CODE_WRITE_SETTINGS = 2;
     protected boolean isRequestWriteSetting;
+    protected WifiApService.WifiApBinder mBackupService;
+    private ServiceConnection mServiceCon = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
+            mBackupService = (WifiApService.WifiApBinder) service;
+            afterServiceConnected();
+            Log.i(TAG, "onServiceConnected");
+        }
 
-    protected abstract int getContentLayout();
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            mBackupService = null;
+            Log.i(TAG, "onServiceDisconnected");
+        }
+    };
+
 
     protected abstract void permissionGranted();
 
     protected abstract void permissionRefused();
 
+    /**
+     * after service connected, will can the function, the son activity can do
+     * anything that need service connected
+     */
+    protected abstract void afterServiceConnected();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getContentLayout());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(this)) {
-            requestWriteSettings();
+            showRequestWriteSettingsDialog();
         } else {
             permissionGranted();
         }
+        bindService();
     }
 
-
-    @TargetApi(Build.VERSION_CODES.M)
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        if(isRequestWriteSetting){
-            isRequestWriteSetting = false;
-            if (Settings.System.canWrite(this)) {
-                permissionGranted();
-            } else {
-                permissionRefused();
+    private void showRequestWriteSettingsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("").setMessage("开关wifi需要申请修改系统设置权限，")
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestWriteSettings();
+                    }
+                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
             }
-        }
+        }).create().show();
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -64,9 +92,33 @@ public abstract class ApBaseActivity extends BaseActivity {
             if (Settings.System.canWrite(this)) {
                 Log.i(TAG, "onActivityResult write settings granted");
                 permissionGranted();
-            }else{
+            } else {
                 permissionRefused();
             }
         }
     }
+
+    private void bindService() {
+        this.getApplicationContext().bindService(new Intent(this, WifiApService.class),
+                mServiceCon, Service.BIND_AUTO_CREATE);
+    }
+
+    protected void unBindService() {
+        if (mBackupService != null) {
+            mBackupService.setOnWifiApStatusListener(null);
+        }
+        this.getApplicationContext().unbindService(mServiceCon);
+    }
+
+    protected void startService() {
+        this.startService(new Intent(this, WifiApService.class));
+    }
+
+    protected void stopService() {
+        if (mBackupService != null) {
+            mBackupService.reset();
+        }
+        this.stopService(new Intent(this, WifiApService.class));
+    }
+
 }
