@@ -1,9 +1,15 @@
 package com.ape.transfer.util;
 
+import android.net.DhcpInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.List;
 
 /**
@@ -11,10 +17,13 @@ import java.util.List;
  * @description Wifi客户端Ap管理者，实质上是WifiManager的代理
  */
 public class WifiUtils {
+    public static final String DEFAULT_GATEWAY_IP = "192.168.43.1";
     /* 数据段begin */
     private final static String TAG = "WifiUtils";
     // 单例
     private static WifiUtils mWifiApClientManager;
+
+    /* 数据段end */
     // WifiManager引用
     private WifiManager mWifiManager;
 
@@ -22,8 +31,6 @@ public class WifiUtils {
     private WifiUtils(WifiManager wifiManager) {
         mWifiManager = wifiManager;
     }
-
-    /* 数据段end */
 
     public synchronized static WifiUtils getInstance(WifiManager wifiManager) {
         if (mWifiApClientManager == null) {
@@ -33,6 +40,44 @@ public class WifiUtils {
         return mWifiApClientManager;
     }
 
+    /* 函数段begin */
+    public static String getLocalIP() {
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            if (networkInterfaces == null) {
+                return "";
+            }
+
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress address = addresses.nextElement();
+                    if (!address.isLoopbackAddress() && (address instanceof Inet4Address)) {
+                        return address.getHostAddress().toString();
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            Log.e(TAG, "", e);
+        }
+
+        return "";
+    }
+
+    public String getGatewayIP() {
+        DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
+        return convertIPv4IntToStr(dhcpInfo.serverAddress);
+    }
+
+    private static String convertIPv4IntToStr(int ip) {
+        if (ip <= 0) {
+            return DEFAULT_GATEWAY_IP;
+        }
+
+        return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 24) & 0xFF);
+    }
+
     public boolean setWifiEnabled(boolean enabled) {
         return mWifiManager.setWifiEnabled(enabled);
     }
@@ -40,6 +85,7 @@ public class WifiUtils {
     public boolean startScan() {
         return mWifiManager.startScan();
     }
+    /* 函数段end */
 
     public List<ScanResult> getScanResults() {
         return mWifiManager.getScanResults();
@@ -60,6 +106,8 @@ public class WifiUtils {
 
         return AuthenticationType.TYPE_NONE;
     }
+
+    /* 数据段end */
 
     public WifiConfiguration generateWifiConfiguration(AuthenticationType type, String ssid, String password) {
         WifiConfiguration config = new WifiConfiguration();
@@ -128,5 +176,4 @@ public class WifiUtils {
     public enum AuthenticationType {
         TYPE_NONE, TYPE_WEP, TYPE_WPA, TYPE_WPA2
     }
-    /* 函数段end */
 }

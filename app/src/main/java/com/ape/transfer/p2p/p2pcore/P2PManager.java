@@ -16,7 +16,7 @@ import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
 import com.ape.transfer.p2p.p2pentity.param.ParamReceiveFiles;
 import com.ape.transfer.p2p.p2pentity.param.ParamSendFiles;
 import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
-import com.ape.transfer.p2p.p2pinterface.Melon_Callback;
+import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
 import com.ape.transfer.p2p.p2pinterface.ReceiveFile_Callback;
 import com.ape.transfer.p2p.p2pinterface.SendFile_Callback;
 
@@ -37,7 +37,7 @@ public class P2PManager {
             + File.separator + P2PConstant.FILE_SHARE_SAVE_PATH;
 
     private P2PNeighbor meMelonInfo;
-    private Melon_Callback melon_callback;
+    private NeighborCallback melon_callback;
     private CustomHandlerThread p2pThread;
     private MelonHandler p2PHandler;
     private P2PManagerHandler mHandler;
@@ -86,7 +86,7 @@ public class P2PManager {
         SAVE_DIR = dir;
     }
 
-    public void start(P2PNeighbor melon, Melon_Callback melon_callback) {
+    public void start(P2PNeighbor melon, NeighborCallback melon_callback) {
         this.meMelonInfo = melon;
         this.melon_callback = melon_callback;
 
@@ -167,11 +167,11 @@ public class P2PManager {
             switch (msg.what) {
                 case P2PConstant.UI_MSG.ADD_NEIGHBOR:
                     if (manager.melon_callback != null)
-                        manager.melon_callback.Melon_Found((P2PNeighbor) msg.obj);
+                        manager.melon_callback.NeighborFound((P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.UI_MSG.REMOVE_NEIGHBOR:
                     if (manager.melon_callback != null)
-                        manager.melon_callback.Melon_Removed((P2PNeighbor) msg.obj);
+                        manager.melon_callback.NeighborRemoved((P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.CommandNum.SEND_FILE_REQ: //收到请求发送文件
                     if (manager.receiveFile_callback != null) {

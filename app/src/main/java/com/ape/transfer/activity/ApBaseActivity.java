@@ -107,7 +107,9 @@ public abstract class ApBaseActivity extends BaseActivity {
         if (mBackupService != null) {
             mBackupService.setOnWifiApStatusListener(null);
         }
-        this.getApplicationContext().unbindService(mServiceCon);
+        try {
+            this.getApplicationContext().unbindService(mServiceCon);
+        }catch (Exception e){}
     }
 
     protected void startService() {

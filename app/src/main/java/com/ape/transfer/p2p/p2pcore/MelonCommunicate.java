@@ -86,9 +86,7 @@ public class MelonCommunicate extends Thread {
                         "send upd data = " + sendStr + "; sendto = "
                                 + sendTo.getHostAddress());
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        }  catch (IOException e) {
             e.printStackTrace();
         }
     }

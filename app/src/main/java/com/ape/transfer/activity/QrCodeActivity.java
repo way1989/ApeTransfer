@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.ape.transfer.R;
 import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
-import com.ape.transfer.p2p.p2pinterface.Melon_Callback;
+import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
 import com.ape.transfer.util.NetworkUtils;
 
 import java.net.InetAddress;
@@ -91,21 +91,21 @@ public class QrCodeActivity extends BaseActivity {
             ip = NetworkUtils.getLocalIp(getApplicationContext());
         melonInfo.ip = ip;
 
-        mP2PManager.start(melonInfo, new Melon_Callback() {
+        mP2PManager.start(melonInfo, new NeighborCallback() {
             @Override
-            public void Melon_Found(P2PNeighbor melon) {
-                if (melon != null) {
-                    if (!neighbors.contains(melon))
-                        neighbors.add(melon);
+            public void NeighborFound(P2PNeighbor neighbor) {
+                if (neighbor != null) {
+                    if (!neighbors.contains(neighbor))
+                        neighbors.add(neighbor);
                     //randomTextView.addKeyWord(melon.alias);
                     //randomTextView.show();
                 }
             }
 
             @Override
-            public void Melon_Removed(P2PNeighbor melon) {
-                if (melon != null) {
-                    neighbors.remove(melon);
+            public void NeighborRemoved(P2PNeighbor neighbor) {
+                if (neighbor != null) {
+                    neighbors.remove(neighbor);
                     //randomTextView.removeKeyWord(melon.alias);
                     //randomTextView.show();
                 }

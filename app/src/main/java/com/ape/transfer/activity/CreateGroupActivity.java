@@ -14,20 +14,15 @@ import android.widget.TextView;
 import com.ape.transfer.R;
 import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
-import com.ape.transfer.p2p.p2pinterface.Melon_Callback;
+import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
 import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.Log;
-import com.ape.transfer.util.NetworkUtils;
 import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
+import com.ape.transfer.util.WifiUtils;
 import com.google.zxing.WriterException;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
 import butterknife.BindView;
@@ -57,29 +52,6 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     private P2PManager mP2PManager;
     private List<P2PNeighbor> neighbors = new ArrayList<>();
 
-    /**
-     * scan all net Adapter to get all IP, just return 192
-     */
-    public static String getLocalIpAddress() throws UnknownHostException {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface
-                    .getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
-                        .hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()
-                            && (inetAddress.getAddress().length == 4)
-                            && inetAddress.getHostAddress().startsWith("192.168")) {
-                        return inetAddress.getHostAddress();
-                    }
-
-                }
-            }
-        } catch (SocketException ex) {
-        }
-        return null;
-    }
 
     @Override
     protected void permissionGranted() {
@@ -97,9 +69,8 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     protected void afterServiceConnected() {
         if (mBackupService != null) {
             mBackupService.setOnWifiApStatusListener(this);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(this)) {
-                mBackupService.openWifiAp();
-            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(this)
+                    || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 mBackupService.openWifiAp();
             }
         } else {
@@ -119,43 +90,42 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
         mP2PManager = new P2PManager(getApplicationContext());
         P2PNeighbor melonInfo = new P2PNeighbor();
         melonInfo.alias = Build.MODEL;
-        String ip = null;
-        try {
-            ip = getLocalIpAddress();
-            Log.i(TAG, "getLocalIpAddress = " + ip);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        if (TextUtils.isEmpty(ip))
-            ip = NetworkUtils.getLocalIp(getApplicationContext());
+        final String ip = WifiUtils.getLocalIP();
         Log.i(TAG, "NetworkUtils.getLocalIp = " + ip);
         melonInfo.ip = ip;
 
-        mP2PManager.start(melonInfo, new Melon_Callback() {
+        mP2PManager.start(melonInfo, new NeighborCallback() {
             @Override
-            public void Melon_Found(P2PNeighbor melon) {
-                if (melon != null) {
-                    if (!neighbors.contains(melon))
-                        neighbors.add(melon);
-                    //randomTextView.addKeyWord(melon.alias);
-                    //randomTextView.show();
+            public void NeighborFound(P2PNeighbor neighbor) {
+                if (neighbor != null) {
+                    if (!neighbors.contains(neighbor) && !TextUtils.equals(neighbor.ip, ip))
+                        neighbors.add(neighbor);
                 }
             }
 
             @Override
-            public void Melon_Removed(P2PNeighbor melon) {
-                if (melon != null) {
-                    neighbors.remove(melon);
-                    //randomTextView.removeKeyWord(melon.alias);
-                    //randomTextView.show();
+            public void NeighborRemoved(P2PNeighbor neighbor) {
+                if (neighbor != null) {
+                    neighbors.remove(neighbor);
                 }
             }
         });
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStart() {
+        super.onStart();
+        if (mBackupService != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(this)
+                    || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                mBackupService.openWifiAp();
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         if (neighbors.isEmpty()) {
             unBindService();
             if (mP2PManager != null)
