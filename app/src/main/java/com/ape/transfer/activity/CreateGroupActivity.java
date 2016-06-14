@@ -121,8 +121,7 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     protected void onStart() {
         super.onStart();
         if (mWifiApService != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(this)
-                    || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            if (canWriteSystem()) {
                 mWifiApService.openWifiAp();
             }
             if(mWifiApService.isWifiApEnabled()){
@@ -135,8 +134,11 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     protected void onStop() {
         super.onStop();
         if (neighbors.isEmpty()) {
-            if(mWifiApService != null)
+            if(mWifiApService != null) {
                 mWifiApService.closeWifiAp();
+                unBindService();
+                stopService();
+            }
             if (mP2PManager != null)
                 mP2PManager.stop();
         }

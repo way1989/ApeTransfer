@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
@@ -89,8 +90,8 @@ public class WifiApService extends Service {
     }
 
     private void handleWifiApStateChanged(int state) {
-        if(mStatusListener != null)
-        mStatusListener.onWifiApStatusChanged(state);
+        if (mStatusListener != null)
+            mStatusListener.onWifiApStatusChanged(state);
         switch (state) {
             case WifiApUtils.WIFI_AP_STATE_DISABLING:
                 Log.d(TAG, "wifi ap disabling");
@@ -180,21 +181,27 @@ public class WifiApService extends Service {
         }
     }
 
+    private void setWifiApDisabled() {
+        if (mWifiApUtils != null && mWifiApUtils.isWifiApEnabled()) {
+            mWifiApUtils.setWifiApEnabled(null, false);
+            mWifiManager.setWifiEnabled(isWifiDefaultEnabled);
+        }
+    }
+
     public interface OnWifiApStatusListener {
-        public void onWifiApStatusChanged(int statuss);
+        void onWifiApStatusChanged(int statuss);
     }
 
     public class WifiApBinder extends Binder {
-        public WifiApService getService() {
-            return WifiApService.this;
-        }
 
         public void setOnWifiApStatusListener(OnWifiApStatusListener listener) {
             mStatusListener = listener;
         }
-        public boolean isWifiApEnabled(){
+
+        public boolean isWifiApEnabled() {
             return mWifiApUtils.isWifiApEnabled();
         }
+
         public void openWifiAp() {
             if (isWifiApEnabled()) {
                 return;
@@ -216,6 +223,10 @@ public class WifiApService extends Service {
             setWifiApDisabled();
         }
 
+        public WifiConfiguration getWifiApConfiguration() {
+            return mWifiApUtils.getWifiApConfiguration();
+        }
+
         /**
          * reset.
          */
@@ -223,12 +234,5 @@ public class WifiApService extends Service {
 
         }
 
-    }
-
-    private void setWifiApDisabled() {
-        if (mWifiApUtils != null && mWifiApUtils.isWifiApEnabled()) {
-            mWifiApUtils.setWifiApEnabled(null, false);
-            mWifiManager.setWifiEnabled(isWifiDefaultEnabled);
-        }
     }
 }

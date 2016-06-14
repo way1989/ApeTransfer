@@ -57,7 +57,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
     private Animation rotateAnim;
     private P2PManager mP2PManager;
     private List<P2PNeighbor> p2PNeighbors = new ArrayList<>();
-//    private boolean isHandleScanResult;
+    //    private boolean isHandleScanResult;
     private boolean isHandleWifiConnected;
     private long mRequestTimeMillis;
     PermissionCallback permissionCallback = new PermissionCallback() {
@@ -94,6 +94,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
         }
     };
     private boolean isStartScan;
+    private Dialog mRequestScanResultDialog;
     BroadcastReceiver mWifiStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -170,13 +171,13 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
                 break;
         }
     }
-    private Dialog mRequestScanResultDialog;
+
     private void HandleScanResult() {
         Log.i(TAG, "HandleScanResult... canWriteSystem = " + canWriteSystem()
-        +", isStartScan = " + isStartScan );
-        if(!canWriteSystem())
+                + ", isStartScan = " + isStartScan);
+        if (!canWriteSystem())
             return;
-        if(!isStartScan)
+        if (!isStartScan)
             return;
 //        if (isHandleScanResult)
 //            return;
@@ -184,7 +185,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
         if (Nammu.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             getScanResults();
         } else {
-            if(mRequestScanResultDialog != null && mRequestScanResultDialog.isShowing())
+            if (mRequestScanResultDialog != null && mRequestScanResultDialog.isShowing())
                 return;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.request_scan_result_title)
@@ -230,7 +231,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
             if (ssid.contains("ApeTransfer")) {
                 Log.i(TAG, "getScanResults ssid = " + ssid);
                 String[] alias = ssid.split("@");
-                if(alias.length > 1) {
+                if (alias.length > 1) {
                     rlPhones.addKeyWord(alias[1]);
                     rlPhones.show();
                     return;
@@ -259,15 +260,20 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
     }
 
     private void startScanWifi() {
+        if (!canWriteSystem())
+            return;
         Log.i(TAG, "startScanWifi...");
-        mWifiUtils.startScan();
-        isStartScan = true;
+        if (mWifiUtils.isWifiEnabled()) {
+            mWifiUtils.startScan();
+            isStartScan = true;
+        }
     }
 
     @Override
     protected void permissionWriteSystemGranted() {
         if (mWifiUtils != null && !mWifiUtils.isWifiOpen())
             mWifiUtils.setWifiEnabled(true);
+        startScanWifi();
     }
 
     @Override
@@ -281,9 +287,9 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
         setContentView(R.layout.activity_ap_scan);
         ButterKnife.bind(this);
         initData();
-        if(canWriteSystem()){
+        if (canWriteSystem()) {
             permissionWriteSystemGranted();
-        }else {
+        } else {
             showRequestWriteSettingsDialog();
         }
     }
@@ -344,11 +350,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
