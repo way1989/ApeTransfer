@@ -54,4 +54,8 @@
     <string name="all_rights_reserved">Copyright © 2012-2016 Broncho. All Rights Reserved.</string>
     <string name="required_permissions_promo">This app needs permission to Camera.</string>
     <string name="enable_permission_procedure"><![CDATA[You can change permissions in Settings > Apps > Me > Permissions.]]></string>
+    <string name="request_scan_result_title">Allow LOCATION permission?</string>
+    <string name="request_scan_result_message">get wifi scan results will request the LOCATION permission</string>
+    <string name="request_write_settings_title">Allow WRITE_SETTINGS permission?</string>
+    <string name="request_write_settings_message">Turn on/off wifi need write system settings permission.</string>
 </resources>

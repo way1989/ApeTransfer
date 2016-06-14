@@ -176,4 +176,14 @@ public class WifiUtils {
     public enum AuthenticationType {
         TYPE_NONE, TYPE_WEP, TYPE_WPA, TYPE_WPA2
     }
+
+    public boolean isWifiOpen(){
+        int state = mWifiManager.getWifiState();
+        return state ==  WifiManager.WIFI_STATE_ENABLING ||
+                state == WifiManager.WIFI_STATE_DISABLED;
+    }
+
+    public boolean  isWifiEnabled(){
+        return mWifiManager.isWifiEnabled();
+    }
 }

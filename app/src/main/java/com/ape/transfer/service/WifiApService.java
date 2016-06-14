@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -175,7 +176,7 @@ public class WifiApService extends Service {
             mWifiManager.setWifiEnabled(false);
             isGetMACThenOpenWifiAp = false;
             mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
-                    WifiApUtils.AuthenticationType.TYPE_NONE, "ApeTransfer", mMAC, null), true);
+                    WifiApUtils.AuthenticationType.TYPE_NONE, "ApeTransfer" + "@" + Build.MODEL, mMAC, null), true);
         }
     }
 
@@ -191,9 +192,11 @@ public class WifiApService extends Service {
         public void setOnWifiApStatusListener(OnWifiApStatusListener listener) {
             mStatusListener = listener;
         }
-
+        public boolean isWifiApEnabled(){
+            return mWifiApUtils.isWifiApEnabled();
+        }
         public void openWifiAp() {
-            if (mWifiApUtils.isWifiApEnabled()) {
+            if (isWifiApEnabled()) {
                 return;
             }
             isWifiDefaultEnabled = mWifiManager.isWifiEnabled();

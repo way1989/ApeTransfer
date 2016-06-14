@@ -1,15 +1,23 @@
 package com.ape.transfer.activity;
 
+import android.Manifest;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
@@ -30,9 +38,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import pl.tajchert.nammu.Nammu;
+import pl.tajchert.nammu.PermissionCallback;
 
-public class ApScanActivity extends BaseActivity {
+public class ApScanActivity extends RequestWriteSettingsBaseActivity {
     private static final String TAG = "ApScanActivity";
+    private static final String PACKAGE_URI_PREFIX = "package:";
     @BindView(R.id.iv_scan)
     ImageView ivScan;
     @BindView(R.id.iv_head)
@@ -46,8 +57,43 @@ public class ApScanActivity extends BaseActivity {
     private Animation rotateAnim;
     private P2PManager mP2PManager;
     private List<P2PNeighbor> p2PNeighbors = new ArrayList<>();
-    private boolean isHandleScanResult;
+//    private boolean isHandleScanResult;
     private boolean isHandleWifiConnected;
+    private long mRequestTimeMillis;
+    PermissionCallback permissionCallback = new PermissionCallback() {
+        @Override
+        public void permissionGranted() {
+            getScanResults();
+        }
+
+        @Override
+        public void permissionRefused() {
+            final long currentTimeMillis = SystemClock.elapsedRealtime();
+            // If the permission request completes very quickly, it must be because the system
+            // automatically denied. This can happen if the user had previously denied it
+            // and checked the "Never ask again" check box.
+            if ((currentTimeMillis - mRequestTimeMillis) < 250L) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ApScanActivity.this);
+                builder.setTitle(R.string.request_scan_result_title)
+                        .setMessage(R.string.request_scan_result_message)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startSettingsPermission();
+                            }
+                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                }).create().show();
+
+            } else {
+                finish();
+            }
+        }
+    };
+    private boolean isStartScan;
     BroadcastReceiver mWifiStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -61,12 +107,12 @@ public class ApScanActivity extends BaseActivity {
             } else if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
                 NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
                 NetworkInfo.State state = networkInfo.getState();
-                handleNetworkState(state);
+                handleConnectState(state);
             }
         }
     };
 
-    private void handleNetworkState(NetworkInfo.State state) {
+    private void handleConnectState(NetworkInfo.State state) {
         switch (state) {
             case CONNECTED:
                 Log.d(TAG, "wifi connected");
@@ -76,8 +122,8 @@ public class ApScanActivity extends BaseActivity {
                 WifiInfo info = mWifiManager.getConnectionInfo();
                 String ssid = info != null ? info.getSSID() : "";
                 if (ssid.contains("ApeTransfer")) {
-                    String gatewayIP = mWifiUtils.getGatewayIP();
-                    initP2P(gatewayIP);
+
+                    initP2P();
                 }
                 break;
             case CONNECTING:
@@ -113,6 +159,9 @@ public class ApScanActivity extends BaseActivity {
                 break;
             case WifiManager.WIFI_STATE_ENABLED:
                 Log.d(TAG, "wifi enabled");
+                if (!isStartScan) {
+                    startScanWifi();
+                }
                 break;
             case WifiManager.WIFI_STATE_UNKNOWN:
                 Log.d(TAG, "wifi unknown");
@@ -121,32 +170,109 @@ public class ApScanActivity extends BaseActivity {
                 break;
         }
     }
-
+    private Dialog mRequestScanResultDialog;
     private void HandleScanResult() {
-        if (isHandleScanResult)
+        Log.i(TAG, "HandleScanResult... canWriteSystem = " + canWriteSystem()
+        +", isStartScan = " + isStartScan );
+        if(!canWriteSystem())
             return;
-        isHandleScanResult = true;
+        if(!isStartScan)
+            return;
+//        if (isHandleScanResult)
+//            return;
+//        isHandleScanResult = true;
+        if (Nammu.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            getScanResults();
+        } else {
+            if(mRequestScanResultDialog != null && mRequestScanResultDialog.isShowing())
+                return;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.request_scan_result_title)
+                    .setMessage(R.string.request_scan_result_message).setPositiveButton(android.R.string
+                    .ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    tryRequestPermission();
+                }
+            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            mRequestScanResultDialog = builder.create();
+            mRequestScanResultDialog.show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Nammu.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void tryRequestPermission() {
+        Nammu.askForPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION, permissionCallback);
+        mRequestTimeMillis = SystemClock.elapsedRealtime();
+    }
+
+    private void startSettingsPermission() {
+        final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse(PACKAGE_URI_PREFIX + getPackageName()));
+        startActivity(intent);
+    }
+
+    private void getScanResults() {
         List<ScanResult> scanResults = mWifiUtils.getScanResults();
+        Log.i(TAG, "getScanResults size = " + scanResults.size());
         for (ScanResult scanResult : scanResults) {
             String ssid = scanResult.SSID;
             if (ssid.contains("ApeTransfer")) {
-                String capabilities = scanResult.capabilities;
-                WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
-                switch (type) {
-                    case TYPE_NONE:
-                        mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, null));
-                        break;
-                    case TYPE_WEP:
-                    case TYPE_WPA:
-                    case TYPE_WPA2:
-                        mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, "12345678"));
-                    default:
-                        assert (false);
-                        break;
+                Log.i(TAG, "getScanResults ssid = " + ssid);
+                String[] alias = ssid.split("@");
+                if(alias.length > 1) {
+                    rlPhones.addKeyWord(alias[1]);
+                    rlPhones.show();
+                    return;
                 }
-                break;
+//                String capabilities = scanResult.capabilities;
+//                WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
+//                switch (type) {
+//                    case TYPE_NONE:
+//                        mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, null));
+//                        break;
+//                    case TYPE_WEP:
+//                    case TYPE_WPA:
+//                    case TYPE_WPA2:
+//                        mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, "12345678"));
+//                    default:
+//                        assert (false);
+//                        break;
+//                }
+//                break;
             }
         }
+        rlPhones.removeAllViews();
+        //have no ssid equal ApeTransfer, rescan system will scan every 15 second
+        //isHandleScanResult = false;
+        //startScanWifi();
+    }
+
+    private void startScanWifi() {
+        Log.i(TAG, "startScanWifi...");
+        mWifiUtils.startScan();
+        isStartScan = true;
+    }
+
+    @Override
+    protected void permissionWriteSystemGranted() {
+        if (mWifiUtils != null && !mWifiUtils.isWifiOpen())
+            mWifiUtils.setWifiEnabled(true);
+    }
+
+    @Override
+    protected void permissionWriteSystemRefused() {
+        finish();
     }
 
     @Override
@@ -155,6 +281,11 @@ public class ApScanActivity extends BaseActivity {
         setContentView(R.layout.activity_ap_scan);
         ButterKnife.bind(this);
         initData();
+        if(canWriteSystem()){
+            permissionWriteSystemGranted();
+        }else {
+            showRequestWriteSettingsDialog();
+        }
     }
 
     private void initData() {
@@ -170,8 +301,9 @@ public class ApScanActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         registerReceiver();
-        mWifiUtils.setWifiEnabled(true);
-        mWifiUtils.startScan();
+        if (mWifiUtils.isWifiEnabled()) {
+            startScanWifi();
+        }
     }
 
     @Override
@@ -182,7 +314,8 @@ public class ApScanActivity extends BaseActivity {
             mP2PManager.stop();
     }
 
-    private void initP2P(final String ip) {
+    private void initP2P() {
+        final String ip = mWifiUtils.getGatewayIP();
         P2PNeighbor neighbor = new P2PNeighbor();
         neighbor.alias = Build.MODEL;
         neighbor.ip = ip;

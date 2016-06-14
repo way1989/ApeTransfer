@@ -54,24 +54,24 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
 
 
     @Override
-    protected void permissionGranted() {
-        if (mBackupService != null) {
-            mBackupService.openWifiAp();
+    protected void permissionWriteSystemGranted() {
+        if (mWifiApService != null) {
+            mWifiApService.openWifiAp();
         }
     }
 
     @Override
-    protected void permissionRefused() {
+    protected void permissionWriteSystemRefused() {
         finish();
     }
 
     @Override
     protected void afterServiceConnected() {
-        if (mBackupService != null) {
-            mBackupService.setOnWifiApStatusListener(this);
+        if (mWifiApService != null) {
+            mWifiApService.setOnWifiApStatusListener(this);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(this)
                     || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                mBackupService.openWifiAp();
+                mWifiApService.openWifiAp();
             }
         } else {
             Log.i(TAG, "afterServiceConnected service == null");
@@ -84,6 +84,11 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
         ButterKnife.bind(this);
+        if(canWriteSystem()){
+            permissionWriteSystemGranted();
+        }else {
+            showRequestWriteSettingsDialog();
+        }
     }
 
     private void initP2p() {
@@ -115,10 +120,13 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     @Override
     protected void onStart() {
         super.onStart();
-        if (mBackupService != null) {
+        if (mWifiApService != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(this)
                     || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                mBackupService.openWifiAp();
+                mWifiApService.openWifiAp();
+            }
+            if(mWifiApService.isWifiApEnabled()){
+                onWifiApStatusChanged(WifiApUtils.WIFI_AP_STATE_ENABLED);
             }
         }
     }
@@ -127,7 +135,8 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     protected void onStop() {
         super.onStop();
         if (neighbors.isEmpty()) {
-            unBindService();
+            if(mWifiApService != null)
+                mWifiApService.closeWifiAp();
             if (mP2PManager != null)
                 mP2PManager.stop();
         }

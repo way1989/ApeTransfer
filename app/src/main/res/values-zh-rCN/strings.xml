@@ -50,4 +50,9 @@
 
     <string name="nickname_info">互传随机生成昵称，您可以修改。</string>
     <string name="hint_input_username">输入16个字符以内名称</string>
+
+    <string name="request_scan_result_title">允许使用定位权限?</string>
+    <string name="request_scan_result_message">获取wifi扫描结果需要使用定位权限</string>
+    <string name="request_write_settings_title">允许修改系统设置的权限?</string>
+    <string name="request_write_settings_message">开关wifi需要修改系统设置的权限</string>
 </resources>
