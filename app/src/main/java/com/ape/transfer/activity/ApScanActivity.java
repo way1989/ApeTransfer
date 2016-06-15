@@ -310,6 +310,8 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
         if (mWifiUtils.isWifiEnabled()) {
             startScanWifi();
         }
+        if (rotateAnim != null && ivScan != null)
+            ivScan.startAnimation(rotateAnim);
     }
 
     @Override
@@ -318,6 +320,8 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
         unregisterReceiver();
         if (mP2PManager != null && p2PNeighbors.isEmpty())
             mP2PManager.stop();
+        if (ivScan != null)
+            ivScan.clearAnimation();
     }
 
     private void initP2P() {
@@ -348,16 +352,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
                 }
             }
         });
-    }
-
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (rotateAnim != null) {
-            if (hasFocus) ivScan.startAnimation(rotateAnim);
-            else ivScan.clearAnimation();
-        }
     }
 
     private void registerReceiver() {
