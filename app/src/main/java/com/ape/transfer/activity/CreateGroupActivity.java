@@ -16,6 +16,7 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
 import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.util.WifiUtils;
@@ -82,6 +83,7 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
             return;
         if (mWifiApService.isWifiApEnabled())
             return;
+        mWifiApService.setWifiApSSID(PreferenceUtil.getInstance(getApplicationContext()).getAlias());
         mWifiApService.openWifiAp();
         isOpeningWifiAp = true;
     }
@@ -100,7 +102,7 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
 
     @Override
     public void onBackPressed() {
-        if(!isOpeningWifiAp)
+        if (!isOpeningWifiAp)
             super.onBackPressed();
     }
 
@@ -151,8 +153,8 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     }
 
     @Override
-    public void onWifiApStatusChanged(int statuss) {
-        if (statuss == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+    public void onWifiApStatusChanged(int status) {
+        if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             isOpeningWifiAp = false;
             rlLoading.setVisibility(View.GONE);
             Bitmap qrCode = null;
@@ -168,8 +170,8 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
                 ivQrcode.setVisibility(View.GONE);
             }
             initP2p();
-        } else if (statuss == WifiApUtils.WIFI_AP_STATE_DISABLED ||
-                statuss == WifiApUtils.WIFI_AP_STATE_FAILED) {
+        } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
+                status == WifiApUtils.WIFI_AP_STATE_FAILED) {
             isOpeningWifiAp = false;
             finish();
         }

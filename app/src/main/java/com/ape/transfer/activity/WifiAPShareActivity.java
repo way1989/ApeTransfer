@@ -12,6 +12,7 @@ import com.ape.transfer.R;
 import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.AndroidWebServer;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.util.WifiUtils;
@@ -36,14 +37,13 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
 
     // NanoHTTPServer
     private NanoHTTPD mNanoHTTPServer;
+    private boolean isOpeningWifiAp;
 
     @Override
     protected void afterServiceConnected() {
         if (mWifiApService != null) {
             mWifiApService.setOnWifiApStatusListener(this);
-            if (canWriteSystem()) {
-                mWifiApService.openWifiAp();
-            }
+            openWifiAp();
         } else {
             Log.i(TAG, "afterServiceConnected service == null");
             finish();
@@ -70,14 +70,7 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
     @Override
     protected void onStart() {
         super.onStart();
-        if (mWifiApService != null) {
-            if (canWriteSystem()) {
-                mWifiApService.openWifiAp();
-            }
-            if (mWifiApService.isWifiApEnabled()) {
-                onWifiApStatusChanged(WifiApUtils.WIFI_AP_STATE_ENABLED);
-            }
-        }
+        openWifiAp();
     }
 
     @Override
@@ -91,12 +84,27 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!isOpeningWifiAp)
+            super.onBackPressed();
+    }
+
+    private void openWifiAp() {
+        if (mWifiApService == null)
+            return;
+        if (!canWriteSystem())
+            return;
+        if (mWifiApService.isWifiApEnabled())
+            return;
+        mWifiApService.setWifiApSSID(PreferenceUtil.getInstance(getApplicationContext()).getAlias());
+        mWifiApService.openWifiAp();
+        isOpeningWifiAp = true;
+    }
 
     @Override
     protected void permissionWriteSystemGranted() {
-        if (mWifiApService != null) {
-            mWifiApService.openWifiAp();
-        }
+        openWifiAp();
     }
 
     @Override
@@ -105,8 +113,9 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
     }
 
     @Override
-    public void onWifiApStatusChanged(int statuss) {
-        if (statuss == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+    public void onWifiApStatusChanged(int status) {
+        if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+            isOpeningWifiAp = false;
             // 开启NanoHTTPServer
             try {
                 mNanoHTTPServer.start();
@@ -125,8 +134,9 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (statuss == WifiApUtils.WIFI_AP_STATE_DISABLED ||
-                statuss == WifiApUtils.WIFI_AP_STATE_FAILED) {
+        } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
+                status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+            isOpeningWifiAp = false;
             finish();
         }
     }

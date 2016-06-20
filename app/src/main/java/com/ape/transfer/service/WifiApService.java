@@ -10,7 +10,6 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.text.TextUtils;
@@ -25,7 +24,8 @@ public class WifiApService extends Service {
     private WifiManager mWifiManager;
     private WifiApUtils mWifiApUtils;
     // 服务端MAC（本机）
-    private String mMAC;
+    private String mWifiMAC;
+    private String mWifiApSSID;
     private boolean isGetMACThenOpenWifiAp;
     private boolean isWifiDefaultEnabled;
     private OnWifiApStatusListener mStatusListener;
@@ -134,7 +134,7 @@ public class WifiApService extends Service {
             case WifiManager.WIFI_STATE_ENABLED:
                 Log.d(TAG, "wifi enabled");
                 if (isGetMACThenOpenWifiAp) {
-                    mMAC = mWifiManager.getConnectionInfo().getMacAddress();
+                    mWifiMAC = mWifiManager.getConnectionInfo().getMacAddress();
                     if (mWifiApUtils.isWifiApEnabled()) {
                         return;
                     }
@@ -164,6 +164,7 @@ public class WifiApService extends Service {
 
     private void stayForeground() {
         Notification notification = new Notification.Builder(this)
+                .setContentTitle(getResources().getString(R.string.app_name))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .build();
         //notification.flags |= Notification.FLAG_HIDE_NOTIFICATION;
@@ -171,13 +172,16 @@ public class WifiApService extends Service {
     }
 
     private void setWifiApEnabled() {
-        if (TextUtils.isEmpty(mMAC)) {
+        if (TextUtils.isEmpty(mWifiMAC)) {
             throw new NullPointerException("wifi mac must not null");
         } else {
             mWifiManager.setWifiEnabled(false);
             isGetMACThenOpenWifiAp = false;
+            String ssid = "ApeTransfer";
+            if (!TextUtils.isEmpty(mWifiApSSID))
+                ssid += "@" + mWifiApSSID;
             mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
-                    WifiApUtils.AuthenticationType.TYPE_NONE, "ApeTransfer" + "@" + Build.MODEL, mMAC, null), true);
+                    WifiApUtils.AuthenticationType.TYPE_NONE, ssid, mWifiMAC, null), true);
         }
     }
 
@@ -189,7 +193,7 @@ public class WifiApService extends Service {
     }
 
     public interface OnWifiApStatusListener {
-        void onWifiApStatusChanged(int statuss);
+        void onWifiApStatusChanged(int status);
     }
 
     public class WifiApBinder extends Binder {
@@ -200,6 +204,10 @@ public class WifiApService extends Service {
 
         public boolean isWifiApEnabled() {
             return mWifiApUtils.isWifiApEnabled();
+        }
+
+        public void setWifiApSSID(String ssid) {
+            mWifiApSSID = ssid;
         }
 
         public void openWifiAp() {
@@ -215,7 +223,7 @@ public class WifiApService extends Service {
                 isGetMACThenOpenWifiAp = true;
                 return;
             }
-            mMAC = wifiInfo.getMacAddress();
+            mWifiMAC = wifiInfo.getMacAddress();
             setWifiApEnabled();
         }
 
