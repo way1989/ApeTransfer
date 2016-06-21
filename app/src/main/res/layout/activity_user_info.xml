@@ -1,229 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:scrollbars="none"
     tools:context="com.ape.transfer.activity.UserInfoActivity">
 
-    <ScrollView
-        android:id="@+id/sv_outer_scroll"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:scrollbars="none">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/ll_scrollview_inner"
-            android:layout_width="fill_parent"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/avatar_marginTop"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:id="@+id/iv_avatar"
+                android:layout_width="@dimen/avatar_width"
+                android:layout_height="@dimen/avatar_height"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="@dimen/avatar_bg_padding"
+                android:layout_marginTop="@dimen/avatar_bg_padding"
+                android:src="@drawable/head_default0" />
+
+            <ImageView
+                android:id="@+id/iv_edit"
+                android:layout_width="@dimen/avatar_edit_width"
+                android:layout_height="@dimen/avatar_bg_height"
+                android:layout_centerInParent="true"
+                android:background="@drawable/take_photo_selecter" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/select_avatar_marginTop"
+            android:gravity="center_horizontal">
 
             <RelativeLayout
-                android:id="@id/my_avatar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/avatar_marginTop"
-                android:gravity="center_horizontal">
+                android:id="@+id/ll_head0"
+                android:layout_width="@dimen/avatar_min_bg_width"
+                android:layout_height="@dimen/avatar_min_bg_height"
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/iv_avatar"
-                    android:layout_width="@dimen/avatar_width"
-                    android:layout_height="@dimen/avatar_height"
+                    android:layout_width="@dimen/avatar_min_bg_width"
+                    android:layout_height="@dimen/avatar_min_bg_height"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/head_default0"
-                    android:layout_marginLeft="@dimen/avatar_bg_padding"
-                    android:layout_marginTop="@dimen/avatar_bg_padding" />
+                    android:background="@drawable/head_default0_bg"
+                    android:visibility="gone" />
 
                 <ImageView
-                    android:id="@+id/iv_edit"
-                    android:layout_width="@dimen/avatar_edit_width"
-                    android:layout_height="@dimen/avatar_bg_height"
+                    android:layout_width="@dimen/avatar_min_width"
+                    android:layout_height="@dimen/avatar_min_height"
                     android:layout_centerInParent="true"
-                    android:background="@drawable/take_photo_selecter" />
+                    android:maxHeight="@dimen/avatar_min_height"
+                    android:maxWidth="@dimen/avatar_min_width"
+                    android:src="@drawable/head_default0" />
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/select_avatar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/my_avatar"
-                android:layout_marginTop="@dimen/select_avatar_marginTop"
-                android:gravity="center_horizontal">
+                android:id="@+id/ll_head1"
+                android:layout_width="@dimen/avatar_min_bg_width"
+                android:layout_height="@dimen/avatar_min_bg_height"
+                android:layout_marginLeft="@dimen/select_avatar_bg_marginLeft"
+                android:layout_toRightOf="@id/ll_head0"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <RelativeLayout
-                    android:id="@+id/ll_head0"
+                <ImageView
                     android:layout_width="@dimen/avatar_min_bg_width"
                     android:layout_height="@dimen/avatar_min_bg_height"
-                    android:gravity="center"
-                    android:orientation="horizontal">
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/head_default1_bg"
+                    android:visibility="gone" />
 
-                    <ImageView
-                        android:id="@+id/iv_head0_bg"
-                        android:layout_width="@dimen/avatar_min_bg_width"
-                        android:layout_height="@dimen/avatar_min_bg_height"
-                        android:layout_centerInParent="true"
-                        android:background="@drawable/head_default0_bg"
-                        android:visibility="gone" />
-
-                    <ImageView
-                        android:id="@+id/iv_head0"
-                        android:layout_width="@dimen/avatar_min_width"
-                        android:layout_height="@dimen/avatar_min_height"
-                        android:layout_centerInParent="true"
-                        android:maxHeight="@dimen/avatar_min_height"
-                        android:maxWidth="@dimen/avatar_min_width"
-                        android:src="@drawable/head_default0" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/ll_head1"
-                    android:layout_width="@dimen/avatar_min_bg_width"
-                    android:layout_height="@dimen/avatar_min_bg_height"
-                    android:layout_marginLeft="@dimen/select_avatar_bg_marginLeft"
-                    android:layout_toRightOf="@id/ll_head0"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/iv_head1_bg"
-                        android:layout_width="@dimen/avatar_min_bg_width"
-                        android:layout_height="@dimen/avatar_min_bg_height"
-                        android:layout_centerInParent="true"
-                        android:background="@drawable/head_default1_bg"
-                        android:visibility="gone" />
-
-                    <ImageView
-                        android:id="@+id/iv_head1"
-                        android:layout_width="@dimen/avatar_min_width"
-                        android:layout_height="@dimen/avatar_min_height"
-                        android:layout_centerInParent="true"
-                        android:maxHeight="@dimen/avatar_min_height"
-                        android:maxWidth="@dimen/avatar_min_width"
-                        android:src="@drawable/head_default1" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/ll_head2"
-                    android:layout_width="@dimen/avatar_min_bg_width"
-                    android:layout_height="@dimen/avatar_min_bg_height"
-                    android:layout_marginLeft="@dimen/select_avatar_bg_marginLeft"
-                    android:layout_toRightOf="@id/ll_head1"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/iv_head2_bg"
-                        android:layout_width="@dimen/avatar_min_bg_width"
-                        android:layout_height="@dimen/avatar_min_bg_height"
-                        android:layout_centerInParent="true"
-                        android:src="@drawable/head_default2_bg"
-                        android:visibility="gone" />
-
-                    <ImageView
-                        android:id="@+id/iv_head2"
-                        android:layout_width="@dimen/avatar_min_width"
-                        android:layout_height="@dimen/avatar_min_height"
-                        android:layout_centerInParent="true"
-                        android:src="@drawable/head_default2" />
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/ll_head3"
-                    android:layout_width="@dimen/avatar_min_bg_width"
-                    android:layout_height="@dimen/avatar_min_bg_height"
-                    android:layout_marginLeft="@dimen/select_avatar_bg_marginLeft"
-                    android:layout_toRightOf="@id/ll_head2"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/iv_head3_bg"
-                        android:layout_width="@dimen/avatar_min_bg_width"
-                        android:layout_height="@dimen/avatar_min_bg_height"
-                        android:layout_centerInParent="true"
-                        android:background="@drawable/head_default3_bg"
-                        android:visibility="gone" />
-
-                    <ImageView
-                        android:id="@+id/iv_head3"
-                        android:layout_width="@dimen/avatar_min_width"
-                        android:layout_height="@dimen/avatar_min_height"
-                        android:layout_centerInParent="true"
-                        android:src="@drawable/head_default3" />
-                </RelativeLayout>
+                <ImageView
+                    android:layout_width="@dimen/avatar_min_width"
+                    android:layout_height="@dimen/avatar_min_height"
+                    android:layout_centerInParent="true"
+                    android:maxHeight="@dimen/avatar_min_height"
+                    android:maxWidth="@dimen/avatar_min_width"
+                    android:src="@drawable/head_default1" />
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/nickname_editText"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/select_avatar"
-                android:layout_marginTop="@dimen/nickname_editText_marginTop"
-                android:gravity="center_horizontal">
+                android:id="@+id/ll_head2"
+                android:layout_width="@dimen/avatar_min_bg_width"
+                android:layout_height="@dimen/avatar_min_bg_height"
+                android:layout_marginLeft="@dimen/select_avatar_bg_marginLeft"
+                android:layout_toRightOf="@id/ll_head1"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/ll_nickname"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/nickname_editText_marginLR"
-                    android:layout_marginRight="@dimen/nickname_editText_marginLR"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="@dimen/avatar_min_bg_width"
+                    android:layout_height="@dimen/avatar_min_bg_height"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/head_default2_bg"
+                    android:visibility="gone" />
 
-                    <RelativeLayout
-                        android:layout_width="0.0dip"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_weight="1.0">
-
-                        <EditText
-                            android:id="@+id/editText"
-                            android:layout_width="fill_parent"
-                            android:layout_height="@dimen/nickname_editText_height"
-                            android:layout_alignParentLeft="true"
-                            android:background="@drawable/nickname_edit_bg"
-                            android:cursorVisible="true"
-                            android:ellipsize="end"
-                            android:hint="@string/hint_input_username"
-                            android:inputType="text"
-                            android:lines="1"
-                            android:maxLines="1"
-                            android:paddingLeft="@dimen/nickname_editText_padding_left"
-                            android:paddingRight="@dimen/nickname_editText_padding_right"
-                            android:singleLine="true"
-                            android:textColor="@android:color/black"
-                            android:textCursorDrawable="@null"
-                            android:textSelectHandle="@drawable/web_text_select_handle_middle"
-                            android:textSelectHandleLeft="@drawable/web_text_select_handle_left"
-                            android:textSelectHandleRight="@drawable/web_text_select_handle_right"
-                            android:textSize="@dimen/textSize_h4" />
-
-                        <Button
-                            android:id="@+id/bt_clean"
-                            android:layout_width="@dimen/nickname_clean_width"
-                            android:layout_height="@dimen/nickname_clean_height"
-                            android:layout_alignRight="@id/editText"
-                            android:layout_centerVertical="true"
-                            android:layout_marginRight="@dimen/nickname_clean_margin"
-                            android:background="@drawable/bt_nickname_clean_selector"
-                            android:gravity="center" />
-                    </RelativeLayout>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tv_nickname_info"
-                    android:layout_width="@dimen/nickname_info_width"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/ll_nickname"
-                    android:layout_marginLeft="@dimen/nickname_editText_marginLR"
-                    android:layout_marginRight="@dimen/nickname_editText_marginLR"
-                    android:layout_marginTop="@dimen/nickname_info_padding_top"
-                    android:background="@null"
-                    android:text="@string/nickname_info"
-                    android:textColor="@color/gray_dark"
-                    android:textSize="@dimen/textSize_h5"
-                    android:visibility="visible" />
+                <ImageView
+                    android:layout_width="@dimen/avatar_min_width"
+                    android:layout_height="@dimen/avatar_min_height"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/head_default2" />
             </RelativeLayout>
-        </LinearLayout>
-    </ScrollView>
-</RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/ll_head3"
+                android:layout_width="@dimen/avatar_min_bg_width"
+                android:layout_height="@dimen/avatar_min_bg_height"
+                android:layout_marginLeft="@dimen/select_avatar_bg_marginLeft"
+                android:layout_toRightOf="@id/ll_head2"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/avatar_min_bg_width"
+                    android:layout_height="@dimen/avatar_min_bg_height"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/head_default3_bg"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:layout_width="@dimen/avatar_min_width"
+                    android:layout_height="@dimen/avatar_min_height"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/head_default3" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/nickname_editText_marginTop"
+            android:gravity="center_horizontal">
+
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ll_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/nickname_editText_marginLR"
+                android:layout_marginRight="@dimen/nickname_editText_marginLR"
+                android:gravity="center_vertical">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/editText"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/nickname_editText_height"
+                    android:cursorVisible="true"
+                    android:ellipsize="end"
+                    android:hint="@string/hint_input_username"
+                    android:inputType="text"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textCursorDrawable="@null"
+                    android:textSize="@dimen/textSize_h4" />
+            </android.support.design.widget.TextInputLayout>
+
+
+            <TextView
+                android:id="@+id/tv_nickname_info"
+                android:layout_width="@dimen/nickname_info_width"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ll_nickname"
+                android:layout_marginLeft="@dimen/nickname_editText_marginLR"
+                android:layout_marginRight="@dimen/nickname_editText_marginLR"
+                android:layout_marginTop="@dimen/nickname_info_padding_top"
+                android:background="@null"
+                android:text="@string/nickname_info"
+                android:textColor="@color/gray_dark"
+                android:textSize="@dimen/textSize_h5"
+                android:visibility="visible" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

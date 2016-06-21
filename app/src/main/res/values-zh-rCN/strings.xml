@@ -23,7 +23,7 @@
     <string name="invite_share_code">扫描二维码分享(需用好友流量)</string>
     <string name="invite_share_to">分享到</string>
 
-    <string name="waiting_creating_ap">创建热点中...</string>
+    <string name="waiting_creating_ap">创建热点中&#8230;</string>
     <string name="mobile_data_warning">数据网络开启可能偷跑流量哦~请手动去关闭 !</string>
     <string name="saveTraffic_ap_close">抱歉,热点已被关闭！</string>
     <string name="saveTraffic_code_intro">在有扫描二维码功能的浏览器中</string>
@@ -46,7 +46,7 @@
     <string name="text_connetion_tip">请确认对方手机是否已经创建群组</string>
     <string name="main_me">我</string>
     <string name="created_qrcode_tip">用其它手机扫描以下二维码连接设备</string>
-    <string name="creating_qrcode_tip">正在生成二维码，请等待...</string>
+    <string name="creating_qrcode_tip">正在生成二维码，请等待&#8230;</string>
 
     <string name="nickname_info">互传随机生成昵称，您可以修改。</string>
     <string name="hint_input_username">输入16个字符以内名称</string>
@@ -55,4 +55,9 @@
     <string name="request_scan_result_message">获取wifi扫描结果需要使用定位权限</string>
     <string name="request_write_settings_title">允许修改系统设置的权限?</string>
     <string name="request_write_settings_message">开关wifi需要修改系统设置的权限</string>
+    <string name="action_save">保存</string>
+    <string name="hint_input_username_empty">昵称不能为空</string>
+    <string name="required_permissions_promo">本应用需要使用相机的权限</string>
+    <string name="title_activity_user_info">个人信息</string>
+    <string name="enable_permission_procedure">请在设置 &gt; 应用 &gt; 本应用 &gt; 权限，修改权限</string>
 </resources>

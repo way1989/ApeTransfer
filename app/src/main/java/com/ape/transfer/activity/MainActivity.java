@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
@@ -22,6 +23,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -36,6 +39,7 @@ import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
 import com.ape.transfer.fragment.TransferFragment;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity
         AdapterView.OnItemSelectedListener, PermissionCallback {
     private static final int PAGE_TRANSFER = 0;
     private static final int PAGE_EXCHANGE = 1;
+    private static final int REQUEST_CODE = 2;
     private static final String TAG = "MainActivity";
     private static final String PACKAGE_URI_PREFIX = "package:";
     @BindView(R.id.toolbar)
@@ -91,17 +96,26 @@ public class MainActivity extends AppCompatActivity
             startActivity(chooserIntent);
         }
     };
+    View.OnClickListener headViewOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivityForResult(new Intent(MainActivity.this, UserInfoActivity.class), REQUEST_CODE);
+        }
+    };
     private ActionBarDrawerToggle toggle;
-    private MainPagerAdapter mPagerAdapter;
     private long mRequestTimeMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (TextUtils.isEmpty(PreferenceUtil.getInstance(getApplicationContext()).getAlias())) {
+            startActivityForResult(new Intent(MainActivity.this, UserInfoActivity.class), REQUEST_CODE);
+        }
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         setupNavView();
 
         //setup viewpager
@@ -119,6 +133,7 @@ public class MainActivity extends AppCompatActivity
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navView.setNavigationItemSelectedListener(this);
+        setupAliasAndHead();
     }
 
     private void setupSpinner() {
@@ -132,11 +147,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupViewpager() {
-        mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
-        mPagerAdapter.addFragment(TransferFragment.newInstance("", ""), getString(R.string.main_bottom_transfer));
-        mPagerAdapter.addFragment(ExchangeFragment.newInstance("", ""), getString(R.string.main_bottom_exchange));
+        MainPagerAdapter mPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        mPagerAdapter.addFragment(TransferFragment.newInstance(), getString(R.string.main_bottom_transfer));
+        mPagerAdapter.addFragment(ExchangeFragment.newInstance(), getString(R.string.main_bottom_exchange));
         container.setAdapter(mPagerAdapter);
         container.addOnPageChangeListener(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            setupAliasAndHead();
+        }
+    }
+
+    private void setupAliasAndHead() {
+        ImageView headView = (ImageView) navView.getHeaderView(0).findViewById(R.id.nav_head_icon);
+        headView.setOnClickListener(headViewOnClick);
+        TextView aliasView = (TextView) navView.getHeaderView(0).findViewById(R.id.nav_head_alias);
+        PreferenceUtil preferenceUtil = PreferenceUtil.getInstance(getApplicationContext());
+        int headPosition = preferenceUtil.getHead();
+        String alias = preferenceUtil.getAlias();
+        headView.setImageResource(UserInfoActivity.HEAD[headPosition]);
+        aliasView.setText(TextUtils.isEmpty(alias) ? Build.MODEL : alias);
     }
 
     @Override

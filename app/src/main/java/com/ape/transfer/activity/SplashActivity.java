@@ -12,11 +12,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 
 import com.ape.transfer.R;
+import com.ape.transfer.util.PreferenceUtil;
 
 import java.util.ArrayList;
 import java.util.List;

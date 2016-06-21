@@ -46,7 +46,7 @@ public final class PreferenceUtil {
     }
 
     public String getAlias() {
-        return mPreferences.getString(PERFERENCE_ALIAS, Build.MODEL);
+        return mPreferences.getString(PERFERENCE_ALIAS, "");
     }
 
     public void setAlias(String alias) {

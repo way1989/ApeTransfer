@@ -72,7 +72,12 @@
             android:label="@string/connect_ap"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.UserInfoActivity" />
+        <activity android:name=".activity.UserInfoActivity"
+            android:label="@string/title_activity_user_info"
+            android:windowSoftInputMode="adjustResize|stateHidden"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            />
 
         <service
             android:name=".service.WifiApService"
