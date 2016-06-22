@@ -18,7 +18,7 @@
         android:paddingTop="12dp"
         android:text="Header"
         android:textAllCaps="true"
-        android:textColor="@color/picker_map_nearby_header_color"
+        android:textColor="?attr/colorAccent"
         android:textSize="@dimen/picker_map_header"
         android:textStyle="bold" />
 </RelativeLayout>

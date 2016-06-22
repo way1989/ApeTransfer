@@ -1,5 +1,6 @@
 package com.ape.transfer.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,8 +15,11 @@ import com.ape.emoji.keyboard.KeyboardStatusListener;
 import com.ape.emoji.keyboard.emoji.EmojiKeyboard;
 import com.ape.filepicker.Intents;
 import com.ape.transfer.R;
+import com.ape.transfer.util.Log;
 import com.ape.transfer.util.ViewUtils;
 import com.ape.transfer.widget.RecyclerListView;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -86,6 +90,21 @@ public class ChatActivity extends BaseActivity implements TextWatcher {
                 break;
             case R.id.record_btn:
                 break;
+        }
+    }
+
+    private static final String TAG = "ChatActivity";
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0){
+            if(resultCode == RESULT_OK){
+                ArrayList<String> selectedItems = data.getStringArrayListExtra("picked");
+                for(String file : selectedItems){
+                    Log.i(TAG, "selected file = " + file);
+                }
+            }
         }
     }
 
