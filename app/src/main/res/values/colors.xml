@@ -14,4 +14,9 @@
     <color name="divider_bg">#ffdddddd</color>
     <color name="yellow_warning_text">#ffcb8f00</color>
     <color name="yellow_warning">#fffffcb8</color>
+    <color name="secondary_pressed">#66999999</color>
+    <color name="selector_hover">#33999999</color>
+    <color name="selector_hover_ripple">#11999999</color>
+    <color name="selector_hover_inv">#20cccccc</color>
+
 </resources>

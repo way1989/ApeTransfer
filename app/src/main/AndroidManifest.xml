@@ -15,10 +15,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
-
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!--
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -72,12 +71,12 @@
             android:label="@string/connect_ap"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.UserInfoActivity"
+        <activity
+            android:name=".activity.UserInfoActivity"
             android:label="@string/title_activity_user_info"
-            android:windowSoftInputMode="adjustResize|stateHidden"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            />
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <service
             android:name=".service.WifiApService"
@@ -86,7 +85,12 @@
         <service
             android:name=".service.TransferService"
             android:enabled="true"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".activity.ChatActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="adjustResize"
+            />
     </application>
 
 </manifest>

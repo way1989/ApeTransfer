@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.text.format.Formatter;
 
+import com.ape.emoji.SmileProcessor;
 import com.ape.transfer.util.Log;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -27,7 +28,8 @@ public class App extends Application {
             CrashReport.initCrashReport(mContext, getString(R.string.bugly_appid), false);
 
         Nammu.init(this);
-
+        SmileProcessor smileProcessor = new SmileProcessor(this);
+        smileProcessor.loadEmoji();
         long maxMemory = Runtime.getRuntime().maxMemory();
         String result = Formatter.formatFileSize(mContext, maxMemory);
         Log.i("broncho", "maxMemory = " + result);

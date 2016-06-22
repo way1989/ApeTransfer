@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Emoji</string>
+    <string name="emoji_no_recent">no recent emoji yet</string>
+</resources>

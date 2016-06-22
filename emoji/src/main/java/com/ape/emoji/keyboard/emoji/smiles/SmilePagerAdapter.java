@@ -1,0 +1,181 @@
+package com.ape.emoji.keyboard.emoji.smiles;
+
+import android.content.Context;
+import android.support.v4.view.PagerAdapter;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+
+import com.ape.emoji.PagerSlidingTabStrip;
+import com.ape.emoji.R;
+import com.ape.emoji.Screen;
+import com.ape.emoji.SmileProcessor;
+import com.ape.emoji.keyboard.emoji.EmojiKeyboard;
+import com.ape.emoji.smiles.SmilesPack;
+import com.ape.emoji.smiles.SmilesPackView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+
+/**
+* Created by Jesus Christ. Amen.
+*/
+public class SmilePagerAdapter extends PagerAdapter implements PagerSlidingTabStrip.TabProvider {
+
+    private EmojiKeyboard emojiKeyboard;
+    private int count;
+    private PagerSlidingTabStrip tabs;
+
+    public SmilePagerAdapter(EmojiKeyboard emojiKeyboard) {
+        this.emojiKeyboard = emojiKeyboard;
+//        count = messenger().getOwnStickerPacks().getValuesMap().values().size();
+//        if (emojiKeyboard.getActivity() instanceof BaseActivity) {
+//            messenger().getOwnStickerPacks().addCallback(new MVVMCollection.OnChangedListener() {
+//                @Override
+//                public void onChanged() {
+//                    count = messenger().getOwnStickerPacks().getValuesMap().values().size();
+//                    if (tabs != null) {
+//                        tabs.notifyDataSetChanged();
+//                    }
+//                    notifyDataSetChanged();
+//                }
+//            });
+//        }
+
+    }
+
+
+    @Override
+    public int getCount() {
+        return 5;//count > 0 ? 6 : 5;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        View itemView;
+
+            itemView = LayoutInflater.from(container.getContext()).inflate(R.layout.emoji_smiles_page, null);
+            ViewGroup emojicontainer = (ViewGroup) itemView.findViewById(R.id.emojiPackContainer);
+            View noEmojiTV = itemView.findViewById(R.id.text);
+
+            ArrayList<Long> emojiPack = new ArrayList<Long>();
+            switch (position) {
+                case 0:
+                    emojiPack = SmilesPack.getRecent(container.getContext());
+                    break;
+                case 1:
+                    emojiPack = new ArrayList<Long>(Arrays.asList(SmilesPack.STANDART));
+                    break;
+                case 2:
+                    emojiPack = new ArrayList<Long>(Arrays.asList(SmilesPack.NATURE));
+                    break;
+                case 3:
+                    emojiPack = new ArrayList<Long>(Arrays.asList(SmilesPack.TRANSPORT));
+                    break;
+                case 4:
+                    emojiPack = new ArrayList<Long>(Arrays.asList(SmilesPack.UNSORTED));
+                    break;
+
+            }
+
+            int emojisMaxRowCount = 8;
+            int emojiSize = Screen.dp(container.getContext(), 45);
+            int emojiPadding = emojiSize / 5;
+            if (Screen.getWidth(container.getContext()) / emojiSize < emojisMaxRowCount) {
+                emojisMaxRowCount = Screen.getWidth(container.getContext()) / emojiSize;
+            }
+            final SmilesPackView smilesPackView = new SmilesPackView(container.getContext(),
+                    SmileProcessor.emoji(), emojiPack, emojisMaxRowCount, emojiSize, emojiPadding);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.gravity = Gravity.CENTER;
+            emojicontainer.addView(smilesPackView, params);
+            if (!SmileProcessor.emoji().isLoaded()) {
+                SmileProcessor.emoji().registerListener(new SmilesListener() {
+                    @Override
+                    public void onSmilesUpdated(boolean completed) {
+                        smilesPackView.update();
+                        SmileProcessor.emoji().unregisterListener(this);
+                    }
+                });
+            }
+            if (emojiPack.size() == 0) {
+                noEmojiTV.setVisibility(View.VISIBLE);
+            } else {
+                noEmojiTV.setVisibility(View.GONE);
+            }
+            // is this necessary?
+            /*if(position==0){
+                getSmileProcessor().setRecentUpdateListener(new SmilesRecentListener() {
+                    @Override
+                    public void onSmilesUpdated() {
+                        smilesPackView.update();
+                    }
+                });
+            }*/
+            smilesPackView.setOnSmileClickListener(new OnSmileClickListener() {
+                @Override
+                public void onEmojiClicked(String smile) {
+                    emojiKeyboard.onEmojiClicked(smile);
+                }
+            });
+            SmilesPack.setOnRecentChangeListener(new OnRecentChangeListener() {
+
+                @Override
+                public void onRecentChange() {
+                    smilesPackView.update();
+                }
+            });
+
+            container.addView(itemView, 0);
+        return itemView;
+    }
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object view) {
+        container.removeView((View) view);
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object key) {
+        return key == view;
+    }
+
+    @Override
+    public View getTab(int position, Context context) {
+
+        ImageButton tabView = new ImageButton(context);
+        //if(position==0){
+        int icon;
+        switch (position) {
+            case 0:
+                icon = R.drawable.ic_smiles_recent;
+                break;
+            case 1:
+                icon = R.drawable.ic_smiles_smile;
+                break;
+            case 2:
+                icon = R.drawable.ic_smiles_bell;//R.drawable.ic_smiles_flower;
+                break;
+            case  3:
+                icon = R.drawable.ic_smiles_car;
+                break;
+            case 4:
+                icon = R.drawable.ic_smiles_grid;
+                break;
+
+            default:
+                icon = R.drawable.ic_smiles_smile;
+        }
+        tabView.setImageResource(icon);
+        return tabView;
+    }
+
+    public void setTabs(PagerSlidingTabStrip tabs) {
+        this.tabs = tabs;
+    }
+
+}
