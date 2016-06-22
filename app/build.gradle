@@ -77,4 +77,5 @@ dependencies {
     compile "com.github.tajchert:nammu:$rootProject.nammuVersion"
 
     compile project(':emoji')
+    compile project(':filepicker')
 }

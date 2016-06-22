@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:left="78dp"
+        android:right="13dp">
+        <shape>
+            <solid android:color="@color/picker_file_listitem_divider" />
+
+        </shape>
+    </item>
+</layer-list>

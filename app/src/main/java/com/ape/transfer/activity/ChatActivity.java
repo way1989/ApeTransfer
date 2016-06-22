@@ -12,10 +12,10 @@ import android.widget.TextView;
 
 import com.ape.emoji.keyboard.KeyboardStatusListener;
 import com.ape.emoji.keyboard.emoji.EmojiKeyboard;
+import com.ape.filepicker.Intents;
 import com.ape.transfer.R;
 import com.ape.transfer.util.ViewUtils;
 import com.ape.transfer.widget.RecyclerListView;
-import com.ape.transfer.widget.TintImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,6 +77,7 @@ public class ChatActivity extends BaseActivity implements TextWatcher {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ib_attach:
+                startActivityForResult(Intents.pickFile(this), 0);
                 break;
             case R.id.ib_emoji:
                 emojiKeyboard.toggle(etMessage);

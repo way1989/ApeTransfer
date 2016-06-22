@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search"
+        android:enabled="true"
+        android:icon="@drawable/picker_bar_search"
+        android:title="@string/picker_search"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/sortname"
+        android:enabled="true"
+        android:title="@string/picker_file_sort_name"
+        android:visible="false"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/sortdate"
+        android:title="@string/picker_file_sort_date"
+        app:showAsAction="never" />
+</menu>

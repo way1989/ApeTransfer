@@ -1,0 +1,18 @@
+<resources>
+
+    <style name="AppToolbarTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/primary</item>
+
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="PickerTheme" parent="AppToolbarTheme">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/picker_globalWindowBackground</item>
+    </style>
+
+
+</resources>

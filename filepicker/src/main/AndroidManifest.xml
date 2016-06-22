@@ -1,0 +1,15 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ape.filepicker">
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true">
+        <activity
+            android:name=".FilePickerActivity"
+            android:label="@string/picker_file_activity_title"
+            android:theme="@style/PickerTheme" />
+
+    </application>
+
+</manifest>
