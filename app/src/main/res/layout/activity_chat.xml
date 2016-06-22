@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/selectableItemBackgroundBorderless"
     tools:context="com.ape.transfer.activity.ChatActivity">
 
@@ -97,13 +98,14 @@
             android:layout_height="56dp"
             android:layout_gravity="right|bottom">
 
-            <com.ape.transfer.widget.TintImageView
+            <ImageView
                 android:id="@+id/ib_send"
                 style="@android:style/Widget.Material.ActionButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:clickable="true"
+                android:src="@drawable/conv_send"
                 android:scaleType="centerInside"
                 android:visibility="invisible" />
         </FrameLayout>
