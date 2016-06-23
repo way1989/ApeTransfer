@@ -8,4 +8,9 @@
         android:icon="@drawable/picker_bar_search"
         android:title="@string/picker_search"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/menu_pick"
+        android:enabled="false"
+        android:title="@android:string/ok"
+        app:showAsAction="ifRoom" />
 </menu>

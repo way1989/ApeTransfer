@@ -8,6 +8,13 @@
         android:icon="@drawable/picker_bar_search"
         android:title="@string/picker_search"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_pick"
+        android:enabled="false"
+        android:title="@android:string/ok"
+        app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/sortname"
         android:enabled="true"

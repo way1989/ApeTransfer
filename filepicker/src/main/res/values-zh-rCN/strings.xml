@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">文件选择</string>
+
+    <string name="picker_empty">无内容</string>
+    <string name="picker_loading">加载中</string>
+    <string name="picker_internalerror">Error has occurred</string>
+    <string name="picker_search">搜索</string>
+
+    <!-- Files -->
+    <string name="picker_file_activity_title">选择文件</string>
+    <string name="picker_file_memory_phone">内部存储</string>
+    <string name="picker_file_memory_external">外部存储</string>
+    <string name="picker_file_memory_external_error">SD卡未插入</string>
+    <string name="picker_file_recent">最近选择项</string>
+    <string name="picker_file_recent_empty">无最近选择项</string>
+    <string name="picker_file_denied">Access denied</string>
+    <string name="picker_file_directory_empty">无文件</string>
+    <string name="picker_file_search_activity_title">搜索</string>
+    <string name="picker_file_search_query_text">搜索</string>
+    <string name="picker_file_sort_name">名称排序</string>
+    <string name="picker_file_sort_date">日期排序</string>
+    <string name="picker_file_camera">照片</string>
+    <string name="picker_file_header_recent">最近文件</string>
+    <string name="picker_file_header_main">主文件夹</string>
+
+    <!-- Images -->
+    <string name="picker_pictures_activity_title">选择图片</string>
+    <string name="picker_pictures_empty_folder">该文件夹无图片</string>
+    <string name="picker_pictures_empty">本设备无图片</string>
+    <string name="picker_pictures_camera">相机</string>
+
+
+
+
+    <!-- Metrics -->
+    <plurals name="picker_time_minutes_ago">
+        <item quantity="one">%d 分钟前</item>
+        <item quantity="two">%d 分钟前</item>
+        <item quantity="few">%d 分钟前</item>
+        <item quantity="many">%d 分钟前</item>
+        <item quantity="other">找到 %d 首歌</item>
+    </plurals>
+
+
+    <string name="picker_time_yesterday_at">昨天 %s</string>
+    <string name="picker_time_today_at">今天 %s</string>
+    <string name="picker_time_hour_ago">1 小时前</string>
+    <string name="picker_time_minute_ago">1 分钟前</string>
+    <string name="picker_time_at">%1$s 在 %2$s</string>
+
+    <string name="picker_bytes">%d bytes</string>
+    <string name="picker_kbytes">KB</string>
+    <string name="picker_mbytes">MB</string>
+    <string name="picker_gbytes">GB</string>
+
+</resources>

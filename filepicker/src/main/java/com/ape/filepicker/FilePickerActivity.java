@@ -12,23 +12,6 @@ import com.ape.filepicker.util.HistoryDatabase;
 
 public class FilePickerActivity extends BasePickerActivity {
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //searchEnable();
-        findViewById(R.id.controllers).setVisibility(View.GONE);
-
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        /*
-        final int actionBarTitle = Resources.getSystem().getIdentifier("action_bar_title", "id", "android");
-        final TextView title = (TextView)getWindow().findViewById(actionBarTitle);
-        if ( title != null ) {
-            title.setEllipsize(TextUtils.TruncateAt.START);
-        }*/
-        // getSupportActionBar().setIcon(null);
-    }
-
     @Override
     protected Fragment getWelcomeFragment() {
         return new ExplorerFragment();
@@ -63,9 +46,8 @@ public class FilePickerActivity extends BasePickerActivity {
                     .addToBackStack(path)
                     .commit();
         } else {
-
             selectItem(item, itemView);
-            returnResult();
+            //returnResult();
         }
     }
 

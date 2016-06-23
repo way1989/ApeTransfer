@@ -54,12 +54,9 @@ public class SearchFileFragment extends Fragment implements AbsListView.OnScroll
         rootView = inflater.inflate(R.layout.picker_fragment_file_search, container, false);
         root = getArguments().getString("root");
 
-//        ViewGroup searchContainer = (ViewGroup) rootView.findViewById(R.id.search_container);
         View contentContainer = rootView.findViewById(R.id.content_container);
 
         status = (TextView) rootView.findViewById(R.id.status);
-        // progress = new IndeterminateWrapper(pickerActivity);
-        // progress.show();
         listView = (ListView) contentContainer.findViewById(R.id.list);
         listView.setOnScrollListener(this);
 
@@ -116,7 +113,7 @@ public class SearchFileFragment extends Fragment implements AbsListView.OnScroll
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
         inflater.inflate(R.menu.picker_search, menu);
-        MenuItem searchMenuItem = menu.getItem(0);
+        MenuItem searchMenuItem = menu.findItem(R.menu.picker_search);
 
         searchView = (SearchView) searchMenuItem.getActionView();
 

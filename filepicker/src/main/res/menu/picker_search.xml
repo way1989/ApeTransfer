@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_search"
         android:icon="@drawable/picker_bar_search"
-        android:title="Search"
+        android:title="@string/picker_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 </menu>
