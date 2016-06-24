@@ -3,6 +3,7 @@ package com.ape.filepicker;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 
 import com.ape.filepicker.items.BackItem;
@@ -48,6 +49,13 @@ public class FilePickerActivity extends BasePickerActivity {
         } else {
             selectItem(item, itemView);
             //returnResult();
+            Adapter adapter = parent.getAdapter();
+            if(adapter instanceof  ExplorerAdapter){
+                ((ExplorerAdapter)adapter).notifyDataSetChanged();
+            }else if(adapter instanceof  WelcomeExplorerAdapter){
+                ((WelcomeExplorerAdapter)adapter).notifyDataSetChanged();
+
+            }
         }
     }
 

@@ -26,7 +26,7 @@ public class ExploreItemViewHolder {
         imageView = (ImageView) itemView.findViewById(R.id.image);
         selectedView = itemView.findViewById(R.id.selected);
         divider = itemView.findViewById(R.id.divider);
-        //divider.setBackgroundColor(ActorSDK.sharedActor().style.getDividerColor());
+        divider.setBackgroundResource(R.color.picker_list_divider);
         typeView = (TextView) itemView.findViewById(R.id.type);
     }
 
@@ -46,7 +46,8 @@ public class ExploreItemViewHolder {
     }
 
     public void setSelected(boolean selected) {
-        // selectedView.setSelected(selected);
+        //selectedView.setSelected(selected);
+        selectedView.setVisibility(selected? View.VISIBLE:View.GONE);
     }
 
     public void disableSubtitle() {
@@ -67,5 +68,13 @@ public class ExploreItemViewHolder {
 
     public void setType(String fileType) {
         typeView.setText(fileType);
+    }
+
+    public ImageView getIconView(){
+        return imageView;
+    }
+
+    public TextView getTypeView(){
+        return typeView;
     }
 }

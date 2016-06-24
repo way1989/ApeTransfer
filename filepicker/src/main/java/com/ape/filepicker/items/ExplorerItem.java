@@ -1,12 +1,17 @@
 package com.ape.filepicker.items;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ape.filepicker.ExploreItemViewHolder;
 import com.ape.filepicker.R;
+import com.ape.filepicker.util.FileTypes;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.io.File;
 
@@ -113,7 +118,13 @@ public class ExplorerItem {
     }
 
     public void bindImage(ExploreItemViewHolder holder) {
-
+        if(!TextUtils.isEmpty(fileType)
+        &&(FileTypes.getType(fileType) == FileTypes.TYPE_PICTURE
+                || FileTypes.getType(fileType) == FileTypes.TYPE_VIDEO)){
+            loadIcon(file.getAbsolutePath(), holder.getIconView());
+            holder.setType("");
+            return;
+        }
         if (imageId != 0) {
             holder.setIcon(imageId);
             holder.setType("");
@@ -122,6 +133,14 @@ public class ExplorerItem {
             holder.setType(fileType);
         }
     }
+    public static void loadIcon(String path, @NonNull ImageView image) {
+        Glide.with(image.getContext())
+                .load(path)
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(image);
+    }
+
 
     public Long getLastModified() {
         return file.lastModified();

@@ -73,138 +73,131 @@ public class ExplorerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d("Explorer Animation", "Created");
-        {
-            rootView = inflater.inflate(R.layout.picker_fragment_file_picker, container, false);
-            list = (ListView) rootView.findViewById(R.id.list);
-            Bundle bundle = getArguments();
-            statusView = (TextView) rootView.findViewById(R.id.status);
-            emptyView = rootView.findViewById(R.id.empty);
+        rootView = inflater.inflate(R.layout.picker_fragment_file_picker, container, false);
+        list = (ListView) rootView.findViewById(R.id.list);
+        Bundle bundle = getArguments();
+        statusView = (TextView) rootView.findViewById(R.id.status);
+        emptyView = rootView.findViewById(R.id.empty);
 
-            items = new ArrayList<ExplorerItem>();
+        items = new ArrayList<ExplorerItem>();
 
-            if (bundle != null) {
-                path = bundle.getString("path");
+        if (bundle != null) {
+            path = bundle.getString("path");
 
+            Log.d(LOG_TAG, "Path: " + path);
+            File currentPathFile = new File(path);
+            File[] fileList = currentPathFile.listFiles();
+            title = currentPathFile.getPath();
+            if (title.contains(Environment.getExternalStorageDirectory().getPath())) {
+                title = title.replace(Environment.getExternalStorageDirectory().getPath(), "");
+            }
+            if (title.length() > 0 && title.toCharArray()[0] == '/') {
+                title = title.substring(1);
+            }
 
-                Log.d(LOG_TAG, "Path: " + path);
-                File currentPathFile = new File(path);
-                File[] fileList = currentPathFile.listFiles();
-                title = currentPathFile.getPath();
-                if (title.contains(Environment.getExternalStorageDirectory().getPath())) {
-                    title = title.replace(Environment.getExternalStorageDirectory().getPath(), "");
-                }
-                if (title.length() > 0 && title.toCharArray()[0] == '/') {
-                    title = title.substring(1);
-                }
-
-                if (path.equals(Environment.getExternalStorageDirectory().getPath())) {
-                    if (Environment.isExternalStorageEmulated()) {
-                        title = getString(R.string.picker_file_memory_phone);
-                    } else
-                        title = getString((R.string.picker_file_memory_external));
-                } else if (path.equals("/"))
+            if (path.equals(Environment.getExternalStorageDirectory().getPath())) {
+                if (Environment.isExternalStorageEmulated()) {
                     title = getString(R.string.picker_file_memory_phone);
+                } else
+                    title = getString((R.string.picker_file_memory_external));
+            } else if (path.equals("/"))
+                title = getString(R.string.picker_file_memory_phone);
 
-                if (fileList == null) {
-                    statusView.setVisibility(View.VISIBLE);
-                    File external = Environment.getExternalStorageDirectory();
-                    if (path.equals(external.getPath()))
-                        statusView.setText(R.string.picker_file_memory_external_error);
-                    else
-                        statusView.setText(R.string.picker_file_denied);
+            if (fileList == null) {
+                statusView.setVisibility(View.VISIBLE);
+                File external = Environment.getExternalStorageDirectory();
+                if (path.equals(external.getPath()))
+                    statusView.setText(R.string.picker_file_memory_external_error);
+                else
+                    statusView.setText(R.string.picker_file_denied);
 
-                    return rootView;
-                } else {
-                    if (fileList.length == 0) {
-
-                        emptyView.setVisibility(View.VISIBLE);
-                        AnimationSet slideInAnimation = new AnimationSet(true);
-                        slideInAnimation.setInterpolator(new MaterialInterpolator());
-                        slideInAnimation.setDuration(280);
-                        AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
-                        slideInAnimation.addAnimation(alphaAnimation);
-                        TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, 150, 0);
-                        slideInAnimation.addAnimation(translateAnimation);
-                        emptyView.startAnimation(slideInAnimation);
-
-                        statusView.setVisibility(View.VISIBLE);
-                        AnimationSet slideInAnimation1 = new AnimationSet(true);
-                        slideInAnimation1.setInterpolator(new MaterialInterpolator());
-                        slideInAnimation1.setDuration(280);
-                        slideInAnimation1.setStartOffset(150);//cause of offset
-                        AlphaAnimation alphaAnimation1 = new AlphaAnimation(0, 1);
-                        slideInAnimation1.addAnimation(alphaAnimation1);
-                        TranslateAnimation translateAnimation1 = new TranslateAnimation(0, 0, 150, 0);
-                        slideInAnimation1.addAnimation(translateAnimation1);
-                        statusView.startAnimation(slideInAnimation1);
-                        statusView.setText(R.string.picker_file_directory_empty);
-                        //return rootView;
-                    }
-                }
-
-                Log.d(LOG_TAG, "Size: " + fileList.length);
-
-                for (File file : fileList) {
-                    putItem(file);
-                }
-                Collections.sort(items, new FileNameOrderComparator());
-
-                insertBack();
-                adapter = new ExplorerAdapter(getActivity(), items);
-
+                return rootView;
             } else {
-                welcome = true;
+                if (fileList.length == 0) {
+                    emptyView.setVisibility(View.VISIBLE);
+                    AnimationSet slideInAnimation = new AnimationSet(true);
+                    slideInAnimation.setInterpolator(new MaterialInterpolator());
+                    slideInAnimation.setDuration(280);
+                    AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
+                    slideInAnimation.addAnimation(alphaAnimation);
+                    TranslateAnimation translateAnimation = new TranslateAnimation(0, 0, 150, 0);
+                    slideInAnimation.addAnimation(translateAnimation);
+                    emptyView.startAnimation(slideInAnimation);
+
+                    statusView.setVisibility(View.VISIBLE);
+                    AnimationSet slideInAnimation1 = new AnimationSet(true);
+                    slideInAnimation1.setInterpolator(new MaterialInterpolator());
+                    slideInAnimation1.setDuration(280);
+                    slideInAnimation1.setStartOffset(150);//cause of offset
+                    AlphaAnimation alphaAnimation1 = new AlphaAnimation(0, 1);
+                    slideInAnimation1.addAnimation(alphaAnimation1);
+                    TranslateAnimation translateAnimation1 = new TranslateAnimation(0, 0, 150, 0);
+                    slideInAnimation1.addAnimation(translateAnimation1);
+                    statusView.startAnimation(slideInAnimation1);
+                    statusView.setText(R.string.picker_file_directory_empty);
+                    //return rootView;
+                }
+            }
+
+            Log.d(LOG_TAG, "Size: " + fileList.length);
+
+            for (File file : fileList) {
+                putItem(file);
+            }
+            Collections.sort(items, new FileNameOrderComparator());
+
+            insertBack();
+            adapter = new ExplorerAdapter(getActivity(), items);
+
+        } else {
+            welcome = true;
 //                items.add(new StorageItem(getActivity()));
-                adapter = new WelcomeExplorerAdapter(getActivity(), items);
-                items.add(new HeaderItem(getString(R.string.picker_file_header_main)));
-                String externalStorageState = Environment.getExternalStorageState();
-                Log.w(LOG_TAG, externalStorageState);
-                if (
-                        externalStorageState.equals(Environment.MEDIA_REMOVED)
-                                || externalStorageState.equals(Environment.MEDIA_BAD_REMOVAL)
-                                || externalStorageState.equals(Environment.MEDIA_UNKNOWN)
-                                || externalStorageState.equals(Environment.MEDIA_UNMOUNTED)
-                                || externalStorageState.equals(Environment.MEDIA_UNMOUNTABLE)
-                                || externalStorageState.equals(Environment.MEDIA_SHARED)
-                                || externalStorageState.equals(Environment.MEDIA_NOFS)
-                        ) {
-                    items.add(new StorageItem(getString(R.string.picker_file_memory_phone)));
-                } else {/*
+            adapter = new WelcomeExplorerAdapter(getActivity(), items);
+            items.add(new HeaderItem(getString(R.string.picker_file_header_main)));
+            String externalStorageState = Environment.getExternalStorageState();
+            Log.w(LOG_TAG, externalStorageState);
+            if (externalStorageState.equals(Environment.MEDIA_REMOVED)
+                    || externalStorageState.equals(Environment.MEDIA_BAD_REMOVAL)
+                    || externalStorageState.equals(Environment.MEDIA_UNKNOWN)
+                    || externalStorageState.equals(Environment.MEDIA_UNMOUNTED)
+                    || externalStorageState.equals(Environment.MEDIA_UNMOUNTABLE)
+                    || externalStorageState.equals(Environment.MEDIA_SHARED)
+                    || externalStorageState.equals(Environment.MEDIA_NOFS)) {
+                items.add(new StorageItem(getString(R.string.picker_file_memory_phone)));
+            } else {
+                /*
                     File cameraFile = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
                     if(cameraFile.exists()) {
                        items.add(new FolderItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),R.drawable.picker_folder_camera,getString(R.string.picker_files_camera)));
                     }*/
-                    putItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM));
-                    putItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
-                    putItem((Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)));
-                    putItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC));
-                    putItem((Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)));
-                    if (Environment.isExternalStorageEmulated()) {
+                putItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM));
+                putItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
+                putItem((Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)));
+                putItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC));
+                putItem((Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)));
+                if (Environment.isExternalStorageEmulated()) {
+                    items.add(new ExternalStorageItem(getString(R.string.picker_file_memory_phone), R.drawable.picker_memory));
+                } else
+                    items.add(new ExternalStorageItem(getString(R.string.picker_file_memory_external), R.drawable.picker_sdcard));
 
-                        items.add(new ExternalStorageItem(getString(R.string.picker_file_memory_phone), R.drawable.picker_memory));
-                    } else
-                        items.add(new ExternalStorageItem(getString(R.string.picker_file_memory_external), R.drawable.picker_sdcard));
-
-
-                    if (Build.VERSION.SDK_INT >= 19) {
-                        // putItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS));
-                        // even on sdk>19 documents folder does not work.
-                    }
+                if (Build.VERSION.SDK_INT >= 19) {
+                    putItem(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS));
+                    // even on sdk>19 documents folder does not work.
                 }
-                path = "";
-                title = getString(R.string.picker_file_activity_title);
+            }
+            path = "";
+            title = getString(R.string.picker_file_activity_title);
 
-                ArrayList<ExplorerItem> historyItems = loadHistory();
-                if (!historyItems.isEmpty()) {
-                    items.addAll(historyItems);
-                }
-
+            ArrayList<ExplorerItem> historyItems = loadHistory();
+            if (!historyItems.isEmpty()) {
+                items.addAll(historyItems);
             }
 
-            list.setAdapter(adapter);
-            list.setOnItemClickListener((BasePickerActivity) getActivity());
-
         }
+
+        list.setAdapter(adapter);
+        list.setOnItemClickListener((BasePickerActivity) getActivity());
+
         pickerActivity.updateCounter();
 
         return rootView;
@@ -293,7 +286,6 @@ public class ExplorerFragment extends Fragment {
         ExplorerItem item;
         if (file.isDirectory()) {
             item = getFolderItem(file);
-
         } else {
             item = getFileItem(file);
         }

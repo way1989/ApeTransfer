@@ -60,7 +60,6 @@ public class ExplorerAdapter extends BaseAdapter {
 
         ExplorerItem item = getItem(position);
 
-
         item.bindImage(holder);
         item.bindData(holder);
         if (getCount() == 1) {
