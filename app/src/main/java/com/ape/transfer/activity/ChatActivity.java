@@ -1,6 +1,7 @@
 package com.ape.transfer.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import com.ape.emoji.keyboard.KeyboardStatusListener;
 import com.ape.emoji.keyboard.emoji.EmojiKeyboard;
 import com.ape.filepicker.Intents;
+import com.ape.photopicker.ImageInfo;
+import com.ape.photopicker.PhotoPickActivity;
 import com.ape.transfer.R;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.ViewUtils;
@@ -76,12 +79,13 @@ public class ChatActivity extends BaseActivity implements TextWatcher {
         });
         etMessage.addTextChangedListener(this);
     }
-
+    private static final int RESULT_REQUEST_PICK_FILE = 1002;
+    private static final int RESULT_REQUEST_PICK_PHOTO = 1003;
     @OnClick({R.id.ib_attach, R.id.ib_emoji, R.id.ib_send, R.id.record_btn})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.ib_attach:
-                startActivityForResult(Intents.pickFile(this), 0);
+                startActivityForResult(Intents.pickFile(this), RESULT_REQUEST_PICK_FILE);
                 break;
             case R.id.ib_emoji:
                 emojiKeyboard.toggle(etMessage);
@@ -89,20 +93,30 @@ public class ChatActivity extends BaseActivity implements TextWatcher {
             case R.id.ib_send:
                 break;
             case R.id.record_btn:
+                photo();
                 break;
         }
     }
-
+    public void photo() {
+        Intent intent = new Intent(this, PhotoPickActivity.class);
+        startActivityForResult(intent, RESULT_REQUEST_PICK_PHOTO);
+    }
     private static final String TAG = "ChatActivity";
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 0){
-            if(resultCode == RESULT_OK){
-                ArrayList<String> selectedItems = data.getStringArrayListExtra("picked");
-                for(String file : selectedItems){
-                    Log.i(TAG, "selected file = " + file);
+        if(resultCode == RESULT_OK) {
+            if (requestCode == RESULT_REQUEST_PICK_FILE) {
+                    ArrayList<String> selectedItems = data.getStringArrayListExtra("picked");
+                    for (String file : selectedItems) {
+                        Log.i(TAG, "selected file = " + file);
+                    }
+            }else if(requestCode == RESULT_REQUEST_PICK_PHOTO){
+                ArrayList<ImageInfo> pickPhots = (ArrayList<ImageInfo>) data.getSerializableExtra("data");
+                for (ImageInfo item : pickPhots) {
+                    Uri uri = Uri.parse(item.path);
+                    Log.i(TAG, "selected photo = " + item.path);
                 }
             }
         }

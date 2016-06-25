@@ -49,7 +49,6 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     @BindView(R.id.rl_loading)
     RelativeLayout rlLoading;
 
-    private boolean isOpeningWifiAp;
     private P2PManager mP2PManager;
     private List<P2PNeighbor> neighbors = new ArrayList<>();
 
@@ -93,11 +92,7 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
         ButterKnife.bind(this);
-        if (canWriteSystem()) {
-            permissionWriteSystemGranted();
-        } else {
-            showRequestWriteSettingsDialog();
-        }
+
     }
 
     @Override
@@ -135,7 +130,11 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     @Override
     protected void onStart() {
         super.onStart();
-        openWifiAp();
+        if (canWriteSystem()) {
+            permissionWriteSystemGranted();
+        } else {
+            showRequestWriteSettingsDialog();
+        }
     }
 
     @Override

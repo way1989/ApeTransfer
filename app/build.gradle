@@ -78,4 +78,5 @@ dependencies {
 
     compile project(':emoji')
     compile project(':filepicker')
+    compile project(':photopicker')
 }

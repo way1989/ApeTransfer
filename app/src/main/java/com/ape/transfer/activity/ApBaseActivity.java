@@ -13,6 +13,7 @@ import com.ape.transfer.util.Log;
 public abstract class ApBaseActivity extends RequestWriteSettingsBaseActivity {
     private static final String TAG = "ApBaseActivity";
     protected WifiApService.WifiApBinder mWifiApService;
+    protected boolean isOpeningWifiAp;
     private ServiceConnection mServiceCon = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -37,7 +38,6 @@ public abstract class ApBaseActivity extends RequestWriteSettingsBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         bindService();
     }
 

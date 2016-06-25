@@ -37,7 +37,6 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
 
     // NanoHTTPServer
     private NanoHTTPD mNanoHTTPServer;
-    private boolean isOpeningWifiAp;
 
     @Override
     protected void afterServiceConnected() {
@@ -55,22 +54,17 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_apshare);
         ButterKnife.bind(this);
-        initData();
-    }
-
-    private void initData() {
         mNanoHTTPServer = new AndroidWebServer(PORT);
-        if (canWriteSystem()) {
-            permissionWriteSystemGranted();
-        } else {
-            showRequestWriteSettingsDialog();
-        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        openWifiAp();
+        if (canWriteSystem()) {
+            permissionWriteSystemGranted();
+        } else {
+            showRequestWriteSettingsDialog();
+        }
     }
 
     @Override
