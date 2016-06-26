@@ -70,4 +70,11 @@
     <string name="share_menu_camera">Camera</string>
     <string name="share_menu_contact">Contact</string>
     <string name="share_menu_location">Location</string>
+    <string name="hold_to_talk">Hold to talk</string>
+    <string name="voice_can_not_send_because_duration_too_short">voice is too short</string>
+    <string name="record_has_canceled">Voice is canceled</string>
+    <string name="loosen_to_cancel">move up to cancel</string>
+    <string name="record_failed">Take voice failed</string>
+    <string name="record_failed_no_enough_storage_space">Not enough storage space</string>
+    <string name="sliding_upwards_and_cancel_sending">swipe up to cancle</string>
 </resources>

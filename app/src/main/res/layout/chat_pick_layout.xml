@@ -3,15 +3,11 @@
     android:id="@+id/share_container"
     android:layout_width="match_parent"
     android:layout_height="245dp"
-    android:layout_above="@+id/fl_send_panel"
     android:background="@android:color/transparent"
-    android:gravity="bottom"
+    android:gravity="center"
+    android:visibility="gone"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/fast_share"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/fast_share_size" />
 
     <TableLayout
         android:id="@+id/share_menu"
@@ -119,13 +115,6 @@
                     android:layout_height="@dimen/share_btn_size"
                     android:background="@drawable/share_location_selector" />
 
-                <ImageButton
-                    android:id="@+id/share_hide"
-                    android:layout_width="@dimen/share_btn_size"
-                    android:layout_height="@dimen/share_btn_size"
-                    android:background="@drawable/share_hide_selector"
-                    android:src="@drawable/attach_hide2" />
-
                 <TextView
                     android:id="@+id/location_text"
                     android:layout_width="wrap_content"
@@ -140,29 +129,11 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-                <FrameLayout
+                <Button
+                    android:id="@+id/share_contact"
                     android:layout_width="@dimen/share_btn_size"
-                    android:layout_height="@dimen/share_btn_size">
-
-                    <Button
-                        android:id="@+id/share_contact"
-                        android:layout_width="@dimen/share_btn_size"
-                        android:layout_height="@dimen/share_btn_size"
-                        android:background="@drawable/share_contact_selector" />
-
-
-                    <ImageButton
-                        android:id="@+id/share_send"
-                        android:layout_width="@dimen/share_btn_size"
-                        android:layout_height="@dimen/share_btn_size"
-                        android:background="@drawable/share_send_selector"
-                        android:paddingLeft="10dp"
-                        android:paddingRight="5dp"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/conv_send"
-                        android:visibility="invisible" />
-
-                </FrameLayout>
+                    android:layout_height="@dimen/share_btn_size"
+                    android:background="@drawable/share_contact_selector" />
 
                 <TextView
                     android:id="@+id/contact_text"

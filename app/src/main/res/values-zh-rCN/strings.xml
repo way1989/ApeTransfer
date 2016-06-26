@@ -60,4 +60,20 @@
     <string name="required_permissions_promo">本应用需要使用相机的权限</string>
     <string name="title_activity_user_info">个人信息</string>
     <string name="enable_permission_procedure">请在设置 &gt; 应用 &gt; 本应用 &gt; 权限，修改权限</string>
+    <string name="chat_empty_bot">开始</string>
+    <string name="chat_message_hint">输入消息</string>
+    <string name="chat_voice_record_cancel">左滑取消</string>
+    <string name="hold_to_talk">按住说话</string>
+    <string name="loosen_to_cancel">上滑取消</string>
+    <string name="share_menu_camera">相机</string>
+    <string name="share_menu_contact">联系人</string>
+    <string name="share_menu_file">文件</string>
+    <string name="share_menu_gallery">图库</string>
+    <string name="share_menu_location">位置</string>
+    <string name="share_menu_video">视频</string>
+    <string name="sliding_upwards_and_cancel_sending">上滑取消</string>
+    <string name="voice_can_not_send_because_duration_too_short">语言太短</string>
+    <string name="record_failed">录音失败</string>
+    <string name="record_failed_no_enough_storage_space">设备存储空间不足</string>
+    <string name="record_has_canceled">录音取消</string>
 </resources>

@@ -58,6 +58,8 @@ public class Screen {
     }
 
     public static float getDensity() {
+        if (density == 0f)
+            density = App.getContext().getResources().getDisplayMetrics().density;
         return density;
     }
 }
