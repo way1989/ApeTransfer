@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,6 +29,7 @@ import com.ape.filepicker.Intents;
 import com.ape.photopicker.ImageInfo;
 import com.ape.photopicker.PhotoPickActivity;
 import com.ape.transfer.R;
+import com.ape.transfer.fragment.MessagesFragment;
 import com.ape.transfer.util.Files;
 import com.ape.transfer.util.KeyboardHelper;
 import com.ape.transfer.util.Log;
@@ -81,11 +83,26 @@ public class ChatActivity extends BaseActivity implements TextWatcher {
     private String audioFile;
     private VoiceCaptureActor voiceCaptureActor;
 
+    protected void setFragment(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.messagesFragment, onCreateFragment())
+                    .commit();
+        }
+    }
+
+    private Fragment onCreateFragment() {
+        return MessagesFragment.newInstance();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
+        // Setting fragment
+        setFragment(savedInstanceState);
+
         mKeyboardHelper = new KeyboardHelper(getApplicationContext());
         emojiKeyboard = new EmojiKeyboard(this);
         emojiKeyboard.setKeyboardStatusListener(new KeyboardStatusListener() {
