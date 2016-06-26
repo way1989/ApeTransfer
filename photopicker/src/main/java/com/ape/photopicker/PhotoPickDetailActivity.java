@@ -35,7 +35,6 @@ public class PhotoPickDetailActivity extends AppCompatActivity {
 
     private int mMaxPick = PhotoPickActivity.PHOTO_MAX_COUNT;
     private MenuItem mMenuSend;
-    private final String actionbarTitle = "%d/%d";
     Cursor mCursor;
 
     @Override
@@ -54,7 +53,7 @@ public class PhotoPickDetailActivity extends AppCompatActivity {
             String folderName = extras.getString(FOLDER_NAME, "");
             String where = folderName;
             if (!folderName.isEmpty()) {
-                where = String.format("%s='%s'",
+                where = getString(R.string.image_index,
                         MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
                         folderName);
             }
@@ -99,7 +98,7 @@ public class PhotoPickDetailActivity extends AppCompatActivity {
                 if (((CheckBox) v).isChecked()) {
                     if (mPickPhotos.size() >= mMaxPick) {
                         ((CheckBox) v).setChecked(false);
-                        String s = String.format("最多只能选择%d张", mMaxPick);
+                        String s = getString(R.string.over_max_count_tips, mMaxPick);
                         Toast.makeText(PhotoPickDetailActivity.this, s, Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -129,7 +128,7 @@ public class PhotoPickDetailActivity extends AppCompatActivity {
     private void updateDisplay(int pos) {
         String uri = getImagePath(pos);
         mCheckBox.setChecked(isPicked(uri));
-        getSupportActionBar().setTitle(String.format(actionbarTitle, pos + 1, getImageCount()));
+        getSupportActionBar().setTitle(getString(R.string.image_index1, pos + 1, getImageCount()));
     }
 
     private boolean isPicked(String path) {
@@ -180,7 +179,7 @@ public class PhotoPickDetailActivity extends AppCompatActivity {
     }
 
     private void updateDataPickCount() {
-        String send = String.format("确定(%d/%d)", mPickPhotos.size(), mMaxPick);
+        String send = getString(R.string.done_with_count, mPickPhotos.size(), mMaxPick);
         mMenuSend.setTitle(send);
     }
 

@@ -1,4 +1,12 @@
 <resources>
-    <string name="app_name">PhotoPicker</string>
-    <string name="action_settings">Settings</string>
+    <string name="photo_picker">Pictures Picker</string>
+    <string name="action_done">Done</string>
+    <string name="all_photo">All Pictures</string>
+    <string name="over_max_count_tips">Up to %1$d photos can be selected</string>
+    <string name="done_with_count">Done(%1$d/%2$d)</string>
+    <string name="preview_with_count">Preview(%1$d/%2$d)</string>
+    <string name="image_index" translatable="false">%1$s=\'%2$s\'</string>
+    <string name="image_index1" translatable="false">%1$d/%2$d</string>
+    <string name="image_count" translatable="false">%1$d</string>
+    <string name="take_photo">Take photos</string>
 </resources>

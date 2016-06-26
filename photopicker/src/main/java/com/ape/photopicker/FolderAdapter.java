@@ -7,9 +7,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
-import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 
 /**
@@ -17,8 +14,8 @@ import java.util.ArrayList;
  */
 public class FolderAdapter extends BaseAdapter {
 
-    private String mSelect = "";
     ArrayList<ImageInfoExtra> mFolderData = new ArrayList<>();
+    private String mSelect = "";
 
     public FolderAdapter(ArrayList<ImageInfoExtra> mFolderData) {
         this.mFolderData = mFolderData;
@@ -73,7 +70,7 @@ public class FolderAdapter extends BaseAdapter {
         int count = data.getCount();
 
         holder.foldName.setText(data.getmName());
-        holder.photoCount.setText(String.format("%d张", count));
+        holder.photoCount.setText(parent.getContext().getString(R.string.image_count, count));
 
         GlideHelper.loadResource(ImageInfo.pathAddPreFix(uri), holder.foldIcon);
         if (data.getmName().equals(mSelect)) {

@@ -68,7 +68,7 @@ public class AllPhotoAdapter extends GridPhotoAdapter {
             return super.getView(position - 1, convertView, parent);
         } else {
             if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.photopick_gridlist_item_camera2, parent, false);
+                convertView = mInflater.inflate(R.layout.photopick_gridlist_item_camera, parent, false);
                 convertView.getLayoutParams().height = PhotoPickActivity.sWidthPix / 3;
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override

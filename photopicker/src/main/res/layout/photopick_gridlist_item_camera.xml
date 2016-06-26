@@ -2,56 +2,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingRight="3dp">
-
-    <!--<ImageView-->
-    <!--android:id="@+id/icon"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:scaleType="centerCrop"-->
-    <!--android:adjustViewBounds="true" />-->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/iconFore"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:scaleType="centerCrop"-->
-    <!--android:background="#66666666"-->
-    <!--android:adjustViewBounds="true" />-->
-
-    <!--<CheckBox-->
-    <!--android:id="@+id/check"-->
-    <!--android:layout_width="40dp"-->
-    <!--android:layout_height="40dp"-->
-    <!--android:layout_alignParentRight="true"-->
-    <!--android:button="@drawable/pick_photo_checkbox"-->
-    <!--android:focusable="false" />-->
-
-    <net.coding.program.common.CameraPreview
-        android:id="@+id/cameraPreview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    android:paddingBottom="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#99000000"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:layout_centerInParent="true"
+        android:background="@color/camera_background"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <View
             android:id="@+id/icon_camera"
-            android:layout_width="57dp"
-            android:layout_height="57dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="@drawable/ic_camera" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:gravity="center"
-            android:text="相机"
-            android:textColor="@android:color/white"
-            android:layout_marginTop="5dp" />
+            android:text="@string/take_photo"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 </RelativeLayout>

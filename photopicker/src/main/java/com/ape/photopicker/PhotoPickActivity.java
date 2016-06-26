@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,33 +24,26 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 
-public class PhotoPickActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class PhotoPickActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String EXTRA_MAX = "EXTRA_MAX";
     public static final String EXTRA_PICKED = "EXTRA_PICKED"; // mPickData
-    private static final String RESTORE_FILEURI = "fileUri";
     public static final int PHOTO_MAX_COUNT = 6;
-
+    private static final String RESTORE_FILEURI = "fileUri";
+    public static int sWidthPix;
     final int RESULT_PICK = 20;
     final int RESULT_CAMERA = 21;
-    private final String allPhotos = "所有图片";
-    private final String CameraItem = "CameraItem";
     MenuItem mMenuItem;
     int mFolderId = 0;
     private int mMaxPick = PHOTO_MAX_COUNT;
-    private LayoutInflater mInflater;
     private TextView mFoldName;
     private View mListViewGroup;
     private ListView mListView;
-    public static int sWidthPix;
-
-    //    LinkedHashMap<String, ArrayList<ImageInfo>> mFolders = new LinkedHashMap();
-//    ArrayList<String> mFoldersName = new ArrayList<>();
     View.OnClickListener mOnClickFoldName = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -126,15 +118,15 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
     };
     private Uri fileUri;
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_pick);
         sWidthPix = getResources().getDisplayMetrics().widthPixels;
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("图片");
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        if(actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         mMaxPick = getIntent().getIntExtra(EXTRA_MAX, 6);
         Object extraPicked = getIntent().getSerializableExtra(EXTRA_PICKED);
@@ -143,13 +135,12 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
             mPickData = (ArrayList<ImageInfo>) extraPicked;
         }
 
-        mInflater = getLayoutInflater();
         mGridView = (GridView) findViewById(R.id.gridView);
         mListView = (ListView) findViewById(R.id.listView);
         mListViewGroup = findViewById(R.id.listViewParent);
         mListViewGroup.setOnClickListener(mOnClickFoldName);
         mFoldName = (TextView) findViewById(R.id.foldName);
-        mFoldName.setText(allPhotos);
+        mFoldName.setText(R.string.all_photo);
 
         findViewById(R.id.selectFold).setOnClickListener(mOnClickFoldName);
 
@@ -169,7 +160,7 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
         if (((CheckBox) v).isChecked()) {
             if (mPickData.size() >= mMaxPick) {
                 ((CheckBox) v).setChecked(false);
-                String s = String.format("最多只能选择%d张", mMaxPick);
+                String s = getString(R.string.over_max_count_tips, mMaxPick);
                 Toast.makeText(this, s, Toast.LENGTH_LONG).show();
                 return;
             }
@@ -213,7 +204,7 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
         if (cursor.moveToFirst()) {
             ImageInfo imageInfo = new ImageInfo(cursor.getString(1));
             int allImagesCount = cursor.getCount();
-            mFolderData.add(new ImageInfoExtra(allPhotos, imageInfo, allImagesCount));
+            mFolderData.add(new ImageInfoExtra(getString(R.string.all_photo), imageInfo, allImagesCount));
         }
 
         for (String item : mNames.keySet()) {
@@ -258,7 +249,6 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
             public void onAnimationRepeat(Animation animation) {
             }
         });
-
         mListView.startAnimation(animation);
         mListViewGroup.startAnimation(fadeOut);
     }
@@ -266,16 +256,14 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_photo_pick, menu);
-        mMenuItem = menu.getItem(0);
+        mMenuItem = menu.findItem(R.id.action_finish);
         updatePickCount();
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
         if (id == R.id.action_finish) {
             send();
             return true;
@@ -283,7 +271,6 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
             finish();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -301,7 +288,7 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
 
     public void camera() {
         if (mPickData.size() >= mMaxPick) {
-            String s = String.format("最多只能选择%d张", mMaxPick);
+            String s = getString(R.string.over_max_count_tips, mMaxPick);
             Toast.makeText(PhotoPickActivity.this, s, Toast.LENGTH_LONG).show();
             return;
         }
@@ -347,9 +334,7 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
                 send();
             }
         }
-
         updatePickCount();
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -379,11 +364,8 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
     }
 
     private void updatePickCount() {
-        String format = "完成(%d/%d)";
-        mMenuItem.setTitle(String.format(format, mPickData.size(), mMaxPick));
-
-        String formatPreview = "预览(%d/%d)";
-        mPreView.setText(String.format(formatPreview, mPickData.size(), mMaxPick));
+        mMenuItem.setTitle(getString(R.string.done_with_count, mPickData.size(), mMaxPick));
+        mPreView.setText(getString(R.string.preview_with_count, mPickData.size(), mMaxPick));
     }
 
     @Override
@@ -391,14 +373,13 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
         String where;
         if (!isAllPhotoMode()) {
             String select = ((FolderAdapter) mListView.getAdapter()).getSelect();
-            where = String.format("%s='%s'",
+            where = getString(R.string.image_index,
                     MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
                     select
             );
         } else {
             where = "";
         }
-
         return new CursorLoader(
                 this, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
                 where,
@@ -432,7 +413,6 @@ public class PhotoPickActivity extends AppCompatActivity implements LoaderManage
     static class GridViewCheckTag {
         View iconFore;
         String path = "";
-
         GridViewCheckTag(View iconFore) {
             this.iconFore = iconFore;
         }
