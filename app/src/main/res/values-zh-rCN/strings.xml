@@ -76,4 +76,5 @@
     <string name="record_failed">录音失败</string>
     <string name="record_failed_no_enough_storage_space">设备存储空间不足</string>
     <string name="record_has_canceled">录音取消</string>
+    <string name="doconnect">正在連接...</string>
 </resources>

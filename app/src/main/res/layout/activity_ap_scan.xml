@@ -47,7 +47,7 @@
             android:textColor="@color/primary"
             android:textSize="@dimen/textSize_h6" />
 
-        <com.ape.transfer.widget.RandomTextView
+        <RelativeLayout
             android:id="@+id/rl_phones"
             android:layout_width="@dimen/scan_random_width"
             android:layout_height="@dimen/scan_random_height"

@@ -21,11 +21,13 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
@@ -36,6 +38,7 @@ import com.ape.transfer.util.WifiUtils;
 import com.ape.transfer.widget.RandomTextView;
 import com.ape.transfer.widget.RippleView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,7 +46,8 @@ import butterknife.ButterKnife;
 import pl.tajchert.nammu.Nammu;
 import pl.tajchert.nammu.PermissionCallback;
 
-public class ApScanActivity extends RequestWriteSettingsBaseActivity implements RandomTextView.OnRippleViewClickListener, TransferService.Callback {
+public class ApScanActivity extends RequestWriteSettingsBaseActivity implements View.OnClickListener,
+        TransferService.Callback {
     private static final String TAG = "ApScanActivity";
     private static final String PACKAGE_URI_PREFIX = "package:";
     @BindView(R.id.iv_scan)
@@ -53,7 +57,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     @BindView(R.id.mine_tv_name)
     TextView mineTvName;
     @BindView(R.id.rl_phones)
-    RandomTextView rlPhones;
+    RelativeLayout rlPhones;
     private WifiManager mWifiManager;
     private WifiUtils mWifiUtils;
     private Animation rotateAnim;
@@ -62,7 +66,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     private long mRequestTimeMillis;
     private boolean isStartScan;
     private Dialog mRequestScanResultDialog;
-    private ScanResult mScanResult;
+//    private ScanResult mScanResult;
     PermissionCallback permissionCallback = new PermissionCallback() {
         @Override
         public void permissionGranted() {
@@ -139,11 +143,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
                 if (isHandleWifiConnected)
                     return;
                 isHandleWifiConnected = true;
-                WifiInfo info = mWifiManager.getConnectionInfo();
-                String ssid = info != null ? info.getSSID() : "";
-                if (ssid.contains("ApeTransfer")) {
                     initP2P();
-                }
                 break;
             case CONNECTING:
                 Log.d(TAG, "wifi connecting");
@@ -242,6 +242,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
     private void getScanResults() {
+        List<ScanResult> filterResults = new ArrayList<>();
         List<ScanResult> scanResults = mWifiUtils.getScanResults();
         Log.i(TAG, "getScanResults size = " + scanResults.size());
         for (ScanResult scanResult : scanResults) {
@@ -250,18 +251,61 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
                 Log.i(TAG, "getScanResults ssid = " + ssid);
                 String[] alias = ssid.split("@");
                 if (alias.length > 1) {
-                    rlPhones.addKeyWord(alias[1]);
-                    rlPhones.show();
-                    mScanResult = scanResult;
-                    return;
+                    filterResults.add(scanResult);
                 }
 
             }
         }
-        rlPhones.removeAllViews();
+        addToRandom(filterResults);
+
         //have no ssid equal ApeTransfer, rescan system will scan every 15 second
         //isHandleScanResult = false;
         //startScanWifi();
+    }
+
+    private void addToRandom(List<ScanResult> filterResults) {
+        rlPhones.removeAllViews();
+        if(filterResults.isEmpty())
+            return;
+        LayoutInflater inflater = getLayoutInflater();
+        final int size = Math.min(filterResults.size(), 4);
+        for(int i = 0; i < size; i++){
+            View item = inflater.inflate(R.layout.item_ap_scan_activity, rlPhones, false);
+            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            switch (i) {
+                case 0:
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    lp.bottomMargin = 20;
+                    break;
+                case 1:
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    lp.addRule(RelativeLayout.CENTER_VERTICAL);
+                    lp.rightMargin = 20;
+                    break;
+                case 2:
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                    lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    lp.topMargin = 20;
+                    break;
+                case 3:
+                    lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+                    lp.addRule(RelativeLayout.CENTER_VERTICAL);
+                    lp.leftMargin = 20;
+                    break;
+            }
+            item.setLayoutParams(lp);
+            item.setTag(filterResults.get(i));
+            item.setOnClickListener(this);
+            bindDatas(filterResults.get(i), item);
+            rlPhones.addView(item);
+        }
+    }
+
+    private void bindDatas(ScanResult scanResult, View item) {
+        TextView name = (TextView) item.findViewById(R.id.tv_name);
+        name.setText(scanResult.SSID.split("@")[1]);
     }
 
     private void startScanWifi() {
@@ -305,9 +349,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
         mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         mWifiUtils = WifiUtils.getInstance(mWifiManager);
 
-        rlPhones.setMode(RippleView.MODE_IN);
-        rlPhones.setOnRippleViewClickListener(this);
-
     }
 
     @Override
@@ -327,11 +368,19 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
         unregisterReceiver();
         if (ivScan != null)
             ivScan.clearAnimation();
+        rlPhones.removeAllViews();
+        if(mTransferService != null)
+            mTransferService.stop();
+        unBindService();
     }
 
     private void initP2P() {
-        startService();
-        bindService();
+        if(mTransferService == null) {
+            startService();
+            bindService();
+        }else {
+            startP2P();
+        }
     }
 
     private void registerReceiver() {
@@ -382,13 +431,15 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
         finish();
     }
 
+
     @Override
-    public void onRippleViewClicked(View view) {
+    public void onClick(View v) {
         Log.i(TAG, "rl_phones  onClick....");
-        if (mScanResult == null)
+        ScanResult scanResult = (ScanResult) v.getTag();
+        if (scanResult == null)
             return;
-        final String capabilities = mScanResult.capabilities;
-        final String ssid = mScanResult.SSID;
+        final String capabilities = scanResult.capabilities;
+        final String ssid = scanResult.SSID;
         WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
         switch (type) {
             case TYPE_NONE:
@@ -402,9 +453,18 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
                 break;
         }
         isHandleScanResult = true;
-        rlPhones.removeAllViews();
-        if (ivScan != null)
+        if (ivScan != null) {
             ivScan.clearAnimation();
+        }
 
+        View title = v.findViewById(R.id.tv_connect);
+        View progress = v.findViewById(R.id.iv_route);
+        ImageView ivHead = (ImageView) v.findViewById(R.id.iv_head);
+        title.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.VISIBLE);
+        ivHead.setImageResource(R.drawable.unconnect_focus);
+        progress.startAnimation(rotateAnim);
+
+        isHandleWifiConnected = false;
     }
 }

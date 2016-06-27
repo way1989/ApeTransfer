@@ -82,6 +82,10 @@ public class TransferService extends Service {
             });
         }
 
+        public void stop(){
+            mP2PManager.stop();
+        }
+
         public boolean isEmpty(){
             return mNeighbors.isEmpty();
         }

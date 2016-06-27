@@ -77,4 +77,5 @@
     <string name="record_failed">Take voice failed</string>
     <string name="record_failed_no_enough_storage_space">Not enough storage space</string>
     <string name="sliding_upwards_and_cancel_sending">swipe up to cancle</string>
+    <string name="doconnect">Connecting...</string>
 </resources>
