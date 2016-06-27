@@ -84,42 +84,49 @@ public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements 
         isOpeningWifiAp = true;
     }
 
+    private void closeWifiAp() {
+        mWifiApService.setOnWifiApStatusListener(null);
+        mWifiApService.closeWifiAp();
+        unBindService();
+        stopService();
+    }
+
     @Override
     public void onBackPressed() {
-        if (!isOpeningWifiAp)
-            super.onBackPressed();
+        if (isOpeningWifiAp)//正在打开热点,禁用返回键
+            return;
+
+        if (mWifiApService != null && mWifiApService.isWifiApEnabled()
+                && shouldCloseWifiAp()) {
+            closeWifiAp();
+        }
+        super.onBackPressed();
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isOpeningWifiAp = true;
         startService();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         bindService();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         if (mWifiApService == null)
             return;
         if (!shouldCloseWifiAp()) {
             return;
         }
-        mWifiApService.setOnWifiApStatusListener(null);
-        mWifiApService.closeWifiAp();
-        unBindService();
+        closeWifiAp();
     }
 
     private void bindService() {
-        if(mWifiApService == null)
-        this.getApplicationContext().bindService(new Intent(this, WifiApService.class),
-                mServiceCon, Service.BIND_AUTO_CREATE);
+        if (mWifiApService == null)
+            this.getApplicationContext().bindService(new Intent(this, WifiApService.class),
+                    mServiceCon, Service.BIND_AUTO_CREATE);
     }
 
     private void unBindService() {

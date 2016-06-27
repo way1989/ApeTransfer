@@ -129,7 +129,7 @@ public class CreateGroupActivity extends ApBaseActivity implements TransferServi
     }
 
     @Override
-    public void connect(P2PNeighbor neighbor) {
+    public void onNeighborConnected(P2PNeighbor neighbor) {
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("neighbor", neighbor);
         startActivity(intent);
@@ -138,7 +138,7 @@ public class CreateGroupActivity extends ApBaseActivity implements TransferServi
     }
 
     @Override
-    public void disConnect(P2PNeighbor neighbor) {
+    public void onNeighborDisconnected(P2PNeighbor neighbor) {
         finish();
     }
 }

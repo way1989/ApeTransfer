@@ -44,6 +44,7 @@ public class WifiUtils {
     public static String getLocalIP() {
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            Log.e("TransferService", "networkInterfaces = " + networkInterfaces);
             if (networkInterfaces == null) {
                 return "";
             }
@@ -59,7 +60,7 @@ public class WifiUtils {
                 }
             }
         } catch (SocketException e) {
-            Log.e(TAG, "", e);
+            Log.e("TransferService", "", e);
         }
 
         return "";
@@ -180,7 +181,7 @@ public class WifiUtils {
     public boolean isWifiOpen(){
         int state = mWifiManager.getWifiState();
         return state ==  WifiManager.WIFI_STATE_ENABLING ||
-                state == WifiManager.WIFI_STATE_DISABLED;
+                state == WifiManager.WIFI_STATE_ENABLED;
     }
 
     public boolean  isWifiEnabled(){

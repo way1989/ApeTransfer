@@ -39,9 +39,9 @@ public class TransferService extends Service {
     }
 
     public interface Callback {
-        void connect(P2PNeighbor neighbor);
+        void onNeighborConnected(P2PNeighbor neighbor);
 
-        void disConnect(P2PNeighbor neighbor);
+        void onNeighborDisconnected(P2PNeighbor neighbor);
     }
 
     public class P2PBinder extends Binder {
@@ -60,6 +60,7 @@ public class TransferService extends Service {
         }
 
         public void start() {
+            Log.i(TAG, "p2p start....");
             final P2PNeighbor me = getMe();
             mP2PManager.start(me, new NeighborCallback() {
                 @Override
@@ -68,7 +69,7 @@ public class TransferService extends Service {
                         return;
                     if (!mNeighbors.contains(neighbor) && !TextUtils.equals(neighbor.ip, me.ip)) {
                         mNeighbors.add(neighbor);
-                        if (mCallback != null) mCallback.connect(neighbor);
+                        if (mCallback != null) mCallback.onNeighborConnected(neighbor);
                     }
                 }
 
@@ -76,13 +77,14 @@ public class TransferService extends Service {
                 public void NeighborRemoved(P2PNeighbor neighbor) {
                     if (neighbor != null) {
                         mNeighbors.remove(neighbor);
-                        if (mCallback != null) mCallback.disConnect(neighbor);
+                        if (mCallback != null) mCallback.onNeighborDisconnected(neighbor);
                     }
                 }
             });
         }
 
         public void stop(){
+            Log.i(TAG, "p2p stop....");
             mP2PManager.stop();
         }
 
