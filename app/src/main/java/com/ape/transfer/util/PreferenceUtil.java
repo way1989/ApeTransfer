@@ -20,6 +20,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.ape.transfer.App;
+
 public final class PreferenceUtil {
 
     private static final String PERFERENCE_ALIAS = "perference_alias";
@@ -40,6 +42,12 @@ public final class PreferenceUtil {
         return sInstance;
     }
 
+    public static final PreferenceUtil getInstance() {
+        if (sInstance == null) {
+            sInstance = new PreferenceUtil(App.getContext());
+        }
+        return sInstance;
+    }
 
     public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
         mPreferences.registerOnSharedPreferenceChangeListener(listener);

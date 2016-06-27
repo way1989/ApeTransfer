@@ -18,5 +18,7 @@
     <color name="selector_hover">#33999999</color>
     <color name="selector_hover_ripple">#11999999</color>
     <color name="selector_hover_inv">#20cccccc</color>
+    <color name="white_pressed1">#ffdfdfdf</color>
+    <color name="font_black_content">#ff222222</color>
 
 </resources>

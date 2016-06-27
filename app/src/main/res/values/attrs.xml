@@ -7,4 +7,10 @@
             <enum name="right" value="0"/>
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="MinSizeImageView">
+        <attr name="minWidth" format="dimension" />
+        <attr name="minHeight" format="dimension" />
+        <attr name="microSize" format="dimension" />
+    </declare-styleable>
 </resources>
