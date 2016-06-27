@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.IBinder;
@@ -24,9 +23,7 @@ public class WifiApService extends Service {
     private WifiManager mWifiManager;
     private WifiApUtils mWifiApUtils;
     // 服务端MAC（本机）
-    private String mWifiMAC;
     private String mWifiApSSID;
-    private boolean isGetMACThenOpenWifiAp;
     private boolean isWifiDefaultEnabled;
     private OnWifiApStatusListener mStatusListener;
     BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -84,14 +81,18 @@ public class WifiApService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopForeground(true);
         setWifiApDisabled();
         unregisterReceiver(receiver);
 
     }
 
     private void handleWifiApStateChanged(int state) {
-        if (mStatusListener != null)
+        if (mStatusListener != null) {
             mStatusListener.onWifiApStatusChanged(state);
+        } else {
+            stopSelf();
+        }
         switch (state) {
             case WifiApUtils.WIFI_AP_STATE_DISABLING:
                 Log.d(TAG, "wifi ap disabling");
@@ -133,13 +134,7 @@ public class WifiApService extends Service {
 
             case WifiManager.WIFI_STATE_ENABLED:
                 Log.d(TAG, "wifi enabled");
-                if (isGetMACThenOpenWifiAp) {
-                    mWifiMAC = mWifiManager.getConnectionInfo().getMacAddress();
-                    if (mWifiApUtils.isWifiApEnabled()) {
-                        return;
-                    }
-                    setWifiApEnabled();
-                }
+
                 break;
 
             case WifiManager.WIFI_STATE_UNKNOWN:
@@ -172,17 +167,23 @@ public class WifiApService extends Service {
     }
 
     private void setWifiApEnabled() {
-        if (TextUtils.isEmpty(mWifiMAC)) {
-            throw new NullPointerException("wifi mac must not null");
-        } else {
-            mWifiManager.setWifiEnabled(false);
-            isGetMACThenOpenWifiAp = false;
-            String ssid = "ApeTransfer";
-            if (!TextUtils.isEmpty(mWifiApSSID))
-                ssid += "@" + mWifiApSSID;
-            mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
-                    WifiApUtils.AuthenticationType.TYPE_NONE, ssid, mWifiMAC, null), true);
+        isWifiDefaultEnabled = mWifiManager.isWifiEnabled();
+
+        String wifiMAC = mWifiApUtils.getWifiMacFromDevice();
+        if (TextUtils.isEmpty(wifiMAC)) {
+            if (mStatusListener != null)
+                mStatusListener.onWifiApStatusChanged(WifiApUtils.WIFI_AP_STATE_FAILED);
+            return;
         }
+        mWifiManager.setWifiEnabled(false);
+        if (TextUtils.isEmpty(mWifiApSSID)){
+            if (mStatusListener != null)
+                mStatusListener.onWifiApStatusChanged(WifiApUtils.WIFI_AP_STATE_FAILED);
+            return;
+        }
+        mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
+                WifiApUtils.AuthenticationType.TYPE_NONE, mWifiApSSID, wifiMAC, null), true);
+
     }
 
     private void setWifiApDisabled() {
@@ -211,19 +212,6 @@ public class WifiApService extends Service {
         }
 
         public void openWifiAp() {
-            if (isWifiApEnabled()) {
-                return;
-            }
-            isWifiDefaultEnabled = mWifiManager.isWifiEnabled();
-
-            WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
-            if (wifiInfo == null || wifiInfo.getMacAddress() == null) {
-                // 打开Wifi开关以便Wifi上报MAC
-                mWifiManager.setWifiEnabled(true);
-                isGetMACThenOpenWifiAp = true;
-                return;
-            }
-            mWifiMAC = wifiInfo.getMacAddress();
             setWifiApEnabled();
         }
 

@@ -14,7 +14,6 @@ import com.ape.transfer.R;
 import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
-import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
@@ -28,7 +27,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CreateGroupActivity extends ApBaseActivity implements WifiApService.OnWifiApStatusListener {
+public class CreateGroupActivity extends ApBaseActivity {
     private static final String TAG = "CreateGroupActivity";
     @BindView(R.id.iv_warning)
     ImageView ivWarning;
@@ -54,40 +53,6 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
 
 
     @Override
-    protected void permissionWriteSystemGranted() {
-        openWifiAp();
-    }
-
-
-    @Override
-    protected void permissionWriteSystemRefused() {
-        finish();
-    }
-
-    @Override
-    protected void afterServiceConnected() {
-        if (mWifiApService != null) {
-            mWifiApService.setOnWifiApStatusListener(this);
-            openWifiAp();
-        } else {
-            Log.i(TAG, "afterServiceConnected service == null");
-            finish();
-        }
-    }
-
-    private void openWifiAp() {
-        if (mWifiApService == null)
-            return;
-        if (!canWriteSystem())
-            return;
-        if (mWifiApService.isWifiApEnabled())
-            return;
-        mWifiApService.setWifiApSSID(PreferenceUtil.getInstance(getApplicationContext()).getAlias());
-        mWifiApService.openWifiAp();
-        isOpeningWifiAp = true;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
@@ -95,11 +60,6 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
 
     }
 
-    @Override
-    public void onBackPressed() {
-        if (!isOpeningWifiAp)
-            super.onBackPressed();
-    }
 
     private void initP2p() {
         mP2PManager = new P2PManager(getApplicationContext());
@@ -141,20 +101,25 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
     protected void onStop() {
         super.onStop();
         if (neighbors.isEmpty()) {
-            if (mWifiApService != null) {
-                mWifiApService.closeWifiAp();
-                unBindService();
-                stopService();
-            }
             if (mP2PManager != null)
                 mP2PManager.stop();
         }
     }
 
     @Override
+    protected boolean shouldCloseWifiAp() {
+        return neighbors.isEmpty();
+    }
+
+    @Override
+    protected String getSSID() {
+        return "ApeTransfer@" + PreferenceUtil.getInstance().getAlias();
+    }
+
+    @Override
     public void onWifiApStatusChanged(int status) {
+        super.onWifiApStatusChanged(status);
         if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
-            isOpeningWifiAp = false;
             rlLoading.setVisibility(View.GONE);
             Bitmap qrCode = null;
             try {
@@ -171,7 +136,6 @@ public class CreateGroupActivity extends ApBaseActivity implements WifiApService
             initP2p();
         } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
                 status == WifiApUtils.WIFI_AP_STATE_FAILED) {
-            isOpeningWifiAp = false;
             finish();
         }
     }

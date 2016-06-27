@@ -1,7 +1,9 @@
 package com.ape.transfer.util;
 
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.lang.reflect.Method;
@@ -82,6 +84,50 @@ public class WifiApUtils {
         return mWifiApServerManager;
     }
 
+    //尝试获取MAC地址
+    private String tryGetMAC(WifiManager manager) {
+        WifiInfo wifiInfo = manager.getConnectionInfo();
+        if (wifiInfo == null || TextUtils.isEmpty(wifiInfo.getMacAddress())) {
+            return null;
+        }
+        return wifiInfo.getMacAddress();
+    }
+
+    //尝试读取MAC地址
+    public String getWifiMacFromDevice() {
+        String mac = tryGetMAC(mWifiManager);
+        if (!TextUtils.isEmpty(mac)) {
+            return mac;
+        }
+
+        //获取失败，尝试打开wifi获取
+        tryOpenWifi(mWifiManager);
+        for (int count = 0; count < 5; count++) {
+            //如果第一次没有成功，第二次做500毫秒的延迟。
+            if (count != 0) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            mac = tryGetMAC(mWifiManager);
+            if (!TextUtils.isEmpty(mac)) {
+                Log.i(TAG, "getWifiMacFromDevice try count = " + count);
+                return mac;
+            }
+        }
+        return null;
+    }
+
+    //尝试打开wifi
+    private void tryOpenWifi(WifiManager manager) {
+        int state = manager.getWifiState();
+        if (state != WifiManager.WIFI_STATE_ENABLED && state != WifiManager.WIFI_STATE_ENABLING) {
+            manager.setWifiEnabled(true);
+        }
+    }
+
     public WifiConfiguration getWifiApConfiguration() {
         WifiConfiguration config = null;
         try {
@@ -105,6 +151,7 @@ public class WifiApUtils {
 
         return ret;
     }
+    /* 函数段end */
 
     public boolean isWifiApEnabled() {
         boolean ret = false;
@@ -175,5 +222,4 @@ public class WifiApUtils {
     public enum AuthenticationType {
         TYPE_NONE, TYPE_WPA, TYPE_WPA2
     }
-    /* 函数段end */
 }

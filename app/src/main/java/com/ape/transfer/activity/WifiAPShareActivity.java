@@ -9,9 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
-import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.AndroidWebServer;
-import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
@@ -21,7 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import fi.iki.elonen.NanoHTTPD;
 
-public class WifiAPShareActivity extends ApBaseActivity implements WifiApService.OnWifiApStatusListener {
+public class WifiAPShareActivity extends ApBaseActivity {
 
     /* 数据段begin */
     private static final String TAG = "WifiApServerActivity";
@@ -38,16 +36,6 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
     // NanoHTTPServer
     private NanoHTTPD mNanoHTTPServer;
 
-    @Override
-    protected void afterServiceConnected() {
-        if (mWifiApService != null) {
-            mWifiApService.setOnWifiApStatusListener(this);
-            openWifiAp();
-        } else {
-            Log.i(TAG, "afterServiceConnected service == null");
-            finish();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,58 +46,20 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        if (canWriteSystem()) {
-            permissionWriteSystemGranted();
-        } else {
-            showRequestWriteSettingsDialog();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         mNanoHTTPServer.stop();
-        if (mWifiApService != null) {
-            mWifiApService.closeWifiAp();
-            unBindService();
-            stopService();
-        }
     }
 
     @Override
-    public void onBackPressed() {
-        if (!isOpeningWifiAp)
-            super.onBackPressed();
-    }
-
-    private void openWifiAp() {
-        if (mWifiApService == null)
-            return;
-        if (!canWriteSystem())
-            return;
-        if (mWifiApService.isWifiApEnabled())
-            return;
-        mWifiApService.setWifiApSSID(PreferenceUtil.getInstance(getApplicationContext()).getAlias());
-        mWifiApService.openWifiAp();
-        isOpeningWifiAp = true;
-    }
-
-    @Override
-    protected void permissionWriteSystemGranted() {
-        openWifiAp();
-    }
-
-    @Override
-    protected void permissionWriteSystemRefused() {
-        finish();
+    protected String getSSID() {
+        return PreferenceUtil.getInstance().getAlias();
     }
 
     @Override
     public void onWifiApStatusChanged(int status) {
+        super.onWifiApStatusChanged(status);
         if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
-            isOpeningWifiAp = false;
             // 开启NanoHTTPServer
             try {
                 mNanoHTTPServer.start();
@@ -130,7 +80,6 @@ public class WifiAPShareActivity extends ApBaseActivity implements WifiApService
             }
         } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
                 status == WifiApUtils.WIFI_AP_STATE_FAILED) {
-            isOpeningWifiAp = false;
             finish();
         }
     }
