@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity
         if (TextUtils.isEmpty(PreferenceUtil.getInstance(getApplicationContext()).getAlias())) {
             startActivityForResult(new Intent(MainActivity.this, UserInfoActivity.class), REQUEST_CODE);
         }
-        startActivity(new Intent(this, ChatActivity.class));
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);

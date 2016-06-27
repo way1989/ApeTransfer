@@ -1,9 +1,12 @@
 package com.ape.transfer.activity;
 
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -11,23 +14,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
-import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
-import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
+import com.ape.transfer.service.TransferService;
+import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
-import com.ape.transfer.util.WifiUtils;
 import com.google.zxing.WriterException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CreateGroupActivity extends ApBaseActivity {
+public class CreateGroupActivity extends ApBaseActivity implements TransferService.Callback {
     private static final String TAG = "CreateGroupActivity";
     @BindView(R.id.iv_warning)
     ImageView ivWarning;
@@ -47,10 +46,28 @@ public class CreateGroupActivity extends ApBaseActivity {
     TextView tvPrompt;
     @BindView(R.id.rl_loading)
     RelativeLayout rlLoading;
+    private TransferService.P2PBinder mTransferService;
+    private ServiceConnection mServiceCon = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
+            Log.i(TAG, "onServiceConnected");
+            mTransferService = (TransferService.P2PBinder) service;
+            if(mTransferService != null) {
+                mTransferService.setCallback(CreateGroupActivity.this);
+                startP2P();
+            }
+        }
 
-    private P2PManager mP2PManager;
-    private List<P2PNeighbor> neighbors = new ArrayList<>();
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            Log.i(TAG, "onServiceDisconnected");
+            mTransferService = null;
+        }
+    };
 
+    private void startP2P() {
+        mTransferService.start();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,55 +77,9 @@ public class CreateGroupActivity extends ApBaseActivity {
 
     }
 
-
-    private void initP2p() {
-        mP2PManager = new P2PManager(getApplicationContext());
-        P2PNeighbor melonInfo = new P2PNeighbor();
-        melonInfo.alias = Build.MODEL;
-        final String ip = WifiUtils.getLocalIP();
-        Log.i(TAG, "NetworkUtils.getLocalIp = " + ip);
-        melonInfo.ip = ip;
-
-        mP2PManager.start(melonInfo, new NeighborCallback() {
-            @Override
-            public void NeighborFound(P2PNeighbor neighbor) {
-                if (neighbor != null) {
-                    if (!neighbors.contains(neighbor) && !TextUtils.equals(neighbor.ip, ip))
-                        neighbors.add(neighbor);
-                }
-            }
-
-            @Override
-            public void NeighborRemoved(P2PNeighbor neighbor) {
-                if (neighbor != null) {
-                    neighbors.remove(neighbor);
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (canWriteSystem()) {
-            permissionWriteSystemGranted();
-        } else {
-            showRequestWriteSettingsDialog();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (neighbors.isEmpty()) {
-            if (mP2PManager != null)
-                mP2PManager.stop();
-        }
-    }
-
     @Override
     protected boolean shouldCloseWifiAp() {
-        return neighbors.isEmpty();
+        return mTransferService == null || mTransferService.isEmpty();
     }
 
     @Override
@@ -123,7 +94,7 @@ public class CreateGroupActivity extends ApBaseActivity {
             rlLoading.setVisibility(View.GONE);
             Bitmap qrCode = null;
             try {
-                qrCode = QrCodeUtils.create2DCode("ApeTransfer");
+                qrCode = QrCodeUtils.create2DCode(getSSID());
             } catch (WriterException e) {
                 e.printStackTrace();
             }
@@ -133,10 +104,41 @@ public class CreateGroupActivity extends ApBaseActivity {
             } else {
                 ivQrcode.setVisibility(View.GONE);
             }
-            initP2p();
+            bindService();
         } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
                 status == WifiApUtils.WIFI_AP_STATE_FAILED) {
             finish();
         }
+    }
+
+    private void startService() {
+        this.startService(new Intent(this, TransferService.class));
+    }
+    private void bindService() {
+        startService();
+        if (mTransferService == null)
+            this.getApplicationContext().bindService(new Intent(this, TransferService.class),
+                    mServiceCon, Service.BIND_AUTO_CREATE);
+    }
+
+    private void unBindService() {
+        try {
+            this.getApplicationContext().unbindService(mServiceCon);
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    public void connect(P2PNeighbor neighbor) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra("neighbor", neighbor);
+        startActivity(intent);
+        finish();
+        unBindService();
+    }
+
+    @Override
+    public void disConnect(P2PNeighbor neighbor) {
+        finish();
     }
 }

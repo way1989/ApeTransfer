@@ -122,18 +122,18 @@ public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements 
                 mServiceCon, Service.BIND_AUTO_CREATE);
     }
 
-    protected void unBindService() {
+    private void unBindService() {
         try {
             this.getApplicationContext().unbindService(mServiceCon);
         } catch (Exception e) {
         }
     }
 
-    protected void startService() {
+    private void startService() {
         this.startService(new Intent(this, WifiApService.class));
     }
 
-    protected void stopService() {
+    private void stopService() {
         if (mWifiApService != null) {
             mWifiApService.reset();
         }

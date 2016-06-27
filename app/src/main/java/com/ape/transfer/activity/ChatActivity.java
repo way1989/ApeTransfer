@@ -30,6 +30,7 @@ import com.ape.photopicker.ImageInfo;
 import com.ape.photopicker.PhotoPickActivity;
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.MessagesFragment;
+import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.util.Files;
 import com.ape.transfer.util.KeyboardHelper;
 import com.ape.transfer.util.Log;
@@ -100,6 +101,10 @@ public class ChatActivity extends BaseActivity implements TextWatcher {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
+        P2PNeighbor neighbor = (P2PNeighbor) getIntent().getSerializableExtra("neighbor");
+        if(neighbor != null){
+            getSupportActionBar().setTitle(neighbor.alias);
+        }
         // Setting fragment
         setFragment(savedInstanceState);
 

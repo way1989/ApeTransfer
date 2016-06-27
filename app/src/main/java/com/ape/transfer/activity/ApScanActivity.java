@@ -2,23 +2,26 @@ package com.ape.transfer.activity;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
+import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -26,14 +29,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
-import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
-import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
+import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.WifiUtils;
 import com.ape.transfer.widget.RandomTextView;
+import com.ape.transfer.widget.RippleView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -41,7 +43,7 @@ import butterknife.ButterKnife;
 import pl.tajchert.nammu.Nammu;
 import pl.tajchert.nammu.PermissionCallback;
 
-public class ApScanActivity extends RequestWriteSettingsBaseActivity {
+public class ApScanActivity extends RequestWriteSettingsBaseActivity implements RandomTextView.OnRippleViewClickListener, TransferService.Callback {
     private static final String TAG = "ApScanActivity";
     private static final String PACKAGE_URI_PREFIX = "package:";
     @BindView(R.id.iv_scan)
@@ -55,11 +57,12 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
     private WifiManager mWifiManager;
     private WifiUtils mWifiUtils;
     private Animation rotateAnim;
-    private P2PManager mP2PManager;
-    private List<P2PNeighbor> p2PNeighbors = new ArrayList<>();
-    //    private boolean isHandleScanResult;
+    private boolean isHandleScanResult;
     private boolean isHandleWifiConnected;
     private long mRequestTimeMillis;
+    private boolean isStartScan;
+    private Dialog mRequestScanResultDialog;
+    private ScanResult mScanResult;
     PermissionCallback permissionCallback = new PermissionCallback() {
         @Override
         public void permissionGranted() {
@@ -93,8 +96,24 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
             }
         }
     };
-    private boolean isStartScan;
-    private Dialog mRequestScanResultDialog;
+    private TransferService.P2PBinder mTransferService;
+    private ServiceConnection mServiceCon = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
+            Log.i(TAG, "onServiceConnected");
+            mTransferService = (TransferService.P2PBinder) service;
+            if(mTransferService != null) {
+                mTransferService.setCallback(ApScanActivity.this);
+                startP2P();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            Log.i(TAG, "onServiceDisconnected");
+            mTransferService = null;
+        }
+    };
     BroadcastReceiver mWifiStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -123,7 +142,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
                 WifiInfo info = mWifiManager.getConnectionInfo();
                 String ssid = info != null ? info.getSSID() : "";
                 if (ssid.contains("ApeTransfer")) {
-
                     initP2P();
                 }
                 break;
@@ -179,8 +197,8 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
             return;
         if (!isStartScan)
             return;
-//        if (isHandleScanResult)
-//            return;
+        if (isHandleScanResult)
+            return;
 //        isHandleScanResult = true;
         if (Nammu.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             getScanResults();
@@ -234,23 +252,10 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
                 if (alias.length > 1) {
                     rlPhones.addKeyWord(alias[1]);
                     rlPhones.show();
+                    mScanResult = scanResult;
                     return;
                 }
-//                String capabilities = scanResult.capabilities;
-//                WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
-//                switch (type) {
-//                    case TYPE_NONE:
-//                        mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, null));
-//                        break;
-//                    case TYPE_WEP:
-//                    case TYPE_WPA:
-//                    case TYPE_WPA2:
-//                        mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, "12345678"));
-//                    default:
-//                        assert (false);
-//                        break;
-//                }
-//                break;
+
             }
         }
         rlPhones.removeAllViews();
@@ -300,7 +305,9 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
         mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         mWifiUtils = WifiUtils.getInstance(mWifiManager);
 
-        mP2PManager = new P2PManager(getApplicationContext());
+        rlPhones.setMode(RippleView.MODE_IN);
+        rlPhones.setOnRippleViewClickListener(this);
+
     }
 
     @Override
@@ -318,40 +325,13 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
     protected void onStop() {
         super.onStop();
         unregisterReceiver();
-        if (mP2PManager != null && p2PNeighbors.isEmpty())
-            mP2PManager.stop();
         if (ivScan != null)
             ivScan.clearAnimation();
     }
 
     private void initP2P() {
-        final String ip = mWifiUtils.getGatewayIP();
-        P2PNeighbor neighbor = new P2PNeighbor();
-        neighbor.alias = Build.MODEL;
-        neighbor.ip = ip;
-
-        Log.i(TAG, "alias = " + neighbor.alias + ", ip = " + ip);
-
-        mP2PManager.start(neighbor, new NeighborCallback() {
-            @Override
-            public void NeighborFound(P2PNeighbor neighbor) {
-                if (neighbor != null) {
-                    if (!p2PNeighbors.contains(neighbor) && !TextUtils.equals(neighbor.ip, ip))
-                        p2PNeighbors.add(neighbor);
-                    rlPhones.addKeyWord(neighbor.alias);
-                    rlPhones.show();
-                }
-            }
-
-            @Override
-            public void NeighborRemoved(P2PNeighbor neighbor) {
-                if (neighbor != null) {
-                    p2PNeighbors.remove(neighbor);
-                    rlPhones.removeKeyWord(neighbor.alias);
-                    rlPhones.show();
-                }
-            }
-        });
+        startService();
+        bindService();
     }
 
     private void registerReceiver() {
@@ -364,5 +344,67 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity {
 
     private void unregisterReceiver() {
         unregisterReceiver(mWifiStateReceiver);
+    }
+
+    private void startP2P() {
+        mTransferService.start();
+    }
+
+    private void startService() {
+        this.startService(new Intent(this, TransferService.class));
+    }
+
+    private void bindService() {
+        startService();
+        if (mTransferService == null)
+            this.getApplicationContext().bindService(new Intent(this, TransferService.class),
+                    mServiceCon, Service.BIND_AUTO_CREATE);
+    }
+
+    private void unBindService() {
+        try {
+            this.getApplicationContext().unbindService(mServiceCon);
+        } catch (Exception e) {
+        }
+    }
+
+    @Override
+    public void connect(P2PNeighbor neighbor) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra("neighbor", neighbor);
+        startActivity(intent);
+        finish();
+        unBindService();
+    }
+
+    @Override
+    public void disConnect(P2PNeighbor neighbor) {
+        finish();
+    }
+
+    @Override
+    public void onRippleViewClicked(View view) {
+        Log.i(TAG, "rl_phones  onClick....");
+        if (mScanResult == null)
+            return;
+        final String capabilities = mScanResult.capabilities;
+        final String ssid = mScanResult.SSID;
+        WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
+        switch (type) {
+            case TYPE_NONE:
+                mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, null));
+                break;
+            case TYPE_WEP:
+            case TYPE_WPA:
+            case TYPE_WPA2:
+                //mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, "12345678"));
+            default:
+                break;
+        }
+        isHandleScanResult = true;
+        rlPhones.removeAllViews();
+        if (ivScan != null)
+            ivScan.clearAnimation();
+
     }
 }
