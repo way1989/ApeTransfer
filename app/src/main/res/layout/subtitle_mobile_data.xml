@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mobile_data_warning"
     android:layout_width="match_parent"
     android:layout_height="25.0dip"
     android:background="@color/yellow_warning"
+    android:visibility="gone"
     android:gravity="center"
     android:orientation="horizontal"
     android:paddingLeft="10.0dip"

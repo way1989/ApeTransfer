@@ -30,4 +30,22 @@
         <item name="android:windowActionModeOverlay">true</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
+
+    <style name="AppTheme.Button" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:minWidth">0.0dip</item>
+        <item name="android:minHeight">0.0dip</item>
+    </style>
+
+    <style name="myRecyclerViewStyle">
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:background">#ffffffff</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:fadingEdge">none</item>
+        <item name="android:fadingEdgeLength">0.0dip</item>
+        <item name="android:clipChildren">true</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:fadeEnabled">false</item>
+        <item name="android:overScrollMode">always</item>
+    </style>
+
 </resources>

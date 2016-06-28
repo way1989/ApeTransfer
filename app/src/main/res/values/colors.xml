@@ -21,4 +21,19 @@
     <color name="white_pressed1">#ffdfdfdf</color>
     <color name="font_black_content">#ff222222</color>
 
+    <color name="green">#ff31c27c</color>
+    <color name="green_end">#00f4f4f4</color>
+    <color name="green_light">#ff5ecf8f</color>
+    <color name="green_lighter">#ffe5f0ea</color>
+    <color name="green_start">#ff36c574</color>
+
+    <color name="bg">#fff4f4f4</color>
+    <color name="black">#ff000000</color>
+    <color name="black_alpha">#77000000</color>
+    <color name="black_dark">#ff818181</color>
+    <color name="blue">#ff2ea3f5</color>
+    <color name="bottom_divider_bg">#ffc0c0c0</color>
+    <color name="ccc">#cccccccc</color>
+    <color name="gray_light">#ffc6c6c6</color>
+    <color name="tab_bg">#fffafafa</color>
 </resources>

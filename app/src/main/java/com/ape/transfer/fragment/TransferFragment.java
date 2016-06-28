@@ -13,6 +13,7 @@ import com.ape.transfer.R;
 import com.ape.transfer.activity.ApScanActivity;
 import com.ape.transfer.activity.CreateGroupActivity;
 import com.ape.transfer.activity.InviteFriendActivity;
+import com.ape.transfer.activity.MainTransferActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -54,7 +55,7 @@ public class TransferFragment extends Fragment {
                 startActivity(new Intent(getActivity(), InviteFriendActivity.class));
                 break;
             case R.id.mainSendBtn:
-                startActivity(new Intent(getActivity(), CreateGroupActivity.class));
+                startActivity(new Intent(getActivity(), MainTransferActivity.class));
 
                 break;
             case R.id.mainReceiveBtn:
