@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
+import com.ape.transfer.adapter.PagerAdapter;
 import com.ape.transfer.adapter.PhoneItemAdapter;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.service.TransferService;
@@ -114,6 +115,9 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         mPhoneItemAdapter = new PhoneItemAdapter(getApplicationContext());
         mNeighbors = new ArrayList<>();
         rvPhones.setAdapter(mPhoneItemAdapter);
+        PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(pagerAdapter);
+        indicator.setupWithViewPager(pager);
     }
 
     @Override
