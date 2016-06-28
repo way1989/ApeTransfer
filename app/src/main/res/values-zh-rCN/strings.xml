@@ -82,4 +82,10 @@
     <string name="waiting_create">创建群组中...</string>
     <string name="waiting_connect_info">已连接的用户会出现在此处</string>
     <string name="waiting_connect">等待对方加入</string>
+    <string name="category_apk">应用</string>
+    <string name="category_document">文档</string>
+    <string name="category_music">音乐</string>
+    <string name="category_picture">图像</string>
+    <string name="category_video">视频</string>
+    <string name="category_zip">压缩包</string>
 </resources>

@@ -116,6 +116,22 @@ public class FileCategoryHelper {
         };
     }
 
+    public static String buildSortOrder(FileCategory fileCategory) {
+        switch (fileCategory) {
+            case Doc:
+            case Zip:
+            case Apk:
+                return buildSortOrder(SortMethod.name);
+            case Music:
+            case Video:
+            case Picture:
+                return buildSortOrder(SortMethod.date);
+            default:
+                break;
+        }
+        return buildSortOrder(SortMethod.name);
+    }
+
 
     public enum FileCategory {
         Music, Video, Picture, Doc, Zip, Apk

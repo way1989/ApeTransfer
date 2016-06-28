@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
 import com.ape.transfer.App;
-import com.ape.transfer.fragment.MusicFragment;
+import com.ape.transfer.fragment.FileFragment;
 import com.ape.transfer.util.FileCategoryHelper;
 
 /**
@@ -24,21 +24,21 @@ public class PagerAdapter extends FragmentPagerAdapter {
         FileCategoryHelper.FileCategory fileCategory = FileCategoryHelper.sCategories[position];
         switch (fileCategory) {
             case Music:
-                return MusicFragment.newInstance();
+                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Music);
             case Video:
-                return MusicFragment.newInstance();
+                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Video);
             case Picture:
-                return MusicFragment.newInstance();
+                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Picture);
             case Doc:
-                return MusicFragment.newInstance();
+                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Doc);
             case Apk:
-                return MusicFragment.newInstance();
+                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Apk);
             case Zip:
-                return MusicFragment.newInstance();
+                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Zip);
             default:
                 break;
         }
-        return MusicFragment.newInstance();
+        return FileFragment.newInstance(FileCategoryHelper.FileCategory.Music);
     }
 
     @Override

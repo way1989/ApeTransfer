@@ -90,4 +90,5 @@
     <string name="category_document">Document</string>
     <string name="category_zip">Zip</string>
     <string name="category_apk">Apk</string>
+    <string name="empty">No File</string>
 </resources>

@@ -3,13 +3,15 @@ package com.ape.transfer.fragment.loader;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 
 /**
  * Created by android on 16-6-28.
  */
-public class BaseLoader<T> extends
+public class BaseLoader<FileItem> extends
         AsyncTaskLoader<BaseLoader.Result> {
     private Result mResults;
 
@@ -66,7 +68,7 @@ public class BaseLoader<T> extends
         mResults = null;
     }
 
-    public static class Result<T> {
-        public List<T> lists;
+    public static class Result<FileItem> {
+        public ArrayList<FileItem> lists;
     }
 }

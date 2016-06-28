@@ -107,6 +107,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maintransfer);
         ButterKnife.bind(this);
+        getSupportActionBar().setElevation(0f);
         tvMeName.setText(PreferenceUtil.getInstance().getAlias());
         ivMeAvatar.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
         btnDisconnect.setEnabled(false);
