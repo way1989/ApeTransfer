@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
+import com.ape.transfer.activity.MainTransferActivity;
 import com.ape.transfer.adapter.FileItemAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.FileItemLoader;
@@ -118,5 +119,6 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
         boolean isSelected = item.selected;
         item.selected = !isSelected;
         mMusicItemAdapter.notifyDataSetChanged();
+        ((MainTransferActivity)getActivity()).onFileItemChange(item);
     }
 }

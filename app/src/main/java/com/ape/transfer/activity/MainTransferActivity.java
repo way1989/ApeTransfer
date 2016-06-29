@@ -10,6 +10,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,9 +19,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.PagerAdapter;
 import com.ape.transfer.adapter.PhoneItemAdapter;
+import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
@@ -194,6 +197,40 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
             case R.id.btnDisconnect:
                 onBackPressed();
                 break;
+        }
+    }
+    private ArrayList<FileItem> mFileItems = new ArrayList<>();
+    public void onFileItemChange(FileItem item) {
+        Log.i(TAG, "onFileItemChange...");
+        if(item.selected){
+            mFileItems.add(item);
+        }else {
+            mFileItems.remove(item);
+        }
+        updateSendUI();
+    }
+    private boolean isSendViewVisiabled;
+    private void updateSendUI() {
+        long sumSize = 0L;
+        for (FileItem item : mFileItems){
+            sumSize += item.size;
+        }
+        Log.i(TAG, "updateSendUI... sumSize = " + sumSize);
+        final float height = getResources().getDimension(R.dimen.send_layout_margin_bottom);
+        final String sendText = getString(R.string.select_text, mFileItems.size(),
+                Formatter.formatFileSize(App.getContext(), sumSize));
+        if(mFileItems.isEmpty()){
+            if(isSendViewVisiabled) {
+                rlSendFile.animate().translationYBy(Math.abs(height));
+                isSendViewVisiabled = false;
+            }
+            tvSendSize.setText(sendText);
+        }else {
+            if(!isSendViewVisiabled) {
+                rlSendFile.animate().translationYBy(height);
+                isSendViewVisiabled = true;
+            }
+            tvSendSize.setText(sendText);
         }
     }
 }

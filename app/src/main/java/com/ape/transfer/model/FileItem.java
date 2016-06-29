@@ -12,6 +12,7 @@ import com.ape.transfer.util.FileCategoryHelper;
 import com.ape.transfer.util.Log;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,12 +20,13 @@ import java.util.List;
 /**
  * Created by android on 16-6-28.
  */
-public class FileItem {
+public class FileItem implements Serializable{
     private static final int COLUMN_ID = 0;
     private static final int COLUMN_DATA = 1;
     private static final int COLUMN_SIZE = 2;
     private static final int COLUMN_DATE_MODIFIED = 3;
     private static final String TAG = "FileItem";
+    private static final long serialVersionUID = -636934079297822919L;
     public boolean selected;
     public long dateModified;
     public long size;
