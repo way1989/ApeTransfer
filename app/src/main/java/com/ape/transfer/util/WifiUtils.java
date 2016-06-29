@@ -66,17 +66,17 @@ public class WifiUtils {
         return "";
     }
 
-    public String getGatewayIP() {
-        DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
-        return convertIPv4IntToStr(dhcpInfo.serverAddress);
-    }
-
     private static String convertIPv4IntToStr(int ip) {
         if (ip <= 0) {
             return DEFAULT_GATEWAY_IP;
         }
 
         return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 24) & 0xFF);
+    }
+
+    public String getGatewayIP() {
+        DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
+        return convertIPv4IntToStr(dhcpInfo.serverAddress);
     }
 
     public boolean setWifiEnabled(boolean enabled) {
@@ -173,18 +173,18 @@ public class WifiUtils {
         return mWifiManager.enableNetwork(networkID, true);
     }
 
-    // 认证加密类型
-    public enum AuthenticationType {
-        TYPE_NONE, TYPE_WEP, TYPE_WPA, TYPE_WPA2
-    }
-
-    public boolean isWifiOpen(){
+    public boolean isWifiOpen() {
         int state = mWifiManager.getWifiState();
-        return state ==  WifiManager.WIFI_STATE_ENABLING ||
+        return state == WifiManager.WIFI_STATE_ENABLING ||
                 state == WifiManager.WIFI_STATE_ENABLED;
     }
 
-    public boolean  isWifiEnabled(){
+    public boolean isWifiEnabled() {
         return mWifiManager.isWifiEnabled();
+    }
+
+    // 认证加密类型
+    public enum AuthenticationType {
+        TYPE_NONE, TYPE_WEP, TYPE_WPA, TYPE_WPA2
     }
 }

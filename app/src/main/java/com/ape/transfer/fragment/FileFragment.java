@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,8 +21,6 @@ import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.FileItemLoader;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.util.FileCategoryHelper;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,13 +66,24 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMusicItemAdapter = new FileItemAdapter(getContext(), this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mMusicItemAdapter = new FileItemAdapter(getContext(), mFileCategory, this);
+        recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(mMusicItemAdapter);
         getLoaderManager().initLoader(0, null, FileFragment.this);
         recyclerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
         empty.setVisibility(View.INVISIBLE);
+    }
+
+    private RecyclerView.LayoutManager getLayoutManager() {
+        switch (mFileCategory) {
+            case Apk:
+            case Picture:
+            case Video:
+                return new GridLayoutManager(getContext(), 4);
+            default:
+                return new LinearLayoutManager(getContext());
+        }
     }
 
 
@@ -84,13 +94,12 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<BaseLoader.Result> loader, BaseLoader.Result data) {
-
-        if (data.lists != null) {
+        if (!data.lists.isEmpty()) {
             progressBar.setVisibility(View.INVISIBLE);
             empty.setVisibility(View.INVISIBLE);
             recyclerView.setVisibility(View.VISIBLE);
             mMusicItemAdapter.setDatas(data.lists);
-        }else {
+        } else {
             recyclerView.setVisibility(View.INVISIBLE);
             progressBar.setVisibility(View.INVISIBLE);
             empty.setVisibility(View.VISIBLE);

@@ -102,7 +102,7 @@ public class ChatActivity extends BaseActivity implements TextWatcher {
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
         P2PNeighbor neighbor = (P2PNeighbor) getIntent().getSerializableExtra("neighbor");
-        if(neighbor != null){
+        if (neighbor != null) {
             getSupportActionBar().setTitle(neighbor.alias);
         }
         // Setting fragment

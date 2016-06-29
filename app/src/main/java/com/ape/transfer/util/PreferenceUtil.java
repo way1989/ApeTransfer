@@ -17,7 +17,6 @@ package com.ape.transfer.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Build;
 import android.preference.PreferenceManager;
 
 import com.ape.transfer.App;

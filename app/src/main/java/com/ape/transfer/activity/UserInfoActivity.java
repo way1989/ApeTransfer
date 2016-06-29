@@ -1,6 +1,5 @@
 package com.ape.transfer.activity;
 
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;

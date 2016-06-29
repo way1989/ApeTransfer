@@ -12,13 +12,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
-import android.widget.Toast;
 
 import com.ape.transfer.App;
 import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;
 import com.ape.transfer.util.Log;
-import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import java.io.File;
 import java.util.HashMap;

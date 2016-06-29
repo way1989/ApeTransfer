@@ -58,4 +58,16 @@ public class GlideHelper {
                 .into(image);
     }
 
+    public static void loadCropResource(String path, @NonNull ImageView image) {
+        Glide.with(image.getContext())
+                .load(path)
+                .error(R.drawable.image_not_exist)
+                .placeholder(R.drawable.ic_default_image)
+                .centerCrop()
+                .animate(ANIMATOR)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .fitCenter()
+                .into(image);
+    }
+
 }

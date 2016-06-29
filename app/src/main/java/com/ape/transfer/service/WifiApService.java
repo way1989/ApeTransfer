@@ -176,7 +176,7 @@ public class WifiApService extends Service {
             return;
         }
         mWifiManager.setWifiEnabled(false);
-        if (TextUtils.isEmpty(mWifiApSSID)){
+        if (TextUtils.isEmpty(mWifiApSSID)) {
             if (mStatusListener != null)
                 mStatusListener.onWifiApStatusChanged(WifiApUtils.WIFI_AP_STATE_FAILED);
             return;

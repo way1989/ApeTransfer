@@ -6,7 +6,7 @@
     android:gravity="center">
 
     <ImageView
-        android:id="@+id/iv_app"
+        android:id="@+id/iv_icon"
         android:layout_width="@dimen/app_item_im_width"
         android:layout_height="@dimen/app_item_im_width"
         android:layout_centerHorizontal="true"
@@ -16,8 +16,8 @@
         android:id="@+id/iv_selected"
         android:layout_width="@dimen/selected_icon_width_height"
         android:layout_height="@dimen/selected_icon_width_height"
-        android:layout_alignBottom="@id/iv_app"
-        android:layout_alignRight="@id/iv_app"
+        android:layout_alignBottom="@id/iv_icon"
+        android:layout_alignRight="@id/iv_icon"
         android:src="@drawable/selected"
         android:visibility="visible" />
 
@@ -25,7 +25,7 @@
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/iv_app"
+        android:layout_below="@id/iv_icon"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/app_item_text_marginTop"
         android:ellipsize="end"

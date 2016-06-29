@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.ape.transfer.R;
 import com.ape.transfer.activity.ApScanActivity;
-import com.ape.transfer.activity.CreateGroupActivity;
 import com.ape.transfer.activity.InviteFriendActivity;
 import com.ape.transfer.activity.MainTransferActivity;
 

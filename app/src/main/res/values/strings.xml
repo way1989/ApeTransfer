@@ -77,10 +77,10 @@
     <string name="record_failed">Take voice failed</string>
     <string name="record_failed_no_enough_storage_space">Not enough storage space</string>
     <string name="sliding_upwards_and_cancel_sending">swipe up to cancle</string>
-    <string name="doconnect">Connecting...</string>
+    <string name="doconnect">Connecting&#8230;</string>
     <string name="operation_send">Send</string>
     <string name="bt_disconnect">Quit</string>
-    <string name="waiting_create">Creating a group...</string>
+    <string name="waiting_create">Creating a group&#8230;</string>
     <string name="waiting_connect">Waiting for the other device to join in</string>
     <string name="waiting_connect_info">Connected users will appear here</string>
     <string name="music">Music</string>

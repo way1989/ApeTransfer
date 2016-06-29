@@ -11,11 +11,6 @@ import java.lang.reflect.Method;
 public class KeyboardHelper {
 
     private Context context;
-
-    public KeyboardHelper(Context context) {
-        this.context = context;
-    }
-
     private Runnable mShowImeRunnable = new Runnable() {
         public void run() {
             InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -43,6 +38,10 @@ public class KeyboardHelper {
             }
         }
     };
+
+    public KeyboardHelper(Context context) {
+        this.context = context;
+    }
 
     public void setImeVisibility(View view, final boolean visible) {
         if (visible) {

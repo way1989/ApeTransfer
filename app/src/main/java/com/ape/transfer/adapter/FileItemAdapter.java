@@ -9,9 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ape.photopicker.GlideHelper;
 import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.model.FileItem;
+import com.ape.transfer.util.FileCategoryHelper;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -23,43 +25,91 @@ import java.util.Date;
  */
 public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHolder> {
     private LayoutInflater mInflater;
-    private ArrayList<FileItem> mMusicItems;
+    private ArrayList<FileItem> mFileItems;
     private OnItemClickListener mListener;
+    private FileCategoryHelper.FileCategory mFileCategory;
 
-    public FileItemAdapter(Context context, OnItemClickListener onItemClickListener) {
+    public FileItemAdapter(Context context, FileCategoryHelper.FileCategory fileCategory,
+                           OnItemClickListener onItemClickListener) {
         mInflater = LayoutInflater.from(context);
         setHasStableIds(true);
-        mMusicItems = new ArrayList<>();
+        mFileItems = new ArrayList<>();
         mListener = onItemClickListener;
+        mFileCategory = fileCategory;
     }
 
     public void setDatas(ArrayList<FileItem> musicItems) {
-        if (musicItems == null)
-            return;
-        mMusicItems = musicItems;
+        mFileItems = musicItems;
         notifyDataSetChanged();
     }
 
     public void reset() {
-//        mMusicItems.close();
-        mMusicItems.clear();
+        mFileItems.clear();
         notifyDataSetChanged();
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View v = mInflater.inflate(R.layout.music_item, parent, false);
-        return new ViewHolder(v);
+        View view;
+        switch (mFileCategory) {
+            case Apk:
+                view = mInflater.inflate(R.layout.app_item, parent, false);
+                break;
+            case Video:
+            case Picture:
+                view = mInflater.inflate(R.layout.video_item, parent, false);
+                break;
+            default:
+                view = mInflater.inflate(R.layout.music_item, parent, false);
+                break;
+        }
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        FileItem musicItem = mMusicItems.get(position);
-        holder.itemView.setTag(musicItem);
-        holder.musicName.setText(new File(musicItem.path).getName());
-        holder.musicSize.setText(Formatter.formatFileSize(App.getContext(), musicItem.size));
-        holder.musicDuration.setText(formatTime(musicItem.dateModified));
-        holder.checkBox.setVisibility(musicItem.selected ? View.VISIBLE : View.GONE);
+        FileItem item = mFileItems.get(position);
+        holder.itemView.setTag(item);
+        switch (mFileCategory) {
+            case Apk:
+                holder.ivIcon.setImageDrawable(item.appLogo);
+                holder.tvName.setText(item.appLabel);
+                holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                break;
+            case Video:
+            case Picture:
+                GlideHelper.loadCropResource(item.path, holder.ivIcon);
+                holder.tvName.setText(new File(item.path).getName());
+                holder.tvDuration.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                break;
+            case Zip:
+                holder.ivIcon.setImageResource(R.drawable.file_icon_rar);
+                holder.tvName.setText(new File(item.path).getName());
+                holder.tvDuration.setText(formatTime(item.dateModified));
+                holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                break;
+            case Doc:
+                holder.ivIcon.setImageResource(R.drawable.file_icon_default);
+                holder.tvName.setText(new File(item.path).getName());
+                holder.tvDuration.setText(formatTime(item.dateModified));
+                holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                break;
+            case Music:
+                holder.ivIcon.setImageResource(R.drawable.file_icon_music);
+                holder.tvName.setText(new File(item.path).getName());
+                holder.tvDuration.setText(formatTime(item.dateModified));
+                holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                break;
+            default:
+
+                break;
+        }
+        holder.ivCheckBox.setVisibility(item.selected ? View.VISIBLE : View.GONE);
     }
 
     private String formatTime(long dateModified) {
@@ -69,12 +119,12 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return mMusicItems.size();
+        return mFileItems.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return mMusicItems.get(position).id;
+        return mFileItems.get(position).id;
     }
 
     public interface OnItemClickListener {
@@ -82,18 +132,20 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView checkBox;
-        public TextView musicName;
-        public TextView musicSize;
-        public TextView musicDuration;
+        public ImageView ivCheckBox;
+        public ImageView ivIcon;
+        public TextView tvName;
+        public TextView tvSize;
+        public TextView tvDuration;
 
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            checkBox = (ImageView) itemView.findViewById(R.id.iv_selected);
-            musicName = (TextView) itemView.findViewById(R.id.tv_musicName);
-            musicSize = (TextView) itemView.findViewById(R.id.tv_musicSize);
-            musicDuration = (TextView) itemView.findViewById(R.id.tv_musicDuration);
+            ivCheckBox = (ImageView) itemView.findViewById(R.id.iv_selected);
+            ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
+            tvName = (TextView) itemView.findViewById(R.id.tv_name);
+            tvSize = (TextView) itemView.findViewById(R.id.tv_size);
+            tvDuration = (TextView) itemView.findViewById(R.id.tv_duration);
         }
 
         @Override

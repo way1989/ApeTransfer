@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
 
 import com.ape.transfer.R;
@@ -23,7 +22,7 @@ public abstract class RequestWriteSettingsBaseActivity extends BaseActivity {
 
     protected abstract void permissionWriteSystemRefused();
 
-//    @Override
+    //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(this)) {
@@ -32,10 +31,11 @@ public abstract class RequestWriteSettingsBaseActivity extends BaseActivity {
 //            permissionWriteSystemGranted();
 //        }
 //    }
-    protected boolean canWriteSystem(){
+    protected boolean canWriteSystem() {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
                 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(this));
     }
+
     protected void showRequestWriteSettingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.request_write_settings_title).setMessage(R.string.request_write_settings_message)

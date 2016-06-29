@@ -48,12 +48,7 @@ public class QrCodeActivity extends BaseActivity {
 
     private P2PManager mP2PManager;
     private List<P2PNeighbor> neighbors = new ArrayList<>();
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qr_code);
-        ButterKnife.bind(this);
-    }
+
     /**
      * scan all net Adapter to get all IP, just return 192
      */
@@ -77,6 +72,14 @@ public class QrCodeActivity extends BaseActivity {
         }
         return null;
     }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_qr_code);
+        ButterKnife.bind(this);
+    }
+
     private void initDatas() {
         mP2PManager = new P2PManager(getApplicationContext());
         P2PNeighbor melonInfo = new P2PNeighbor();
@@ -116,7 +119,7 @@ public class QrCodeActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mP2PManager != null)
-        mP2PManager.stop();
+        if (mP2PManager != null)
+            mP2PManager.stop();
     }
 }

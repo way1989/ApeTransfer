@@ -83,12 +83,12 @@ public class TransferService extends Service {
             });
         }
 
-        public void stop(){
+        public void stop() {
             Log.i(TAG, "p2p stop....");
             mP2PManager.stop();
         }
 
-        public boolean isEmpty(){
+        public boolean isEmpty() {
             return mNeighbors.isEmpty();
         }
     }

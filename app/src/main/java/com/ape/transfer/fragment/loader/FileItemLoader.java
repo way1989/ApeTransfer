@@ -22,9 +22,7 @@ public class FileItemLoader extends BaseLoader<FileItem> {
     public Result loadInBackground() {
         final Context context = getContext();
         ArrayList<FileItem> musicItems = FileItem.getMusicItems(context, mFileCategory);
-        if (musicItems == null) {
-            return new Result();
-        }
+
         Result result = new Result();
         result.lists = musicItems;
         return result;

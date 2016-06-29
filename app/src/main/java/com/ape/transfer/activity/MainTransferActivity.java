@@ -117,6 +117,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         mNeighbors = new ArrayList<>();
         rvPhones.setAdapter(mPhoneItemAdapter);
         PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        pager.setOffscreenPageLimit(pagerAdapter.getCount() - 1);
         pager.setAdapter(pagerAdapter);
         indicator.setupWithViewPager(pager);
     }

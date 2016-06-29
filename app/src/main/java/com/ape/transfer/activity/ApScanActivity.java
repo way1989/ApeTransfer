@@ -66,23 +66,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     private Animation rotateAnim;
     private boolean isHandleScanResult;
     private boolean isHandleWifiConnected;
-    private android.os.Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case MSG_START_P2P:
-                    initP2P();
-                    break;
-                case MSG_START_SCAN_WIFI:
-                    startScanWifi();
-                    break;
-                case MSG_HANDLE_SCAN_RESULT:
-                    handleScanResult();
-                    break;
-            }
-        }
-    };
     private long mRequestTimeMillis;
     PermissionCallback permissionCallback = new PermissionCallback() {
         @Override
@@ -137,6 +120,23 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
             mTransferService = null;
         }
     };
+    private android.os.Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_START_P2P:
+                    initP2P();
+                    break;
+                case MSG_START_SCAN_WIFI:
+                    startScanWifi();
+                    break;
+                case MSG_HANDLE_SCAN_RESULT:
+                    handleScanResult();
+                    break;
+            }
+        }
+    };
     BroadcastReceiver mWifiStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -163,7 +163,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
                 if (isHandleWifiConnected)
                     return;
                 isHandleWifiConnected = true;
-                if(!isHandleScanResult)
+                if (!isHandleScanResult)
                     return;
                 mHandler.removeMessages(MSG_START_P2P);
                 mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 2500L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
@@ -424,7 +424,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
 
     private void bindService() {
         this.getApplicationContext().bindService(new Intent(this, TransferService.class),
-                    mServiceCon, Service.BIND_AUTO_CREATE);
+                mServiceCon, Service.BIND_AUTO_CREATE);
     }
 
     private void unBindService() {

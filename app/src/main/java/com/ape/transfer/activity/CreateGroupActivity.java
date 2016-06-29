@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.ape.transfer.R;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.service.TransferService;
-import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
@@ -52,7 +51,7 @@ public class CreateGroupActivity extends ApBaseActivity implements TransferServi
         public void onServiceConnected(final ComponentName name, final IBinder service) {
             Log.i(TAG, "onServiceConnected");
             mTransferService = (TransferService.P2PBinder) service;
-            if(mTransferService != null) {
+            if (mTransferService != null) {
                 mTransferService.setCallback(CreateGroupActivity.this);
                 startP2P();
             }
@@ -114,6 +113,7 @@ public class CreateGroupActivity extends ApBaseActivity implements TransferServi
     private void startService() {
         this.startService(new Intent(this, TransferService.class));
     }
+
     private void bindService() {
         startService();
         if (mTransferService == null)

@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 /**
  * Created by android on 16-6-26.
  */
-public class ChatRecyclerView extends RecyclerView{
+public class ChatRecyclerView extends RecyclerView {
     private int oldHeight;
 
     public ChatRecyclerView(Context context) {

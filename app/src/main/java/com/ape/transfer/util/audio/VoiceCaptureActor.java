@@ -2,15 +2,12 @@ package com.ape.transfer.util.audio;
 
 import android.content.Context;
 import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.os.Vibrator;
-
-import com.ape.transfer.R;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,13 +21,11 @@ public class VoiceCaptureActor {
 
     private static final int STATE_STOPPED = 0;
     private static final int STATE_STARTED = 1;
-
-    private int state = STATE_STOPPED;
-
-    private AmrAudioRecorder mAmrAudioRecorder;
-    private long playStartTime;
     Context context;
     VoiceCaptureCallback callback;
+    private int state = STATE_STOPPED;
+    private AmrAudioRecorder mAmrAudioRecorder;
+    private long playStartTime;
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -40,7 +35,7 @@ public class VoiceCaptureActor {
 //            float db = (float) volume * 1.618f;
             //录音时长在60.05s到60.5s的范围内时停止录音
             long dur = SystemClock.uptimeMillis() - playStartTime;
-            if(dur > 60100 && dur < 60500 )
+            if (dur > 60100 && dur < 60500)
                 callback.onRecordStop(dur);
             else
                 callback.onRecordProgress(SystemClock.uptimeMillis() - playStartTime);
@@ -57,6 +52,7 @@ public class VoiceCaptureActor {
             mHandler.sendMessage(m);
         }
     };
+
     public VoiceCaptureActor(Context context, VoiceCaptureCallback callback) {
         this.context = context;
         this.callback = callback;
@@ -116,7 +112,6 @@ public class VoiceCaptureActor {
         } catch (Exception e) {
         }
     }
-
 
 
     public interface VoiceCaptureCallback {
