@@ -133,6 +133,8 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
                         public void onClick(DialogInterface dialog, int which) {
                             if(mTransferService != null && !mTransferService.isEmpty()){
                                 mTransferService.stopP2P();
+                                TransferServiceUtil.getInstance().stopTransferService();
+                                TransferServiceUtil.getInstance().unbindTransferService();
                             }
                             stopWifiAp();
                             finish();
