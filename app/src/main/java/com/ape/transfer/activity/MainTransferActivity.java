@@ -100,6 +100,8 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     };
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<P2PNeighbor> mNeighbors;
+    private ArrayList<FileItem> mFileItems = new ArrayList<>();
+    private boolean isSendViewVisiabled;
 
     private void startP2P() {
         mTransferService.start();
@@ -199,34 +201,34 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
                 break;
         }
     }
-    private ArrayList<FileItem> mFileItems = new ArrayList<>();
+
     public void onFileItemChange(FileItem item) {
         Log.i(TAG, "onFileItemChange...");
-        if(item.selected){
+        if (item.selected) {
             mFileItems.add(item);
-        }else {
+        } else {
             mFileItems.remove(item);
         }
         updateSendUI();
     }
-    private boolean isSendViewVisiabled;
+
     private void updateSendUI() {
         long sumSize = 0L;
-        for (FileItem item : mFileItems){
+        for (FileItem item : mFileItems) {
             sumSize += item.size;
         }
         Log.i(TAG, "updateSendUI... sumSize = " + sumSize);
         final float height = getResources().getDimension(R.dimen.send_layout_margin_bottom);
         final String sendText = getString(R.string.select_text, mFileItems.size(),
                 Formatter.formatFileSize(App.getContext(), sumSize));
-        if(mFileItems.isEmpty()){
-            if(isSendViewVisiabled) {
+        if (mFileItems.isEmpty()) {
+            if (isSendViewVisiabled) {
                 rlSendFile.animate().translationYBy(Math.abs(height));
                 isSendViewVisiabled = false;
             }
             tvSendSize.setText(sendText);
-        }else {
-            if(!isSendViewVisiabled) {
+        } else {
+            if (!isSendViewVisiabled) {
                 rlSendFile.animate().translationYBy(height);
                 isSendViewVisiabled = true;
             }

@@ -14,11 +14,10 @@ import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.util.FileCategoryHelper;
+import com.ape.transfer.util.Util;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by android on 16-6-28.
@@ -84,25 +83,25 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
             case Video:
             case Picture:
                 GlideHelper.loadCropResource(item.path, holder.ivIcon);
-                holder.tvName.setText(new File(item.path).getName());
+                holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             case Zip:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_rar);
-                holder.tvName.setText(new File(item.path).getName());
-                holder.tvDuration.setText(formatTime(item.dateModified));
+                holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
+                holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             case Doc:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_default);
-                holder.tvName.setText(new File(item.path).getName());
-                holder.tvDuration.setText(formatTime(item.dateModified));
+                holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
+                holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             case Music:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_music);
-                holder.tvName.setText(new File(item.path).getName());
-                holder.tvDuration.setText(formatTime(item.dateModified));
+                holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
+                holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             default:
@@ -110,11 +109,6 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
                 break;
         }
         holder.ivCheckBox.setVisibility(item.selected ? View.VISIBLE : View.GONE);
-    }
-
-    private String formatTime(long dateModified) {
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
-        return format.format(new Date(dateModified));
     }
 
     @Override
