@@ -15,7 +15,7 @@ import com.ape.transfer.util.WifiApUtils;
 public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements WifiApService.OnWifiApStatusListener {
     private static final String TAG = "ApBaseActivity";
     protected WifiApService.WifiApBinder mWifiApService;
-    private boolean isOpeningWifiAp;
+    protected boolean isOpeningWifiAp;
     private ServiceConnection mServiceCon = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -85,30 +85,24 @@ public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
     private void closeWifiAp() {
-        mWifiApService.setOnWifiApStatusListener(null);
-        mWifiApService.closeWifiAp();
+        if(mWifiApService != null) {
+            mWifiApService.setOnWifiApStatusListener(null);
+            mWifiApService.closeWifiAp();
+        }
         unBindService();
         stopService();
     }
 
-    @Override
-    public void onBackPressed() {
-        if (isOpeningWifiAp)//正在打开热点,禁用返回键
-            return;
 
-        if (mWifiApService != null && mWifiApService.isWifiApEnabled()
-                && shouldCloseWifiAp()) {
-            closeWifiAp();
-        }
-        super.onBackPressed();
-    }
 
     protected void startWifiAp() {
         isOpeningWifiAp = true;
         startService();
         bindService();
     }
-
+    protected void stopWifiAp(){
+        closeWifiAp();
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

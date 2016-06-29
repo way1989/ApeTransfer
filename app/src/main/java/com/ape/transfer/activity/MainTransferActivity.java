@@ -1,8 +1,10 @@
 package com.ape.transfer.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
@@ -13,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ape.transfer.App;
 import com.ape.transfer.R;
@@ -116,6 +119,32 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isOpeningWifiAp) {//正在打开热点,禁用返回键
+            Toast.makeText(getApplicationContext(), R.string.waiting_creating_ap, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mNeighbors != null || (mWifiApService != null && mWifiApService.isWifiApEnabled())) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.connect_dialog_title).setMessage(R.string.transfer_discontent)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if(mTransferService != null && !mTransferService.isEmpty()){
+                                mTransferService.stopP2P();
+                            }
+                            stopWifiAp();
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null).create().show();
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
     private void setupWithNeighbor() {
         rvPhones.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.HORIZONTAL, false));
@@ -172,6 +201,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         rlWaitingConnect.setVisibility(View.INVISIBLE);
         mNeighbors.add(neighbor);
         mPhoneItemAdapter.setDatas(mNeighbors);
+        btnDisconnect.setEnabled(true);
         btSend.setEnabled(true);
     }
 

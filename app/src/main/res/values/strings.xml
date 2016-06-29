@@ -92,4 +92,11 @@
     <string name="category_apk">Apk</string>
     <string name="empty">No File</string>
     <string name="select_text">%1$d/%2$s</string>
+
+    <string name="transfer_discontent">Disconnect?</string>
+    <string name="transfer_fail_1">You have disabled the “Turn on/off WLAN” permission for EasyShare. Please allow this permission to return to the home page and retry creating a hotpot.</string>
+    <string name="transfer_fail_title">Failed to create hotpot</string>
+    <string name="transfer_receive_ok">Receive completed</string>
+    <string name="transfer_send_ok">Send completed</string>
+    <string name="connect_dialog_title">Prompt</string>
 </resources>

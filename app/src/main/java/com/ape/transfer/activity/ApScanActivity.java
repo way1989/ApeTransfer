@@ -2,26 +2,24 @@ package com.ape.transfer.activity;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -34,8 +32,8 @@ import android.widget.TextView;
 import com.ape.transfer.R;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.service.TransferService;
+import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
-import com.ape.transfer.util.Screen;
 import com.ape.transfer.util.WifiUtils;
 
 import java.util.ArrayList;
@@ -47,7 +45,7 @@ import pl.tajchert.nammu.Nammu;
 import pl.tajchert.nammu.PermissionCallback;
 
 public class ApScanActivity extends RequestWriteSettingsBaseActivity implements View.OnClickListener,
-        TransferService.Callback {
+        TransferService.Callback, TransferServiceUtil.Callback {
     private static final String TAG = "ApScanActivity";
     private static final String PACKAGE_URI_PREFIX = "package:";
     private static final int MSG_START_P2P = 0;
@@ -103,23 +101,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     private boolean isStartScan;
     private Dialog mRequestScanResultDialog;
     private TransferService.P2PBinder mTransferService;
-    private ServiceConnection mServiceCon = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(final ComponentName name, final IBinder service) {
-            Log.i(TAG, "onServiceConnected");
-            mTransferService = (TransferService.P2PBinder) service;
-            if (mTransferService != null) {
-                mTransferService.setCallback(ApScanActivity.this);
-                startP2P();
-            }
-        }
 
-        @Override
-        public void onServiceDisconnected(final ComponentName name) {
-            Log.i(TAG, "onServiceDisconnected");
-            mTransferService = null;
-        }
-    };
     private android.os.Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -155,6 +137,15 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
             }
         }
     };
+
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiNetworkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
 
     private void handleConnectState(NetworkInfo.State state) {
         switch (state) {
@@ -381,8 +372,8 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     private void initP2P() {
         Log.i(TAG, "init P2P mTransferService = " + mTransferService);
         if (mTransferService == null) {
-            startService();
-            bindService();
+            TransferServiceUtil.getInstance().setCallback(this);
+            TransferServiceUtil.getInstance().bindTransferService();
         } else {
             startP2P();
         }
@@ -391,16 +382,15 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mTransferService != null) {
+            TransferServiceUtil.getInstance().unbindTransferService();
+            TransferServiceUtil.getInstance().stopTransferService();
+        }
         unregisterReceiver();
 
         ivScan.clearAnimation();
-
         rlPhones.removeAllViews();
-        if (mTransferService != null)
-            mTransferService.stopP2P();
-        unBindService();
     }
-
 
     private void registerReceiver() {
         IntentFilter intentFilter = new IntentFilter();
@@ -418,22 +408,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
         mTransferService.startP2P();
     }
 
-    private void startService() {
-        this.startService(new Intent(this, TransferService.class));
-    }
-
-    private void bindService() {
-        this.getApplicationContext().bindService(new Intent(this, TransferService.class),
-                mServiceCon, Service.BIND_AUTO_CREATE);
-    }
-
-    private void unBindService() {
-        try {
-            this.getApplicationContext().unbindService(mServiceCon);
-        } catch (Exception e) {
-        }
-    }
-
     @Override
     public void onNeighborConnected(P2PNeighbor neighbor) {
         Log.i(TAG, "neighbor onNeighborConnected neighbor = " + neighbor.ip);
@@ -441,7 +415,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
         intent.putExtra("neighbor", neighbor);
         startActivity(intent);
         finish();
-        unBindService();
     }
 
     @Override
@@ -449,7 +422,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
         Log.i(TAG, "neighbor onNeighborDisconnected neighbor = " + neighbor.ip);
         finish();
     }
-
 
     @Override
     public void onClick(View v) {
@@ -459,17 +431,22 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
             return;
         final String capabilities = scanResult.capabilities;
         final String ssid = scanResult.SSID;
-        WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
-        switch (type) {
-            case TYPE_NONE:
-                mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, null));
-                break;
-            case TYPE_WEP:
-            case TYPE_WPA:
-            case TYPE_WPA2:
-                //mWifiUtils.onNeighborConnected(mWifiUtils.generateWifiConfiguration(type, ssid, "12345678"));
-            default:
-                break;
+        if (isWifiConnected(this) && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), ssid)) {
+            mHandler.removeMessages(MSG_START_P2P);
+            mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 2500L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+        } else {
+            WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
+            switch (type) {
+                case TYPE_NONE:
+                    mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, null));
+                    break;
+                case TYPE_WEP:
+                case TYPE_WPA:
+                case TYPE_WPA2:
+                    //mWifiUtils.onNeighborConnected(mWifiUtils.generateWifiConfiguration(type, ssid, "12345678"));
+                default:
+                    break;
+            }
         }
         isHandleScanResult = true;
 
@@ -485,5 +462,20 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
         progress.startAnimation(rotateAnim);
 
         isHandleWifiConnected = false;
+    }
+
+    @Override
+    public void onServiceConnected(TransferService.P2PBinder service) {
+        Log.i(TAG, "onServiceConnected");
+        mTransferService = service;
+        if (mTransferService != null) {
+            mTransferService.setCallback(ApScanActivity.this);
+            startP2P();
+        }
+    }
+
+    @Override
+    public void onServiceDisconnected() {
+        mTransferService = null;
     }
 }
