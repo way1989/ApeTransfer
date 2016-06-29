@@ -17,8 +17,8 @@ import com.ape.transfer.p2p.p2pentity.param.ParamReceiveFiles;
 import com.ape.transfer.p2p.p2pentity.param.ParamSendFiles;
 import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
-import com.ape.transfer.p2p.p2pinterface.ReceiveFile_Callback;
-import com.ape.transfer.p2p.p2pinterface.SendFile_Callback;
+import com.ape.transfer.p2p.p2pinterface.receiveFileCallback;
+import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -42,8 +42,8 @@ public class P2PManager {
     private MelonHandler p2PHandler;
     private P2PManagerHandler mHandler;
 
-    private ReceiveFile_Callback receiveFile_callback;
-    private SendFile_Callback sendFile_callback;
+    private receiveFileCallback receiveFile_callback;
+    private SendFileCallback sendFile_callback;
 
     private Context mContext;
 
@@ -53,7 +53,7 @@ public class P2PManager {
     }
 
     public static String getSavePath(int type) {
-        String[] typeStr = {"APP", "Picture"};
+        String[] typeStr = {"APP", "Picture", "Video", "Zip", "Document", "Music"};
         return SAVE_DIR + File.separator + typeStr[type];
     }
 
@@ -98,13 +98,13 @@ public class P2PManager {
         p2PHandler.init(this, mContext);
     }
 
-    public void receiveFile(ReceiveFile_Callback callback) {
+    public void receiveFile(receiveFileCallback callback) {
         receiveFile_callback = callback;
         p2PHandler.initReceive();
     }
 
     public void sendFile(P2PNeighbor[] dsts, P2PFileInfo[] files,
-                         SendFile_Callback callback) {
+                         SendFileCallback callback) {
         this.sendFile_callback = callback;
         p2PHandler.initSend();
 

@@ -6,11 +6,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.text.TextUtils;
 
+import com.ape.transfer.model.FileItem;
+import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
-import com.ape.transfer.p2p.p2pinterface.ReceiveFile_Callback;
+import com.ape.transfer.p2p.p2pinterface.receiveFileCallback;
+import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.WifiUtils;
@@ -18,7 +21,7 @@ import com.ape.transfer.util.WifiUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransferService extends Service implements NeighborCallback, ReceiveFile_Callback {
+public class TransferService extends Service implements NeighborCallback, receiveFileCallback {
     private static final String TAG = "TransferService";
     private IBinder mBinder = new P2PBinder();
     private P2PManager mP2PManager;
@@ -70,27 +73,28 @@ public class TransferService extends Service implements NeighborCallback, Receiv
 
     @Override
     public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo[] files) {
+        Log.i(TAG, "QueryReceiving....");
         return false;
     }
 
     @Override
     public void BeforeReceiving(P2PNeighbor src, P2PFileInfo[] files) {
-
+        Log.i(TAG, "BeforeReceiving....");
     }
 
     @Override
     public void OnReceiving(P2PFileInfo files) {
-
+        Log.i(TAG, "OnReceiving.... percent = " + files.percent);
     }
 
     @Override
     public void AfterReceiving() {
-
+        Log.i(TAG, "AfterReceiving....");
     }
 
     @Override
     public void AbortReceiving(int error, String alias) {
-
+        Log.i(TAG, "AbortReceiving....");
     }
 
     public interface Callback {
@@ -135,6 +139,47 @@ public class TransferService extends Service implements NeighborCallback, Receiv
 
         public boolean isP2PRunning() {
             return isP2pRunning;
+        }
+
+        public void sendFile(ArrayList<FileItem> fileItems){
+            int size = fileItems.size();
+            P2PFileInfo[] fileArray = new P2PFileInfo[size];
+            for(int i = 0; i < size; i++){
+                FileItem item = fileItems.get(i);
+                P2PFileInfo info = new P2PFileInfo();
+                info.name = item.appLabel.toString();
+                info.type = P2PConstant.TYPE.APP;
+                info.size = item.size;
+                info.path = item.path;
+
+                fileArray[i] = info;
+            }
+            mP2PManager.sendFile(new P2PNeighbor[]{mNeighbors.get(0)}, fileArray, new SendFileCallback() {
+                @Override
+                public void BeforeSending() {
+                    Log.i(TAG, "BeforeSending....");
+                }
+
+                @Override
+                public void OnSending(P2PFileInfo file, P2PNeighbor dest) {
+                    Log.i(TAG, "OnSending.... file.percent = " + file.percent);
+                }
+
+                @Override
+                public void AfterSending(P2PNeighbor dest) {
+                    Log.i(TAG, "AfterSending....");
+                }
+
+                @Override
+                public void AfterAllSending() {
+                    Log.i(TAG, "AfterAllSending....");
+                }
+
+                @Override
+                public void AbortSending(int error, P2PNeighbor dest) {
+                    Log.i(TAG, "AbortSending....");
+                }
+            });
         }
     }
 }

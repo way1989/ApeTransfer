@@ -221,6 +221,8 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_send:
+                if(mTransferService != null)
+                    mTransferService.sendFile(mFileItems);
                 break;
             case R.id.bt_cancel:
                 onBackPressed();

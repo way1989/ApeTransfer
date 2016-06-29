@@ -22,6 +22,10 @@ public class P2PConstant {
     public interface TYPE {
         public static final int APP = 0;
         public static final int PIC = 1;
+        public static final int VIDEO = 2;
+        public static final int ZIP = 3;
+        public static final int DOC = 4;
+        public static final int MUSIC = 5;
     }
 
     public interface UI_MSG {
