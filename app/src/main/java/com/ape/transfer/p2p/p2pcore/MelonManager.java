@@ -94,6 +94,7 @@ public class MelonManager {
         if (neighbor == null) {
             neighbor = new P2PNeighbor();
             neighbor.alias = sigMessage.senderAlias;
+            neighbor.icon = sigMessage.senderHead;
             neighbor.ip = ip;
             neighbor.inetAddress = address;
             mNeighbors.put(ip, neighbor);

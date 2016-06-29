@@ -24,6 +24,10 @@ public class SigMessage {
      */
     public String senderIp;
     /**
+     * 发送者的头像id
+     */
+    public int senderHead;
+    /**
      *
      */
     public int commandNum;
@@ -47,14 +51,15 @@ public class SigMessage {
         packetNum = args[0];
         senderAlias = args[1];
         senderIp = args[2];
-        commandNum = Integer.parseInt(args[3]);
-        recipient = Integer.parseInt(args[4]);
-        if (args.length > 5)
-            addition = args[5];
+        senderHead = Integer.parseInt(args[3]);
+        commandNum = Integer.parseInt(args[4]);
+        recipient = Integer.parseInt(args[5]);
+        if (args.length > 6)
+            addition = args[6];
         else
             addition = null;
 
-        for (int i = 6; i < args.length; i++) {
+        for (int i = 7; i < args.length; i++) {
             addition += (":" + args[i]);
         }
     }
@@ -66,6 +71,8 @@ public class SigMessage {
         sb.append(senderAlias);
         sb.append(":");
         sb.append(senderIp);
+        sb.append(":");
+        sb.append(senderHead);
         sb.append(":");
         sb.append(commandNum);
         sb.append(":");

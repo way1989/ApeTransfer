@@ -116,6 +116,7 @@ public class MelonCommunicate extends Thread {
         if (melonInfo != null) {
             msg.senderAlias = melonInfo.alias;
             msg.senderIp = melonInfo.ip;
+            msg.senderHead = melonInfo.icon;
         }
 
         return msg;
