@@ -300,22 +300,22 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
                 case 0:
                     lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                     lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    lp.bottomMargin = Screen.dp(8);
+                    //lp.bottomMargin = Screen.dp(8);
                     break;
                 case 1:
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     lp.addRule(RelativeLayout.CENTER_VERTICAL);
-                    lp.rightMargin = Screen.dp(8);
+                    //lp.rightMargin = Screen.dp(8);
                     break;
                 case 2:
                     lp.addRule(RelativeLayout.ALIGN_PARENT_TOP);
                     lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    lp.topMargin = Screen.dp(8);
+                    //lp.topMargin = Screen.dp(8);
                     break;
                 case 3:
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
                     lp.addRule(RelativeLayout.CENTER_VERTICAL);
-                    lp.leftMargin = Screen.dp(8);
+                    //lp.leftMargin = Screen.dp(8);
                     break;
             }
             item.setLayoutParams(lp);
@@ -397,7 +397,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
 
         rlPhones.removeAllViews();
         if (mTransferService != null)
-            mTransferService.stop();
+            mTransferService.stopP2P();
         unBindService();
     }
 
@@ -415,7 +415,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
     private void startP2P() {
-        mTransferService.start();
+        mTransferService.startP2P();
     }
 
     private void startService() {
@@ -437,7 +437,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     @Override
     public void onNeighborConnected(P2PNeighbor neighbor) {
         Log.i(TAG, "neighbor onNeighborConnected neighbor = " + neighbor.ip);
-        Intent intent = new Intent(this, ChatActivity.class);
+        Intent intent = new Intent(this, MainTransferActivity.class);
         intent.putExtra("neighbor", neighbor);
         startActivity(intent);
         finish();

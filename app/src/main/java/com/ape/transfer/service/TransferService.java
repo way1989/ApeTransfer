@@ -22,6 +22,7 @@ public class TransferService extends Service {
     private P2PManager mP2PManager;
     private List<P2PNeighbor> mNeighbors = new ArrayList<>();
     private Callback mCallback;
+    private boolean isP2pRunning;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -32,6 +33,15 @@ public class TransferService extends Service {
     public void onCreate() {
         super.onCreate();
         init();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mP2PManager != null) {
+            mP2PManager.stop();
+            isP2pRunning = false;
+        }
     }
 
     private void init() {
@@ -59,8 +69,8 @@ public class TransferService extends Service {
             return neighbor;
         }
 
-        public void start() {
-            Log.i(TAG, "p2p start....");
+        public void startP2P() {
+            Log.i(TAG, "p2p startP2P....");
             final P2PNeighbor me = getMe();
             mP2PManager.start(me, new NeighborCallback() {
                 @Override
@@ -81,15 +91,20 @@ public class TransferService extends Service {
                     }
                 }
             });
+            isP2pRunning = true;
         }
 
-        public void stop() {
-            Log.i(TAG, "p2p stop....");
+        public void stopP2P() {
+            Log.i(TAG, "p2p stopP2P....");
             mP2PManager.stop();
+            isP2pRunning = false;
         }
 
         public boolean isEmpty() {
             return mNeighbors.isEmpty();
+        }
+        public boolean isP2PRunning(){
+            return isP2pRunning;
         }
     }
 }

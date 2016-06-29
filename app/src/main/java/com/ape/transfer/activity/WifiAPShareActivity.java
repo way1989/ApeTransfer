@@ -42,6 +42,7 @@ public class WifiAPShareActivity extends ApBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_apshare);
         ButterKnife.bind(this);
+        startWifiAp();
         mNanoHTTPServer = new AndroidWebServer(PORT);
     }
 

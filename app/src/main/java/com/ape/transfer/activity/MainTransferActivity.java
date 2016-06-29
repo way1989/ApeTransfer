@@ -1,11 +1,6 @@
 package com.ape.transfer.activity;
 
-import android.app.Service;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +21,7 @@ import com.ape.transfer.adapter.PhoneItemAdapter;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.service.TransferService;
+import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.WifiApUtils;
@@ -36,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainTransferActivity extends ApBaseActivity implements TransferService.Callback {
+public class MainTransferActivity extends ApBaseActivity implements TransferService.Callback, TransferServiceUtil.Callback {
     private static final String TAG = "MainTransferActivity";
     @BindView(R.id.indicator)
     TabLayout indicator;
@@ -81,30 +77,17 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     @BindView(R.id.root)
     RelativeLayout root;
     private TransferService.P2PBinder mTransferService;
-    private ServiceConnection mServiceCon = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(final ComponentName name, final IBinder service) {
-            Log.i(TAG, "onServiceConnected");
-            mTransferService = (TransferService.P2PBinder) service;
-            if (mTransferService != null) {
-                mTransferService.setCallback(MainTransferActivity.this);
-                startP2P();
-            }
-        }
 
-        @Override
-        public void onServiceDisconnected(final ComponentName name) {
-            Log.i(TAG, "onServiceDisconnected");
-            mTransferService = null;
-        }
-    };
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<P2PNeighbor> mNeighbors;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
-    private boolean isSendViewVisiabled;
+    private boolean isSendViewShow;
+    private P2PNeighbor mP2PNeighbor;
 
     private void startP2P() {
-        mTransferService.start();
+        if(mP2PNeighbor == null &&
+                mTransferService != null && !mTransferService.isP2PRunning())
+        mTransferService.startP2P();
     }
 
     @Override
@@ -113,14 +96,35 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         setContentView(R.layout.activity_maintransfer);
         ButterKnife.bind(this);
         getSupportActionBar().setElevation(0f);
+        TransferServiceUtil.getInstance().setCallback(this);
+        TransferServiceUtil.getInstance().bindTransferService();
+
+        mP2PNeighbor = (P2PNeighbor) getIntent().getSerializableExtra("neighbor");
+
         tvMeName.setText(PreferenceUtil.getInstance().getAlias());
         ivMeAvatar.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
         btnDisconnect.setEnabled(false);
+        btSend.setEnabled(false);
+
+        setupWithNeighbor();
+        setupWithViewPager();
+
+        if(mP2PNeighbor != null){
+            onNeighborConnected(mP2PNeighbor);
+        }else {
+            startWifiAp();
+        }
+    }
+
+    private void setupWithNeighbor() {
         rvPhones.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.HORIZONTAL, false));
         mPhoneItemAdapter = new PhoneItemAdapter(getApplicationContext());
         mNeighbors = new ArrayList<>();
         rvPhones.setAdapter(mPhoneItemAdapter);
+    }
+
+    private void setupWithViewPager() {
         PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
         pager.setOffscreenPageLimit(pagerAdapter.getCount() - 1);
         pager.setAdapter(pagerAdapter);
@@ -144,7 +148,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
             tvStatus.setText(R.string.waiting_connect);
             tvStatusInfo.setVisibility(View.VISIBLE);
             btnDisconnect.setEnabled(true);
-            bindService();
+            startP2P();
         } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
                 status == WifiApUtils.WIFI_AP_STATE_FAILED) {
             finish();
@@ -152,11 +156,23 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     }
 
     @Override
+    public void onServiceConnected(TransferService.P2PBinder service) {
+        mTransferService = service;
+        mTransferService.setCallback(MainTransferActivity.this);
+        startP2P();
+    }
+
+    @Override
+    public void onServiceDisconnected() {
+        mTransferService = null;
+    }
+    @Override
     public void onNeighborConnected(P2PNeighbor neighbor) {
         rvPhones.setVisibility(View.VISIBLE);
         rlWaitingConnect.setVisibility(View.INVISIBLE);
         mNeighbors.add(neighbor);
         mPhoneItemAdapter.setDatas(mNeighbors);
+        btSend.setEnabled(true);
     }
 
     @Override
@@ -165,29 +181,9 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         rlWaitingConnect.setVisibility(View.VISIBLE);
         mNeighbors.remove(neighbor);
         mPhoneItemAdapter.setDatas(mNeighbors);
+        btSend.setEnabled(false);
     }
 
-    private void startService() {
-        this.startService(new Intent(this, TransferService.class));
-    }
-
-    private void stopService() {
-        this.stopService(new Intent(this, TransferService.class));
-    }
-
-    private void bindService() {
-        startService();
-        if (mTransferService == null)
-            this.getApplicationContext().bindService(new Intent(this, TransferService.class),
-                    mServiceCon, Service.BIND_AUTO_CREATE);
-    }
-
-    private void unBindService() {
-        try {
-            this.getApplicationContext().unbindService(mServiceCon);
-        } catch (Exception e) {
-        }
-    }
 
     @OnClick({R.id.bt_send, R.id.bt_cancel, R.id.btnDisconnect})
     public void onClick(View view) {
@@ -195,6 +191,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
             case R.id.bt_send:
                 break;
             case R.id.bt_cancel:
+                onBackPressed();
                 break;
             case R.id.btnDisconnect:
                 onBackPressed();
@@ -222,17 +219,18 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         final String sendText = getString(R.string.select_text, mFileItems.size(),
                 Formatter.formatFileSize(App.getContext(), sumSize));
         if (mFileItems.isEmpty()) {
-            if (isSendViewVisiabled) {
+            if (isSendViewShow) {
                 rlSendFile.animate().translationYBy(Math.abs(height));
-                isSendViewVisiabled = false;
+                isSendViewShow = false;
             }
             tvSendSize.setText(sendText);
         } else {
-            if (!isSendViewVisiabled) {
+            if (!isSendViewShow) {
                 rlSendFile.animate().translationYBy(height);
-                isSendViewVisiabled = true;
+                isSendViewShow = true;
             }
             tvSendSize.setText(sendText);
         }
     }
+
 }

@@ -65,7 +65,7 @@ public class CreateGroupActivity extends ApBaseActivity implements TransferServi
     };
 
     private void startP2P() {
-        mTransferService.start();
+        mTransferService.startP2P();
     }
 
     @Override
