@@ -34,6 +34,7 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.WifiUtils;
 
 import java.util.ArrayList;
@@ -367,6 +368,9 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
 
         mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         mWifiUtils = WifiUtils.getInstance(mWifiManager);
+
+        ivHead.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
+        mineTvName.setText(PreferenceUtil.getInstance().getAlias());
     }
 
     private void initP2P() {
@@ -405,6 +409,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
     private void startP2P() {
+        Log.i(TAG, "startP2P...");
         mTransferService.startP2P();
     }
 
@@ -426,12 +431,16 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     @Override
     public void onClick(View v) {
         Log.i(TAG, "rl_phones  onClick....");
+        v.setEnabled(false);
         ScanResult scanResult = (ScanResult) v.getTag();
         if (scanResult == null)
             return;
         final String capabilities = scanResult.capabilities;
         final String ssid = scanResult.SSID;
-        if (isWifiConnected(this) && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), ssid)) {
+        boolean isWifiConnected = isWifiConnected(this);
+        Log.i(TAG, "isWifiConnected = " + isWifiConnected + ", ssid = " + mWifiManager.getConnectionInfo().getSSID()
+                + ", ScanResult ssid = " + "\"" +ssid + "\"");
+        if (isWifiConnected && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), "\"" +ssid + "\"")) {
             mHandler.removeMessages(MSG_START_P2P);
             mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 2500L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
         } else {
@@ -466,7 +475,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
 
     @Override
     public void onServiceConnected(TransferService.P2PBinder service) {
-        Log.i(TAG, "onServiceConnected");
+        Log.i(TAG, "onServiceConnected mTransferService = " + service);
         mTransferService = service;
         if (mTransferService != null) {
             mTransferService.setCallback(ApScanActivity.this);
@@ -476,6 +485,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
 
     @Override
     public void onServiceDisconnected() {
+        Log.i(TAG, "onServiceDisconnected mTransferService = " + mTransferService);
         mTransferService = null;
     }
 }

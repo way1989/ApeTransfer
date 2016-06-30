@@ -30,8 +30,7 @@ import java.net.UnknownHostException;
  * Created by 郭攀峰 on 2015/9/17.
  */
 public class P2PManager {
-
-    private static final String tag = P2PManager.class.getSimpleName();
+    private static final String TAG = "P2PManager";
 
     private static String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
             + File.separator + P2PConstant.FILE_SHARE_SAVE_PATH;
@@ -106,6 +105,7 @@ public class P2PManager {
     public void sendFile(P2PNeighbor[] dsts, P2PFileInfo[] files,
                          SendFileCallback callback) {
         this.sendFile_callback = callback;
+        Log.i(TAG, "sendFile p2PHandler = " + p2PHandler);
         p2PHandler.initSend();
 
         ParamSendFiles paramSendFiles = new ParamSendFiles(dsts, files);
@@ -131,7 +131,7 @@ public class P2PManager {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d(tag, "p2pManager stop");
+                    Log.d(TAG, "p2pManager stop");
                     ((MelonHandler) p2pThread.getLooperHandler()).release();
                     p2pThread.quit();
                     p2pThread = null;

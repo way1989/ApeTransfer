@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.ape.transfer.App;
 import com.ape.transfer.BuildConfig;
+import com.ape.transfer.R;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -137,8 +138,6 @@ public class AndroidWebServer extends NanoHTTPD {
     }
 
     public Response responseIndex() {
-//        String msg = String.format(INDEX, "互传-零流量下载", "互传", "零流量，下载文件", APK_NAME, "下 载", BuildConfig.VERSION_NAME);
-//        return newFixedLengthResponse(msg);
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html><html><head>");
         builder.append("<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>");
@@ -159,11 +158,11 @@ public class AndroidWebServer extends NanoHTTPD {
                 "</head>" +
                 "<body>" +
                 "<div class='iwrap fix'>");
-        builder.append("<div class='logo' style='clear:both;'>" + "互传" + "</div>");
-        builder.append("<div class='prompt' style='clear:both;'>" + "零流量，下载文件" + "</div>");
+        builder.append("<div class='logo' style='clear:both;'>" + App.getContext().getString(R.string.app_name) + "</div>");
+        builder.append("<div class='prompt' style='clear:both;'>" + App.getContext().getString(R.string.saveTraffic_download_prompt) + "</div>");
         builder.append("<div style=clear:both;></div>");
         builder.append("<button onclick=download('/ApeTransfer.apk');>");
-        builder.append("<div class='title'>" + "下 载" + "</div>");
+        builder.append("<div class='title'>" + App.getContext().getString(R.string.saveTraffic_download_text) + "</div>");
         builder.append("<div class='version'>" + BuildConfig.VERSION_NAME + "</div>");
         builder.append("</button></div></body></html>");
         return newFixedLengthResponse(builder.toString());

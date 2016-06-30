@@ -188,6 +188,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
 
     @Override
     public void onServiceConnected(TransferService.P2PBinder service) {
+        Log.i(TAG, "onServiceConnected... service = " + service);
         mTransferService = service;
         mTransferService.setCallback(MainTransferActivity.this);
         startP2P();
@@ -195,10 +196,12 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
 
     @Override
     public void onServiceDisconnected() {
+        Log.i(TAG, "onServiceConnected... service = " + mTransferService);
         mTransferService = null;
     }
     @Override
     public void onNeighborConnected(P2PNeighbor neighbor) {
+        Log.i(TAG, "onNeighborConnected... neighbor.ip = " + neighbor.ip);
         rvPhones.setVisibility(View.VISIBLE);
         rlWaitingConnect.setVisibility(View.INVISIBLE);
         mNeighbors.add(neighbor);
@@ -209,6 +212,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
 
     @Override
     public void onNeighborDisconnected(P2PNeighbor neighbor) {
+        Log.i(TAG, "onNeighborDisconnected... neighbor.ip = " + neighbor.ip);
         rvPhones.setVisibility(View.INVISIBLE);
         rlWaitingConnect.setVisibility(View.VISIBLE);
         mNeighbors.remove(neighbor);
