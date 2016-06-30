@@ -4,7 +4,7 @@ package com.ape.transfer.p2p.p2pcore.send;
 import android.util.Log;
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
-import com.ape.transfer.p2p.p2pcore.MelonHandler;
+import com.ape.transfer.p2p.p2pcore.P2PWorkHandler;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
@@ -19,13 +19,13 @@ import java.util.HashMap;
 public class SendManager {
     private static final String tag = SendManager.class.getSimpleName();
 
-    private MelonHandler p2PHandler;
+    private P2PWorkHandler p2PHandler;
     private HashMap<String, Sender> mSenders;
 
     private SendServer sendServer;
     private SendServerHandler sendServerHandler;
 
-    public SendManager(MelonHandler handler) {
+    public SendManager(P2PWorkHandler handler) {
         this.p2PHandler = handler;
         mSenders = new HashMap<>();
         init();

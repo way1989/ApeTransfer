@@ -2,7 +2,7 @@ package com.ape.transfer.p2p.p2pcore.send;
 
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
-import com.ape.transfer.p2p.p2pcore.MelonHandler;
+import com.ape.transfer.p2p.p2pcore.P2PWorkHandler;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pentity.SocketTransInfo;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class Sender {
     private static final String tag = Sender.class.getSimpleName();
 
-    MelonHandler p2PHandler;
+    P2PWorkHandler p2PHandler;
     P2PFileInfo[] files;
     SendManager sendManager;
     P2PNeighbor neighbor;
@@ -25,7 +25,7 @@ public class Sender {
     int index = 0;
     boolean flagPercents = false;
 
-    public Sender(MelonHandler handler, SendManager man, P2PNeighbor n, P2PFileInfo[] fs) {
+    public Sender(P2PWorkHandler handler, SendManager man, P2PNeighbor n, P2PFileInfo[] fs) {
         this.p2PHandler = handler;
         this.sendManager = man;
         this.neighbor = n;

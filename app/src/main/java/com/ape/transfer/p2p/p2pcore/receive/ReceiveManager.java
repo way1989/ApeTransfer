@@ -2,7 +2,7 @@ package com.ape.transfer.p2p.p2pcore.receive;
 
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
-import com.ape.transfer.p2p.p2pcore.MelonHandler;
+import com.ape.transfer.p2p.p2pcore.P2PWorkHandler;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
@@ -13,10 +13,10 @@ import com.ape.transfer.p2p.p2pentity.param.ParamReceiveFiles;
  */
 public class ReceiveManager {
 
-    protected MelonHandler p2PHandler;
+    protected P2PWorkHandler p2PHandler;
     private Receiver receiver;
 
-    public ReceiveManager(MelonHandler handler) {
+    public ReceiveManager(P2PWorkHandler handler) {
         p2PHandler = handler;
     }
 

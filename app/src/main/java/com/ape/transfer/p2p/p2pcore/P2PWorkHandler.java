@@ -21,29 +21,29 @@ import java.net.InetAddress;
  * Created by 郭攀峰 on 2015/9/19.
  * 所有的message中转的handler，可以接受来自UI或者thread的message，也可以转发message到UI
  */
-public class MelonHandler extends Handler {
-    private static final String tag = MelonHandler.class.getSimpleName();
+public class P2PWorkHandler extends Handler {
+    private static final String tag = P2PWorkHandler.class.getSimpleName();
 
     private P2PManager p2PManager;
-    private MelonCommunicate p2PCommunicate;
-    private MelonManager neighborManager;
+    private P2PCommunicateThread p2PCommunicate;
+    private P2PCommunicateManager neighborManager;
     private ReceiveManager receiveManager;
     private SendManager sendManager;
 
-    public MelonHandler(Looper looper) {
+    public P2PWorkHandler(Looper looper) {
         super(looper);
     }
 
-    public MelonManager getNeighborManager() {
+    public P2PCommunicateManager getNeighborManager() {
         return neighborManager;
     }
 
     public void init(P2PManager manager, Context context) {
         this.p2PManager = manager;
-        p2PCommunicate = new MelonCommunicate(p2PManager, this, context);
+        p2PCommunicate = new P2PCommunicateThread(p2PManager, this, context);
         p2PCommunicate.start();
 
-        neighborManager = new MelonManager(p2PManager, this, p2PCommunicate);
+        neighborManager = new P2PCommunicateManager(p2PManager, this, p2PCommunicate);
         new Thread() {
             public void run() {
                 neighborManager.sendBroadcast();

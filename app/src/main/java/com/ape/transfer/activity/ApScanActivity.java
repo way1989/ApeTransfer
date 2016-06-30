@@ -386,7 +386,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mTransferService != null) {
+        if (mTransferService != null && mTransferService.isEmpty()) {
             TransferServiceUtil.getInstance().unbindTransferService();
             TransferServiceUtil.getInstance().stopTransferService();
         }

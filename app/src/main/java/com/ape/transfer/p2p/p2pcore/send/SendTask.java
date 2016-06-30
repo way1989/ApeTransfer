@@ -4,7 +4,7 @@ package com.ape.transfer.p2p.p2pcore.send;
 import android.util.Log;
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
-import com.ape.transfer.p2p.p2pcore.MelonHandler;
+import com.ape.transfer.p2p.p2pcore.P2PWorkHandler;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pentity.SocketTransInfo;
@@ -26,7 +26,7 @@ public class SendTask extends OneByOneRunnable {
     private static final String tag = SendTask.class.getSimpleName();
     Sender sender;
     SocketChannel socketChannel; //与客户端通信的通道
-    MelonHandler p2PHandler;
+    P2PWorkHandler p2PHandler;
     P2PNeighbor neighbor;
     SocketTransInfo socketTransInfo;
     P2PFileInfo p2PFileInfo;

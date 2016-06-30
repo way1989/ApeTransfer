@@ -4,7 +4,7 @@ package com.ape.transfer.p2p.p2pcore.send;
 import android.util.Log;
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
-import com.ape.transfer.p2p.p2pinterface.Handler;
+import com.ape.transfer.p2p.p2pinterface.ISendServer;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by 郭攀峰 on 2015/9/21.
  */
-public class SendServerHandler implements Handler {
+public class SendServerHandler implements ISendServer {
     static final int CORE_POOL_SIZE = P2PConstant.MAXIMUM_POOL_SIZE;
     static final int KEEP_ALIVE_TIME = 1;
     static final TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;

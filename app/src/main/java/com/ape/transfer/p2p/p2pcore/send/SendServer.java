@@ -3,7 +3,7 @@ package com.ape.transfer.p2p.p2pcore.send;
 
 import android.util.Log;
 
-import com.ape.transfer.p2p.p2pinterface.Handler;
+import com.ape.transfer.p2p.p2pinterface.ISendServer;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -20,13 +20,13 @@ import java.util.Set;
 public class SendServer extends Thread {
     private static final String tag = SendServer.class.getSimpleName();
 
-    Handler handler;
+    ISendServer handler;
     int port;
     Selector selector;
     ServerSocketChannel serverSocketChannel;
     boolean ready = false;
 
-    public SendServer(Handler handler, int port) {
+    public SendServer(ISendServer handler, int port) {
         this.handler = handler;
         this.port = port;
     }

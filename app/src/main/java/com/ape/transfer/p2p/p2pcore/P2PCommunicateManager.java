@@ -17,18 +17,18 @@ import java.util.HashMap;
 /**
  * Created by 郭攀峰 on 2015/9/19.
  */
-public class MelonManager {
+public class P2PCommunicateManager {
 
-    private static final String tag = MelonManager.class.getSimpleName();
+    private static final String tag = P2PCommunicateManager.class.getSimpleName();
 
     private P2PManager p2PManager;
-    private MelonHandler p2PHandler;
-    private MelonCommunicate sigCommunicate;
+    private P2PWorkHandler p2PHandler;
+    private P2PCommunicateThread sigCommunicate;
 
     private HashMap<String, P2PNeighbor> mNeighbors;
 
-    public MelonManager(P2PManager manager, MelonHandler handler,
-                        MelonCommunicate communicate) {
+    public P2PCommunicateManager(P2PManager manager, P2PWorkHandler handler,
+                                 P2PCommunicateThread communicate) {
         p2PHandler = handler;
         p2PManager = manager;
         sigCommunicate = communicate;

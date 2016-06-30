@@ -12,7 +12,7 @@ import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
-import com.ape.transfer.p2p.p2pinterface.receiveFileCallback;
+import com.ape.transfer.p2p.p2pinterface.ReceiveFileCallback;
 import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
@@ -21,7 +21,7 @@ import com.ape.transfer.util.WifiUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransferService extends Service implements NeighborCallback, receiveFileCallback {
+public class TransferService extends Service implements NeighborCallback, ReceiveFileCallback {
     private static final String TAG = "TransferService";
     private IBinder mBinder = new P2PBinder();
     private P2PManager mP2PManager;

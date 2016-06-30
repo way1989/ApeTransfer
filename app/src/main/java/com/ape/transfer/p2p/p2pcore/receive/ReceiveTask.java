@@ -4,7 +4,7 @@ package com.ape.transfer.p2p.p2pcore.receive;
 import android.util.Log;
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
-import com.ape.transfer.p2p.p2pcore.MelonHandler;
+import com.ape.transfer.p2p.p2pcore.P2PWorkHandler;
 import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 
@@ -29,10 +29,10 @@ public class ReceiveTask extends Thread {
     BufferedOutputStream bufferedOutputStream;
     BufferedInputStream bufferedInputStream;
     byte[] readBuffer = new byte[512];
-    private MelonHandler p2PHandler;
+    private P2PWorkHandler p2PHandler;
     private Receiver receiver;
 
-    public ReceiveTask(MelonHandler handler, Receiver receiver) {
+    public ReceiveTask(P2PWorkHandler handler, Receiver receiver) {
         this.p2PHandler = handler;
         this.receiver = receiver;
         this.sendIp = receiver.neighbor.ip;

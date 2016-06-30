@@ -17,7 +17,7 @@ import com.ape.transfer.p2p.p2pentity.param.ParamReceiveFiles;
 import com.ape.transfer.p2p.p2pentity.param.ParamSendFiles;
 import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
-import com.ape.transfer.p2p.p2pinterface.receiveFileCallback;
+import com.ape.transfer.p2p.p2pinterface.ReceiveFileCallback;
 import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
 
 import java.io.File;
@@ -35,20 +35,20 @@ public class P2PManager {
     private static String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
             + File.separator + P2PConstant.FILE_SHARE_SAVE_PATH;
 
-    private P2PNeighbor meMelonInfo;
-    private NeighborCallback melon_callback;
-    private CustomHandlerThread p2pThread;
-    private MelonHandler p2PHandler;
-    private P2PManagerHandler mHandler;
+    private P2PNeighbor mNeighbor;
+    private NeighborCallback mNeighborCallback;
+    private CustomHandlerThread mP2PMainThread;
+    private P2PWorkHandler mP2PWorkHandler;
+    private P2PManagerHandler mMainUIHandler;
 
-    private receiveFileCallback receiveFile_callback;
-    private SendFileCallback sendFile_callback;
+    private ReceiveFileCallback mReceiveFileCallback;
+    private SendFileCallback mSendFileCallback;
 
     private Context mContext;
 
     public P2PManager(Context context) {
         mContext = context;
-        mHandler = new P2PManagerHandler(this);
+        mMainUIHandler = new P2PManagerHandler(this);
     }
 
     public static String getSavePath(int type) {
@@ -86,68 +86,68 @@ public class P2PManager {
     }
 
     public void start(P2PNeighbor melon, NeighborCallback melon_callback) {
-        this.meMelonInfo = melon;
-        this.melon_callback = melon_callback;
+        this.mNeighbor = melon;
+        this.mNeighborCallback = melon_callback;
 
-        p2pThread = new CustomHandlerThread("P2PThread", MelonHandler.class);
-        p2pThread.start();
-        p2pThread.isReady();
+        mP2PMainThread = new CustomHandlerThread("P2PThread", P2PWorkHandler.class);
+        mP2PMainThread.start();
+        mP2PMainThread.isReady();
 
-        p2PHandler = (MelonHandler) p2pThread.getLooperHandler();
-        p2PHandler.init(this, mContext);
+        mP2PWorkHandler = (P2PWorkHandler) mP2PMainThread.getLooperHandler();
+        mP2PWorkHandler.init(this, mContext);
     }
 
-    public void receiveFile(receiveFileCallback callback) {
-        receiveFile_callback = callback;
-        p2PHandler.initReceive();
+    public void receiveFile(ReceiveFileCallback callback) {
+        mReceiveFileCallback = callback;
+        mP2PWorkHandler.initReceive();
     }
 
     public void sendFile(P2PNeighbor[] dsts, P2PFileInfo[] files,
                          SendFileCallback callback) {
-        this.sendFile_callback = callback;
-        Log.i(TAG, "sendFile p2PHandler = " + p2PHandler);
-        p2PHandler.initSend();
+        this.mSendFileCallback = callback;
+        Log.i(TAG, "sendFile mP2PWorkHandler = " + mP2PWorkHandler);
+        mP2PWorkHandler.initSend();
 
         ParamSendFiles paramSendFiles = new ParamSendFiles(dsts, files);
-        p2PHandler.send2Handler(P2PConstant.CommandNum.SEND_FILE_REQ,
+        mP2PWorkHandler.send2Handler(P2PConstant.CommandNum.SEND_FILE_REQ,
                 P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_SEND, paramSendFiles);
     }
 
     public void ackReceive() {
-        p2PHandler.send2Handler(P2PConstant.CommandNum.RECEIVE_FILE_ACK,
+        mP2PWorkHandler.send2Handler(P2PConstant.CommandNum.RECEIVE_FILE_ACK,
                 P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_RECEIVE, null);
     }
 
     public P2PNeighbor getSelfMeMelonInfo() {
-        return meMelonInfo;
+        return mNeighbor;
     }
 
     public Handler getHandler() {
-        return mHandler;
+        return mMainUIHandler;
     }
 
     public void stop() {
-        if (p2pThread != null) {
+        if (mP2PMainThread != null) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Log.d(TAG, "p2pManager stop");
-                    ((MelonHandler) p2pThread.getLooperHandler()).release();
-                    p2pThread.quit();
-                    p2pThread = null;
-                    p2PHandler = null;
+                    ((P2PWorkHandler) mP2PMainThread.getLooperHandler()).release();
+                    mP2PMainThread.quit();
+                    mP2PMainThread = null;
+                    mP2PWorkHandler = null;
                 }
             }).start();
         }
     }
 
     public void cancelReceive() {
-        p2PHandler.send2Handler(P2PConstant.CommandNum.RECEIVE_ABORT_SELF,
+        mP2PWorkHandler.send2Handler(P2PConstant.CommandNum.RECEIVE_ABORT_SELF,
                 P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_RECEIVE, null);
     }
 
     public void cancelSend(P2PNeighbor neighbor) {
-        p2PHandler.send2Handler(P2PConstant.CommandNum.SEND_ABORT_SELF,
+        mP2PWorkHandler.send2Handler(P2PConstant.CommandNum.SEND_ABORT_SELF,
                 P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_SEND, neighbor);
     }
 
@@ -166,56 +166,56 @@ public class P2PManager {
 
             switch (msg.what) {
                 case P2PConstant.UI_MSG.ADD_NEIGHBOR:
-                    if (manager.melon_callback != null)
-                        manager.melon_callback.NeighborFound((P2PNeighbor) msg.obj);
+                    if (manager.mNeighborCallback != null)
+                        manager.mNeighborCallback.NeighborFound((P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.UI_MSG.REMOVE_NEIGHBOR:
-                    if (manager.melon_callback != null)
-                        manager.melon_callback.NeighborRemoved((P2PNeighbor) msg.obj);
+                    if (manager.mNeighborCallback != null)
+                        manager.mNeighborCallback.NeighborRemoved((P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.CommandNum.SEND_FILE_REQ: //收到请求发送文件
-                    if (manager.receiveFile_callback != null) {
+                    if (manager.mReceiveFileCallback != null) {
                         ParamReceiveFiles params = (ParamReceiveFiles) msg.obj;
-                        manager.receiveFile_callback.QueryReceiving(params.Neighbor,
+                        manager.mReceiveFileCallback.QueryReceiving(params.Neighbor,
                                 params.Files);
                     }
                     break;
                 case P2PConstant.CommandNum.SEND_FILE_START: //发送端开始发送
-                    if (manager.sendFile_callback != null) {
-                        manager.sendFile_callback.BeforeSending();
+                    if (manager.mSendFileCallback != null) {
+                        manager.mSendFileCallback.BeforeSending();
                     }
                     break;
                 case P2PConstant.CommandNum.SEND_PERCENTS:
                     ParamTCPNotify notify = (ParamTCPNotify) msg.obj;
-                    if (manager.sendFile_callback != null)
-                        manager.sendFile_callback.OnSending((P2PFileInfo) notify.Obj,
+                    if (manager.mSendFileCallback != null)
+                        manager.mSendFileCallback.OnSending((P2PFileInfo) notify.Obj,
                                 notify.Neighbor);
                     break;
                 case P2PConstant.CommandNum.SEND_OVER:
-                    if (manager.sendFile_callback != null)
-                        manager.sendFile_callback.AfterSending((P2PNeighbor) msg.obj);
+                    if (manager.mSendFileCallback != null)
+                        manager.mSendFileCallback.AfterSending((P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.CommandNum.SEND_ABORT_SELF: //通知接收者，发送者退出了
-                    if (manager.receiveFile_callback != null) {
+                    if (manager.mReceiveFileCallback != null) {
                         ParamIPMsg paramIPMsg = (ParamIPMsg) msg.obj;
                         if (paramIPMsg != null)
-                            manager.receiveFile_callback.AbortReceiving(
+                            manager.mReceiveFileCallback.AbortReceiving(
                                     P2PConstant.CommandNum.SEND_ABORT_SELF,
                                     paramIPMsg.peerMSG.senderAlias);
                     }
                     break;
                 case P2PConstant.CommandNum.RECEIVE_ABORT_SELF: //通知发送者，接收者退出了
-                    if (manager.sendFile_callback != null)
-                        manager.sendFile_callback.AbortSending(msg.what,
+                    if (manager.mSendFileCallback != null)
+                        manager.mSendFileCallback.AbortSending(msg.what,
                                 (P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.CommandNum.RECEIVE_OVER:
-                    if (manager.receiveFile_callback != null)
-                        manager.receiveFile_callback.AfterReceiving();
+                    if (manager.mReceiveFileCallback != null)
+                        manager.mReceiveFileCallback.AfterReceiving();
                     break;
                 case P2PConstant.CommandNum.RECEIVE_PERCENT:
-                    if (manager.receiveFile_callback != null)
-                        manager.receiveFile_callback.OnReceiving((P2PFileInfo) msg.obj);
+                    if (manager.mReceiveFileCallback != null)
+                        manager.mReceiveFileCallback.OnReceiving((P2PFileInfo) msg.obj);
                     break;
             }
         }

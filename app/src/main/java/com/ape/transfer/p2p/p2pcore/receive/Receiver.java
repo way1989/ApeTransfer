@@ -4,7 +4,7 @@ package com.ape.transfer.p2p.p2pcore.receive;
 import android.util.Log;
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
-import com.ape.transfer.p2p.p2pcore.MelonHandler;
+import com.ape.transfer.p2p.p2pcore.P2PWorkHandler;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
@@ -18,7 +18,7 @@ public class Receiver {
     public ReceiveManager receiveManager;
     public P2PNeighbor neighbor;
     public P2PFileInfo[] files;
-    public MelonHandler p2PHandler;
+    public P2PWorkHandler p2PHandler;
     protected ReceiveTask receiveTask = null;
     boolean flagPercent = false;
 

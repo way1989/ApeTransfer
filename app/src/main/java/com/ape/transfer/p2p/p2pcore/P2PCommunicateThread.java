@@ -28,11 +28,11 @@ import java.util.Enumeration;
 /**
  * Created by 郭攀峰 on 2015/9/19. 接收端和发送端的udp交互
  */
-public class MelonCommunicate extends Thread {
+public class P2PCommunicateThread extends Thread {
 
-    private static final String tag = MelonCommunicate.class.getSimpleName();
+    private static final String tag = P2PCommunicateThread.class.getSimpleName();
 
-    private MelonHandler p2PHandler;
+    private P2PWorkHandler p2PHandler;
     private P2PManager p2PManager;
 
     private DatagramSocket udpSocket;
@@ -45,7 +45,7 @@ public class MelonCommunicate extends Thread {
 
     private Context mContext;
 
-    public MelonCommunicate(P2PManager manager, MelonHandler handler, Context context) {
+    public P2PCommunicateThread(P2PManager manager, P2PWorkHandler handler, Context context) {
         mContext = context;
         this.p2PHandler = handler;
         this.p2PManager = manager;
