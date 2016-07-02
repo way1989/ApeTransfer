@@ -74,6 +74,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     @Override
     public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo[] files) {
         Log.i(TAG, "QueryReceiving....");
+        mP2PManager.ackReceive();
         return false;
     }
 

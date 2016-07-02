@@ -8,6 +8,7 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pentity.SocketTransInfo;
 import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
 import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
+import com.ape.transfer.util.Log;
 
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ import java.util.ArrayList;
  * Created by 郭攀峰 on 2015/9/20.
  */
 public class Sender {
-    private static final String tag = Sender.class.getSimpleName();
+    private static final String TAG = "Sender";
 
     P2PWorkHandler p2PHandler;
     P2PFileInfo[] files;
@@ -40,6 +41,7 @@ public class Sender {
     public void dispatchCommMSG(int cmd, ParamIPMsg ipmsg) {
         switch (cmd) {
             case P2PConstant.CommandNum.RECEIVE_FILE_ACK:
+                Log.i(TAG, "dispatchCommMSG RECEIVE_FILE_ACK");
                 startSelf();
                 //通知界面开始发送
                 if (p2PHandler != null)
@@ -50,6 +52,7 @@ public class Sender {
                             P2PConstant.CommandNum.SEND_FILE_START, null);
                 break;
             case P2PConstant.CommandNum.RECEIVE_ABORT_SELF: //接收者退出
+                Log.i(TAG, "dispatchCommMSG RECEIVE_ABORT_SELF");
                 clearSelf();
                 //通知UI
                 if (p2PHandler != null)

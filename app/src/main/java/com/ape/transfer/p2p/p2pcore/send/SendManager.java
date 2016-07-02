@@ -17,7 +17,7 @@ import java.util.HashMap;
  * Created by 郭攀峰 on 2015/9/20.
  */
 public class SendManager {
-    private static final String tag = SendManager.class.getSimpleName();
+    private static final String TAG = "SendManager";
 
     private P2PWorkHandler p2PHandler;
     private HashMap<String, Sender> mSenders;
@@ -38,12 +38,14 @@ public class SendManager {
     public void disPatchMsg(int what, Object obj, int src) {
         switch (src) {
             case P2PConstant.Src.COMMUNICATE: {
+                Log.i(TAG, "disPatchMsg COMMUNICATE");
                 String peerIP = ((ParamIPMsg) obj).peerIAddr.getHostAddress();
                 Sender sender = getSender(peerIP);
                 sender.dispatchCommMSG(what, (ParamIPMsg) obj);    //dispatch
                 break;
             }
             case P2PConstant.Src.MANAGER: {
+                Log.i(TAG, "disPatchMsg MANAGER");
                 if (what == P2PConstant.CommandNum.SEND_FILE_REQ) {
                     if (!mSenders.isEmpty())
                         return;
@@ -56,6 +58,7 @@ public class SendManager {
                 break;
             }
             case P2PConstant.Src.SEND_TCP_THREAD: {
+                Log.i(TAG, "disPatchMsg SEND_TCP_THREAD");
                 String peerIP = ((ParamTCPNotify) obj).Neighbor.ip;
                 Sender sender = getSender(peerIP);
                 if (sender == null)
@@ -98,7 +101,7 @@ public class SendManager {
 
     public void startSend(String peerIP, Sender fileSender) {
         if (sendServer == null) {
-            Log.d(tag, "SendManager start send");
+            Log.d(TAG, "SendManager start send");
 
             sendServerHandler = new SendServerHandler(this);
             sendServer = new SendServer(sendServerHandler, P2PConstant.PORT);

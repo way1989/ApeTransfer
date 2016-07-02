@@ -22,7 +22,7 @@ import java.net.InetAddress;
  * 所有的message中转的handler，可以接受来自UI或者thread的message，也可以转发message到UI
  */
 public class P2PWorkHandler extends Handler {
-    private static final String tag = P2PWorkHandler.class.getSimpleName();
+    private static final String TAG = "P2PWorkHandler";
 
     private P2PManager p2PManager;
     private P2PCommunicateThread p2PCommunicate;
@@ -71,15 +71,17 @@ public class P2PWorkHandler extends Handler {
         int dst = msg.arg2;
         switch (dst) {
             case P2PConstant.Recipient.NEIGHBOR: //好友状态上线或者离线
-                Log.d(tag, "received neighbor message");
+                Log.d(TAG, "received neighbor message");
                 if (neighborManager != null)
                     neighborManager.dispatchMSG((ParamIPMsg) msg.obj);
                 break;
             case P2PConstant.Recipient.FILE_SEND: //发送文件
+                Log.d(TAG, "received file send");
                 if (sendManager != null)
                     sendManager.disPatchMsg(msg.what, msg.obj, src);
                 break;
             case P2PConstant.Recipient.FILE_RECEIVE: //接收文件
+                Log.d(TAG, "received file receive");
                 if (receiveManager != null)
                     receiveManager.disPatchMsg(msg.what, msg.obj, src);
                 break;
@@ -87,7 +89,7 @@ public class P2PWorkHandler extends Handler {
     }
 
     public void release() {
-        Log.d(tag, "p2pHandler release");
+        Log.d(TAG, "p2pHandler release");
 
         if (receiveManager != null)
             releaseReceive();

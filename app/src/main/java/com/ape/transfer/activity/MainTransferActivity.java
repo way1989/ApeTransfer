@@ -213,6 +213,10 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     @Override
     public void onNeighborDisconnected(P2PNeighbor neighbor) {
         Log.i(TAG, "onNeighborDisconnected... neighbor.ip = " + neighbor.ip);
+        if(mNeighbors != null){
+            finish();
+            return;
+        }
         rvPhones.setVisibility(View.INVISIBLE);
         rlWaitingConnect.setVisibility(View.VISIBLE);
         mNeighbors.remove(neighbor);

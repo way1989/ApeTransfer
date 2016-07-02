@@ -49,7 +49,7 @@
             android:layout_below="@id/bt_saveTraffic"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/invite_code_marginTop"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@drawable/code" />
 
         <TextView
             android:id="@+id/tv_code_intro"
