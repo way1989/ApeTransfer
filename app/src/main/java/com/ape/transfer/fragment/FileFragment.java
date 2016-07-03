@@ -1,5 +1,6 @@
 package com.ape.transfer.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
-import com.ape.transfer.activity.MainTransferActivity;
 import com.ape.transfer.adapter.FileItemAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.FileItemLoader;
@@ -41,6 +41,7 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     FrameLayout emptyContainer;
     private FileItemAdapter mMusicItemAdapter;
     private FileCategoryHelper.FileCategory mFileCategory;
+    private OnFileItemChangeListener mListener;
 
     public static FileFragment newInstance(FileCategoryHelper.FileCategory fileCategory) {
         FileFragment fragment = new FileFragment();
@@ -87,7 +88,6 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
         }
     }
 
-
     @Override
     public Loader<BaseLoader.Result> onCreateLoader(int id, Bundle args) {
         return new FileItemLoader(getContext(), mFileCategory);
@@ -119,6 +119,27 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
         boolean isSelected = item.selected;
         item.selected = !isSelected;
         mMusicItemAdapter.notifyDataSetChanged();
-        ((MainTransferActivity)getActivity()).onFileItemChange(item);
+        mListener.onFileItemChange(item);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFileItemChangeListener) {
+            mListener = (OnFileItemChangeListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFileItemChangeListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    public interface OnFileItemChangeListener {
+        void onFileItemChange(FileItem item);
     }
 }

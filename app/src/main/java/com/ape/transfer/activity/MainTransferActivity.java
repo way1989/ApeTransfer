@@ -21,6 +21,7 @@ import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.PagerAdapter;
 import com.ape.transfer.adapter.PhoneItemAdapter;
+import com.ape.transfer.fragment.FileFragment;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.service.TransferService;
@@ -35,7 +36,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainTransferActivity extends ApBaseActivity implements TransferService.Callback, TransferServiceUtil.Callback {
+public class MainTransferActivity extends ApBaseActivity implements TransferService.Callback,
+        TransferServiceUtil.Callback, FileFragment.OnFileItemChangeListener {
     private static final String TAG = "MainTransferActivity";
     @BindView(R.id.indicator)
     TabLayout indicator;
@@ -88,9 +90,9 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     private P2PNeighbor mP2PNeighbor;
 
     private void startP2P() {
-        if(mP2PNeighbor == null &&
+        if (mP2PNeighbor == null &&
                 mTransferService != null && !mTransferService.isP2PRunning())
-        mTransferService.startP2P();
+            mTransferService.startP2P();
     }
 
     @Override
@@ -112,9 +114,9 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         setupWithNeighbor();
         setupWithViewPager();
 
-        if(mP2PNeighbor != null){
+        if (mP2PNeighbor != null) {
             onNeighborConnected(mP2PNeighbor);
-        }else {
+        } else {
             startWifiAp();
         }
     }
@@ -131,7 +133,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if(mTransferService != null && !mTransferService.isEmpty()){
+                            if (mTransferService != null && !mTransferService.isEmpty()) {
                                 mTransferService.stopP2P();
                                 TransferServiceUtil.getInstance().stopTransferService();
                                 TransferServiceUtil.getInstance().unbindTransferService();
@@ -199,6 +201,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         Log.i(TAG, "onServiceConnected... service = " + mTransferService);
         mTransferService = null;
     }
+
     @Override
     public void onNeighborConnected(P2PNeighbor neighbor) {
         Log.i(TAG, "onNeighborConnected... neighbor.ip = " + neighbor.ip);
@@ -213,7 +216,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     @Override
     public void onNeighborDisconnected(P2PNeighbor neighbor) {
         Log.i(TAG, "onNeighborDisconnected... neighbor.ip = " + neighbor.ip);
-        if(mNeighbors != null){
+        if (mNeighbors != null) {
             finish();
             return;
         }
@@ -229,8 +232,12 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_send:
-                if(mTransferService != null)
+                if (mTransferService != null)
                     mTransferService.sendFile(mFileItems);
+
+                mFileItems.clear();
+                updateSendUI();
+                ((PagerAdapter)pager.getAdapter()).clearAllSelect();
                 break;
             case R.id.bt_cancel:
                 onBackPressed();
@@ -241,6 +248,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         }
     }
 
+    @Override
     public void onFileItemChange(FileItem item) {
         Log.i(TAG, "onFileItemChange...");
         if (item.selected) {

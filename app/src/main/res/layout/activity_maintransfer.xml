@@ -52,7 +52,7 @@
                 android:id="@+id/bt_send"
                 android:layout_width="@dimen/bt_send_width"
                 android:layout_height="@dimen/bt_send_height"
-                android:background="@drawable/bt_disable_send"
+                android:background="@drawable/bt_send_selector"
                 android:text="@string/operation_send"
                 android:textColor="@android:color/white" />
 
@@ -61,7 +61,7 @@
                 android:layout_width="@dimen/bt_send_width"
                 android:layout_height="@dimen/bt_send_height"
                 android:layout_toRightOf="@id/bt_send"
-                android:background="@drawable/bt_cancel_disable_selector"
+                android:background="@drawable/bt_cancel_selector"
                 android:text="@android:string/cancel"
                 android:textColor="@color/black_dark" />
         </LinearLayout>

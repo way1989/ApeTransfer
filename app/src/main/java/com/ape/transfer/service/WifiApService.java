@@ -159,10 +159,11 @@ public class WifiApService extends Service {
 
     private void stayForeground() {
         Notification notification = new Notification.Builder(this)
-                .setContentTitle(getResources().getString(R.string.app_name))
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getString(R.string.notify_title))
+                .setContentText(getString(R.string.notify_close_wlan))
+                .setSmallIcon(R.drawable.notify_icon_white)
                 .build();
-        //notification.flags |= Notification.FLAG_HIDE_NOTIFICATION;
+        //notification.flags |= Notification.FLAG_HIDE_NOTIFICATION;//just for MTK platform
         startForeground(1, notification);
     }
 

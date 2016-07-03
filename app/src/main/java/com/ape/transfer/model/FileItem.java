@@ -33,14 +33,17 @@ public class FileItem implements Serializable{
     public long size;
     public long id;
     public String path;
+    public FileCategoryHelper.FileCategory category;
+
+    //just for apk
     public Drawable appLogo;
-    public CharSequence appLabel;
 
     public FileItem() {
 
     }
 
-    public FileItem(Cursor c) {
+    public FileItem(Cursor c, FileCategoryHelper.FileCategory fileCategory) {
+        category = fileCategory;
         id = c.getLong(COLUMN_ID);
         path = c.getString(COLUMN_PATH);
         size = c.getLong(COLUMN_SIZE);
@@ -76,7 +79,7 @@ public class FileItem implements Serializable{
 
         cursor.moveToPosition(-1);
         while (cursor.moveToNext()) {
-            FileItem musicItem = new FileItem(cursor);
+            FileItem musicItem = new FileItem(cursor, fileCategory);
             musicItems.add(musicItem);
         }
         cursor.close();
@@ -120,11 +123,12 @@ public class FileItem implements Serializable{
         long fileSize = file.length();
         if (fileSize <= 0)
             return null;
-        appInfo.path = filepath;
         appInfo.size = file.length();
         appInfo.dateModified = file.lastModified();
         appInfo.appLogo = app.loadIcon(pkManager);
-        appInfo.appLabel = app.loadLabel(pkManager);
+        CharSequence title = app.loadLabel(pkManager);
+        appInfo.path = filepath.replace("base", title);
+        appInfo.category = FileCategoryHelper.FileCategory.Apk;
         return appInfo;
     }
 

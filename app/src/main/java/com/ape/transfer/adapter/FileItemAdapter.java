@@ -77,7 +77,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         switch (mFileCategory) {
             case Apk:
                 holder.ivIcon.setImageDrawable(item.appLogo);
-                holder.tvName.setText(item.appLabel);
+                holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             case Video:

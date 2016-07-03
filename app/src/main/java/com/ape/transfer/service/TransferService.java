@@ -16,6 +16,7 @@ import com.ape.transfer.p2p.p2pinterface.ReceiveFileCallback;
 import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.Util;
 import com.ape.transfer.util.WifiUtils;
 
 import java.util.ArrayList;
@@ -148,7 +149,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
             for(int i = 0; i < size; i++){
                 FileItem item = fileItems.get(i);
                 P2PFileInfo info = new P2PFileInfo();
-                info.name = item.appLabel.toString();
+                info.name = Util.getNameFromFilepath(item.path);
                 info.type = P2PConstant.TYPE.APP;
                 info.size = item.size;
                 info.path = item.path;

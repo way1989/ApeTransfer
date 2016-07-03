@@ -52,8 +52,20 @@ public class InviteFriendActivity extends BaseActivity {
                 }
                 break;
             case R.id.bt_more:
+                share();
                 break;
         }
+    }
+
+    private void share() {
+        String url = getString(R.string.share_app);
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, url);
+        sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent chooserIntent = Intent.createChooser(sharingIntent, null);
+        startActivity(chooserIntent);
     }
 
     @TargetApi(Build.VERSION_CODES.M)

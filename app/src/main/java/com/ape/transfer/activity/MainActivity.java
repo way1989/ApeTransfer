@@ -85,8 +85,7 @@ public class MainActivity extends AppCompatActivity
     };
     Runnable navigateShare = new Runnable() {
         public void run() {
-            String url = "http://fir.im/capturer";
-            //url = getString(R.string.share_app, url);
+            String url = getString(R.string.share_app);
             Intent sharingIntent = new Intent(Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
             sharingIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));

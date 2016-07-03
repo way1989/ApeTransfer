@@ -99,4 +99,8 @@
     <string name="transfer_receive_ok">Receive completed</string>
     <string name="transfer_send_ok">Send completed</string>
     <string name="connect_dialog_title">Prompt</string>
+    <string name="notify_close_wlan">WLAN will be turned off temporarily, and will be re-connected after this is completed</string>
+    <string name="notify_title">EasyShare reminder</string>
+    <string name="share_app">http://fir.im/ApeTransfer</string>
+
 </resources>

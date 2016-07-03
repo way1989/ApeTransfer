@@ -97,4 +97,8 @@
     <string name="transfer_receive_ok">接收完成</string>
     <string name="transfer_send_ok">发送完成</string>
     <string name="connect_dialog_title">提示</string>
+
+    <string name="notify_close_wlan">WLAN将暂时关闭，结束后恢复连接</string>
+    <string name="notify_title">互传提醒您</string>
+
 </resources>

@@ -7,7 +7,6 @@ import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
@@ -19,6 +18,7 @@ import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
 import com.ape.transfer.p2p.p2pinterface.ReceiveFileCallback;
 import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
+import com.ape.transfer.util.Log;
 
 import java.io.File;
 import java.lang.ref.WeakReference;

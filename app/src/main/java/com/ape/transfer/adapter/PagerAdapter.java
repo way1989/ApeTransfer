@@ -63,4 +63,6 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
 
+    public void clearAllSelect() {
+    }
 }
