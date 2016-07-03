@@ -127,15 +127,15 @@ public class P2PManager {
     }
 
     public void stop() {
-        if (mP2PMainThread != null) {
+        if (mP2PMainThread != null && mP2PWorkHandler != null) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Log.d(TAG, "p2pManager stop");
-                    ((P2PWorkHandler) mP2PMainThread.getLooperHandler()).release();
+                    mP2PWorkHandler.release();
+                    mP2PWorkHandler = null;
                     mP2PMainThread.quit();
                     mP2PMainThread = null;
-                    mP2PWorkHandler = null;
                 }
             }).start();
         }

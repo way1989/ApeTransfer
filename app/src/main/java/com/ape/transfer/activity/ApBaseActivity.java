@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.text.TextUtils;
 
@@ -85,7 +84,7 @@ public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
     private void closeWifiAp() {
-        if(mWifiApService != null) {
+        if (mWifiApService != null) {
             mWifiApService.setOnWifiApStatusListener(null);
             mWifiApService.closeWifiAp();
         }
@@ -94,15 +93,16 @@ public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
 
-
     protected void startWifiAp() {
         isOpeningWifiAp = true;
         startService();
         bindService();
     }
-    protected void stopWifiAp(){
+
+    protected void stopWifiAp() {
         closeWifiAp();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

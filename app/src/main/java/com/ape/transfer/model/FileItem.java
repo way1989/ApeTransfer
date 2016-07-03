@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
+import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.util.FileCategoryHelper;
 import com.ape.transfer.util.Log;
 
@@ -20,30 +21,30 @@ import java.util.List;
 /**
  * Created by android on 16-6-28.
  */
-public class FileItem implements Serializable{
-    private static final long serialVersionUID = -636934079297822919L;
-
+public class FileItem implements Serializable {
     public static final int COLUMN_ID = 0;
     public static final int COLUMN_PATH = 1;
     public static final int COLUMN_SIZE = 2;
     public static final int COLUMN_DATE = 3;
+    private static final long serialVersionUID = -636934079297822919L;
     private static final String TAG = "FileItem";
     public boolean selected;
     public long dateModified;
     public long size;
     public long id;
     public String path;
-    public FileCategoryHelper.FileCategory category;
+    public int type;
 
     //just for apk
     public Drawable appLogo;
+    public CharSequence appLabel;
 
     public FileItem() {
 
     }
 
-    public FileItem(Cursor c, FileCategoryHelper.FileCategory fileCategory) {
-        category = fileCategory;
+    public FileItem(Cursor c, int type) {
+        this.type = type;
         id = c.getLong(COLUMN_ID);
         path = c.getString(COLUMN_PATH);
         size = c.getLong(COLUMN_SIZE);
@@ -51,10 +52,10 @@ public class FileItem implements Serializable{
         selected = false;
     }
 
-    public static ArrayList<FileItem> getMusicItems(Context context, FileCategoryHelper.FileCategory fileCategory) {
+    public static ArrayList<FileItem> getMusicItems(Context context, int fileCategory) {
         ArrayList<FileItem> musicItems = new ArrayList<>();
 
-        if (fileCategory == FileCategoryHelper.FileCategory.Apk) {
+        if (fileCategory == P2PConstant.TYPE.APP) {
             musicItems.addAll(getThirdPartApp(context));
         }
 
@@ -123,12 +124,13 @@ public class FileItem implements Serializable{
         long fileSize = file.length();
         if (fileSize <= 0)
             return null;
+        appInfo.path = filepath;
         appInfo.size = file.length();
         appInfo.dateModified = file.lastModified();
         appInfo.appLogo = app.loadIcon(pkManager);
-        CharSequence title = app.loadLabel(pkManager);
-        appInfo.path = filepath.replace("base", title);
-        appInfo.category = FileCategoryHelper.FileCategory.Apk;
+        appInfo.appLabel = app.loadLabel(pkManager);
+
+        appInfo.type = P2PConstant.TYPE.APP;
         return appInfo;
     }
 

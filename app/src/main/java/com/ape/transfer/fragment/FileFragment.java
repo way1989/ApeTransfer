@@ -21,7 +21,7 @@ import com.ape.transfer.adapter.FileItemAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.FileItemLoader;
 import com.ape.transfer.model.FileItem;
-import com.ape.transfer.util.FileCategoryHelper;
+import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,13 +40,13 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     @BindView(R.id.empty_container)
     FrameLayout emptyContainer;
     private FileItemAdapter mMusicItemAdapter;
-    private FileCategoryHelper.FileCategory mFileCategory;
+    private int mFileCategory;
     private OnFileItemChangeListener mListener;
 
-    public static FileFragment newInstance(FileCategoryHelper.FileCategory fileCategory) {
+    public static FileFragment newInstance(int fileCategory) {
         FileFragment fragment = new FileFragment();
         Bundle args = new Bundle();
-        args.putSerializable(FILE_CATEGORY, fileCategory);
+        args.putInt(FILE_CATEGORY, fileCategory);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,7 +54,7 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFileCategory = (FileCategoryHelper.FileCategory) getArguments().getSerializable(FILE_CATEGORY);
+        mFileCategory = getArguments().getInt(FILE_CATEGORY);
     }
 
     @Nullable
@@ -79,9 +79,9 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private RecyclerView.LayoutManager getLayoutManager() {
         switch (mFileCategory) {
-            case Apk:
-            case Picture:
-            case Video:
+            case P2PConstant.TYPE.APP:
+            case P2PConstant.TYPE.PIC:
+            case P2PConstant.TYPE.VIDEO:
                 return new GridLayoutManager(getContext(), 4);
             default:
                 return new LinearLayoutManager(getContext());

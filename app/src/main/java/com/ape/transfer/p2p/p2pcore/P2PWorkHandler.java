@@ -44,11 +44,11 @@ public class P2PWorkHandler extends Handler {
         p2PCommunicate.start();
 
         neighborManager = new P2PCommunicateManager(p2PManager, this, p2PCommunicate);
-        new Thread() {
-            public void run() {
+//        new Thread() {
+//            public void run() {
                 neighborManager.sendBroadcast();
-            }
-        }.start();
+//            }
+//        }.start();
     }
 
     public void initSend() {
@@ -59,14 +59,13 @@ public class P2PWorkHandler extends Handler {
         receiveManager = new ReceiveManager(this);
     }
 
-    public void releaseReceive() {
-        neighborManager.offLine();
-        receiveManager.quit();
-    }
+//    public void releaseReceive() {
+//        neighborManager.offLine();
+//        receiveManager.quit();
+//    }
 
     @Override
-    public void handleMessage(Message msg) //进行网络相关操作
-    {
+    public void handleMessage(Message msg) {//进行网络相关操作
         int src = msg.arg1;
         int dst = msg.arg2;
         switch (dst) {
@@ -92,10 +91,14 @@ public class P2PWorkHandler extends Handler {
         Log.d(TAG, "p2pHandler release");
 
         if (receiveManager != null)
-            releaseReceive();
+            receiveManager.quit();
+            //releaseReceive();
 
         if (sendManager != null) {
             sendManager.quit();
+        }
+        if (neighborManager != null) {
+            neighborManager.offLine();
         }
 
         Timeout timeout = new Timeout() {

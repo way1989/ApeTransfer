@@ -21,24 +21,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        FileCategoryHelper.FileCategory fileCategory = FileCategoryHelper.sCategories[position];
-        switch (fileCategory) {
-            case Music:
-                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Music);
-            case Video:
-                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Video);
-            case Picture:
-                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Picture);
-            case Doc:
-                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Doc);
-            case Apk:
-                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Apk);
-            case Zip:
-                return FileFragment.newInstance(FileCategoryHelper.FileCategory.Zip);
-            default:
-                break;
-        }
-        return FileFragment.newInstance(FileCategoryHelper.FileCategory.Music);
+        int fileCategory = FileCategoryHelper.sCategories[position];
+        return FileFragment.newInstance(fileCategory);
+
     }
 
     @Override
@@ -48,7 +33,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        FileCategoryHelper.FileCategory fileCategory = FileCategoryHelper.sCategories[position];
+        int fileCategory = FileCategoryHelper.sCategories[position];
         return App.getContext().getString(FileCategoryHelper.categoryNames.get(fileCategory));
     }
 

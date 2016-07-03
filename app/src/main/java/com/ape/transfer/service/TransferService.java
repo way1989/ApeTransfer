@@ -143,14 +143,18 @@ public class TransferService extends Service implements NeighborCallback, Receiv
             return isP2pRunning;
         }
 
-        public void sendFile(ArrayList<FileItem> fileItems){
+        public void sendFile(ArrayList<FileItem> fileItems) {
             int size = fileItems.size();
             P2PFileInfo[] fileArray = new P2PFileInfo[size];
-            for(int i = 0; i < size; i++){
+            for (int i = 0; i < size; i++) {
                 FileItem item = fileItems.get(i);
                 P2PFileInfo info = new P2PFileInfo();
-                info.name = Util.getNameFromFilepath(item.path);
-                info.type = P2PConstant.TYPE.APP;
+                if (item.type == P2PConstant.TYPE.APP) {
+                    info.name = item.appLabel + ".apk";
+                } else {
+                    info.name = Util.getNameFromFilepath(item.path);
+                }
+                info.type = item.type;
                 info.size = item.size;
                 info.path = item.path;
 

@@ -439,8 +439,8 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
         final String ssid = scanResult.SSID;
         boolean isWifiConnected = isWifiConnected(this);
         Log.i(TAG, "isWifiConnected = " + isWifiConnected + ", ssid = " + mWifiManager.getConnectionInfo().getSSID()
-                + ", ScanResult ssid = " + "\"" +ssid + "\"");
-        if (isWifiConnected && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), "\"" +ssid + "\"")) {
+                + ", ScanResult ssid = " + "\"" + ssid + "\"");
+        if (isWifiConnected && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), "\"" + ssid + "\"")) {
             mHandler.removeMessages(MSG_START_P2P);
             mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 2500L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
         } else {

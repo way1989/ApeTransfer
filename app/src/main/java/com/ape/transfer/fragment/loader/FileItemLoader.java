@@ -3,7 +3,6 @@ package com.ape.transfer.fragment.loader;
 import android.content.Context;
 
 import com.ape.transfer.model.FileItem;
-import com.ape.transfer.util.FileCategoryHelper;
 
 import java.util.ArrayList;
 
@@ -11,9 +10,9 @@ import java.util.ArrayList;
  * Created by android on 16-6-28.
  */
 public class FileItemLoader extends BaseLoader<FileItem> {
-    private FileCategoryHelper.FileCategory mFileCategory;
+    private int mFileCategory;
 
-    public FileItemLoader(Context context, FileCategoryHelper.FileCategory fileCategory) {
+    public FileItemLoader(Context context, int fileCategory) {
         super(context);
         mFileCategory = fileCategory;
     }

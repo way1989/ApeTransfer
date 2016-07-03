@@ -13,10 +13,9 @@ import com.ape.photopicker.GlideHelper;
 import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.model.FileItem;
-import com.ape.transfer.util.FileCategoryHelper;
+import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.util.Util;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -26,9 +25,9 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
     private LayoutInflater mInflater;
     private ArrayList<FileItem> mFileItems;
     private OnItemClickListener mListener;
-    private FileCategoryHelper.FileCategory mFileCategory;
+    private int mFileCategory;
 
-    public FileItemAdapter(Context context, FileCategoryHelper.FileCategory fileCategory,
+    public FileItemAdapter(Context context, int fileCategory,
                            OnItemClickListener onItemClickListener) {
         mInflater = LayoutInflater.from(context);
         setHasStableIds(true);
@@ -56,11 +55,11 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         switch (mFileCategory) {
-            case Apk:
+            case P2PConstant.TYPE.APP:
                 view = mInflater.inflate(R.layout.app_item, parent, false);
                 break;
-            case Video:
-            case Picture:
+            case P2PConstant.TYPE.VIDEO:
+            case P2PConstant.TYPE.PIC:
                 view = mInflater.inflate(R.layout.video_item, parent, false);
                 break;
             default:
@@ -75,30 +74,30 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         FileItem item = mFileItems.get(position);
         holder.itemView.setTag(item);
         switch (mFileCategory) {
-            case Apk:
+            case P2PConstant.TYPE.APP:
                 holder.ivIcon.setImageDrawable(item.appLogo);
-                holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
+                holder.tvName.setText(item.appLabel);
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
-            case Video:
-            case Picture:
+            case P2PConstant.TYPE.VIDEO:
+            case P2PConstant.TYPE.PIC:
                 GlideHelper.loadCropResource(item.path, holder.ivIcon);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
-            case Zip:
+            case P2PConstant.TYPE.ZIP:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_rar);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
-            case Doc:
+            case P2PConstant.TYPE.DOC:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_default);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
-            case Music:
+            case P2PConstant.TYPE.MUSIC:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_music);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));

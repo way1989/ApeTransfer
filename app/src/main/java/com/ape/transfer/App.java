@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.text.format.Formatter;
 
-import com.ape.emoji.SmileProcessor;
 import com.ape.transfer.util.Log;
 import com.tencent.bugly.crashreport.CrashReport;
 

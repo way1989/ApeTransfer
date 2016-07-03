@@ -8,6 +8,7 @@ import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Video;
 
 import com.ape.transfer.R;
+import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 
 import java.util.HashMap;
 
@@ -15,19 +16,19 @@ public class FileCategoryHelper {
     public static final String[] DOC_SUPPORTED_SUFFIX = {".txt", ".log", ".xml", ".ini", ".lrc"};
     public static final String[] SUPPORTED_ARCHIVES = {".zip", ".rar"};
     private static final String TAG = "FileCategoryHelper";
-    public static HashMap<FileCategory, Integer> categoryNames = new HashMap<FileCategory, Integer>();
-    public static FileCategory[] sCategories = new FileCategory[]{
-            FileCategory.Music, FileCategory.Video, FileCategory.Picture,
-            FileCategory.Doc, FileCategory.Zip, FileCategory.Apk
+    public static HashMap<Integer, Integer> categoryNames = new HashMap<Integer, Integer>();
+    public static int[] sCategories = new int[]{
+            P2PConstant.TYPE.MUSIC, P2PConstant.TYPE.VIDEO, P2PConstant.TYPE.PIC,
+            P2PConstant.TYPE.DOC, P2PConstant.TYPE.ZIP, P2PConstant.TYPE.APP
     };
 
     static {
-        categoryNames.put(FileCategory.Music, R.string.category_music);
-        categoryNames.put(FileCategory.Video, R.string.category_video);
-        categoryNames.put(FileCategory.Picture, R.string.category_picture);
-        categoryNames.put(FileCategory.Doc, R.string.category_document);
-        categoryNames.put(FileCategory.Zip, R.string.category_zip);
-        categoryNames.put(FileCategory.Apk, R.string.category_apk);
+        categoryNames.put(P2PConstant.TYPE.MUSIC, R.string.category_music);
+        categoryNames.put(P2PConstant.TYPE.VIDEO, R.string.category_video);
+        categoryNames.put(P2PConstant.TYPE.PIC, R.string.category_picture);
+        categoryNames.put(P2PConstant.TYPE.DOC, R.string.category_document);
+        categoryNames.put(P2PConstant.TYPE.ZIP, R.string.category_zip);
+        categoryNames.put(P2PConstant.TYPE.APP, R.string.category_apk);
     }
 
 
@@ -43,13 +44,13 @@ public class FileCategoryHelper {
         return selection.substring(0, selection.lastIndexOf(")") + 1) + ")";
     }
 
-    public static String buildSelectionByCategory(FileCategory cat) {
+    public static String buildSelectionByCategory(int cat) {
         String selection = null;
         switch (cat) {
-            case Doc:
+            case P2PConstant.TYPE.DOC:
                 selection = buildDocSelection();
                 break;
-            case Zip:
+            case P2PConstant.TYPE.ZIP:
                 selection = "(format != 12289) and (";
                 for (String str : SUPPORTED_ARCHIVES) {
                     selection = selection + "(" + FileColumns.DATA + " LIKE '%"
@@ -58,7 +59,7 @@ public class FileCategoryHelper {
                 selection = selection.substring(0, selection.length() - 3);
                 selection += ")";
                 break;
-            case Apk:
+            case P2PConstant.TYPE.APP:
                 selection = FileColumns.DATA + " LIKE '%.apk'";
                 break;
             default:
@@ -67,22 +68,22 @@ public class FileCategoryHelper {
         return selection;
     }
 
-    public static Uri getContentUriByCategory(FileCategory cat) {
+    public static Uri getContentUriByCategory(int cat) {
         Uri uri;
         String volumeName = "external";
         switch (cat) {
-            case Doc:
-            case Zip:
-            case Apk:
+            case P2PConstant.TYPE.DOC:
+            case P2PConstant.TYPE.ZIP:
+            case P2PConstant.TYPE.APP:
                 uri = Files.getContentUri(volumeName);
                 break;
-            case Music:
+            case P2PConstant.TYPE.MUSIC:
                 uri = Audio.Media.getContentUri(volumeName);
                 break;
-            case Video:
+            case P2PConstant.TYPE.VIDEO:
                 uri = Video.Media.getContentUri(volumeName);
                 break;
-            case Picture:
+            case P2PConstant.TYPE.PIC:
                 uri = Images.Media.getContentUri(volumeName);
                 break;
             default:
@@ -116,25 +117,20 @@ public class FileCategoryHelper {
         };
     }
 
-    public static String buildSortOrder(FileCategory fileCategory) {
+    public static String buildSortOrder(int fileCategory) {
         switch (fileCategory) {
-            case Doc:
-            case Zip:
-            case Apk:
+            case P2PConstant.TYPE.DOC:
+            case P2PConstant.TYPE.ZIP:
+            case P2PConstant.TYPE.APP:
                 return buildSortOrder(SortMethod.name);
-            case Music:
-            case Video:
-            case Picture:
+            case P2PConstant.TYPE.MUSIC:
+            case P2PConstant.TYPE.VIDEO:
+            case P2PConstant.TYPE.PIC:
                 return buildSortOrder(SortMethod.date);
             default:
                 break;
         }
         return buildSortOrder(SortMethod.name);
-    }
-
-
-    public enum FileCategory {
-        Music, Video, Picture, Doc, Zip, Apk
     }
 
     public enum SortMethod {

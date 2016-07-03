@@ -237,7 +237,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
 
                 mFileItems.clear();
                 updateSendUI();
-                ((PagerAdapter)pager.getAdapter()).clearAllSelect();
+                ((PagerAdapter) pager.getAdapter()).clearAllSelect();
                 break;
             case R.id.bt_cancel:
                 onBackPressed();
