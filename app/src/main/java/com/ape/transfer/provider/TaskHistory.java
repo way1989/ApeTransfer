@@ -9,10 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 public class TaskHistory {
     private static TaskHistory sInstance = null;
 
-    private TransferDB mMusicDatabase = null;
+    private TransferDB mTransferDB = null;
 
     public TaskHistory(final Context context) {
-        mMusicDatabase = TransferDB.getInstance(context);
+        mTransferDB = TransferDB.getInstance(context);
     }
 
     public static final synchronized TaskHistory getInstance(final Context context) {

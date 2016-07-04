@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class TransferDB extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "transfer.db";
-    private static final int VERSION = 1;
+    public static final int VERSION = 1;
     private static TransferDB sInstance = null;
 
     private final Context mContext;

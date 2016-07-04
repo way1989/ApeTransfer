@@ -4,7 +4,7 @@
     tools:context=".activity.MainActivity">
     <item
         android:id="@+id/action_history"
-        android:icon="@drawable/record_selector"
+        android:icon="@drawable/ic_history_white"
         android:orderInCategory="100"
         android:title="@string/history_title"
         app:showAsAction="ifRoom" />

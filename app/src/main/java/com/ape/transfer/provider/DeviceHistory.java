@@ -11,10 +11,10 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 public class DeviceHistory {
     private static DeviceHistory sInstance = null;
 
-    private TransferDB mMusicDatabase = null;
+    private TransferDB mTransferDB = null;
 
     public DeviceHistory(final Context context) {
-        mMusicDatabase = TransferDB.getInstance(context);
+        mTransferDB = TransferDB.getInstance(context);
     }
 
     public static final synchronized DeviceHistory getInstance(final Context context) {
@@ -33,7 +33,6 @@ public class DeviceHistory {
                 + DeviceHistoryColumns.IMEI + " TEXT NOT NULL,"
                 + DeviceHistoryColumns.MODEL + " TEXT NOT NULL,"
                 + DeviceHistoryColumns.BRAND + " TEXT NOT NULL,"
-                + DeviceHistoryColumns.OS + " TEXT NOT NULL,"
                 + DeviceHistoryColumns.SDK_INT + " TEXT NOT NULL,"
                 + DeviceHistoryColumns.VERSION_CODE + " TEXT NOT NULL,"
                 + DeviceHistoryColumns.DATABASE_VERSION + " TEXT NOT NULL,"
@@ -50,7 +49,7 @@ public class DeviceHistory {
     public void addDevice(P2PNeighbor neighbor){
         if(neighbor == null)
             return;
-        final SQLiteDatabase database = mMusicDatabase.getWritableDatabase();
+        final SQLiteDatabase database = mTransferDB.getWritableDatabase();
         database.beginTransaction();
     }
     public interface DeviceHistoryColumns {
@@ -62,7 +61,6 @@ public class DeviceHistory {
         public static final String IMEI = "imei";
         public static final String MODEL = "model";
         public static final String BRAND = "brand";
-        public static final String OS = "os";
         public static final String SDK_INT = "sdk_int";
         public static final String VERSION_CODE = "version_code";
         public static final String DATABASE_VERSION = "database_version";
