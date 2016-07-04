@@ -72,16 +72,16 @@ public class P2PCommunicateManager {
     }
 
     public void offLine() {
-//        Timeout timeOut = new Timeout() {
-//            @Override
-//            public void onTimeOut() {
+        Timeout timeOut = new Timeout() {
+            @Override
+            public void onTimeOut() {
                 sigCommunicate.BroadcastMSG(P2PConstant.CommandNum.OFF_LINE,
                         P2PConstant.Recipient.NEIGHBOR);
-//            }
-//        };
-//        timeOut.onTimeOut();
-//        new OSTimer(p2PHandler, timeOut, 250);
-//        new OSTimer(p2PHandler, timeOut, 500);
+            }
+        };
+        timeOut.onTimeOut();
+        new OSTimer(p2PHandler, timeOut, 0);
+        new OSTimer(p2PHandler, timeOut, 250);
     }
 
     public HashMap<String, P2PNeighbor> getNeighbors() {

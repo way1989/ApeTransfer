@@ -81,10 +81,7 @@ public class P2PCommunicateThread extends Thread {
                     P2PConstant.PORT);
             if (udpSocket != null) {
                 udpSocket.send(sendPacket);
-                Log.d(
-                        tag,
-                        "send upd data = " + sendStr + "; sendto = "
-                                + sendTo.getHostAddress());
+                Log.d(tag, "send upd data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
             }
         } catch (IOException e) {
             e.printStackTrace();

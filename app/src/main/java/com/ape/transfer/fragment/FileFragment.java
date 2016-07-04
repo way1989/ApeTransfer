@@ -20,8 +20,15 @@ import com.ape.transfer.R;
 import com.ape.transfer.adapter.FileItemAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.FileItemLoader;
+import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.util.Log;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +37,7 @@ import butterknife.ButterKnife;
  * Created by android on 16-6-28.
  */
 public class FileFragment extends Fragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>, FileItemAdapter.OnItemClickListener {
+    private static final String TAG = "FileFragment";
     private static final String FILE_CATEGORY = "fileCategory";
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
@@ -62,7 +70,21 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_file, container, false);
         ButterKnife.bind(this, view);
+        EventBus.getDefault().register(this);
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void onEventMainThread(FileEvent event) {
+        Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
+        ArrayList<FileItem> lists = event.getMsg();
+        mMusicItemAdapter.unChecked(lists);
     }
 
     @Override

@@ -79,4 +79,6 @@ dependencies {
     compile project(':emoji')
     compile project(':filepicker')
     compile project(':photopicker')
+
+    compile 'org.greenrobot:eventbus:3.0.0'
 }

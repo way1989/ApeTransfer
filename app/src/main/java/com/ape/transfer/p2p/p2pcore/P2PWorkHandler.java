@@ -46,7 +46,7 @@ public class P2PWorkHandler extends Handler {
         neighborManager = new P2PCommunicateManager(p2PManager, this, p2PCommunicate);
 //        new Thread() {
 //            public void run() {
-                neighborManager.sendBroadcast();
+        neighborManager.sendBroadcast();
 //            }
 //        }.start();
     }
@@ -92,7 +92,7 @@ public class P2PWorkHandler extends Handler {
 
         if (receiveManager != null)
             receiveManager.quit();
-            //releaseReceive();
+        //releaseReceive();
 
         if (sendManager != null) {
             sendManager.quit();

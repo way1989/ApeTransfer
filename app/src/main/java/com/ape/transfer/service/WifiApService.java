@@ -9,7 +9,9 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 
@@ -19,6 +21,9 @@ import com.ape.transfer.util.WifiApUtils;
 
 public class WifiApService extends Service {
     private static final String TAG = "WifiApService";
+    private static final int OPEN_WIFI_AP = 0;
+    private static final int CLOSE_WIFI_AP = 1;
+
     private IBinder mBinder = new WifiApBinder();
     private WifiManager mWifiManager;
     private WifiApUtils mWifiApUtils;
@@ -41,6 +46,20 @@ public class WifiApService extends Service {
                 enableWifiSwitch();
             }
 
+        }
+    };
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case OPEN_WIFI_AP:
+                    setWifiApEnabled();
+                    break;
+                case CLOSE_WIFI_AP:
+                    setWifiApDisabled();
+                    break;
+            }
         }
     };
 
@@ -82,7 +101,8 @@ public class WifiApService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        setWifiApDisabled();
+        mHandler.removeMessages(CLOSE_WIFI_AP);
+        mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, 1500L);
         unregisterReceiver(receiver);
 
     }
@@ -213,11 +233,13 @@ public class WifiApService extends Service {
         }
 
         public void openWifiAp() {
-            setWifiApEnabled();
+            mHandler.removeMessages(OPEN_WIFI_AP);
+            mHandler.sendEmptyMessage(OPEN_WIFI_AP);
         }
 
         public void closeWifiAp() {
-            setWifiApDisabled();
+            mHandler.removeMessages(CLOSE_WIFI_AP);
+            mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, 1500L);//delay close wifi ap to send offline message
         }
 
         public WifiConfiguration getWifiApConfiguration() {

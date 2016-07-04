@@ -89,9 +89,9 @@ public class Sender {
                     index++;
                     clearTask();
                     if (index == files.length) {
+                        clearSelf();//add by liweiping for release send resource when all send finished
                         if (p2PHandler != null)
-                            p2PHandler
-                                    .send2UI(P2PConstant.CommandNum.SEND_OVER, neighbor);
+                            p2PHandler.send2UI(P2PConstant.CommandNum.SEND_OVER, neighbor);
                     }
                 }
                 break;

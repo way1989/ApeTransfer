@@ -47,7 +47,4 @@ public class PagerAdapter extends FragmentPagerAdapter {
         return mCurrentFragment;
     }
 
-
-    public void clearAllSelect() {
-    }
 }

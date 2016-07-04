@@ -22,6 +22,7 @@ import com.ape.transfer.R;
 import com.ape.transfer.adapter.PagerAdapter;
 import com.ape.transfer.adapter.PhoneItemAdapter;
 import com.ape.transfer.fragment.FileFragment;
+import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.service.TransferService;
@@ -29,6 +30,8 @@ import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.WifiApUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -235,9 +238,9 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
                 if (mTransferService != null)
                     mTransferService.sendFile(mFileItems);
 
+                EventBus.getDefault().post(new FileEvent(mFileItems));//post message to fragment
                 mFileItems.clear();
                 updateSendUI();
-                ((PagerAdapter) pager.getAdapter()).clearAllSelect();
                 break;
             case R.id.bt_cancel:
                 onBackPressed();

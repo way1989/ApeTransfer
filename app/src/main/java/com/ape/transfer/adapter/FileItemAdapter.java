@@ -120,6 +120,15 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         return mFileItems.get(position).id;
     }
 
+    public void unChecked(ArrayList<FileItem> lists) {
+        if (mFileItems.containsAll(lists)) {
+            for (FileItem item : mFileItems) {
+                item.selected = false;
+            }
+        }
+        notifyDataSetChanged();
+    }
+
     public interface OnItemClickListener {
         void onItemClick(View v);
     }
