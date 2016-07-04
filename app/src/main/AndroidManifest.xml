@@ -94,7 +94,17 @@
             android:name=".activity.ChatActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".activity.MainTransferActivity" />
+        <activity
+            android:name=".activity.MainTransferActivity"
+            android:launchMode="singleTop"
+            android:label="@string/select_file"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.HistoryActivity"
+            android:label="@string/history_title"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

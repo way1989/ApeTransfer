@@ -47,5 +47,11 @@
         <item name="android:fadeEnabled">false</item>
         <item name="android:overScrollMode">always</item>
     </style>
+    <style name="progressBarHorizontal" parent="@android:style/Widget.ProgressBar.Horizontal">
+        <item name="android:maxHeight">@dimen/message_progress_bg_height</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:progressDrawable">@drawable/progress_horizontal</item>
+        <item name="android:minHeight">@dimen/message_progress_bg_height</item>
+    </style>
 
 </resources>

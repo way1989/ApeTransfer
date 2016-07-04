@@ -92,6 +92,9 @@
     <string name="category_apk">Apk</string>
     <string name="empty">No File</string>
     <string name="select_text">%1$d/%2$s</string>
+    <string name="select_file">Choose file</string>
+    <string name="select_settings">Select Setup</string>
+    <string name="selected_none">Nothing selected</string>
 
     <string name="transfer_discontent">Disconnect?</string>
     <string name="transfer_fail_1">You have disabled the “Turn on/off WLAN” permission for EasyShare. Please allow this permission to return to the home page and retry creating a hotpot.</string>
@@ -101,6 +104,15 @@
     <string name="connect_dialog_title">Prompt</string>
     <string name="notify_close_wlan">WLAN will be turned off temporarily, and will be re-connected after this is completed</string>
     <string name="notify_title">EasyShare reminder</string>
-    <string name="share_app">http://fir.im/ApeTransfer</string>
+    <string name="share_app" translatable="false">http://fir.im/ApeTransfer</string>
+    <string name="default_progress" translatable="false">0%</string>
+    <string name="main_receive">I want to receive</string>
+
+    <string name="history_clean">Clear</string>
+    <string name="history_empty">Temporarily no records</string>
+    <string name="history_not_found">Source file does not exist</string>
+    <string name="history_receive">Received</string>
+    <string name="history_send">Sent</string>
+    <string name="history_title">Records</string>
 
 </resources>

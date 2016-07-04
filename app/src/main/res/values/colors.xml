@@ -36,4 +36,5 @@
     <color name="ccc">#cccccccc</color>
     <color name="gray_light">#ffc6c6c6</color>
     <color name="tab_bg">#fffafafa</color>
+    <color name="gray_lighter">#ffaaaaaa</color>
 </resources>

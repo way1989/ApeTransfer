@@ -90,6 +90,9 @@
     <string name="category_zip">压缩包</string>
     <string name="empty">暂无文件</string>
     <string name="select_text">%1$d个/%2$s</string>
+    <string name="select_file">选择文件</string>
+    <string name="select_settings">选择设置</string>
+    <string name="selected_none">未选中任何内容</string>
 
     <string name="transfer_discontent">确定断开连接？</string>
     <string name="transfer_fail_1">您可能已经禁用了互传 “打开/关闭WLAN” 的权限,请允许该权限后，返回主页再尝试创建热点。</string>
@@ -100,5 +103,14 @@
 
     <string name="notify_close_wlan">WLAN将暂时关闭，结束后恢复连接</string>
     <string name="notify_title">互传提醒您</string>
+
+    <string name="history_clean">清除</string>
+    <string name="history_empty">暂无记录</string>
+    <string name="history_not_found">源文件已不存在</string>
+    <string name="history_receive">我接收的</string>
+    <string name="history_send">我发送的</string>
+    <string name="history_title">记录</string>
+    <string name="main_receive">我要接受</string>
+    <string name="music">音乐</string>
 
 </resources>
