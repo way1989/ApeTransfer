@@ -11,13 +11,27 @@ import java.io.File;
  * android设备中的文件
  */
 public class P2PFileInfo {
-    public String path;
+    public String savePath;
     public String name;
     public long size;
     public int type;
     public int percent;
     public boolean success;
     public long LengthNeeded = 0;
+
+
+    public String wifiMac;
+    public String filePath;
+    public String md5;
+    public String thumbUrl;
+    public String mineType;
+    public long position;
+    public long lastModify;
+    public long createTime;
+    public int status;
+    public int read;
+    public int deleted;
+    public int direction;
 
     public P2PFileInfo() {
 
@@ -26,10 +40,15 @@ public class P2PFileInfo {
     public P2PFileInfo(String string) {
         String str[] = string.split(":");
         name = str[0];
-        size = Long.parseLong(str[1]);
-        type = Integer.parseInt(str[2]);
+        filePath = str[1];
+        md5 = str[2];
+        lastModify = Long.parseLong(str[3]);
+        thumbUrl = str[4];
+        size = Long.parseLong(str[5]);
+        type = Integer.parseInt(str[6
+                ]);
 
-        path = P2PManager.getSavePath(type) + File.separator + name;
+        savePath = P2PManager.getSavePath(type) + File.separator + name;
     }
 
     public int getPercent() {
@@ -46,13 +65,15 @@ public class P2PFileInfo {
     @Override
     public boolean equals(Object o) {
         return (((P2PFileInfo) (o)).name.equals(name))
-                && (((P2PFileInfo) (o)).size == size) && (((P2PFileInfo) (o)).type == type)
-                && (((P2PFileInfo) (o)).path.equals(path));
+                && (((P2PFileInfo) (o)).size == size)
+                && (((P2PFileInfo) (o)).type == type)
+                &&(((P2PFileInfo) (o)).md5.equals(md5))
+                && (((P2PFileInfo) (o)).savePath.equals(savePath));
     }
 
     @Override
     public String toString() {
-        return name + ":" + size + ":" + type + "\0";
+        return name + ":" + filePath + ":" + md5 + ":" + lastModify + ":" + thumbUrl + ":" + size + ":" + type + "\0";
     }
 
     public P2PFileInfo duplicate() {
@@ -60,7 +81,7 @@ public class P2PFileInfo {
 
         file.name = this.name;
         file.size = this.size;
-        file.path = this.path;
+        file.savePath = this.savePath;
         file.type = this.type;
         file.percent = this.percent;
         file.success = this.success;

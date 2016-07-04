@@ -16,6 +16,14 @@ public class P2PNeighbor implements Serializable {
     public String ip;
     public InetAddress inetAddress;
 
+    public String wifiMac;
+    public String mode;
+    public String brand;
+    public int sdkInt;
+    public int versionCode;
+    public int databaseVersion;
+    public long lastTime;
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null)

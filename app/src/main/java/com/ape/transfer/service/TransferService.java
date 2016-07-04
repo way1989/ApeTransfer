@@ -156,7 +156,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
                 }
                 info.type = item.type;
                 info.size = item.size;
-                info.path = item.path;
+                info.savePath = item.path;
 
                 fileArray[i] = info;
             }

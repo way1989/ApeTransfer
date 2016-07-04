@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -34,12 +35,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
 import com.ape.transfer.fragment.TransferFragment;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.WifiApUtils;
+import com.ape.transfer.util.WifiUtils;
 import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
@@ -124,6 +128,8 @@ public class MainActivity extends AppCompatActivity
         setupSpinner();
 
         navigateTransfer.run();
+        String mac = WifiApUtils.getInstance((WifiManager) getSystemService(Context.WIFI_SERVICE)).getWifiMacFromDevice();
+        Toast.makeText(this, "mac = " + mac, Toast.LENGTH_SHORT).show();
     }
 
     private void setupNavView() {
