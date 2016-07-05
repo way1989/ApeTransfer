@@ -78,7 +78,7 @@ public class TaskHistory {
             while (searches.moveToNext()) {
                 P2PFileInfo fileInfo = new P2PFileInfo();
                 fileInfo.wifiMac = searches.getString(searches.getColumnIndex(TaskHistoryColumns.WIFI_MAC));
-                fileInfo.name = searches.getString(searches.getColumnIndex(TaskHistoryColumns.NAME));
+                fileInfo.name = searches.getString(searches.getColumnIndex(TaskHistoryColumns.TITLE));
                 fileInfo.direction = searches.getInt(searches.getColumnIndex(TaskHistoryColumns.DIRECTION));
                 fileInfo.createTime = searches.getLong(searches.getColumnIndex(TaskHistoryColumns.CREATE_TIME));
                 fileInfo.path = searches.getString(searches.getColumnIndex(TaskHistoryColumns.FILE_PATH));

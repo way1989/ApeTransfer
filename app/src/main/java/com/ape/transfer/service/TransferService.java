@@ -78,12 +78,6 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo[] files) {
         Log.i(TAG, "QueryReceiving....");
         mP2PManager.ackReceive();
-        return false;
-    }
-
-    @Override
-    public void BeforeReceiving(P2PNeighbor src, P2PFileInfo[] files) {
-        Log.i(TAG, "BeforeReceiving....");
         for(P2PFileInfo fileInfo : files){
             fileInfo.direction = 1;
             fileInfo.deleted = 0;
@@ -92,6 +86,12 @@ public class TransferService extends Service implements NeighborCallback, Receiv
             fileInfo.position = 0;
             TaskHistory.getInstance().addFileInfo(fileInfo);
         }
+        return false;
+    }
+
+    @Override
+    public void BeforeReceiving(P2PNeighbor src, P2PFileInfo[] files) {
+        Log.i(TAG, "BeforeReceiving....");
     }
 
     @Override

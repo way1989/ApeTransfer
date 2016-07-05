@@ -112,5 +112,7 @@
     <string name="history_title">记录</string>
     <string name="main_receive">我要接受</string>
     <string name="music">音乐</string>
+    <string name="format_from">接收自 %1$s</string>
+    <string name="format_to">发送给 %1$s</string>
 
 </resources>

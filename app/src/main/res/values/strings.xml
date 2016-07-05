@@ -115,4 +115,7 @@
     <string name="history_send">Sent</string>
     <string name="history_title">Records</string>
 
+    <string name="format_from">FROM: %1$s</string>
+    <string name="format_to">TO: %1$s</string>
+
 </resources>
