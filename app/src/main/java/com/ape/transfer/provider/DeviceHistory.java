@@ -1,7 +1,6 @@
 package com.ape.transfer.provider;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
@@ -28,7 +27,7 @@ public class DeviceHistory {
     }
 
     public void onCreate(final SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + DeviceHistoryColumns.NAME
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + DeviceHistoryColumns.TABLE_NAME
                 + " (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + DeviceHistoryColumns.WIFI_MAC + " TEXT NOT NULL,"
                 + DeviceHistoryColumns.ALIAS + " TEXT NOT NULL,"
@@ -45,7 +44,7 @@ public class DeviceHistory {
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + DeviceHistoryColumns.NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + DeviceHistoryColumns.TABLE_NAME);
         onCreate(db);
     }
 
@@ -55,10 +54,10 @@ public class DeviceHistory {
         final SQLiteDatabase database = mTransferDB.getWritableDatabase();
         database.beginTransaction();
         try {
-            database.delete(DeviceHistoryColumns.NAME,
+            database.delete(DeviceHistoryColumns.TABLE_NAME,
                     DeviceHistoryColumns.WIFI_MAC + " = ? COLLATE NOCASE", new String[]{neighbor.wifiMac});
 
-            final ContentValues values = new ContentValues(9);
+            final ContentValues values = new ContentValues();
             values.put(DeviceHistoryColumns.WIFI_MAC, neighbor.wifiMac);
             values.put(DeviceHistoryColumns.ALIAS, neighbor.alias);
             values.put(DeviceHistoryColumns.AVATAR, neighbor.icon);
@@ -68,7 +67,7 @@ public class DeviceHistory {
             values.put(DeviceHistoryColumns.VERSION_CODE, neighbor.versionCode);
             values.put(DeviceHistoryColumns.DATABASE_VERSION, neighbor.databaseVersion);
             values.put(DeviceHistoryColumns.LAST_TIME, neighbor.lastTime);
-            database.insert(DeviceHistoryColumns.NAME, null, values);
+            database.insert(DeviceHistoryColumns.TABLE_NAME, null, values);
 
         } finally {
             database.setTransactionSuccessful();
@@ -80,7 +79,7 @@ public class DeviceHistory {
         if (TextUtils.isEmpty(wifiMac))
             return null;
         final SQLiteDatabase database = mTransferDB.getReadableDatabase();
-        Cursor cursor = database.query(DeviceHistoryColumns.NAME,
+        Cursor cursor = database.query(DeviceHistoryColumns.TABLE_NAME,
                 null, DeviceHistoryColumns.WIFI_MAC + " = ?", new String[]{wifiMac}, null, null, null);
         if (cursor == null)
             return null;
@@ -107,7 +106,7 @@ public class DeviceHistory {
 
     public interface DeviceHistoryColumns {
         /* Table name */
-        String NAME = "devices";
+        String TABLE_NAME = "devices";
         public static final String WIFI_MAC = "wifi_mac";
         public static final String ALIAS = "alias";
         public static final String AVATAR = "avatar";

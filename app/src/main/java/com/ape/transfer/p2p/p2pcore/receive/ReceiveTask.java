@@ -78,7 +78,7 @@ public class ReceiveTask extends Thread {
 
                     total += len;
                     percent = (int) (((float) total / fileInfo.size) * 100);
-
+                    fileInfo.position = total;//add by liweiping
                     if (percent - lastPercent > 1 || percent == 100) {
                         lastPercent = percent;
                         fileInfo.setPercent(percent);

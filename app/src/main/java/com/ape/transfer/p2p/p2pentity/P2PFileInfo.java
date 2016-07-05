@@ -89,4 +89,17 @@ public class P2PFileInfo {
 
         return file;
     }
+
+    public interface Status{
+        public static final int STATUS_READY = 0;
+        public static final int STATUS_SENDING = 1;
+        public static final int STATUS_RECEIVING = 2;
+        public static final int STATUS_FAILED = 3;
+        public static final int STATUS_SCUEED = 4;
+    }
+
+    public interface Direction{
+        public static final int DIRECTION_SEND = 0;
+        public static final int DIRECTION_RECEIVE = 1;
+    }
 }

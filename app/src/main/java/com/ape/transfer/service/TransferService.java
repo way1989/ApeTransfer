@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.text.TextUtils;
 
 import com.ape.transfer.model.FileItem;
+import com.ape.transfer.model.P2PFileInfoEvent;
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.p2p.p2pcore.P2PManager;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
@@ -19,6 +20,8 @@ import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.util.WifiUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -79,9 +82,9 @@ public class TransferService extends Service implements NeighborCallback, Receiv
         Log.i(TAG, "QueryReceiving....");
         mP2PManager.ackReceive();
         for(P2PFileInfo fileInfo : files){
-            fileInfo.direction = 1;
+            fileInfo.direction = P2PFileInfo.Direction.DIRECTION_RECEIVE;
             fileInfo.deleted = 0;
-            fileInfo.status = 0;
+            fileInfo.status = P2PFileInfo.Status.STATUS_READY;
             fileInfo.read = 0;
             fileInfo.position = 0;
             TaskHistory.getInstance().addFileInfo(fileInfo);
@@ -95,8 +98,12 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     }
 
     @Override
-    public void OnReceiving(P2PFileInfo files) {
-        Log.i(TAG, "OnReceiving.... percent = " + files.percent);
+    public void OnReceiving(P2PFileInfo file) {
+        Log.i(TAG, "OnReceiving.... percent = " + file.percent
+                + ", position = " + file.position + ", sumSize = " + file.size);
+        file.status = P2PFileInfo.Status.STATUS_RECEIVING;
+        TaskHistory.getInstance().updateFileInfo(file);
+        EventBus.getDefault().post(new P2PFileInfoEvent(file));
     }
 
     @Override
@@ -174,7 +181,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
                 info.md5 = Util.getFileMD5(file);
                 info.lastModify = file.lastModified();
                 info.createTime = System.currentTimeMillis();
-                info.status = 0;
+                info.status = P2PFileInfo.Status.STATUS_READY;
                 info.read = 1;
                 info.deleted = 0;
                 TaskHistory.getInstance().addFileInfo(info);
@@ -189,7 +196,11 @@ public class TransferService extends Service implements NeighborCallback, Receiv
 
                 @Override
                 public void OnSending(P2PFileInfo file, P2PNeighbor dest) {
-                    Log.i(TAG, "OnSending.... file.percent = " + file.percent);
+                    Log.i(TAG, "OnSending.... percent = " + file.percent
+                            + ", position = " + file.position + ", sumSize = " + file.size);
+                    file.status = P2PFileInfo.Status.STATUS_SENDING;
+                    TaskHistory.getInstance().updateFileInfo(file);
+                    EventBus.getDefault().post(new P2PFileInfoEvent(file));
                 }
 
                 @Override

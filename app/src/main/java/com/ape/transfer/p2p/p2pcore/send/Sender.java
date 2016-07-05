@@ -70,7 +70,7 @@ public class Sender {
                 lastPercent = fileInfo.getPercent();
 
                 percent = (int) (((float) (fileInfo.size - (fileInfo.LengthNeeded - socketTransInfo.Transferred)) / fileInfo.size) * 100);
-
+                fileInfo.position = socketTransInfo.Transferred;//add by liweiping
                 ParamTCPNotify tcpNotify;
                 if (percent < 100) {
                     if (percent != lastPercent) {

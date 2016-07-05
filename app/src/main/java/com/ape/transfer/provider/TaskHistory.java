@@ -28,7 +28,7 @@ public class TaskHistory {
     }
 
     public void onCreate(final SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS " + TaskHistoryColumns.NAME
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TaskHistoryColumns.TABLE_NAME
                 + " (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + TaskHistoryColumns.WIFI_MAC + " TEXT NOT NULL,"
                 + TaskHistoryColumns.TITLE + " TEXT NOT NULL,"
@@ -52,13 +52,13 @@ public class TaskHistory {
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TaskHistoryColumns.NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TaskHistoryColumns.TABLE_NAME);
         onCreate(db);
     }
 
     public Cursor queryFileInfos(final String direction) {
         final SQLiteDatabase database = mTransferDB.getReadableDatabase();
-        return database.query(TaskHistoryColumns.NAME,
+        return database.query(TaskHistoryColumns.TABLE_NAME,
                 null, TaskHistoryColumns.DIRECTION + " = ?", new String[]{direction}, null, null,
                 TaskHistoryColumns.CREATE_TIME + " DESC");
     }
@@ -112,7 +112,7 @@ public class TaskHistory {
         database.beginTransaction();
 
         try {
-            final ContentValues values = new ContentValues(9);
+            final ContentValues values = new ContentValues();
             values.put(TaskHistoryColumns.WIFI_MAC, fileInfo.wifiMac);
             values.put(TaskHistoryColumns.TITLE, fileInfo.name);
             values.put(TaskHistoryColumns.DIRECTION, fileInfo.direction);
@@ -128,7 +128,27 @@ public class TaskHistory {
             values.put(TaskHistoryColumns.MD5, fileInfo.md5);
             values.put(TaskHistoryColumns.READ, fileInfo.read);
             values.put(TaskHistoryColumns.DELETED, fileInfo.deleted);
-            database.insert(TaskHistoryColumns.NAME, null, values);
+            database.insert(TaskHistoryColumns.TABLE_NAME, null, values);
+
+        } finally {
+            database.setTransactionSuccessful();
+            database.endTransaction();
+        }
+    }
+
+    public void updateFileInfo(P2PFileInfo fileInfo) {
+        if (fileInfo == null) {
+            return;
+        }
+        final SQLiteDatabase database = mTransferDB.getWritableDatabase();
+        database.beginTransaction();
+        try {
+            final ContentValues values = new ContentValues();
+            values.put(TaskHistoryColumns.POSITION, fileInfo.position);
+            values.put(TaskHistoryColumns.STATUS, fileInfo.status);
+
+            database.update(TaskHistoryColumns.TABLE_NAME, values, TaskHistoryColumns.WIFI_MAC + " = ?"
+                    + " and " + TaskHistoryColumns.MD5 + " = ?", new String[]{fileInfo.wifiMac, fileInfo.md5});
 
         } finally {
             database.setTransactionSuccessful();
@@ -138,7 +158,7 @@ public class TaskHistory {
 
     public interface TaskHistoryColumns {
         /* Table name */
-        String NAME = "tasks";
+        String TABLE_NAME = "tasks";
         public static final String WIFI_MAC = "wifi_mac";
         public static final String TITLE = "title";
         public static final String DIRECTION = "direction";

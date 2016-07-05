@@ -1,6 +1,7 @@
 package com.ape.transfer.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -8,6 +9,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -123,7 +126,22 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
             startWifiAp();
         }
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_history:
+                startActivity(new Intent(this, HistoryActivity.class));
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     public void onBackPressed() {
         if (isOpeningWifiAp) {//正在打开热点,禁用返回键

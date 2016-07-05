@@ -18,6 +18,16 @@ import com.ape.transfer.adapter.FileItemAdapter;
 import com.ape.transfer.adapter.HistoryAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.TaskLoader;
+import com.ape.transfer.model.FileEvent;
+import com.ape.transfer.model.FileItem;
+import com.ape.transfer.model.P2PFileInfoEvent;
+import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
+import com.ape.transfer.util.Log;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,9 +72,23 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, rootView);
+        EventBus.getDefault().register(this);
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+    }
+
+    private static final String TAG = "HistoryFragment";
+    @Subscribe
+    public void onEventMainThread(P2PFileInfoEvent event) {
+        Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
+        P2PFileInfo fileInfo = event.getMsg();
+        mAdapter.updateItem(fileInfo);
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

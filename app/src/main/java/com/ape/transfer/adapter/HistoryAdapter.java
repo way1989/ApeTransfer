@@ -68,6 +68,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private boolean lessThanStandard(long selfTime, long lastTime) {
         return (selfTime - lastTime) < (30 * 60 * 1000);
     }
+    private int getPercent(P2PFileInfo fileInfo){
+        return (int)((100.0f) * fileInfo.position / fileInfo.size);
+    }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -91,11 +94,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.ivThumb.setImageResource(R.drawable.file_icon_default);
         holder.tvTitle.setText(item.name);
         holder.tvInfo.setText(Formatter.formatFileSize(App.getContext(), item.size));
-        if (item.percent < 100) {
+        if (item.position < item.size) {
             holder.progressBar.setVisibility(View.VISIBLE);
-            holder.progressBar.setProgress(item.percent);
+            holder.progressBar.setProgress(getPercent(item));
+            holder.tvPrecent.setText(getPercent(item) + "%");
         } else {
             holder.progressBar.setVisibility(View.INVISIBLE);
+            holder.tvPrecent.setVisibility(View.INVISIBLE);
             holder.tvInfo.setVisibility(View.VISIBLE);
         }
         if (mDirection == 0) {
@@ -116,14 +121,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return mFileItems.get(position).md5.hashCode();
     }
 
-//    public void unChecked(ArrayList<P2PFileInfo> lists) {
-//        if (mFileItems.containsAll(lists)) {
-//            for (P2PFileInfo item : mFileItems) {
-//                item.selected = false;
-//            }
-//        }
-//        notifyDataSetChanged();
-//    }
+    public void updateItem(P2PFileInfo fileInfo) {
+        int index = mFileItems.indexOf(fileInfo);
+        if(index != -1){
+            P2PFileInfo info = mFileItems.get(index);
+            info.position = fileInfo.position;
+            info.percent = (int)((100.0f) * fileInfo.position / fileInfo.size);
+            notifyItemChanged(index);
+        }
+    }
 
     public interface OnItemClickListener {
         void onItemClick(View v);
