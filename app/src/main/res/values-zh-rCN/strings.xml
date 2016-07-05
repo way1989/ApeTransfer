@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ApeTransfer</string>
+    <string name="app_name">闪传</string>
     <string name="action_settings">设置</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
