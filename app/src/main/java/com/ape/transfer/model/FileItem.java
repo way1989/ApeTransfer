@@ -141,7 +141,7 @@ public class FileItem implements Serializable {
                 ", dateModified=" + dateModified +
                 ", size=" + size +
                 ", id=" + id +
-                ", savePath='" + path + '\'' +
+                ", path='" + path + '\'' +
                 '}';
     }
 }

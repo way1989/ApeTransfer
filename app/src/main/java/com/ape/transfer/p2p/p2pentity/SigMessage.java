@@ -2,6 +2,7 @@ package com.ape.transfer.p2p.p2pentity;
 
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.util.Log;
 
 import java.util.Date;
 
@@ -11,6 +12,7 @@ import java.util.Date;
  * 局域网用户之间的upd消息
  */
 public class SigMessage {
+    private static final String TAG = "SigMessage";
     /**
      * 发送包的编号 时间即编号
      */
@@ -62,6 +64,7 @@ public class SigMessage {
         for (int i = 7; i < args.length; i++) {
             addition += (":" + args[i]);
         }
+        Log.i(TAG, "SigMessage addition = " + addition);
     }
 
     public String toProtocolString() {

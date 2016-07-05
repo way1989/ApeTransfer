@@ -11,7 +11,7 @@ import java.io.File;
  * android设备中的文件
  */
 public class P2PFileInfo {
-    public String savePath;
+    public String path;
     public String name;
     public long size;
     public int type;
@@ -21,7 +21,7 @@ public class P2PFileInfo {
 
 
     public String wifiMac;
-    public String filePath;
+    public String savePath;
     public String md5;
     public String thumbUrl;
     public String mineType;
@@ -40,13 +40,13 @@ public class P2PFileInfo {
     public P2PFileInfo(String string) {
         String str[] = string.split(":");
         name = str[0];
-        filePath = str[1];
+        path = str[1];
         md5 = str[2];
-        lastModify = Long.parseLong(str[3]);
-        thumbUrl = str[4];
-        size = Long.parseLong(str[5]);
-        type = Integer.parseInt(str[6
-                ]);
+        wifiMac = str[3];
+        createTime = Long.parseLong(str[4]);
+        thumbUrl = str[5];
+        size = Long.parseLong(str[6]);
+        type = Integer.parseInt(str[7]);
 
         savePath = P2PManager.getSavePath(type) + File.separator + name;
     }
@@ -68,12 +68,12 @@ public class P2PFileInfo {
                 && (((P2PFileInfo) (o)).size == size)
                 && (((P2PFileInfo) (o)).type == type)
                 &&(((P2PFileInfo) (o)).md5.equals(md5))
-                && (((P2PFileInfo) (o)).savePath.equals(savePath));
+                && (((P2PFileInfo) (o)).path.equals(path));
     }
 
     @Override
     public String toString() {
-        return name + ":" + filePath + ":" + md5 + ":" + lastModify + ":" + thumbUrl + ":" + size + ":" + type + "\0";
+        return name + ":" + path + ":" + md5 + ":" + wifiMac + ":" + createTime + ":" + thumbUrl + ":" + size + ":" + type + "\0";
     }
 
     public P2PFileInfo duplicate() {
@@ -81,7 +81,7 @@ public class P2PFileInfo {
 
         file.name = this.name;
         file.size = this.size;
-        file.savePath = this.savePath;
+        file.path = this.path;
         file.type = this.type;
         file.percent = this.percent;
         file.success = this.success;

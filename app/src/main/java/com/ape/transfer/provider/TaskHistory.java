@@ -1,7 +1,6 @@
 package com.ape.transfer.provider;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -17,13 +16,13 @@ public class TaskHistory {
 
     private TransferDB mTransferDB = null;
 
-    public TaskHistory(final Context context) {
-        mTransferDB = TransferDB.getInstance(context);
+    public TaskHistory() {
+        mTransferDB = TransferDB.getInstance();
     }
 
-    public static final synchronized TaskHistory getInstance(final Context context) {
+    public static final synchronized TaskHistory getInstance() {
         if (sInstance == null) {
-            sInstance = new TaskHistory(context.getApplicationContext());
+            sInstance = new TaskHistory();
         }
         return sInstance;
     }
@@ -31,18 +30,18 @@ public class TaskHistory {
     public void onCreate(final SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + TaskHistoryColumns.NAME
                 + " (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + TaskHistoryColumns.WIFI_MAC + " STRING NOT NULL,"
-                + TaskHistoryColumns.TITLE + " STRING NOT NULL,"
-                + TaskHistoryColumns.DIRECTION + " STRING NOT NULL,"
-                + TaskHistoryColumns.CREATE_TIME + " STRING NOT NULL,"
-                + TaskHistoryColumns.SAVE_PATH + " TEXT NOT NULL,"
+                + TaskHistoryColumns.WIFI_MAC + " TEXT NOT NULL,"
+                + TaskHistoryColumns.TITLE + " TEXT NOT NULL,"
+                + TaskHistoryColumns.DIRECTION + " TEXT NOT NULL,"
+                + TaskHistoryColumns.CREATE_TIME + " TEXT NOT NULL,"
+                + TaskHistoryColumns.SAVE_PATH + " TEXT,"
                 + TaskHistoryColumns.FILE_PATH + " TEXT NOT NULL,"
                 + TaskHistoryColumns.THUMB_URL + " TEXT,"
                 + TaskHistoryColumns.CATEGORY + " TEXT NOT NULL,"
-                + TaskHistoryColumns.MIME_TYPE + " TEXT NOT NULL,"
+                + TaskHistoryColumns.MIME_TYPE + " TEXT,"
                 + TaskHistoryColumns.SIZE + " TEXT NOT NULL,"
-                + TaskHistoryColumns.POSITION + " TEXT NOT NULL,"
-                + TaskHistoryColumns.LAST_MODIFIED + " TEXT NOT NULL,"
+                + TaskHistoryColumns.POSITION + " TEXT,"
+                + TaskHistoryColumns.LAST_MODIFIED + " TEXT,"
                 + TaskHistoryColumns.STATUS + " TEXT NOT NULL,"
                 + TaskHistoryColumns.MD5 + " TEXT NOT NULL,"
                 + TaskHistoryColumns.READ + " TEXT NOT NULL,"
@@ -82,8 +81,8 @@ public class TaskHistory {
                 fileInfo.name = searches.getString(searches.getColumnIndex(TaskHistoryColumns.NAME));
                 fileInfo.direction = searches.getInt(searches.getColumnIndex(TaskHistoryColumns.DIRECTION));
                 fileInfo.createTime = searches.getLong(searches.getColumnIndex(TaskHistoryColumns.CREATE_TIME));
+                fileInfo.path = searches.getString(searches.getColumnIndex(TaskHistoryColumns.FILE_PATH));
                 fileInfo.savePath = searches.getString(searches.getColumnIndex(TaskHistoryColumns.SAVE_PATH));
-                fileInfo.filePath = searches.getString(searches.getColumnIndex(TaskHistoryColumns.FILE_PATH));
                 fileInfo.thumbUrl = searches.getString(searches.getColumnIndex(TaskHistoryColumns.THUMB_URL));
                 fileInfo.type = searches.getInt(searches.getColumnIndex(TaskHistoryColumns.CATEGORY));
                 fileInfo.size = searches.getInt(searches.getColumnIndex(TaskHistoryColumns.SIZE));
@@ -119,7 +118,7 @@ public class TaskHistory {
             values.put(TaskHistoryColumns.DIRECTION, fileInfo.direction);
             values.put(TaskHistoryColumns.CREATE_TIME, fileInfo.createTime);
             values.put(TaskHistoryColumns.SAVE_PATH, fileInfo.savePath);
-            values.put(TaskHistoryColumns.FILE_PATH, fileInfo.filePath);
+            values.put(TaskHistoryColumns.FILE_PATH, fileInfo.path);
             values.put(TaskHistoryColumns.CATEGORY, fileInfo.type);
             values.put(TaskHistoryColumns.MIME_TYPE, fileInfo.mineType);
             values.put(TaskHistoryColumns.SIZE, fileInfo.size);

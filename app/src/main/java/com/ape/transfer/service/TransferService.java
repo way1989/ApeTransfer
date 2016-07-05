@@ -14,11 +14,13 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
 import com.ape.transfer.p2p.p2pinterface.ReceiveFileCallback;
 import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
+import com.ape.transfer.provider.TaskHistory;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.util.WifiUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +84,14 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     @Override
     public void BeforeReceiving(P2PNeighbor src, P2PFileInfo[] files) {
         Log.i(TAG, "BeforeReceiving....");
+        for(P2PFileInfo fileInfo : files){
+            fileInfo.direction = 1;
+            fileInfo.deleted = 0;
+            fileInfo.status = 0;
+            fileInfo.read = 0;
+            fileInfo.position = 0;
+            TaskHistory.getInstance().addFileInfo(fileInfo);
+        }
     }
 
     @Override
@@ -146,6 +156,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
         public void sendFile(ArrayList<FileItem> fileItems) {
             int size = fileItems.size();
             P2PFileInfo[] fileArray = new P2PFileInfo[size];
+            String wifiMac = Util.getStringMD5(PreferenceUtil.getInstance().getMac());
             for (int i = 0; i < size; i++) {
                 FileItem item = fileItems.get(i);
                 P2PFileInfo info = new P2PFileInfo();
@@ -156,7 +167,17 @@ public class TransferService extends Service implements NeighborCallback, Receiv
                 }
                 info.type = item.type;
                 info.size = item.size;
-                info.savePath = item.path;
+                info.path = item.path;
+
+                File file = new File(item.path);
+                info.wifiMac = wifiMac;
+                info.md5 = Util.getFileMD5(file);
+                info.lastModify = file.lastModified();
+                info.createTime = System.currentTimeMillis();
+                info.status = 0;
+                info.read = 1;
+                info.deleted = 0;
+                TaskHistory.getInstance().addFileInfo(info);
 
                 fileArray[i] = info;
             }

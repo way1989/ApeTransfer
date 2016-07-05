@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity
         navigateTransfer.run();
         String mac = WifiApUtils.getInstance((WifiManager) getSystemService(Context.WIFI_SERVICE)).getWifiMacFromDevice();
         Toast.makeText(this, "mac = " + mac, Toast.LENGTH_SHORT).show();
+        PreferenceUtil.getInstance().setMac(mac);
     }
 
     private void setupNavView() {

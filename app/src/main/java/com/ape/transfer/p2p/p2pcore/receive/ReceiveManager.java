@@ -7,12 +7,14 @@ import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
 import com.ape.transfer.p2p.p2pentity.param.ParamReceiveFiles;
+import com.ape.transfer.util.Log;
 
 /**
  * Created by 郭攀峰 on 2015/9/20.
  */
 public class ReceiveManager {
 
+    private static final String TAG = "ReceiveManager";
     protected P2PWorkHandler p2PHandler;
     private Receiver receiver;
 
@@ -61,6 +63,7 @@ public class ReceiveManager {
         String[] strArray = paramIPMsg.peerMSG.addition.split(P2PConstant.MSG_SEPARATOR);
         P2PFileInfo[] files = new P2PFileInfo[strArray.length];
         for (int i = 0; i < strArray.length; i++) {
+            Log.i(TAG, "receive strArray = " + strArray[i]);
             files[i] = new P2PFileInfo(strArray[i]);
         }
 

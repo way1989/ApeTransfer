@@ -108,7 +108,7 @@ public class SendTask extends OneByOneRunnable {
         lastTransferred = 0;
 
         try {
-            randomAccessFile = new RandomAccessFile(new File(p2PFileInfo.savePath), "r");
+            randomAccessFile = new RandomAccessFile(new File(p2PFileInfo.path), "r");
             fileChannel = randomAccessFile.getChannel();
             mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY,
                     socketTransInfo.Offset, socketTransInfo.Length); //将文件映射到内存

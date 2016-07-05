@@ -16,13 +16,13 @@ public class DeviceHistory {
 
     private TransferDB mTransferDB = null;
 
-    public DeviceHistory(final Context context) {
-        mTransferDB = TransferDB.getInstance(context);
+    public DeviceHistory() {
+        mTransferDB = TransferDB.getInstance();
     }
 
-    public static final synchronized DeviceHistory getInstance(final Context context) {
+    public static final synchronized DeviceHistory getInstance() {
         if (sInstance == null) {
-            sInstance = new DeviceHistory(context.getApplicationContext());
+            sInstance = new DeviceHistory();
         }
         return sInstance;
     }

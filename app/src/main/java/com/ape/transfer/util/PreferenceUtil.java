@@ -23,6 +23,7 @@ import com.ape.transfer.App;
 
 public final class PreferenceUtil {
 
+    private static final String PERFERENCE_MAC = "perference_mac";
     private static final String PERFERENCE_ALIAS = "perference_alias";
     private static final String PERFERENCE_HEAD = "perference_head";
 
@@ -72,4 +73,13 @@ public final class PreferenceUtil {
         editor.apply();
     }
 
+    public String getMac() {
+        return mPreferences.getString(PERFERENCE_MAC, "");
+    }
+
+    public void setMac(String mac) {
+        final SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString(PERFERENCE_MAC, mac);
+        editor.apply();
+    }
 }
