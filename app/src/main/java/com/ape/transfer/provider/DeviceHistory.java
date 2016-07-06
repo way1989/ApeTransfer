@@ -60,7 +60,7 @@ public class DeviceHistory {
             final ContentValues values = new ContentValues();
             values.put(DeviceHistoryColumns.WIFI_MAC, neighbor.wifiMac);
             values.put(DeviceHistoryColumns.ALIAS, neighbor.alias);
-            values.put(DeviceHistoryColumns.AVATAR, neighbor.icon);
+            values.put(DeviceHistoryColumns.AVATAR, neighbor.avatar);
             values.put(DeviceHistoryColumns.MODEL, neighbor.mode);
             values.put(DeviceHistoryColumns.BRAND, neighbor.brand);
             values.put(DeviceHistoryColumns.SDK_INT, neighbor.sdkInt);
@@ -91,7 +91,7 @@ public class DeviceHistory {
         P2PNeighbor neighbor = new P2PNeighbor();
         neighbor.wifiMac = cursor.getString(cursor.getColumnIndex(DeviceHistoryColumns.WIFI_MAC));
         neighbor.alias = cursor.getString(cursor.getColumnIndex(DeviceHistoryColumns.ALIAS));
-        neighbor.icon = cursor.getInt(cursor.getColumnIndex(DeviceHistoryColumns.AVATAR));
+        neighbor.avatar = cursor.getInt(cursor.getColumnIndex(DeviceHistoryColumns.AVATAR));
         neighbor.mode = cursor.getString(cursor.getColumnIndex(DeviceHistoryColumns.MODEL));
         neighbor.brand = cursor.getString(cursor.getColumnIndex(DeviceHistoryColumns.BRAND));
         neighbor.sdkInt = cursor.getInt(cursor.getColumnIndex(DeviceHistoryColumns.SDK_INT));

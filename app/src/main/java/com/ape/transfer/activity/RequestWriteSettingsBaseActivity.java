@@ -2,6 +2,7 @@ package com.ape.transfer.activity;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import com.ape.transfer.util.Log;
 public abstract class RequestWriteSettingsBaseActivity extends BaseActivity {
     private static final String TAG = "RequestWriteSettingsBaseActivity";
     private static final int REQUEST_CODE_WRITE_SETTINGS = 2;
+    private Dialog mDialog;
 
     protected abstract void permissionWriteSystemGranted();
 
@@ -29,20 +31,33 @@ public abstract class RequestWriteSettingsBaseActivity extends BaseActivity {
     }
 
     protected void showRequestWriteSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.request_write_settings_title).setMessage(R.string.request_write_settings_message)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        requestWriteSettings();
-                    }
-                }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(), R.string.permission_refused, Toast.LENGTH_LONG).show();
-                finish();
-            }
-        }).create().show();
+        if(mDialog != null && mDialog.isShowing()) return;
+        if(mDialog == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.request_write_settings_title).setMessage(R.string.request_write_settings_message)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            requestWriteSettings();
+                        }
+                    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(getApplicationContext(), R.string.permission_refused, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            });
+            mDialog = builder.create();
+        }
+        mDialog.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mDialog != null && mDialog.isShowing())
+            mDialog.dismiss();
+        mDialog = null;
     }
 
     @TargetApi(Build.VERSION_CODES.M)

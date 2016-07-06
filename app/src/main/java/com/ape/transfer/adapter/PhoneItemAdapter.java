@@ -43,7 +43,7 @@ public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
         final P2PNeighbor neighbor = mNeighbors.get(position);
         holder.textView.setText(neighbor.alias);
-        holder.ivAvatar.setImageResource(UserInfoActivity.HEAD[neighbor.icon]);
+        holder.ivAvatar.setImageResource(UserInfoActivity.HEAD[neighbor.avatar]);
         holder.checkBox.setVisibility(View.VISIBLE);
     }
 

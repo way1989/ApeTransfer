@@ -113,7 +113,13 @@ public class P2PCommunicateThread extends Thread {
         if (melonInfo != null) {
             msg.senderAlias = melonInfo.alias;
             msg.senderIp = melonInfo.ip;
-            msg.senderHead = melonInfo.icon;
+            msg.senderAvatar = melonInfo.avatar;
+            msg.wifiMac = melonInfo.wifiMac;
+            msg.brand = melonInfo.brand;
+            msg.mode = melonInfo.mode;
+            msg.sdkInt = melonInfo.sdkInt;
+            msg.versionCode = melonInfo.versionCode;
+            msg.databaseVersion = melonInfo.databaseVersion;
         }
 
         return msg;

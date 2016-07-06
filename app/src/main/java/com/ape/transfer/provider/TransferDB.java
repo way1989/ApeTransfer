@@ -10,7 +10,7 @@ import com.ape.transfer.App;
  * Created by android on 16-7-4.
  */
 public class TransferDB extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "transfer.db";
+    private static final String DATABASE_NAME = "transfer.db";
     public static final int VERSION = 1;
     private static TransferDB sInstance = null;
 

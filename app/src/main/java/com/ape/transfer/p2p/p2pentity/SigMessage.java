@@ -28,7 +28,13 @@ public class SigMessage {
     /**
      * 发送者的头像id
      */
-    public int senderHead;
+    public int senderAvatar;
+    public String wifiMac;//发送者的wifi mac地址
+    public String mode;//发送者的mode
+    public String brand;//发送者的brand
+    public int sdkInt;//发送者的sdkInt
+    public int versionCode;//发送者的versionCode
+    public int databaseVersion;//发送者的databaseVersion
     /**
      *
      */
@@ -53,15 +59,22 @@ public class SigMessage {
         packetNum = args[0];
         senderAlias = args[1];
         senderIp = args[2];
-        senderHead = Integer.parseInt(args[3]);
-        commandNum = Integer.parseInt(args[4]);
-        recipient = Integer.parseInt(args[5]);
-        if (args.length > 6)
-            addition = args[6];
+        senderAvatar = Integer.parseInt(args[3]);
+        wifiMac = args[4];
+        mode = args[5];
+        brand = args[6];
+        sdkInt = Integer.parseInt(args[7]);
+        versionCode = Integer.parseInt(args[8]);
+        databaseVersion = Integer.parseInt(args[9]);
+
+        commandNum = Integer.parseInt(args[10]);
+        recipient = Integer.parseInt(args[11]);
+        if (args.length > 12)
+            addition = args[12];
         else
             addition = null;
 
-        for (int i = 7; i < args.length; i++) {
+        for (int i = 13; i < args.length; i++) {
             addition += (":" + args[i]);
         }
         Log.i(TAG, "SigMessage addition = " + addition);
@@ -75,8 +88,21 @@ public class SigMessage {
         sb.append(":");
         sb.append(senderIp);
         sb.append(":");
-        sb.append(senderHead);
+        sb.append(senderAvatar);
         sb.append(":");
+        sb.append(wifiMac);
+        sb.append(":");
+        sb.append(mode);
+        sb.append(":");
+        sb.append(brand);
+        sb.append(":");
+        sb.append(sdkInt);
+        sb.append(":");
+        sb.append(versionCode);
+        sb.append(":");
+        sb.append(databaseVersion);
+        sb.append(":");
+
         sb.append(commandNum);
         sb.append(":");
         sb.append(recipient);

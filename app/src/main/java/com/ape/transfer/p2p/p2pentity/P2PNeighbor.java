@@ -12,7 +12,7 @@ public class P2PNeighbor implements Serializable {
 
     private static final long serialVersionUID = -5191365431255505545L;
     public String alias;
-    public int icon;
+    public int avatar;
     public String ip;
     public InetAddress inetAddress;
 

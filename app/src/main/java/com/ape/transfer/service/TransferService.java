@@ -3,9 +3,11 @@ package com.ape.transfer.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.text.TextUtils;
 
+import com.ape.transfer.BuildConfig;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.model.P2PFileInfoEvent;
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
@@ -15,7 +17,9 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
 import com.ape.transfer.p2p.p2pinterface.ReceiveFileCallback;
 import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
+import com.ape.transfer.provider.DeviceHistory;
 import com.ape.transfer.provider.TaskHistory;
+import com.ape.transfer.provider.TransferDB;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.Util;
@@ -64,6 +68,8 @@ public class TransferService extends Service implements NeighborCallback, Receiv
         if (neighbor == null)
             return;
         if (!mNeighbors.contains(neighbor) && !TextUtils.equals(neighbor.ip, mP2PManager.getSelfMeMelonInfo().ip)) {
+            neighbor.lastTime = System.currentTimeMillis();
+            DeviceHistory.getInstance().addDevice(neighbor);
             mNeighbors.add(neighbor);
             if (mCallback != null) mCallback.onNeighborConnected(neighbor);
         }
@@ -82,6 +88,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
         Log.i(TAG, "QueryReceiving....");
         mP2PManager.ackReceive();
         for(P2PFileInfo fileInfo : files){
+            fileInfo.wifiMac = src.wifiMac;
             fileInfo.direction = P2PFileInfo.Direction.DIRECTION_RECEIVE;
             fileInfo.deleted = 0;
             fileInfo.status = P2PFileInfo.Status.STATUS_READY;
@@ -130,7 +137,14 @@ public class TransferService extends Service implements NeighborCallback, Receiv
         public P2PNeighbor getMe() {
             P2PNeighbor neighbor = new P2PNeighbor();
             neighbor.alias = PreferenceUtil.getInstance().getAlias();
-            neighbor.icon = PreferenceUtil.getInstance().getHead();
+            neighbor.avatar = PreferenceUtil.getInstance().getHead();
+            neighbor.wifiMac = Util.getStringMD5(PreferenceUtil.getInstance().getMac());
+            neighbor.brand = Build.BRAND;
+            neighbor.mode = Build.MODEL;
+            neighbor.sdkInt = Build.VERSION.SDK_INT;
+            neighbor.versionCode = BuildConfig.VERSION_CODE;
+            neighbor.databaseVersion = TransferDB.VERSION;
+
             final String ip = WifiUtils.getLocalIP();
             Log.i(TAG, "WifiUtils.getLocalIp = " + ip);
             neighbor.ip = ip;
@@ -163,7 +177,6 @@ public class TransferService extends Service implements NeighborCallback, Receiv
         public void sendFile(ArrayList<FileItem> fileItems) {
             int size = fileItems.size();
             P2PFileInfo[] fileArray = new P2PFileInfo[size];
-            String wifiMac = Util.getStringMD5(PreferenceUtil.getInstance().getMac());
             for (int i = 0; i < size; i++) {
                 FileItem item = fileItems.get(i);
                 P2PFileInfo info = new P2PFileInfo();
@@ -177,7 +190,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
                 info.path = item.path;
 
                 File file = new File(item.path);
-                info.wifiMac = wifiMac;
+                info.wifiMac = mNeighbors.get(0).wifiMac;
                 info.md5 = Util.getFileMD5(file);
                 info.lastModify = file.lastModified();
                 info.createTime = System.currentTimeMillis();

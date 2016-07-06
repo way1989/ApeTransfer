@@ -94,9 +94,15 @@ public class P2PCommunicateManager {
         if (neighbor == null) {
             neighbor = new P2PNeighbor();
             neighbor.alias = sigMessage.senderAlias;
-            neighbor.icon = sigMessage.senderHead;
+            neighbor.avatar = sigMessage.senderAvatar;
             neighbor.ip = ip;
             neighbor.inetAddress = address;
+            neighbor.wifiMac = sigMessage.wifiMac;
+            neighbor.brand = sigMessage.brand;
+            neighbor.mode = sigMessage.mode;
+            neighbor.sdkInt = sigMessage.sdkInt;
+            neighbor.versionCode = sigMessage.versionCode;
+            neighbor.databaseVersion = sigMessage.databaseVersion;
             mNeighbors.put(ip, neighbor);
 
             p2PManager.getHandler().sendMessage(

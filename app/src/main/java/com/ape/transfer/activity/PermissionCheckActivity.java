@@ -1,6 +1,7 @@
 package com.ape.transfer.activity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,30 +27,43 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
     private static final long AUTOMATED_RESULT_THRESHOLD_MILLLIS = 250;
     private static final String PACKAGE_URI_PREFIX = "package:";
     private long mRequestTimeMillis;
-
+    private Dialog mDialog;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mDialog != null && mDialog.isShowing())
+            mDialog.dismiss();
+        mDialog = null;
+    }
 
     private void showRequestPermissionDialog() {
-        new AlertDialog.Builder(this).setTitle(R.string.permission_title)
-                .setMessage(R.string.required_permissions_all)
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getApplicationContext(), R.string.permission_refused, Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                })
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        tryRequestPermission();
-                    }
-                }).create().show();
+        if(mDialog != null && mDialog.isShowing()) return;
+        if(mDialog == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.permission_title)
+                    .setMessage(R.string.required_permissions_all)
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(getApplicationContext(), R.string.permission_refused, Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    })
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            tryRequestPermission();
+                        }
+                    });
+            mDialog = builder.create();
+        }
+        mDialog.show();
     }
 
     @Override
