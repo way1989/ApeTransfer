@@ -109,6 +109,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         } else {
             holder.tvFrom.setText(App.getContext().getString(R.string.format_from));
         }
+        holder.btnOperation.setVisibility(View.INVISIBLE);
     }
 
     @Override

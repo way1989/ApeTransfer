@@ -147,8 +147,8 @@ public class TaskHistory {
             values.put(TaskHistoryColumns.POSITION, fileInfo.position);
             values.put(TaskHistoryColumns.STATUS, fileInfo.status);
 
-            database.update(TaskHistoryColumns.TABLE_NAME, values, TaskHistoryColumns.WIFI_MAC + " = ?"
-                    + " and " + TaskHistoryColumns.MD5 + " = ?", new String[]{fileInfo.wifiMac, fileInfo.md5});
+            database.update(TaskHistoryColumns.TABLE_NAME, values, TaskHistoryColumns.CREATE_TIME + " = ?"
+                    + " and " + TaskHistoryColumns.MD5 + " = ?", new String[]{String.valueOf(fileInfo.createTime), fileInfo.md5});
 
         } finally {
             database.setTransactionSuccessful();

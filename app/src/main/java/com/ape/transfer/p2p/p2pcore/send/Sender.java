@@ -31,11 +31,12 @@ public class Sender {
         this.sendManager = man;
         this.neighbor = n;
 
-        files = new P2PFileInfo[fs.length];
+       /* files = new P2PFileInfo[fs.length];
         for (int i = 0; i < files.length; i++) {
             files[i] = fs[i].duplicate();
             files[i].percent = 0;
-        }
+        }*/
+        files = fs;
     }
 
     public void dispatchCommMSG(int cmd, ParamIPMsg ipmsg) {
