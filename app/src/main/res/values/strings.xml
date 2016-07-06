@@ -54,11 +54,12 @@
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="all_rights_reserved" translatable="false">Copyright © 2012&#8211;2016 Broncho. All Rights Reserved.</string>
     <string name="required_permissions_promo">This app needs permission to Camera.</string>
+    <string name="required_permissions_all">This app needs permission to Storage.</string>
     <string name="enable_permission_procedure">You can change permissions in Settings &gt; Apps &gt; Me &gt; Permissions.</string>
     <string name="request_scan_result_title">Allow LOCATION permission?</string>
     <string name="request_scan_result_message">get wifi scan results will request the LOCATION permission</string>
     <string name="request_write_settings_title">Allow WRITE_SETTINGS permission?</string>
-    <string name="request_write_settings_message">Turn on/off wifi need write system settings permission.</string>
+    <string name="request_write_settings_message">Turn on/off wifi need write system settings permission. Please turn off then turn on the switch after you see the allow permission switch</string>
     <string name="action_save">Save</string>
     <string name="chat_voice_record_cancel">SLIDE TO CANCEL</string>
     <string name="chat_empty_bot">START</string>
@@ -117,5 +118,7 @@
 
     <string name="format_from">FROM: %1$s</string>
     <string name="format_to">TO: %1$s</string>
+    <string name="permission_title">Need permission</string>
+    <string name="permission_refused">Permission refused, the app will exit!</string>
 
 </resources>

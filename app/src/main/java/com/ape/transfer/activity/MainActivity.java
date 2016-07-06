@@ -41,9 +41,9 @@ import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
 import com.ape.transfer.fragment.TransferFragment;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.OsUtil;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.WifiApUtils;
-import com.ape.transfer.util.WifiUtils;
 import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
@@ -111,6 +111,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (OsUtil.redirectToPermissionCheckIfNeeded(this)) {
+            return;
+        }
         if (TextUtils.isEmpty(PreferenceUtil.getInstance(getApplicationContext()).getAlias())) {
             startActivityForResult(new Intent(MainActivity.this, UserInfoActivity.class), REQUEST_CODE);
         }
@@ -127,10 +130,17 @@ public class MainActivity extends AppCompatActivity
         // Setup spinner
         setupSpinner();
 
+        setupWifiMac();
         navigateTransfer.run();
-        String mac = WifiApUtils.getInstance((WifiManager) getSystemService(Context.WIFI_SERVICE)).getWifiMacFromDevice();
-        Toast.makeText(this, "mac = " + mac, Toast.LENGTH_SHORT).show();
-        PreferenceUtil.getInstance().setMac(mac);
+    }
+
+    private void setupWifiMac() {
+        if(TextUtils.isEmpty(PreferenceUtil.getInstance().getMac())) {
+            String mac = WifiApUtils.getInstance((WifiManager) getSystemService(Context.WIFI_SERVICE)).getWifiMacFromDevice();
+            Toast.makeText(this, "mac = " + mac, Toast.LENGTH_SHORT).show();
+            if(!TextUtils.isEmpty(mac))
+                PreferenceUtil.getInstance().setMac(mac);
+        }
     }
 
     private void setupNavView() {
@@ -226,8 +236,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        drawerLayout.removeDrawerListener(toggle);
-        container.removeOnPageChangeListener(this);
+        if (drawerLayout != null)
+            drawerLayout.removeDrawerListener(toggle);
+        if (container != null)
+            container.removeOnPageChangeListener(this);
     }
 
     @Override

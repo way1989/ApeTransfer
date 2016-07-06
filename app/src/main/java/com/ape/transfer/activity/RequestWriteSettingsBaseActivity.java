@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import com.ape.transfer.R;
 import com.ape.transfer.util.Log;
@@ -22,15 +23,6 @@ public abstract class RequestWriteSettingsBaseActivity extends BaseActivity {
 
     protected abstract void permissionWriteSystemRefused();
 
-    //    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(this)) {
-//            showRequestWriteSettingsDialog();
-//        } else {
-//            permissionWriteSystemGranted();
-//        }
-//    }
     protected boolean canWriteSystem() {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
                 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(this));
@@ -47,6 +39,7 @@ public abstract class RequestWriteSettingsBaseActivity extends BaseActivity {
                 }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), R.string.permission_refused, Toast.LENGTH_LONG).show();
                 finish();
             }
         }).create().show();
