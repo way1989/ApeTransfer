@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.ape.transfer.util.OsUtil;
  * to grant permissions. However, the OS may not actually prompt the user if the user had
  * previously checked the "Never ask again" checkbox while denying the required permissions.
  */
+@SuppressWarnings("ALL")
 public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
     private static final String TAG = "PermissionCheckActivity";
     private static final int REQUIRED_PERMISSIONS_REQUEST_CODE = 1;
@@ -95,7 +97,7 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
 
     @Override
     public void onRequestPermissionsResult(
-            final int requestCode, final String permissions[], final int[] grantResults) {
+            final int requestCode, @NonNull final String permissions[], @NonNull final int[] grantResults) {
         if (requestCode == REQUIRED_PERMISSIONS_REQUEST_CODE) {
             // We do not use grantResults as some of the granted permissions might have been
             // revoked while the permissions dialog box was being shown for the missing permissions.

@@ -9,12 +9,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("ALL")
 public class AmrUtils {
 
     /**
      * Created by Carlos2015 on 2015/8/28.
      * converts 16 bit PCM to AMR
      */
+    @SuppressWarnings("PrimitiveArrayArgumentToVariableArgMethod")
     public static byte[] convertToAmr(InputStream inputStream, boolean isAddAmrFileHead) throws ClassNotFoundException, NoSuchMethodException, IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException, IOException {
         Class<?> cls = Class.forName("android.media.AmrInputStream");
         Constructor<?> c = cls.getDeclaredConstructor(InputStream.class);
@@ -35,6 +37,7 @@ public class AmrUtils {
             bos.write(0x52);
             bos.write(0x0A);
         }
+        //noinspection PrimitiveArrayArgumentToVariableArgMethod
         while ((len = (Integer) read.invoke(amrInputStream, buf)) > 0) {
             bos.write(buf, 0, len);
         }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -106,7 +107,9 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maintransfer);
         ButterKnife.bind(this);
-        getSupportActionBar().setElevation(0f);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setElevation(0f);
         TransferServiceUtil.getInstance().setCallback(this);
         TransferServiceUtil.getInstance().bindTransferService();
 
@@ -126,6 +129,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
             startWifiAp();
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -142,6 +146,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onBackPressed() {
         if (isOpeningWifiAp) {//正在打开热点,禁用返回键

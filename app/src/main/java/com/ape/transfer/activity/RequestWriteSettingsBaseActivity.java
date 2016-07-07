@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.ape.transfer.R;
@@ -16,7 +17,7 @@ import com.ape.transfer.util.Log;
 /**
  * Created by android on 16-6-14.
  */
-public abstract class RequestWriteSettingsBaseActivity extends BaseActivity {
+public abstract class RequestWriteSettingsBaseActivity extends AppCompatActivity {
     private static final String TAG = "RequestWriteSettingsBaseActivity";
     private static final int REQUEST_CODE_WRITE_SETTINGS = 2;
     private Dialog mDialog;

@@ -11,7 +11,7 @@ import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.WifiApUtils;
 
-public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements WifiApService.OnWifiApStatusListener {
+public class ApBaseActivity extends BaseActivity implements WifiApService.OnWifiApStatusListener {
     private static final String TAG = "ApBaseActivity";
     protected WifiApService.WifiApBinder mWifiApService;
     protected boolean isOpeningWifiAp;
@@ -30,25 +30,10 @@ public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements 
         }
     };
 
-    @Override
-    protected void permissionWriteSystemGranted() {
-        openWifiAp();
-    }
-
-
-    @Override
-    protected void permissionWriteSystemRefused() {
-        finish();
-    }
-
     protected void afterServiceConnected() {
         if (mWifiApService != null) {
             mWifiApService.setOnWifiApStatusListener(this);
-            if (canWriteSystem()) {
-                permissionWriteSystemGranted();
-            } else {
-                showRequestWriteSettingsDialog();
-            }
+           openWifiAp();
         } else {
             Log.i(TAG, "afterServiceConnected service == null");
             finish();
@@ -71,8 +56,7 @@ public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements 
     private void openWifiAp() {
         if (mWifiApService == null)
             return;
-        if (!canWriteSystem())
-            return;
+
         if (mWifiApService.isWifiApEnabled() &&
                 TextUtils.equals(mWifiApService.getWifiApConfiguration().SSID, getSSID())) {
             onWifiApStatusChanged(WifiApUtils.WIFI_AP_STATE_ENABLED);
@@ -121,6 +105,7 @@ public class ApBaseActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
     private void unBindService() {
+        //noinspection EmptyCatchBlock,EmptyCatchBlock
         try {
             this.getApplicationContext().unbindService(mServiceCon);
         } catch (Exception e) {

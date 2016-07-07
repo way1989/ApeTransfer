@@ -7,6 +7,7 @@ import java.io.Serializable;
  * Created by chenchao on 15/5/6.
  */
 public class ImageInfo implements Serializable {
+    private static final long serialVersionUID = 5792946298435140735L;
     public String path;
     public long photoId;
     public int width;

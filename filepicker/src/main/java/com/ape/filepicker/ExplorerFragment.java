@@ -8,6 +8,7 @@ import android.app.Fragment;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -465,7 +466,9 @@ public class ExplorerFragment extends Fragment {
     }
 
     private void setTitle() {
-        pickerActivity.getSupportActionBar().setTitle(title);
+        ActionBar actionBar = pickerActivity.getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setTitle(title);
     }
 
 }

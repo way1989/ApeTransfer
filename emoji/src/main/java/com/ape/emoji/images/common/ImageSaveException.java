@@ -6,6 +6,8 @@ import java.io.IOException;
  * Exception for image saving
  */
 public class ImageSaveException extends IOException {
+    private static final long serialVersionUID = -7567383722913326338L;
+
     public ImageSaveException() {
     }
 

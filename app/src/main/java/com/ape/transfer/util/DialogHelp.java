@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 /**
  * 对话框辅助类
- * Created by 火蚁 on 15/6/19.
  */
 public class DialogHelp {
 
@@ -50,7 +49,7 @@ public class DialogHelp {
     public static AlertDialog.Builder getMessageDialog(Context context, String message, DialogInterface.OnClickListener onClickListener) {
         AlertDialog.Builder builder = getDialog(context);
         builder.setMessage(message);
-        builder.setPositiveButton("确定", onClickListener);
+        builder.setPositiveButton(android.R.string.ok, onClickListener);
         return builder;
     }
 
@@ -61,16 +60,16 @@ public class DialogHelp {
     public static AlertDialog.Builder getConfirmDialog(Context context, String message, DialogInterface.OnClickListener onClickListener) {
         AlertDialog.Builder builder = getDialog(context);
         builder.setMessage(Html.fromHtml(message));
-        builder.setPositiveButton("确定", onClickListener);
-        builder.setNegativeButton("取消", null);
+        builder.setPositiveButton(android.R.string.ok, onClickListener);
+        builder.setNegativeButton(android.R.string.cancel, null);
         return builder;
     }
 
     public static AlertDialog.Builder getConfirmDialog(Context context, String message, DialogInterface.OnClickListener onOkClickListener, DialogInterface.OnClickListener onCancleClickListener) {
         AlertDialog.Builder builder = getDialog(context);
         builder.setMessage(message);
-        builder.setPositiveButton("确定", onOkClickListener);
-        builder.setNegativeButton("取消", onCancleClickListener);
+        builder.setPositiveButton(android.R.string.ok, onOkClickListener);
+        builder.setNegativeButton(android.R.string.cancel, onCancleClickListener);
         return builder;
     }
 
@@ -80,7 +79,7 @@ public class DialogHelp {
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title);
         }
-        builder.setPositiveButton("取消", null);
+        builder.setPositiveButton(android.R.string.cancel, null);
         return builder;
     }
 
@@ -94,7 +93,7 @@ public class DialogHelp {
         if (!TextUtils.isEmpty(title)) {
             builder.setTitle(title);
         }
-        builder.setNegativeButton("取消", null);
+        builder.setNegativeButton(android.R.string.cancel, null);
         return builder;
     }
 

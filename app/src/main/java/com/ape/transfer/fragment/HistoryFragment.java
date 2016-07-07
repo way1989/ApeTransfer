@@ -14,20 +14,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
-import com.ape.transfer.adapter.FileItemAdapter;
 import com.ape.transfer.adapter.HistoryAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.TaskLoader;
-import com.ape.transfer.model.FileEvent;
-import com.ape.transfer.model.FileItem;
 import com.ape.transfer.model.P2PFileInfoEvent;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +33,7 @@ import butterknife.ButterKnife;
 public class HistoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>,
         HistoryAdapter.OnItemClickListener {
     private static final String ARG_DIRECTION = "direction";
+    private static final String TAG = "HistoryFragment";
     @BindView(R.id.history_list)
     RecyclerView historyList;
     @BindView(R.id.tv_empty)
@@ -46,13 +42,8 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     RelativeLayout rlEmpty;
     private int mDirection;
     private HistoryAdapter mAdapter;
-    public HistoryFragment() {
-    }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mDirection = getArguments().getInt(ARG_DIRECTION);
+    public HistoryFragment() {
     }
 
     /**
@@ -65,6 +56,12 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
         args.putInt(ARG_DIRECTION, sectionNumber);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mDirection = getArguments().getInt(ARG_DIRECTION);
     }
 
     @Override
@@ -82,13 +79,13 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
         EventBus.getDefault().unregister(this);
     }
 
-    private static final String TAG = "HistoryFragment";
     @Subscribe
     public void onEventMainThread(P2PFileInfoEvent event) {
         Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
         P2PFileInfo fileInfo = event.getMsg();
         mAdapter.updateItem(fileInfo);
     }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

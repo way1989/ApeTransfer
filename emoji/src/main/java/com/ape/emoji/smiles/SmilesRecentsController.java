@@ -21,6 +21,7 @@ public class SmilesRecentsController extends ArrayList<Long> {
     private static final String PREF_RECENTS = "recent_smiles";
 
     private static final Object LOCK = new Object();
+    private static final long serialVersionUID = -5919429621976445380L;
     private static SmilesRecentsController sInstance;
 
     private Context mContext;

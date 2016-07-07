@@ -9,11 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ape.photopicker.GlideHelper;
 import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.util.GlideHelper;
 import com.ape.transfer.util.Util;
 
 import java.util.ArrayList;

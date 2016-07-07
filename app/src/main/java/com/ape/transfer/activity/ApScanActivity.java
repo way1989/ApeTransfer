@@ -45,7 +45,7 @@ import butterknife.ButterKnife;
 import pl.tajchert.nammu.Nammu;
 import pl.tajchert.nammu.PermissionCallback;
 
-public class ApScanActivity extends RequestWriteSettingsBaseActivity implements View.OnClickListener,
+public class ApScanActivity extends BaseActivity implements View.OnClickListener,
         TransferService.Callback, TransferServiceUtil.Callback {
     private static final String TAG = "ApScanActivity";
     private static final String PACKAGE_URI_PREFIX = "package:";
@@ -207,10 +207,8 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
     private void handleScanResult() {
-        Log.i(TAG, "handleScanResult... canWriteSystem = " + canWriteSystem()
-                + ", isStartScan = " + isStartScan + ", isHandleScanResult = " + isHandleScanResult);
-        if (!canWriteSystem())
-            return;
+        Log.i(TAG, "handleScanResult... isStartScan = " + isStartScan + ", isHandleScanResult = " + isHandleScanResult);
+
         if (!isStartScan)
             return;
         if (isHandleScanResult)
@@ -336,16 +334,6 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
     }
 
     @Override
-    protected void permissionWriteSystemGranted() {
-        startScanWifi();
-    }
-
-    @Override
-    protected void permissionWriteSystemRefused() {
-        finish();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ap_scan);
@@ -354,11 +342,7 @@ public class ApScanActivity extends RequestWriteSettingsBaseActivity implements 
 
         registerReceiver();
 
-        if (canWriteSystem()) {
-            permissionWriteSystemGranted();
-        } else {
-            showRequestWriteSettingsDialog();
-        }
+        startScanWifi();
     }
 
     private void initData() {

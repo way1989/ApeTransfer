@@ -130,11 +130,7 @@ public class CreateGroupActivity extends ApBaseActivity implements TransferServi
 
     @Override
     public void onNeighborConnected(P2PNeighbor neighbor) {
-        Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("neighbor", neighbor);
-        startActivity(intent);
-        finish();
-        unBindService();
+
     }
 
     @Override
