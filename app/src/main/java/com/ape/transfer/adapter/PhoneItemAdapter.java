@@ -13,6 +13,7 @@ import com.ape.transfer.activity.UserInfoActivity;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by android on 16-6-28.
@@ -27,7 +28,7 @@ public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.View
         mNeighbors = new ArrayList<>();
     }
 
-    public void setDatas(ArrayList<P2PNeighbor> neighbors) {
+    public void setDatas(List<P2PNeighbor> neighbors) {
         mNeighbors.clear();
         mNeighbors.addAll(neighbors);
         notifyDataSetChanged();

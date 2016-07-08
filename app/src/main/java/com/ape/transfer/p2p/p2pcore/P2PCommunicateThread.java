@@ -56,8 +56,8 @@ public class P2PCommunicateThread extends Thread {
     public void BroadcastMSG(int cmd, int recipient) {
         try {
             sendMsg2Peer(
-            /* InetAddress.getByName(P2PConstant.MULTI_ADDRESS) */
-                    P2PManager.getBroadcastAddress(mContext), cmd, recipient, null);
+            InetAddress.getByName(P2PConstant.MULTI_ADDRESS)
+                    /*P2PManager.getBroadcastAddress(mContext)*/, cmd, recipient, null);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

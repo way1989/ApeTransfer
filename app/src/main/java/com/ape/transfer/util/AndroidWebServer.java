@@ -141,7 +141,7 @@ public class AndroidWebServer extends NanoHTTPD {
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html><html><head>");
         builder.append("<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>");
-        builder.append("<title>" + "互传-零流量下载" + "</title>");
+        builder.append("<title>" + App.getContext().getString(R.string.saveTraffic_download_title) + "</title>");
         builder.append("<meta name=viewport content=width=device-width, initial-scale=1.0," +
                 "          maximum-scale=1.0user-scalable=0>" +
                 "    <script type=text/javascript> function download(uri){window.location.href=uri;}</script>" +

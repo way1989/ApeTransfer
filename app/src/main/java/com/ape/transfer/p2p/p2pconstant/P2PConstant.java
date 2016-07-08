@@ -26,7 +26,7 @@ public class P2PConstant {
         public static final int ZIP = 3;
         public static final int DOC = 4;
         public static final int MUSIC = 5;
-        public static final int OTHER = 5;
+        public static final int OTHER = 6;
     }
 
     public interface UI_MSG {

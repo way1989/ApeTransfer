@@ -38,6 +38,7 @@ import com.ape.transfer.util.WifiApUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,7 +92,6 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     private TransferService.P2PBinder mTransferService;
 
     private PhoneItemAdapter mPhoneItemAdapter;
-    private ArrayList<P2PNeighbor> mNeighbors;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
     private P2PNeighbor mP2PNeighbor;
@@ -124,7 +124,9 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         setupWithViewPager();
 
         if (mP2PNeighbor != null) {
-            onNeighborConnected(mP2PNeighbor);
+            ArrayList<P2PNeighbor> list = new ArrayList<>();
+            list.add(mP2PNeighbor);
+            onNeighborChanged(list);
         } else {
             startWifiAp();
         }
@@ -153,7 +155,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
             Toast.makeText(getApplicationContext(), R.string.waiting_creating_ap, Toast.LENGTH_SHORT).show();
             return;
         }
-        if (mNeighbors != null || (mWifiApService != null && mWifiApService.isWifiApEnabled())) {
+        if (mP2PNeighbor != null || (mWifiApService != null && mWifiApService.isWifiApEnabled())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.connect_dialog_title).setMessage(R.string.transfer_discontent)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -161,8 +163,8 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
                         public void onClick(DialogInterface dialog, int which) {
                             if (mTransferService != null && !mTransferService.isEmpty()) {
                                 mTransferService.stopP2P();
-                                TransferServiceUtil.getInstance().stopTransferService();
                                 TransferServiceUtil.getInstance().unbindTransferService();
+                                TransferServiceUtil.getInstance().stopTransferService();
                             }
                             stopWifiAp();
                             finish();
@@ -179,7 +181,6 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         rvPhones.setLayoutManager(new LinearLayoutManager(getApplicationContext(),
                 LinearLayoutManager.HORIZONTAL, false));
         mPhoneItemAdapter = new PhoneItemAdapter(getApplicationContext());
-        mNeighbors = new ArrayList<>();
         rvPhones.setAdapter(mPhoneItemAdapter);
     }
 
@@ -229,35 +230,36 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     }
 
     @Override
-    public void onNeighborConnected(P2PNeighbor neighbor) {
-        Log.i(TAG, "onNeighborConnected... neighbor.ip = " + neighbor.ip);
-        rvPhones.setVisibility(View.VISIBLE);
-        rlWaitingConnect.setVisibility(View.INVISIBLE);
-        mNeighbors.add(neighbor);
-        mPhoneItemAdapter.setDatas(mNeighbors);
-        btnDisconnect.setEnabled(true);
-        btSend.setEnabled(true);
+    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+        Log.i(TAG, "onNeighborChanged... neighbors = " + neighbors);
+        mPhoneItemAdapter.setDatas(neighbors);
+        updateUI(neighbors.size() > 0);
     }
 
-    @Override
-    public void onNeighborDisconnected(P2PNeighbor neighbor) {
-        Log.i(TAG, "onNeighborDisconnected... neighbor.ip = " + neighbor.ip);
-        if (mNeighbors != null) {
-            finish();
-            return;
+    private void updateUI(boolean hasNeighbor) {
+        if(hasNeighbor){
+            rvPhones.setVisibility(View.VISIBLE);
+            rlWaitingConnect.setVisibility(View.INVISIBLE);
+            btnDisconnect.setEnabled(true);
+            btSend.setEnabled(true);
+        }else {
+            if(mP2PNeighbor == null){
+                finish();
+                return;
+            }
+            rvPhones.setVisibility(View.INVISIBLE);
+            rlWaitingConnect.setVisibility(View.VISIBLE);
+            btSend.setEnabled(false);
         }
-        rvPhones.setVisibility(View.INVISIBLE);
-        rlWaitingConnect.setVisibility(View.VISIBLE);
-        mNeighbors.remove(neighbor);
-        mPhoneItemAdapter.setDatas(mNeighbors);
-        btSend.setEnabled(false);
     }
-
 
     @OnClick({R.id.bt_send, R.id.bt_cancel, R.id.btnDisconnect})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_send:
+                if(mPhoneItemAdapter.getItemCount() < 1) {
+                    return;
+                }
                 if (mTransferService != null)
                     mTransferService.sendFile(mFileItems);
 

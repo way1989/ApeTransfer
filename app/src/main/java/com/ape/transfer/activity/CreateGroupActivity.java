@@ -22,6 +22,8 @@ import com.ape.transfer.util.QrCodeUtils;
 import com.ape.transfer.util.WifiApUtils;
 import com.google.zxing.WriterException;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -129,12 +131,10 @@ public class CreateGroupActivity extends ApBaseActivity implements TransferServi
     }
 
     @Override
-    public void onNeighborConnected(P2PNeighbor neighbor) {
+    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+        if(neighbors.isEmpty())
+            finish();
 
     }
 
-    @Override
-    public void onNeighborDisconnected(P2PNeighbor neighbor) {
-        finish();
-    }
 }

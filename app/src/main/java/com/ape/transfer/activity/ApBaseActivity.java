@@ -70,10 +70,10 @@ public class ApBaseActivity extends BaseActivity implements WifiApService.OnWifi
     private void closeWifiAp() {
         if (mWifiApService != null) {
             mWifiApService.setOnWifiApStatusListener(null);
+            mWifiApService.reset();
             mWifiApService.closeWifiAp();
         }
         unBindService();
-        stopService();
     }
 
 
@@ -117,9 +117,7 @@ public class ApBaseActivity extends BaseActivity implements WifiApService.OnWifi
     }
 
     private void stopService() {
-        if (mWifiApService != null) {
-            mWifiApService.reset();
-        }
+
         this.stopService(new Intent(this, WifiApService.class));
     }
 

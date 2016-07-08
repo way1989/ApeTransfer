@@ -104,7 +104,6 @@ public class WifiApService extends Service {
         mHandler.removeMessages(CLOSE_WIFI_AP);
         mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, 1500L);
         unregisterReceiver(receiver);
-
     }
 
     private void handleWifiApStateChanged(int state) {

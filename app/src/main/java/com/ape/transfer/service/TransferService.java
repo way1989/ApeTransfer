@@ -53,6 +53,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mNeighbors.clear();
         if (mP2PManager != null) {
             mP2PManager.stop();
             isP2pRunning = false;
@@ -71,7 +72,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
             neighbor.lastTime = System.currentTimeMillis();
             DeviceHistory.getInstance().addDevice(neighbor);
             mNeighbors.add(neighbor);
-            if (mCallback != null) mCallback.onNeighborConnected(neighbor);
+            if (mCallback != null) mCallback.onNeighborChanged(mNeighbors);
         }
     }
 
@@ -79,7 +80,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     public void NeighborRemoved(P2PNeighbor neighbor) {
         if (neighbor != null) {
             mNeighbors.remove(neighbor);
-            if (mCallback != null) mCallback.onNeighborDisconnected(neighbor);
+            if (mCallback != null) mCallback.onNeighborChanged(mNeighbors);
         }
     }
 
@@ -124,9 +125,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     }
 
     public interface Callback {
-        void onNeighborConnected(P2PNeighbor neighbor);
-
-        void onNeighborDisconnected(P2PNeighbor neighbor);
+        void onNeighborChanged(List<P2PNeighbor> neighbors);
     }
 
     public class P2PBinder extends Binder {

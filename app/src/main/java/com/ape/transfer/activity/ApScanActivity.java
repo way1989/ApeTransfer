@@ -28,6 +28,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ape.transfer.R;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
@@ -52,6 +53,9 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     private static final int MSG_START_P2P = 0;
     private static final int MSG_START_SCAN_WIFI = 1;
     private static final int MSG_HANDLE_SCAN_RESULT = 2;
+    private static final int MSG_CONNECT_TIMEOUT = 3;
+    private static final int MSG_SCAN_WIFI_TIMEOUT = 4;
+    private static final long CONNECT_TIMEOUT = 30000;
     @BindView(R.id.iv_scan)
     ImageView ivScan;
     @BindView(R.id.iv_head)
@@ -103,7 +107,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     private Dialog mRequestScanResultDialog;
     private TransferService.P2PBinder mTransferService;
 
-    private android.os.Handler mHandler = new Handler() {
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -116,6 +120,14 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                     break;
                 case MSG_HANDLE_SCAN_RESULT:
                     handleScanResult();
+                    break;
+                case MSG_CONNECT_TIMEOUT:
+                    Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
+                    removeAllFromRadom(true);
+                    break;
+                case MSG_SCAN_WIFI_TIMEOUT:
+                    Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
+                    startScanWifi();
                     break;
             }
         }
@@ -157,8 +169,10 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                 isHandleWifiConnected = true;
                 if (!isHandleScanResult)
                     return;
-                mHandler.removeMessages(MSG_START_P2P);
-                mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 2500L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+                if (mWifiManager.getConnectionInfo().getSSID().contains("ApeTransfer@")) {
+                    mHandler.removeMessages(MSG_START_P2P);
+                    mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 250L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+                }
                 break;
             case CONNECTING:
                 Log.d(TAG, "wifi connecting");
@@ -269,14 +283,14 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
 
             }
         }
-        showToRandom(filterResults);
+        addToRandom(filterResults);
 
         //have no ssid equal ApeTransfer, rescan system will scan every 15 second
         //isHandleScanResult = false;
         //startScanWifi();
     }
 
-    private void showToRandom(List<ScanResult> filterResults) {
+    private void addToRandom(List<ScanResult> filterResults) {
         rlPhones.removeAllViews();
         if (filterResults.isEmpty())
             return;
@@ -316,6 +330,14 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         }
     }
 
+    private void removeAllFromRadom(boolean reScanWifi) {
+        mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
+        rlPhones.removeAllViews();
+        ivScan.startAnimation(rotateAnim);
+        if(reScanWifi)
+            startScanWifi();
+    }
+
     private void bindDatas(ScanResult scanResult, View item) {
         TextView name = (TextView) item.findViewById(R.id.tv_name);
         name.setText(scanResult.SSID.split("@")[1]);
@@ -331,6 +353,11 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
 
         mWifiUtils.startScan();
         isStartScan = true;
+        isHandleScanResult = false;
+        isHandleWifiConnected = false;
+
+        mHandler.removeMessages(MSG_SCAN_WIFI_TIMEOUT);
+        mHandler.sendEmptyMessageDelayed(MSG_SCAN_WIFI_TIMEOUT, 1500L);
     }
 
     @Override
@@ -376,8 +403,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         }
         unregisterReceiver();
 
-        ivScan.clearAnimation();
-        rlPhones.removeAllViews();
+        removeAllFromRadom(false);
     }
 
     private void registerReceiver() {
@@ -398,17 +424,14 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     }
 
     @Override
-    public void onNeighborConnected(P2PNeighbor neighbor) {
-        Log.i(TAG, "neighbor onNeighborConnected neighbor = " + neighbor.ip);
-        Intent intent = new Intent(this, MainTransferActivity.class);
-        intent.putExtra("neighbor", neighbor);
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
-    public void onNeighborDisconnected(P2PNeighbor neighbor) {
-        Log.i(TAG, "neighbor onNeighborDisconnected neighbor = " + neighbor.ip);
+    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+        Log.i(TAG, "onNeighborChanged neighbors = " + neighbors);
+        mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
+        if (!neighbors.isEmpty()) {
+            Intent intent = new Intent(this, MainTransferActivity.class);
+            intent.putExtra("neighbor", neighbors.get(0));
+            startActivity(intent);
+        }
         finish();
     }
 
@@ -426,7 +449,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                 + ", ScanResult ssid = " + "\"" + ssid + "\"");
         if (isWifiConnected && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), "\"" + ssid + "\"")) {
             mHandler.removeMessages(MSG_START_P2P);
-            mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 2500L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+            mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 250L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
         } else {
             WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
             switch (type) {
@@ -441,7 +464,11 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                     break;
             }
         }
+        mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
+        mHandler.sendEmptyMessageDelayed(MSG_CONNECT_TIMEOUT, CONNECT_TIMEOUT);//连接超时处理
+
         isHandleScanResult = true;
+        isHandleWifiConnected = false;
 
         ivScan.clearAnimation();
         ivScan.setVisibility(View.INVISIBLE);
@@ -454,7 +481,6 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         ivHead.setImageResource(R.drawable.unconnect_focus);
         progress.startAnimation(rotateAnim);
 
-        isHandleWifiConnected = false;
     }
 
     @Override
