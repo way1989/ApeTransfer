@@ -37,4 +37,5 @@
     <color name="gray_light">#ffc6c6c6</color>
     <color name="tab_bg">#fffafafa</color>
     <color name="gray_lighter">#ffaaaaaa</color>
+    <color name="qr_scan_mask">#60000000</color>
 </resources>
