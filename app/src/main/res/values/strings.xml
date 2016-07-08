@@ -53,13 +53,13 @@
     <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
     <string name="all_rights_reserved" translatable="false">Copyright © 2012&#8211;2016 Broncho. All Rights Reserved.</string>
-    <string name="required_permissions_promo">This app needs permission to Camera.</string>
-    <string name="required_permissions_all">This app needs permission to Storage.</string>
+    <string name="required_permissions_promo">This app needs access to Camera.</string>
+    <string name="required_permissions_all">This app needs access to Storage to transfer files, and Location to find other devices.</string>
     <string name="enable_permission_procedure">You can change permissions in Settings &gt; Apps &gt; Me &gt; Permissions.</string>
-    <string name="request_scan_result_title">Allow LOCATION permission?</string>
+    <string name="request_scan_result_title">Grant access</string>
     <string name="request_scan_result_message">get wifi scan results will request the LOCATION permission</string>
-    <string name="request_write_settings_title">Allow WRITE_SETTINGS permission?</string>
-    <string name="request_write_settings_message">Turn on/off wifi need write system settings permission. Please turn off then turn on the switch after you see the allow permission switch</string>
+    <string name="request_write_settings_title">Grant access</string>
+    <string name="request_write_settings_message">Allow this app to modify system settings, so it can start connections. Please turn off then turn on the switch after you see the allow permission switch</string>
     <string name="action_save">Save</string>
     <string name="chat_voice_record_cancel">SLIDE TO CANCEL</string>
     <string name="chat_empty_bot">START</string>
@@ -118,7 +118,16 @@
 
     <string name="format_from">FROM: %1$s</string>
     <string name="format_to">TO: %1$s</string>
-    <string name="permission_title">Need permission</string>
+    <string name="permission_title">Grant access</string>
     <string name="permission_refused">Permission refused, the app will exit!</string>
+    <string name="done">Start</string>
+    <string name="skip">Skip</string>
+    <string name="welcome_head_1">Transfer files between any device&#8230;</string>
+    <string name="welcome_content_1">Android,iOS,Windows Phone,Mac or PC</string>
+    <string name="welcome_head_2">&#8230;Without using internet&#8230;</string>
+    <string name="welcome_content_2">Connect directly or use a local network</string>
+    <string name="welcome_head_3">&#8230;at Wi-Fi speed.</string>
+    <string name="welcome_content_3">Transfer large or many files very fast</string>
+    <string name="permission_title_all">One more thing&#8230;</string>
 
 </resources>

@@ -1,24 +1,16 @@
 package com.ape.transfer.activity;
 
-import android.Manifest;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,13 +35,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import pl.tajchert.nammu.Nammu;
-import pl.tajchert.nammu.PermissionCallback;
 
 public class ApScanActivity extends BaseActivity implements View.OnClickListener,
         TransferService.Callback, TransferServiceUtil.Callback {
     private static final String TAG = "ApScanActivity";
-    private static final String PACKAGE_URI_PREFIX = "package:";
     private static final int MSG_START_P2P = 0;
     private static final int MSG_START_SCAN_WIFI = 1;
     private static final int MSG_HANDLE_SCAN_RESULT = 2;
@@ -69,42 +58,8 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     private Animation rotateAnim;
     private boolean isHandleScanResult;
     private boolean isHandleWifiConnected;
-    private long mRequestTimeMillis;
-    PermissionCallback permissionCallback = new PermissionCallback() {
-        @Override
-        public void permissionGranted() {
-            parseScanResults();
-        }
 
-        @Override
-        public void permissionRefused() {
-            final long currentTimeMillis = SystemClock.elapsedRealtime();
-            // If the permission request completes very quickly, it must be because the system
-            // automatically denied. This can happen if the user had previously denied it
-            // and checked the "Never ask again" check box.
-            if ((currentTimeMillis - mRequestTimeMillis) < 250L) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ApScanActivity.this);
-                builder.setTitle(R.string.request_scan_result_title)
-                        .setMessage(R.string.request_scan_result_message)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                startSettingsPermission();
-                            }
-                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                }).create().show();
-
-            } else {
-                finish();
-            }
-        }
-    };
     private boolean isStartScan;
-    private Dialog mRequestScanResultDialog;
     private TransferService.P2PBinder mTransferService;
 
     private Handler mHandler = new Handler() {
@@ -227,45 +182,8 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
             return;
         if (isHandleScanResult)
             return;
-        if (Nammu.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            parseScanResults();
-        } else {
-            if (mRequestScanResultDialog != null && mRequestScanResultDialog.isShowing())
-                return;
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.request_scan_result_title)
-                    .setMessage(R.string.request_scan_result_message).setPositiveButton(android.R.string
-                    .ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    tryRequestPermission();
-                }
-            }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            });
-            mRequestScanResultDialog = builder.create();
-            mRequestScanResultDialog.show();
-        }
-    }
+        parseScanResults();
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Nammu.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    private void tryRequestPermission() {
-        Nammu.askForPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION, permissionCallback);
-        mRequestTimeMillis = SystemClock.elapsedRealtime();
-    }
-
-    private void startSettingsPermission() {
-        final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.parse(PACKAGE_URI_PREFIX + getPackageName()));
-        startActivity(intent);
     }
 
     private void parseScanResults() {
@@ -334,7 +252,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
         rlPhones.removeAllViews();
         ivScan.startAnimation(rotateAnim);
-        if(reScanWifi)
+        if (reScanWifi)
             startScanWifi();
     }
 

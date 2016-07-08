@@ -180,7 +180,7 @@ public class WifiApService extends Service {
         Notification notification = new Notification.Builder(this)
                 .setContentTitle(getString(R.string.notify_title))
                 .setContentText(getString(R.string.notify_close_wlan))
-                .setSmallIcon(R.drawable.notify_icon_white)
+                .setSmallIcon(R.drawable.x_ic_wifi_tethering)
                 .build();
         //notification.flags |= Notification.FLAG_HIDE_NOTIFICATION;//just for MTK platform
         startForeground(1, notification);

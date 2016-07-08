@@ -26,6 +26,7 @@ public final class PreferenceUtil {
     private static final String PERFERENCE_MAC = "perference_mac";
     private static final String PERFERENCE_ALIAS = "perference_alias";
     private static final String PERFERENCE_HEAD = "perference_head";
+    private static final String PERFERENCE_FIRST_RUN = "perference_first_run";
 
     private static PreferenceUtil sInstance;
 
@@ -81,5 +82,15 @@ public final class PreferenceUtil {
         final SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString(PERFERENCE_MAC, mac);
         editor.apply();
+    }
+
+    public void setFirstRun() {
+        final SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(PERFERENCE_FIRST_RUN, false);
+        editor.apply();
+    }
+
+    public boolean isFirstRun(){
+        return mPreferences.getBoolean(PERFERENCE_FIRST_RUN, true);
     }
 }

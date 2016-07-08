@@ -27,7 +27,7 @@ public class OsUtil {
             // Required for knowing the phone number, number of SIMs, etc.
 //            Manifest.permission.READ_PHONE_STATE,
             // This is not strictly required, but simplifies the contact picker scenarios
-//            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 

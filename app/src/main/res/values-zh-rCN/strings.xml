@@ -51,14 +51,14 @@
     <string name="nickname_info">互传随机生成昵称，您可以修改。</string>
     <string name="hint_input_username">输入16个字符以内名称</string>
 
-    <string name="request_scan_result_title">允许使用定位权限?</string>
+    <string name="request_scan_result_title">请给予访问权限</string>
     <string name="request_scan_result_message">获取wifi扫描结果需要使用定位权限</string>
-    <string name="request_write_settings_title">允许修改系统设置的权限?</string>
-    <string name="request_write_settings_message">开关wifi需要修改系统设置的权限,请务必在跳转到授权界面之后,重新开关一下权限开关再返回</string>
+    <string name="request_write_settings_title">请给予访问权限</string>
+    <string name="request_write_settings_message">请允许本应用更改系统设置,以便能正常与其他设备连接。务必在跳转到授权界面之后,重新开关一下权限开关再返回</string>
     <string name="action_save">保存</string>
     <string name="hint_input_username_empty">昵称不能为空</string>
-    <string name="required_permissions_promo">本应用需要使用相机的权限</string>
-    <string name="required_permissions_all">本应用需要使用"设备存储"的权限</string>
+    <string name="required_permissions_promo">本应用需要"访问相机"的权限来扫描二维码</string>
+    <string name="required_permissions_all">本应用需要"访问设备存储"的权限以进行文件传输,需要"位置信息"以便发现其他设备</string>
     <string name="title_activity_user_info">个人信息</string>
     <string name="enable_permission_procedure">请在设置 &gt; 应用 &gt; 本应用 &gt; 权限，修改权限</string>
     <string name="chat_empty_bot">开始</string>
@@ -115,7 +115,15 @@
     <string name="music">音乐</string>
     <string name="format_from">接收自 %1$s</string>
     <string name="format_to">发送给 %1$s</string>
-    <string name="permission_title">请授权</string>
-    <string name="permission_refused">拒绝授权，应用无法正常运行！</string>
+    <string name="permission_title">请给予访问权限</string>
+    <string name="permission_refused">未授权权限，应用无法正常运行！</string>
+    <string name="welcome_head_1">在任何页设备间传输文件…</string>
+    <string name="welcome_content_1">安卓,苹果,Windows手机,Mac或PC</string>
+    <string name="welcome_head_2">…无需接入互联网…</string>
+    <string name="welcome_content_2">直接连接或使用本地网络</string>
+    <string name="welcome_head_3">以Wi-Fi速度互传</string>
+    <string name="welcome_content_3">快速传输大文件或多个文件</string>
+    <string name="done">开始</string>
+    <string name="permission_title_all">还有一件事…</string>
 
 </resources>

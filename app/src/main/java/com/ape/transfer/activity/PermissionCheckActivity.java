@@ -48,7 +48,7 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
         if(mDialog != null && mDialog.isShowing()) return;
         if(mDialog == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.permission_title)
+            builder.setTitle(R.string.permission_title_all)
                     .setMessage(R.string.required_permissions_all)
                     .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
@@ -112,8 +112,7 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
                 if ((currentTimeMillis - mRequestTimeMillis) < AUTOMATED_RESULT_THRESHOLD_MILLLIS) {
                     gotoSettings();
                 } else {
-                    Toast.makeText(getApplicationContext(), R.string.permission_refused, Toast.LENGTH_LONG).show();
-                    finish();
+                    showRequestPermissionDialog();
                 }
             }
         }
@@ -168,7 +167,6 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
 
     @Override
     protected void permissionWriteSystemRefused() {
-        Toast.makeText(getApplicationContext(), R.string.permission_refused, Toast.LENGTH_LONG).show();
-        finish();
+       showRequestWriteSettingsDialog();
     }
 }

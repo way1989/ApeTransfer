@@ -35,7 +35,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
@@ -117,6 +116,8 @@ public class MainActivity extends AppCompatActivity
         if (TextUtils.isEmpty(PreferenceUtil.getInstance(getApplicationContext()).getAlias())) {
             startActivityForResult(new Intent(MainActivity.this, UserInfoActivity.class), REQUEST_CODE);
         }
+        if (PreferenceUtil.getInstance().isFirstRun())
+            startActivity(new Intent(MainActivity.this, GuideActivity.class));
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -135,11 +136,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupWifiMac() {
-        if(TextUtils.isEmpty(PreferenceUtil.getInstance().getMac())) {
+        if (TextUtils.isEmpty(PreferenceUtil.getInstance().getMac())) {
             String mac = WifiApUtils.getInstance((WifiManager) getSystemService(Context.WIFI_SERVICE)).getWifiMacFromDevice();
-            Toast.makeText(this, "mac = " + mac, Toast.LENGTH_SHORT).show();
-            if(!TextUtils.isEmpty(mac))
+            if (!TextUtils.isEmpty(mac))
                 PreferenceUtil.getInstance().setMac(mac);
+            else
+                throw new NullPointerException("cann't get wifi mac");
         }
     }
 
