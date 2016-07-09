@@ -121,9 +121,15 @@
     <string name="welcome_content_1">安卓,苹果,Windows手机,Mac或PC</string>
     <string name="welcome_head_2">…无需接入互联网…</string>
     <string name="welcome_content_2">直接连接或使用本地网络</string>
-    <string name="welcome_head_3">以Wi-Fi速度互传</string>
+    <string name="welcome_head_3">…以Wi-Fi速度互传.</string>
     <string name="welcome_content_3">快速传输大文件或多个文件</string>
     <string name="done">开始</string>
     <string name="permission_title_all">还有一件事…</string>
+    <string name="skip">跳过</string>
+    <string name="advance_category">高级设置</string>
+    <string name="about">关于</string>
+    <string name="feedback">建议反馈 </string>
+    <string name="help">新手指南</string>
+    <string name="share">分享</string>
 
 </resources>

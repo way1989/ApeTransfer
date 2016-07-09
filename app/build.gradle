@@ -33,6 +33,7 @@ android {
             //是否开启BUGLY
             buildConfigField "boolean", "BUGLY_ENABLED", "false"
             resValue "string", "bugly_appid", BUGLY_APPID
+            resValue "string", "feedback_appkey", FEEDBACK_APPKEY
         }
         release {
             // 不显示Log
@@ -40,6 +41,7 @@ android {
             //是否开启ACRA
             buildConfigField "boolean", "BUGLY_ENABLED", "true"
             resValue "string", "bugly_appid", BUGLY_APPID
+            resValue "string", "feedback_appkey", FEEDBACK_APPKEY
             signingConfig signingConfigs.release
             shrinkResources true
             minifyEnabled true
@@ -82,4 +84,6 @@ dependencies {
 
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
+
+    compile(name:'feedbackSdk',ext:'aar')
 }

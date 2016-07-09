@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.text.format.Formatter;
 
+import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.ape.transfer.util.Log;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -25,7 +26,8 @@ public class App extends Application {
         mContext = getApplicationContext();
         if (BuildConfig.BUGLY_ENABLED)
             CrashReport.initCrashReport(mContext, getString(R.string.bugly_appid), false);
-
+        //第二个参数是appkey，就是百川应用创建时候的appkey
+        FeedbackAPI.initAnnoy(this, getString(R.string.feedback_appkey));
         Nammu.init(this);
 //        SmileProcessor smileProcessor = new SmileProcessor(this);
 //        smileProcessor.loadEmoji();

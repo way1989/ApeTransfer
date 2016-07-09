@@ -36,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
 import com.ape.transfer.fragment.TransferFragment;
@@ -96,6 +97,11 @@ public class MainActivity extends AppCompatActivity
             sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             Intent chooserIntent = Intent.createChooser(sharingIntent, null);
             startActivity(chooserIntent);
+        }
+    };
+    Runnable navigateFeedback = new Runnable() {
+        public void run() {
+            FeedbackAPI.openFeedbackActivity(MainActivity.this);
         }
     };
     View.OnClickListener headViewOnClick = new View.OnClickListener() {
@@ -273,17 +279,27 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        if (id == R.id.nav_transfer) {
-            item.setChecked(true);
-            navView.postDelayed(navigateTransfer, 350L);
-        } else if (id == R.id.nav_exchange) {
-            item.setChecked(true);
-            navView.postDelayed(navigateExchange, 350L);
-        } else if (id == R.id.nav_share) {
-            navView.postDelayed(navigateShare, 350L);
-        } else if (id == R.id.nav_send) {
-            navView.postDelayed(navigateShare, 350L);
+        switch (item.getItemId()) {
+            case R.id.nav_transfer:
+                item.setChecked(true);
+                navView.postDelayed(navigateTransfer, 350L);
+                break;
+            case R.id.nav_exchange:
+                item.setChecked(true);
+                navView.postDelayed(navigateExchange, 350L);
+                break;
+            case R.id.nav_help:
+                break;
+            case R.id.nav_share:
+                navView.postDelayed(navigateShare, 350L);
+                break;
+            case R.id.nav_feedback:
+                navView.postDelayed(navigateFeedback, 350L);
+                break;
+            case R.id.nav_settings:
+                break;
+            case R.id.nav_about:
+                break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
