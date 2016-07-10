@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff4f4f4"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/guide_paddingLeft"
+        android:paddingRight="@dimen/guide_paddingLeft">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/guide_step_marginTop"
+            android:text="@string/guide3_step1"
+            android:textColor="@color/green"
+            android:textSize="@dimen/textSize_h1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/guide_step_marginTop"
+            android:text="@string/guide3_step2"
+            android:textColor="@color/black_dark"
+            android:textSize="@dimen/textSize_h4" />
+
+        <TextView
+            android:id="@id/tv_step3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/guide_step_marginTop"
+            android:text="@string/guide3_step3"
+            android:textColor="@color/black_dark"
+            android:textSize="@dimen/textSize_h5" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/guide2_tranfericon_height"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/guide2_tranfericon_marginTop"
+            android:background="@drawable/bg_guide_bt"
+            android:gravity="center_horizontal"
+            android:minWidth="@dimen/guide2_tranfericon_width"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="@dimen/guide3_exchangeicon_wh"
+                android:layout_height="@dimen/guide3_exchangeicon_wh"
+                android:src="@drawable/exchange_phone_focus" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/exchange"
+                android:textColor="@color/green"
+                android:textSize="@dimen/textSize_h5" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@id/tv_step4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/guide2_tranfericon_marginTop"
+            android:lineSpacingExtra="@dimen/guide_lineSpacingExtra"
+            android:text="@string/guide3_step4"
+            android:textColor="@color/black_dark"
+            android:textSize="@dimen/textSize_h5" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/guide_step_marginTop"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/guide2_tranfericon_wh"
+                    android:layout_height="@dimen/guide2_tranfericon_wh"
+                    android:layout_marginBottom="@dimen/guide2_tranfericon_marginbottom"
+                    android:src="@drawable/guide_old_phone" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/main_old_phone"
+                    android:textColor="@color/green"
+                    android:textSize="@dimen/textSize_h5" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/guide2_tranfericon_marginleft"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/guide2_tranfericon_wh"
+                    android:layout_height="@dimen/guide2_tranfericon_wh"
+                    android:layout_marginBottom="@dimen/guide2_tranfericon_marginbottom"
+                    android:src="@drawable/guide_new_phone" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/main_new_phone"
+                    android:textColor="@color/green"
+                    android:textSize="@dimen/textSize_h5" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_step5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/guide2_tranfericon_marginTop"
+            android:lineSpacingExtra="@dimen/guide_lineSpacingExtra"
+            android:text="@string/guide3_step5"
+            android:textColor="@color/black_dark"
+            android:textSize="@dimen/textSize_h5" />
+    </LinearLayout>
+</ScrollView>

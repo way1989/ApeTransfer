@@ -135,4 +135,29 @@
     <string name="about">About</string>
     <string name="help">Help</string>
 
+    <string name="title_activity_user_guide">Getting Started</string>
+
+    <string name="guide1_scan_qcode">Scan QR code to share</string>
+    <string name="guide1_step1">Turn on “EasyShare” on both phones</string>
+    <string name="guide1_step2">If EasyShare is not installed on the other phone?</string>
+    <string name="guide1_step3">Please tap “Invite friends” in the “Home screen”</string>
+    <string name="guide1_step4">Select the way to invite:</string>
+    <string name="guide1_title">Getting Started</string>
+    <string name="guide2_step1">Share any file without data traffic</string>
+    <string name="guide2_step2">1. Tap on “Transmit file” on the “Main screen”</string>
+    <string name="guide2_step3">"2. Tap on “Create a group” on one device to auto create a group
+\u0009 Tap on “Search to join” on the other device to select the device to connect"</string>
+    <string name="guide2_step4">3. When both devices are successfully connected, select the file you want to send in the “Select file” screen, then tap to “Send”</string>
+    <string name="guide2_title">How to use “EasyShare” to transmit files?</string>
+    <string name="guide3_select_data">Select data</string>
+    <string name="guide3_step1">How to use “EasyShare” for one-touch device switch?</string>
+    <string name="guide3_step2">One-touch clone data to new phone</string>
+    <string name="guide3_step3">1. Tap on “One-touch device switch” on the Main screen</string>
+    <string name="guide3_step4">"2. Tap on “I'm Old” on the sender device to auto generate a QR code; tap on “I'm New” on the recipient device and scan the QR code generated on the other phone."</string>
+    <string name="guide3_step5">3. When both devices are successfully connected, select the data to transmit in the “Select data” screen on the old phone; and tap on “Start device switch” after confirmation on the other device.</string>
+    <string name="exchange">One-touch device switch</string>
+    <string name="aboutUs_copyright">Tinno Communication Technology Co.\n
+        Copyright © 1996-2016 Tinno,Inc.\n
+        All Rights Reserved.</string>
+
 </resources>

@@ -47,7 +47,9 @@ import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,9 +103,29 @@ public class MainActivity extends AppCompatActivity
     };
     Runnable navigateFeedback = new Runnable() {
         public void run() {
+            Map<String, String> map = new HashMap<>();
+            map.put("themeColor", "#4CAF50");
+            map.put("hideLoginSuccess", "true");
+            map.put("enableAudio", "0");
+            FeedbackAPI.setUICustomInfo(map);
             FeedbackAPI.openFeedbackActivity(MainActivity.this);
         }
     };
+
+    Runnable navigateHelp = new Runnable() {
+        public void run() {
+            Intent intent = new Intent(MainActivity.this, UserGuideActivity.class);
+            startActivity(intent);
+        }
+    };
+
+    Runnable navigateAbout = new Runnable() {
+        public void run() {
+            Intent intent = new Intent(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
+        }
+    };
+
     View.OnClickListener headViewOnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -282,23 +304,31 @@ public class MainActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.nav_transfer:
                 item.setChecked(true);
+                navView.removeCallbacks(navigateTransfer);
                 navView.postDelayed(navigateTransfer, 350L);
                 break;
             case R.id.nav_exchange:
                 item.setChecked(true);
+                navView.removeCallbacks(navigateExchange);
                 navView.postDelayed(navigateExchange, 350L);
                 break;
             case R.id.nav_help:
+                navView.removeCallbacks(navigateHelp);
+                navView.postDelayed(navigateHelp, 350L);
                 break;
             case R.id.nav_share:
-                navView.postDelayed(navigateShare, 350L);
+                navView.removeCallbacks(navigateShare);
+                navView.postDelayed(navigateShare, 250L);
                 break;
             case R.id.nav_feedback:
+                navView.removeCallbacks(navigateFeedback);
                 navView.postDelayed(navigateFeedback, 350L);
                 break;
             case R.id.nav_settings:
                 break;
             case R.id.nav_about:
+                navView.removeCallbacks(navigateAbout);
+                navView.postDelayed(navigateAbout, 350L);
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -307,7 +337,6 @@ public class MainActivity extends AppCompatActivity
 
     @OnClick(R.id.fab)
     public void onClick() {
-        //startActivity(new Intent(this, CaptureActivity.class));
         checkPermissionAndThenLoad();
     }
 

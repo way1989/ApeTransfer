@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff4f4f4"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/guide_paddingLeft"
+        android:paddingRight="@dimen/guide_paddingLeft">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/guide_text_marginTop"
+            android:text="@string/guide1_step1"
+            android:textColor="@color/green"
+            android:textSize="@dimen/textSize_h1" />
+
+        <ImageView
+            android:layout_width="@dimen/guide_logoicon_wh"
+            android:layout_height="@dimen/guide_logoicon_wh"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/guide1_logoicon_marginBottom"
+            android:layout_marginTop="@dimen/guide_step_marginTop"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/guide1_step2"
+            android:textColor="@color/green"
+            android:textSize="@dimen/textSize_h1" />
+
+        <TextView
+            android:id="@+id/tv_step3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/guide_step_marginTop"
+            android:text="@string/guide1_step3"
+            android:textColor="@color/black_dark"
+            android:textSize="@dimen/textSize_h5" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/guide1_step4_marginTop"
+            android:text="@string/guide1_step4"
+            android:textColor="@color/black_dark"
+            android:textSize="@dimen/textSize_h5" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/guide1_bt_height"
+                android:layout_marginTop="@dimen/guide_step_marginTop"
+                android:background="@drawable/bg_guide_bt"
+                android:gravity="center"
+                android:minWidth="@dimen/guide1_bt_width"
+                android:paddingLeft="@dimen/guide1_text_padding"
+                android:paddingRight="@dimen/guide1_text_padding"
+                android:text="@string/invite_share_bluetooth"
+                android:textColor="@color/green"
+                android:textSize="@dimen/textSize_h9" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/guide1_bt_height"
+                android:layout_marginTop="@dimen/guide_step_marginTop"
+                android:background="@drawable/bg_guide_bt"
+                android:gravity="center"
+                android:minWidth="@dimen/guide1_bt_width"
+                android:paddingLeft="@dimen/guide1_text_padding"
+                android:paddingRight="@dimen/guide1_text_padding"
+                android:text="@string/invite_share_ap"
+                android:textColor="@color/green"
+                android:textSize="@dimen/textSize_h9" />
+
+            <ImageView
+                android:layout_width="@dimen/guide1_qcode_wh"
+                android:layout_height="@dimen/guide1_qcode_wh"
+                android:layout_marginTop="@dimen/guide_step_marginTop"
+                android:src="@drawable/code" />
+
+            <TextView
+                android:layout_width="@dimen/guide1_bt_width"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/guide1_scan_qcode"
+                android:textColor="@color/green"
+                android:textSize="@dimen/textSize_h5" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/guide1_bt_height"
+                android:layout_marginTop="@dimen/guide_step_marginTop"
+                android:background="@drawable/bg_guide_bt"
+                android:gravity="center"
+                android:minWidth="@dimen/guide1_bt_width"
+                android:paddingLeft="@dimen/guide1_text_padding"
+                android:paddingRight="@dimen/guide1_text_padding"
+                android:text="@string/invite_more"
+                android:textColor="@color/green"
+                android:textSize="@dimen/textSize_h9" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

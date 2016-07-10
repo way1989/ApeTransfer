@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">闪传</string>
+    <string name="app_name">速传</string>
     <string name="action_settings">设置</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
@@ -132,4 +132,27 @@
     <string name="help">新手指南</string>
     <string name="share">分享</string>
 
+    <string name="guide1_scan_qcode">扫描二维码分享</string>
+    <string name="guide1_step1">双方一起打开手机上的【互传】</string>
+    <string name="guide1_step2">如果对方手机上没有安装互传？</string>
+    <string name="guide1_step3">请在【主界面】里面-点击【邀请好友】</string>
+    <string name="guide1_step4">选择需要的邀请方式：</string>
+    <string name="guide1_title">新手指南</string>
+    <string name="guide2_step1">任何文件零流量互传</string>
+    <string name="guide2_step2">1. 点击主界面的【传送文件】</string>
+    <string name="guide2_step3">"2. 一方点击【创建群组】，自动创建群组
+\u0009一方点击【搜索加入】，选择需要连接的设备"</string>
+    <string name="guide2_step4">3. 等待双方成功连接设备后，在【选择文件】界面选择需要发送的文件，最后点击【发送】即可</string>
+    <string name="guide2_title">如何使用【互传】传送文件？</string>
+    <string name="guide3_select_data">选择数据</string>
+    <string name="guide3_step1">如何使用【互传】一键换机？</string>
+    <string name="guide3_step2">一键克隆数据到新手机</string>
+    <string name="guide3_step3">1. 点击主界面的【一键换机】</string>
+    <string name="guide3_step4">2. 传送数据方点击【我是旧手机】，自动生成二维码；接收数据方点击【我是新手机】，扫描对方>手机生成的二维码。</string>
+    <string name="guide3_step5">3. 等待双方成功连接设备后，旧手机在【选择数据】界面，选择需要传送的数据，等待对方确认后>，点击【开始换机】即可。</string>
+    <string name="exchange">一键换机</string>
+    <string name="title_activity_user_guide">新手指南</string>
+    <string name="aboutUs_copyright">天珑移动技术股份有限公司\n
+        Copyright © 1996-2016 Tinno,Inc.\n
+        All Rights Reserved.</string>
 </resources>
