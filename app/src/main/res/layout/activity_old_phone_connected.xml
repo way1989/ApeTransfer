@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/main_title_height"
+        android:background="@color/green"
+        android:gravity="center"
+        android:text="@string/old_phone_connected_title"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/textSize_h3" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/connect_bg"
+        android:gravity="bottom|center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingBottom="29.0dip">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@id/iv_olphone"
+                android:layout_width="83.0dip"
+                android:layout_height="83.0dip"
+                android:src="@drawable/head_default"
+                app:civ_border_color="@android:color/white"
+                app:civ_border_width="1.0px" />
+
+            <TextView
+                android:id="@+id/tv_oldphone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/newphone_bottom_text_marginTop"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/textSize_h5" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@id/ll_tip"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_title"
+        android:layout_marginTop="@dimen/newPhone_tip_marginTop"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/oldphone_connected_tip"
+            android:textColor="@color/green"
+            android:textSize="@dimen/textSize_h2" />
+
+        <TextView
+            android:id="@+id/tv_newphone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_tip"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/newPhone_oldPhone_marginTop"
+            android:gravity="center"
+            android:text="@string/newphone_name"
+            android:textColor="@color/black" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_newphone"
+            android:layout_width="65.0dip"
+            android:layout_height="65.0dip"
+            android:layout_marginTop="@dimen/newPhone_oldPhone_text_marginTop"
+            android:src="@drawable/head_default"
+            app:civ_border_color="@android:color/white"
+            app:civ_border_width="1.0px" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/circle_loading"
+        android:layout_width="100.0dip"
+        android:layout_height="100.0dip"
+        android:layout_below="@id/ll_tip"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/newPhone_oldPhone_loading_marginTop"
+        android:gravity="bottom|center"
+        android:orientation="vertical"
+        />
+
+    <ImageView
+        android:id="@+id/iv_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_tip"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/newPhone_oldPhone_loading_marginTop"
+        android:background="@drawable/connect_normal" />
+</RelativeLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/panel_height"
+    android:background="@color/white_dark"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/storageView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="@dimen/panel_storage_padding"
+        android:paddingTop="@dimen/panel_storage_padding"
+        android:text="@string/total_selected"
+        android:textColor="@color/gray_dark"
+        android:textSize="@dimen/textSize_h5" />
+
+    <Button
+        android:id="@+id/btn_sure"
+        android:layout_width="@dimen/panel_btn_width"
+        android:layout_height="@dimen/panel_btn_height"
+        android:background="@drawable/bt_exchange_selector"
+        android:text="@android:string/ok"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/textSize_h4" />
+</LinearLayout>

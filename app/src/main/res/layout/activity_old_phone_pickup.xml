@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/mobile_data_warning"
+        layout="@layout/subtitle_mobile_data"
+        android:layout_width="fill_parent"
+        android:layout_height="25.0dip"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="61.0dip"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/exchange_migrated_tip"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textSize_h4" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0.0dip"
+        android:layout_weight="1.0">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_data_category"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingLeft="@dimen/exchange_pickup_recycler_padding"
+            android:paddingRight="@dimen/exchange_pickup_recycler_padding" />
+    </RelativeLayout>
+
+    <include layout="@layout/panel_pick_activity" />
+</LinearLayout>

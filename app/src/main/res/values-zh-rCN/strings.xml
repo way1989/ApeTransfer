@@ -155,4 +155,32 @@
     <string name="aboutUs_copyright">天珑移动技术股份有限公司\n
         Copyright © 1996-2016 Tinno,Inc.\n
         All Rights Reserved.</string>
+
+    <string name="old_phone_connected_tip">提示：新手机%1$s成功连接。</string>
+    <string name="old_phone_connected_title">我是旧手机</string>
+    <string name="oldphone_connected_tip">成功连接</string>
+    <string name="oldphone_data">旧手机 %s</string>
+    <string name="oldphone_name">旧手机 %1$s</string>
+    <string name="oldphone_tip">旧手机</string>
+
+    <string name="newPhone_not_enough_space">新手机存储空间不足</string>
+    <string name="new_phone_connected_tip">连接成功，等待数据备份...</string>
+    <string name="new_phone_connected_title">我是新手机</string>
+    <string name="newphone_name">新手机 %1$s</string>
+    <string name="newphone_tip">成功连接！等待数据备份...</string>
+
+    <string name="bt_stop_received">终止接收</string>
+    <string name="bt_stop_sending">终止发送</string>
+    <string name="exchange_migrated_tip">选择需要备份的数据 :</string>
+    <string name="exchange_stop_recv">是否终止接收？</string>
+    <string name="exchange_stop_send">是否终止发送？</string>
+    <string name="exit_toast">再按一次退出程序</string>
+    <string name="received">接收完成!</string>
+    <string name="receiving">数据接收中 ...</string>
+    <string name="toast_send_failed">发送失败</string>
+    <string name="toast_submit_success">反馈提交成功</string>
+    <string name="toast_success_join_group">成功加入群组</string>
+    <string name="total_selected">共选择数据 %1$s, 对方手机内存</string>
+    <string name="sended">发送完成!</string>
+    <string name="sending">数据发送中 ...</string>
 </resources>

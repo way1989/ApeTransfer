@@ -159,5 +159,21 @@
     <string name="aboutUs_copyright">Tinno Communication Technology Co.\n
         Copyright © 1996-2016 Tinno,Inc.\n
         All Rights Reserved.</string>
-
+    <string name="bt_stop_sending">Terminate sending</string>
+    <string name="receiving">Receiving data...</string>
+    <string name="old_phone_connected_tip">Tip: new phone %1$s connected successfully.</string>
+    <string name="old_phone_connected_title">"I'm Old"</string>
+    <string name="oldphone_connected_tip">Connected successfully</string>
+    <string name="oldphone_data">Old phone %s</string>
+    <string name="oldphone_name">Old phone %1$s</string>
+    <string name="oldphone_tip">Old phone</string>
+    <string name="newPhone_not_enough_space">New phone memory not enough</string>
+    <string name="new_phone_connected_tip">Connected successfully, waiting for data backup...</string>
+    <string name="new_phone_connected_title">"I'm New"</string>
+    <string name="newphone_name">New phone %1$s</string>
+    <string name="newphone_tip">Connected successfully! Waiting for data backup...</string>
+    <string name="exchange_migrated_tip">Select data to back up:</string>
+    <string name="total_selected">Selected data %1$s, phone storage of the other device</string>
+    <string name="sended">Sending completed!</string>
+    <string name="sending">Sending data...</string>
 </resources>
