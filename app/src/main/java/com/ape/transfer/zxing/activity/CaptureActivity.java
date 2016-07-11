@@ -110,8 +110,8 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
         animation = new TranslateAnimation(
                 Animation.RELATIVE_TO_PARENT, 0.0f,
                 Animation.RELATIVE_TO_PARENT, 0.0f,
-                Animation.RELATIVE_TO_PARENT, 0.0f,
-                Animation.RELATIVE_TO_PARENT, 0.9f);
+                Animation.RELATIVE_TO_PARENT, -0.9f,
+                Animation.RELATIVE_TO_PARENT, 0.08f);
         animation.setDuration(4500);
         animation.setRepeatCount(-1);
         animation.setRepeatMode(Animation.RESTART);
