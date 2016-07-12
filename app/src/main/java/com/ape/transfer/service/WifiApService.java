@@ -23,6 +23,8 @@ public class WifiApService extends Service {
     private static final String TAG = "WifiApService";
     private static final int OPEN_WIFI_AP = 0;
     private static final int CLOSE_WIFI_AP = 1;
+    private static final long CLOSE_WIFI_AP_DELAY = 250L;
+
 
     private IBinder mBinder = new WifiApBinder();
     private WifiManager mWifiManager;
@@ -102,7 +104,7 @@ public class WifiApService extends Service {
         super.onDestroy();
         stopForeground(true);
         mHandler.removeMessages(CLOSE_WIFI_AP);
-        mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, 1500L);
+        mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, CLOSE_WIFI_AP_DELAY);
         unregisterReceiver(receiver);
     }
 
@@ -238,7 +240,7 @@ public class WifiApService extends Service {
 
         public void closeWifiAp() {
             mHandler.removeMessages(CLOSE_WIFI_AP);
-            mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, 1500L);//delay close wifi ap to send offline message
+            mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, CLOSE_WIFI_AP_DELAY);//delay close wifi ap to send offline message
         }
 
         public WifiConfiguration getWifiApConfiguration() {

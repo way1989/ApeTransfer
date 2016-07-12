@@ -74,6 +74,7 @@ public class ApBaseActivity extends BaseActivity implements WifiApService.OnWifi
             mWifiApService.closeWifiAp();
         }
         unBindService();
+        stopService();
     }
 
 

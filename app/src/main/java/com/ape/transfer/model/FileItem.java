@@ -104,7 +104,6 @@ public class FileItem implements Serializable {
                     items.add(info);
             }
         }
-        Log.i(TAG, "getThirdPartApp items = " + items);
         return items;
     }
 

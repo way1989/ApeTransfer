@@ -231,5 +231,14 @@ public class TransferService extends Service implements NeighborCallback, Receiv
                 }
             });
         }
+
+        public void sendOffLine() {
+            Log.i(TAG, "sendOffLine...");
+            if(!isEmpty()){
+                for(P2PNeighbor neighbor : mNeighbors){
+                    mP2PManager.sendOffLine(neighbor);
+                }
+            }
+        }
     }
 }

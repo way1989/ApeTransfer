@@ -209,6 +209,15 @@ public class TDevice {
         return flag;
     }
 
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiNetworkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean gotoGoogleMarket(Activity activity, String pck) {
         try {
             Intent intent = new Intent();

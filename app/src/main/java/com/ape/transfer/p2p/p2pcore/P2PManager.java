@@ -151,6 +151,17 @@ public class P2PManager {
                 P2PConstant.Src.MANAGER, P2PConstant.Recipient.FILE_SEND, neighbor);
     }
 
+    public void sendOffLine(final P2PNeighbor neighbor) {
+        Log.i(TAG, "sendOffLine... neighbor = " + neighbor);
+        if (mP2PWorkHandler != null)
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mP2PWorkHandler.send2Neighbor(neighbor.inetAddress, P2PConstant.CommandNum.OFF_LINE, null);
+                }
+            }).start();
+    }
+
     private static class P2PManagerHandler extends Handler {
         private WeakReference<P2PManager> weakReference;
 

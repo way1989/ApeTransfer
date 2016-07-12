@@ -33,6 +33,7 @@ import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -162,6 +163,9 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (mTransferService != null && !mTransferService.isEmpty()) {
+                                if(mWifiApService.isWifiApEnabled()){
+                                    mTransferService.sendOffLine();
+                                }
                                 mTransferService.stopP2P();
                                 TransferServiceUtil.getInstance().unbindTransferService();
                                 TransferServiceUtil.getInstance().stopTransferService();
@@ -204,6 +208,8 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     @Override
     public void onWifiApStatusChanged(int status) {
         super.onWifiApStatusChanged(status);
+        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (status ==  WifiApUtils.WIFI_AP_STATE_ENABLED));
+//        boolean hasInternet = TDevice.hasInternet();
         if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             tvStatus.setText(R.string.waiting_connect);
             tvStatusInfo.setVisibility(View.VISIBLE);
@@ -220,7 +226,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         Log.i(TAG, "onServiceConnected... service = " + service);
         mTransferService = service;
         mTransferService.setCallback(MainTransferActivity.this);
-        startP2P();
+//        startP2P();
     }
 
     @Override
@@ -243,7 +249,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
             btnDisconnect.setEnabled(true);
             btSend.setEnabled(true);
         }else {
-            if(mP2PNeighbor == null){
+            if(mP2PNeighbor != null){
                 finish();
                 return;
             }

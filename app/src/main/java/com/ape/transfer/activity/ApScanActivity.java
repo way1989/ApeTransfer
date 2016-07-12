@@ -28,6 +28,7 @@ import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiUtils;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     private static final int MSG_START_SCAN_WIFI = 1;
     private static final int MSG_HANDLE_SCAN_RESULT = 2;
     private static final int MSG_CONNECT_TIMEOUT = 3;
-    private static final int MSG_SCAN_WIFI_TIMEOUT = 4;
+    //private static final int MSG_SCAN_WIFI_TIMEOUT = 4;
     private static final long CONNECT_TIMEOUT = 30000;
     @BindView(R.id.iv_scan)
     ImageView ivScan;
@@ -80,10 +81,10 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                     Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
                     removeAllFromRadom(true);
                     break;
-                case MSG_SCAN_WIFI_TIMEOUT:
-                    Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
-                    startScanWifi();
-                    break;
+//                case MSG_SCAN_WIFI_TIMEOUT:
+//                    Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
+//                    startScanWifi();
+//                    break;
             }
         }
     };
@@ -105,15 +106,6 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
             }
         }
     };
-
-    public static boolean isWifiConnected(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiNetworkInfo.isConnected()) {
-            return true;
-        }
-        return false;
-    }
 
     private void handleConnectState(NetworkInfo.State state) {
         switch (state) {
@@ -274,8 +266,8 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         isHandleScanResult = false;
         isHandleWifiConnected = false;
 
-        mHandler.removeMessages(MSG_SCAN_WIFI_TIMEOUT);
-        mHandler.sendEmptyMessageDelayed(MSG_SCAN_WIFI_TIMEOUT, 1500L);
+//        mHandler.removeMessages(MSG_SCAN_WIFI_TIMEOUT);
+//        mHandler.sendEmptyMessageDelayed(MSG_SCAN_WIFI_TIMEOUT, 1500L);
     }
 
     @Override
@@ -362,7 +354,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
             return;
         final String capabilities = scanResult.capabilities;
         final String ssid = scanResult.SSID;
-        boolean isWifiConnected = isWifiConnected(this);
+        boolean isWifiConnected = TDevice.isWifiConnected(getApplicationContext());
         Log.i(TAG, "isWifiConnected = " + isWifiConnected + ", ssid = " + mWifiManager.getConnectionInfo().getSSID()
                 + ", ScanResult ssid = " + "\"" + ssid + "\"");
         if (isWifiConnected && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), "\"" + ssid + "\"")) {
