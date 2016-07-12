@@ -189,6 +189,10 @@
     <dimen name="dialog_title_marginTop">14.0dip</dimen>
     <item name="disabled_alpha_material_dark" type="dimen">0.3</item>
     <item name="disabled_alpha_material_light" type="dimen">0.26</item>
+    <dimen name="white_note_width" >60.0dip</dimen>
+    <dimen name="white_note_height" >60.0dip</dimen>
+    <dimen name="no_results_width" >260.0dip</dimen>
+    <dimen name="no_results_text_padding_bottom">16.0dip</dimen>
     <dimen name="dividing_line_height">1.0px</dimen>
     <dimen name="dividing_line_width">1.0px</dimen>
     <dimen name="empty_text_marginTop">190.0dip</dimen>
@@ -535,4 +539,5 @@
     <dimen name="image_single_min_size">150dp</dimen>
     <dimen name="welcome_content_min_height">96dp</dimen>
     <dimen name="icon_width_height">85dip</dimen>
+    <dimen name="white_note_padding_bottom">24dip</dimen>
 </resources>

@@ -12,9 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.FileItemAdapter;
@@ -24,6 +21,7 @@ import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.widget.LoadingEmptyContainer;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,12 +40,9 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final int LOADER_ID = 0;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
-    @BindView(R.id.progressBar)
-    ProgressBar progressBar;
-    @BindView(R.id.empty)
-    TextView empty;
-    @BindView(R.id.empty_container)
-    FrameLayout emptyContainer;
+    @BindView(R.id.loading_empty_container)
+    LoadingEmptyContainer loadingEmptyContainer;
+
     private FileItemAdapter mMusicItemAdapter;
     private int mFileCategory;
     private OnFileItemChangeListener mListener;
@@ -91,8 +86,13 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if(isVisibleToUser
-                && getLoaderManager().getLoader(LOADER_ID) == null){
+        loadData(isVisibleToUser);
+    }
+
+    private void loadData(boolean isVisibleToUser) {
+        if (isAdded() && isVisibleToUser
+                && getLoaderManager().getLoader(LOADER_ID) == null) {
+            loadingEmptyContainer.showLoading();
             getLoaderManager().initLoader(0, null, FileFragment.this);
         }
     }
@@ -103,9 +103,7 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
         mMusicItemAdapter = new FileItemAdapter(getContext(), mFileCategory, this);
         recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(mMusicItemAdapter);
-        recyclerView.setVisibility(View.INVISIBLE);
-        progressBar.setVisibility(View.VISIBLE);
-        empty.setVisibility(View.INVISIBLE);
+        loadData(getUserVisibleHint());
     }
 
     private RecyclerView.LayoutManager getLayoutManager() {
@@ -127,14 +125,10 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<BaseLoader.Result> loader, BaseLoader.Result data) {
         if (!data.lists.isEmpty()) {
-            progressBar.setVisibility(View.INVISIBLE);
-            empty.setVisibility(View.INVISIBLE);
-            recyclerView.setVisibility(View.VISIBLE);
+            loadingEmptyContainer.hideAll();
             mMusicItemAdapter.setDatas(data.lists);
         } else {
-            recyclerView.setVisibility(View.INVISIBLE);
-            progressBar.setVisibility(View.INVISIBLE);
-            empty.setVisibility(View.VISIBLE);
+            loadingEmptyContainer.showNoResults();
         }
 
     }

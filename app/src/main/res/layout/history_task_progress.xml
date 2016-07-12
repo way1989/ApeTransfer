@@ -31,7 +31,7 @@
         android:visibility="invisible" />
 
     <ProgressBar
-        android:id="@id/progressBar"
+        android:id="@+id/progressBar"
         style="@style/progressBarHorizontal"
         android:layout_width="@dimen/message_progress_bg_width"
         android:layout_height="@dimen/message_progress_bg_height"
