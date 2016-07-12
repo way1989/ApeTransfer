@@ -13,6 +13,7 @@ import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.util.FileIconLoader;
 import com.ape.transfer.util.GlideHelper;
 import com.ape.transfer.util.Util;
 
@@ -26,6 +27,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
     private ArrayList<FileItem> mFileItems;
     private OnItemClickListener mListener;
     private int mFileCategory;
+    private static FileIconLoader mFileIconLoader;
 
     public FileItemAdapter(Context context, int fileCategory,
                            OnItemClickListener onItemClickListener) {
@@ -34,6 +36,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         mFileItems = new ArrayList<>();
         mListener = onItemClickListener;
         mFileCategory = fileCategory;
+        mFileIconLoader = new FileIconLoader(context);
     }
 
     public void setDatas(ArrayList<FileItem> musicItems) {
@@ -75,8 +78,9 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         holder.itemView.setTag(item);
         switch (mFileCategory) {
             case P2PConstant.TYPE.APP:
-                holder.ivIcon.setImageDrawable(item.appLogo);
-                holder.tvName.setText(item.appLabel);
+                //holder.ivIcon.setImageResource(R.drawable.file_icon_apk);
+                mFileIconLoader.loadIcon(holder.ivIcon,item.path, item.id, P2PConstant.TYPE.APP);
+                holder.tvName.setText(item.fileName);
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             case P2PConstant.TYPE.VIDEO:

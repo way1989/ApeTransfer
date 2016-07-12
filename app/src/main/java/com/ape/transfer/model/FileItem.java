@@ -11,6 +11,7 @@ import android.net.Uri;
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.util.FileCategoryHelper;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.Util;
 
 import java.io.File;
 import java.io.Serializable;
@@ -33,11 +34,8 @@ public class FileItem implements Serializable {
     public long size;
     public long id;
     public String path;
+    public String fileName;
     public int type;
-
-    //just for apk
-    public Drawable appLogo;
-    public CharSequence appLabel;
 
     public FileItem() {
 
@@ -47,6 +45,7 @@ public class FileItem implements Serializable {
         this.type = type;
         id = c.getLong(COLUMN_ID);
         path = c.getString(COLUMN_PATH);
+        fileName = Util.getNameFromFilepath(path);
         size = c.getLong(COLUMN_SIZE);
         dateModified = c.getLong(COLUMN_DATE);
         selected = false;
@@ -126,8 +125,7 @@ public class FileItem implements Serializable {
         appInfo.path = filepath;
         appInfo.size = file.length();
         appInfo.dateModified = file.lastModified();
-        appInfo.appLogo = app.loadIcon(pkManager);
-        appInfo.appLabel = app.loadLabel(pkManager);
+        appInfo.fileName = app.loadLabel(pkManager) + ".apk";
 
         appInfo.type = P2PConstant.TYPE.APP;
         return appInfo;

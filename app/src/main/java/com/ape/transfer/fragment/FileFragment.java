@@ -39,6 +39,7 @@ import butterknife.ButterKnife;
 public class FileFragment extends Fragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>, FileItemAdapter.OnItemClickListener {
     private static final String TAG = "FileFragment";
     private static final String FILE_CATEGORY = "fileCategory";
+    private static final int LOADER_ID = 0;
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
     @BindView(R.id.progressBar)
@@ -88,12 +89,20 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser
+                && getLoaderManager().getLoader(LOADER_ID) == null){
+            getLoaderManager().initLoader(0, null, FileFragment.this);
+        }
+    }
+
+    @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mMusicItemAdapter = new FileItemAdapter(getContext(), mFileCategory, this);
         recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(mMusicItemAdapter);
-        getLoaderManager().initLoader(0, null, FileFragment.this);
         recyclerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
         empty.setVisibility(View.INVISIBLE);

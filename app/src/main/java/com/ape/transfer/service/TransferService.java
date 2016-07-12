@@ -180,7 +180,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
                 FileItem item = fileItems.get(i);
                 P2PFileInfo info = new P2PFileInfo();
                 if (item.type == P2PConstant.TYPE.APP) {
-                    info.name = item.appLabel + ".apk";
+                    info.name = item.fileName;
                 } else {
                     info.name = Util.getNameFromFilepath(item.path);
                 }
