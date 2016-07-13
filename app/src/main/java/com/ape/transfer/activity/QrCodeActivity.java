@@ -1,38 +1,32 @@
 package com.ape.transfer.activity;
 
-import android.os.Build;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ape.transfer.R;
-import com.ape.transfer.p2p.p2pcore.P2PManager;
-import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
-import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
-import com.ape.transfer.util.NetworkUtils;
-
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import com.ape.transfer.util.Log;
+import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.QrCodeUtils;
+import com.ape.transfer.util.TDevice;
+import com.ape.transfer.util.WifiApUtils;
+import com.ape.transfer.widget.MobileDataWarningContainer;
+import com.google.zxing.WriterException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class QrCodeActivity extends BaseActivity {
-
-    @BindView(R.id.iv_warning)
-    ImageView ivWarning;
-    @BindView(R.id.tv_warning)
-    TextView tvWarning;
-    @BindView(R.id.iv_warning_arrow)
-    ImageView ivWarningArrow;
+public class QrCodeActivity extends ApBaseActivity {
+    public static final String EXCHANGE_SSID_SUFFIX = "@exchange";
+    private static final String TAG = "QrCodeActivity";
     @BindView(R.id.tv_qrcode)
     TextView tvQrcode;
     @BindView(R.id.ivQrcode)
@@ -45,81 +39,89 @@ public class QrCodeActivity extends BaseActivity {
     TextView tvPrompt;
     @BindView(R.id.rl_loading)
     RelativeLayout rlLoading;
-
-    private P2PManager mP2PManager;
-    private List<P2PNeighbor> neighbors = new ArrayList<>();
-
-    /**
-     * scan all net Adapter to get all IP, just return 192
-     */
-    public static String getLocalIpAddress() throws UnknownHostException {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface
-                    .getNetworkInterfaces(); en.hasMoreElements(); ) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr
-                        .hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()
-                            && (inetAddress.getAddress().length == 4)
-                            && inetAddress.getHostAddress().startsWith("192.168")) {
-                        return inetAddress.getHostAddress();
-                    }
-
-                }
-            }
-        } catch (SocketException ex) {
-        }
-        return null;
-    }
+    @BindView(R.id.mobile_data_warning)
+    MobileDataWarningContainer mobileDataWarning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_code);
         ButterKnife.bind(this);
+        startWifiAp();
     }
 
-    private void initDatas() {
-        mP2PManager = new P2PManager(getApplicationContext());
-        P2PNeighbor melonInfo = new P2PNeighbor();
-        melonInfo.alias = Build.MODEL;
-        String ip = null;
-        try {
-            ip = getLocalIpAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+    @Override
+    public void onBackPressed() {
+
+        if ((mWifiApService != null && mWifiApService.isWifiApEnabled())) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.connect_dialog_title).setMessage(R.string.transfer_discontent)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+//                            if (mTransferService != null && !mTransferService.isEmpty()) {
+//                                if (mWifiApService.isWifiApEnabled()) {
+//                                    mTransferService.sendOffLine();
+//                                }
+//                                mTransferService.stopP2P();
+//                                TransferServiceUtil.getInstance().unbindTransferService();
+//                                TransferServiceUtil.getInstance().stopTransferService();
+//                            }
+                            stopWifiAp();
+                            finish();
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel, null).create().show();
+            return;
         }
-        if (TextUtils.isEmpty(ip))
-            ip = NetworkUtils.getLocalIp(getApplicationContext());
-        melonInfo.ip = ip;
 
-        mP2PManager.start(melonInfo, new NeighborCallback() {
-            @Override
-            public void NeighborFound(P2PNeighbor neighbor) {
-                if (neighbor != null) {
-                    if (!neighbors.contains(neighbor))
-                        neighbors.add(neighbor);
-                    //randomTextView.addKeyWord(melon.alias);
-                    //randomTextView.show();
-                }
-            }
-
-            @Override
-            public void NeighborRemoved(P2PNeighbor neighbor) {
-                if (neighbor != null) {
-                    neighbors.remove(neighbor);
-                    //randomTextView.removeKeyWord(melon.alias);
-                    //randomTextView.show();
-                }
-            }
-        });
+        super.onBackPressed();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mP2PManager != null)
-            mP2PManager.stop();
+
+    }
+
+    @Override
+    protected String getSSID() {
+        return "ApeTransfer@" + PreferenceUtil.getInstance().getAlias() + EXCHANGE_SSID_SUFFIX;
+    }
+
+    @Override
+    protected boolean shouldCloseWifiAp() {
+        return true;
+    }
+
+    @Override
+    public void onWifiApStatusChanged(int status) {
+        super.onWifiApStatusChanged(status);
+        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (status == WifiApUtils.WIFI_AP_STATE_ENABLED));
+//        boolean hasInternet = TDevice.hasInternet();
+        if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+            updateUI();
+        } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
+                status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+            mobileDataWarning.setVisibility(View.GONE);
+            finish();
+        }
+    }
+
+    private void updateUI() {
+        try {
+            boolean hasInternet = TDevice.hasInternet();
+            Log.i(TAG, "updateUI hasInternet = " + hasInternet);
+            if (hasInternet)
+                mobileDataWarning.setVisibility(View.VISIBLE);
+            rlLoading.setVisibility(View.GONE);
+
+            WifiConfiguration wifiConfiguration = mWifiApService.getWifiApConfiguration();
+            String ssid = wifiConfiguration.SSID;
+            Bitmap qrCode = QrCodeUtils.create2DCode("ApeExchange@" + ssid);
+            ivQrcode.setImageBitmap(qrCode);
+        } catch (WriterException e) {
+            e.printStackTrace();
+        }
     }
 }

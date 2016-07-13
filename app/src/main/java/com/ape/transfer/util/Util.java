@@ -1,10 +1,14 @@
 package com.ape.transfer.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.Settings;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -20,6 +24,8 @@ import java.util.Date;
  * Created by android on 16-6-29.
  */
 public class Util {
+    private static final String PACKAGE_URI_PREFIX = "package:";
+
     public static String formatDateString(Context context, long time) {
         DateFormat dateFormat = android.text.format.DateFormat
                 .getDateFormat(context);
@@ -124,4 +130,13 @@ public class Util {
         }
         return hex.toString();
     }
+
+    public static void startSettingsPermission(Context context) {
+        final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse(PACKAGE_URI_PREFIX + context.getPackageName()));
+        if (!(context instanceof Activity))
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
 }

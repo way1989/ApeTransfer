@@ -6,15 +6,17 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.widget.Toast;
 
+import com.ape.transfer.R;
 import com.ape.transfer.service.WifiApService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.WifiApUtils;
 
-public class ApBaseActivity extends BaseActivity implements WifiApService.OnWifiApStatusListener {
+public abstract class ApBaseActivity extends BaseActivity implements WifiApService.OnWifiApStatusListener {
     private static final String TAG = "ApBaseActivity";
     protected WifiApService.WifiApBinder mWifiApService;
-    protected boolean isOpeningWifiAp;
+    private boolean isOpeningWifiAp;
     private ServiceConnection mServiceCon = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -33,20 +35,25 @@ public class ApBaseActivity extends BaseActivity implements WifiApService.OnWifi
     protected void afterServiceConnected() {
         if (mWifiApService != null) {
             mWifiApService.setOnWifiApStatusListener(this);
-           openWifiAp();
+            openWifiAp();
         } else {
             Log.i(TAG, "afterServiceConnected service == null");
             finish();
         }
     }
 
-    protected String getSSID() {
-        return "";
+    @Override
+    public void onBackPressed() {
+        if (isOpeningWifiAp) {
+            Toast.makeText(getApplicationContext(), R.string.waiting_creating_ap, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        super.onBackPressed();
     }
 
-    protected boolean shouldCloseWifiAp() {
-        return true;
-    }
+    protected abstract String getSSID();
+
+    protected abstract boolean shouldCloseWifiAp();
 
     @Override
     public void onWifiApStatusChanged(int status) {

@@ -10,8 +10,10 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!--
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+    -->
 
     <!-- zxing -->
     <uses-permission android:name="android.permission.CAMERA" />
@@ -19,7 +21,6 @@
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!--
     <uses-feature android:name="android.hardware.camera" />
@@ -69,10 +70,9 @@
             android:label="@string/connect_ap"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.CreateGroupActivity" />
         <activity
             android:name=".activity.QrCodeActivity"
-            android:label="@string/connect_ap"
+            android:label="@string/main_old_phone"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity

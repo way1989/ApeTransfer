@@ -5,12 +5,7 @@
     android:layout_height="match_parent"
     tools:context="com.ape.transfer.activity.WifiAPShareActivity">
 
-    <include
-        android:id="@+id/mobile_data_warning"
-        layout="@layout/subtitle_mobile_data"
-        android:layout_width="match_parent"
-        android:layout_height="25.0dip"
-        android:visibility="gone" />
+    <include layout="@layout/subtitle_mobile_data" />
 
     <RelativeLayout
         android:layout_width="match_parent"

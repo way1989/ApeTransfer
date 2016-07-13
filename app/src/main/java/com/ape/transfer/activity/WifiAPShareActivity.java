@@ -10,10 +10,13 @@ import android.widget.TextView;
 
 import com.ape.transfer.R;
 import com.ape.transfer.util.AndroidWebServer;
+import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
+import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.util.WifiUtils;
+import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +35,8 @@ public class WifiAPShareActivity extends ApBaseActivity {
     ImageView ivCode;
     @BindView(R.id.rl_loading)
     RelativeLayout rlLoading;
+    @BindView(R.id.mobile_data_warning)
+    MobileDataWarningContainer mobileDataWarning;
 
     // NanoHTTPServer
     private NanoHTTPD mNanoHTTPServer;
@@ -58,11 +63,21 @@ public class WifiAPShareActivity extends ApBaseActivity {
     }
 
     @Override
+    protected boolean shouldCloseWifiAp() {
+        return true;
+    }
+
+    @Override
     public void onWifiApStatusChanged(int status) {
         super.onWifiApStatusChanged(status);
         if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             // 开启NanoHTTPServer
             try {
+                boolean hasInternet = TDevice.hasInternet();
+                Log.i(TAG, "updateUI hasInternet = " + hasInternet);
+                if(hasInternet)
+                    mobileDataWarning.setVisibility(View.VISIBLE);
+
                 mNanoHTTPServer.start();
                 rlLoading.setVisibility(View.GONE);
                 String ip = WifiUtils.getLocalIP();
@@ -81,6 +96,7 @@ public class WifiAPShareActivity extends ApBaseActivity {
             }
         } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
                 status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+            mobileDataWarning.setVisibility(View.GONE);
             finish();
         }
     }

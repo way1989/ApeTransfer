@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.ape.transfer.widget.MobileDataWarningContainer xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mobile_data_warning"
     android:layout_width="match_parent"
     android:layout_height="25.0dip"
@@ -11,14 +11,12 @@
     android:paddingRight="10.0dip">
 
     <ImageView
-        android:id="@+id/iv_warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="5.0dip"
         android:src="@drawable/warning" />
 
     <TextView
-        android:id="@+id/tv_warning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1.0"
@@ -30,8 +28,7 @@
         android:textSize="@dimen/textSize_h6" />
 
     <ImageView
-        android:id="@+id/iv_warning_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/warning_arrow" />
-</LinearLayout>
+</com.ape.transfer.widget.MobileDataWarningContainer>

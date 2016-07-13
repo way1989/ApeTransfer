@@ -35,6 +35,7 @@ import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
+import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -90,6 +91,8 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     ImageView ivDirection;
     @BindView(R.id.root)
     RelativeLayout root;
+    @BindView(R.id.mobile_data_warning)
+    MobileDataWarningContainer mobileDataWarning;
     private TransferService.P2PBinder mTransferService;
 
     private PhoneItemAdapter mPhoneItemAdapter;
@@ -152,10 +155,6 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
 
     @Override
     public void onBackPressed() {
-        if (isOpeningWifiAp) {//正在打开热点,禁用返回键
-            Toast.makeText(getApplicationContext(), R.string.waiting_creating_ap, Toast.LENGTH_SHORT).show();
-            return;
-        }
         if (mP2PNeighbor != null || (mWifiApService != null && mWifiApService.isWifiApEnabled())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.connect_dialog_title).setMessage(R.string.transfer_discontent)
@@ -163,7 +162,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (mTransferService != null && !mTransferService.isEmpty()) {
-                                if(mWifiApService.isWifiApEnabled()){
+                                if (mWifiApService.isWifiApEnabled()) {
                                     mTransferService.sendOffLine();
                                 }
                                 mTransferService.stopP2P();
@@ -208,15 +207,21 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     @Override
     public void onWifiApStatusChanged(int status) {
         super.onWifiApStatusChanged(status);
-        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (status ==  WifiApUtils.WIFI_AP_STATE_ENABLED));
+        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (status == WifiApUtils.WIFI_AP_STATE_ENABLED));
 //        boolean hasInternet = TDevice.hasInternet();
         if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+            boolean hasInternet = TDevice.hasInternet();
+            Log.i(TAG, "updateUI hasInternet = " + hasInternet);
+            if(hasInternet)
+                mobileDataWarning.setVisibility(View.VISIBLE);
+
             tvStatus.setText(R.string.waiting_connect);
             tvStatusInfo.setVisibility(View.VISIBLE);
             btnDisconnect.setEnabled(true);
             startP2P();
         } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
                 status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+            mobileDataWarning.setVisibility(View.GONE);
             finish();
         }
     }
@@ -243,13 +248,13 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     }
 
     private void updateUI(boolean hasNeighbor) {
-        if(hasNeighbor){
+        if (hasNeighbor) {
             rvPhones.setVisibility(View.VISIBLE);
             rlWaitingConnect.setVisibility(View.INVISIBLE);
             btnDisconnect.setEnabled(true);
             btSend.setEnabled(true);
-        }else {
-            if(mP2PNeighbor != null){
+        } else {
+            if (mP2PNeighbor != null) {
                 finish();
                 return;
             }
@@ -263,7 +268,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_send:
-                if(mPhoneItemAdapter.getItemCount() < 1) {
+                if (mPhoneItemAdapter.getItemCount() < 1) {
                     return;
                 }
                 if (mTransferService != null)
