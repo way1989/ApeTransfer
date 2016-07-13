@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -78,14 +79,7 @@ public class ExchangeFragment extends Fragment {
 
     @OnShowRationale(Manifest.permission.CAMERA)
     void showCameraRationale(final PermissionRequest request) {
-        new AlertDialog.Builder(getActivity()).setMessage(R.string.required_permissions_promo)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //ExchangeFragmentPermissionsDispatcher.startQrCodeScanWithCheck(ExchangeFragment.this);
-                        request.proceed();
-                    }
-                }).setNegativeButton(android.R.string.cancel, null).create().show();
+        showRationaleDialog(R.string.required_permissions_promo, request);
     }
 
     @OnPermissionDenied(Manifest.permission.CAMERA)
@@ -94,15 +88,42 @@ public class ExchangeFragment extends Fragment {
 
     @OnNeverAskAgain(Manifest.permission.CAMERA)
     void showGotoSetting() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.enable_permission_procedure)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Util.startSettingsPermission(getContext().getApplicationContext());
-                    }
-                }).setNegativeButton(android.R.string.cancel, null).create().show();
+        showNeverAskAgainDialog(R.string.enable_permission_procedure);
+
     }
 
+    private void showNeverAskAgainDialog(@StringRes int messageResId) {
+        new AlertDialog.Builder(getActivity())
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull DialogInterface dialog, int which) {
+                        Util.startSettingsPermission(getContext().getApplicationContext());
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .setCancelable(false)
+                .setTitle(R.string.permission_never_ask_title)
+                .setMessage(messageResId)
+                .show();
+    }
 
+    private void showRationaleDialog(@StringRes int messageResId, final PermissionRequest request) {
+        new AlertDialog.Builder(getActivity())
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull DialogInterface dialog, int which) {
+                        request.proceed();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull DialogInterface dialog, int which) {
+                        request.cancel();
+                    }
+                })
+                .setCancelable(false)
+                .setTitle(R.string.permission_title)
+                .setMessage(messageResId)
+                .show();
+    }
 }

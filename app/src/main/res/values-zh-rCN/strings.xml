@@ -183,4 +183,5 @@
     <string name="total_selected">共选择数据 %1$s, 对方手机内存</string>
     <string name="sended">发送完成!</string>
     <string name="sending">数据发送中 ...</string>
+    <string name="permission_never_ask_title">您可以通过以下方式授权</string>
 </resources>

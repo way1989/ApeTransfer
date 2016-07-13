@@ -176,4 +176,5 @@
     <string name="total_selected">Selected data %1$s, phone storage of the other device</string>
     <string name="sended">Sending completed!</string>
     <string name="sending">Sending data...</string>
+    <string name="permission_never_ask_title">you can grant access as</string>
 </resources>
