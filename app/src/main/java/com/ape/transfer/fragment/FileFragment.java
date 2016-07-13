@@ -86,12 +86,12 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        loadData(isVisibleToUser);
+        loadData();
     }
 
-    private void loadData(boolean isVisibleToUser) {
-        if (isAdded() && isVisibleToUser
-                && getLoaderManager().getLoader(LOADER_ID) == null) {
+    private void loadData() {
+        if(isAdded() && getUserVisibleHint()
+                && getLoaderManager().getLoader(LOADER_ID) == null){
             loadingEmptyContainer.showLoading();
             getLoaderManager().initLoader(0, null, FileFragment.this);
         }
@@ -103,7 +103,7 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
         mMusicItemAdapter = new FileItemAdapter(getContext(), mFileCategory, this);
         recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(mMusicItemAdapter);
-        loadData(getUserVisibleHint());
+        loadData();
     }
 
     private RecyclerView.LayoutManager getLayoutManager() {

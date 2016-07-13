@@ -1,7 +1,6 @@
 package com.ape.transfer.widget;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -16,22 +15,10 @@ import com.ape.transfer.R;
  * the text
  */
 public class LoadingEmptyContainer extends FrameLayout {
-    private static final int LOADING_DELAY = 300;
-
-    private Handler mHandler;
-    private Runnable mShowLoadingRunnable;
+    private static final long LOADING_DELAY = 50L;
 
     public LoadingEmptyContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        mHandler = new Handler();
-        mShowLoadingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                findViewById(R.id.progressbar).setVisibility(View.VISIBLE);
-                getNoResultsContainer().setVisibility(View.INVISIBLE);
-            }
-        };
     }
 
     @Override
@@ -46,15 +33,14 @@ public class LoadingEmptyContainer extends FrameLayout {
     }
 
     public void showLoading() {
-        mHandler.removeCallbacks(mShowLoadingRunnable);
-        mHandler.postDelayed(mShowLoadingRunnable, LOADING_DELAY);
-
+        findViewById(R.id.progressbar).setVisibility(View.VISIBLE);
+        findViewById(R.id.progressbar).animate().alpha(1f).setDuration(LOADING_DELAY);
+        getNoResultsContainer().setVisibility(View.INVISIBLE);
     }
 
     public void showNoResults() {
-        mHandler.removeCallbacks(mShowLoadingRunnable);
-        setVisibility(View.VISIBLE);
         findViewById(R.id.progressbar).setVisibility(View.INVISIBLE);
+        findViewById(R.id.progressbar).setAlpha(0f);
         getNoResultsContainer().setVisibility(View.VISIBLE);
     }
 
