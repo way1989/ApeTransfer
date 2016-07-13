@@ -54,33 +54,35 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FileIconLoader implements Callback, ComponentCallbacks2 {
 
     private static final String LOADER_THREAD_NAME = "FileIconLoader";
-    /** Cache size for {@link #mImageCache} for devices with "large" RAM. */
+    /**
+     * Cache size for {@link #mImageCache} for devices with "large" RAM.
+     */
     private static final int HOLDER_CACHE_SIZE = 2000000;
-
+    /**
+     * Type of message sent by the UI thread to itself to indicate that some
+     * photos need to be loaded.
+     */
+    private static final int MESSAGE_REQUEST_LOADING = 1;
+    /**
+     * Type of message sent by the loader thread to indicate that some photos
+     * have been loaded.
+     */
+    private static final int MESSAGE_ICON_LOADED = 2;
+    private static final String TAG = "FileIconLoader";
+    /**
+     * Height/width of a thumbnail image
+     */
+    private static int mThumbnailSize;
+    /**
+     * A soft cache for image thumbnails. the key is file path
+     */
+    // private final static ConcurrentHashMap<String, ImageHolder> mImageCache = new ConcurrentHashMap<String, ImageHolder>();
     /**
      * An LRU cache for bitmap holders. The cache contains bytes for photos just
      * as they come from the database. Each holder has a soft reference to the
      * actual bitmap.
      */
     private final LruCache<Object, ImageHolder> mImageCache;
-
-    /** Height/width of a thumbnail image */
-    private static int mThumbnailSize;
-    /**
-     * Type of message sent by the UI thread to itself to indicate that some
-     * photos need to be loaded.
-     */
-    private static final int MESSAGE_REQUEST_LOADING = 1;
-
-    /**
-     * Type of message sent by the loader thread to indicate that some photos
-     * have been loaded.
-     */
-    private static final int MESSAGE_ICON_LOADED = 2;
-    /**
-     * A soft cache for image thumbnails. the key is file path
-     */
-   // private final static ConcurrentHashMap<String, ImageHolder> mImageCache = new ConcurrentHashMap<String, ImageHolder>();
     /**
      * A map from ImageView to the corresponding photo ID. Please note that this
      * photo ID may change before the photo loading request is started.
@@ -106,6 +108,8 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
      */
     private boolean mPaused;
     private IconLoadFinishListener iconLoadListener;
+
+
     /**
      * Constructor.
      *
@@ -121,7 +125,6 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
         mThumbnailSize = context.getResources().getDimensionPixelSize(
                 R.dimen.icon_width_height);
     }
-
 
     public static Bitmap getMyImageThumbnail(String filePath, int width, int height) {
         File file = new File(filePath);
@@ -200,7 +203,7 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
      */
     private boolean loadCachedIcon(ImageView view, String path, int cate) {
         ImageHolder holder = mImageCache.get(path);
-
+        Log.i(TAG, "loadCachedIcon holder = " + holder + ", path = " + path);
         if (holder == null) {
             holder = ImageHolder.create(cate);
             if (holder == null)
@@ -209,7 +212,7 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
             mImageCache.put(path, holder);
         } else if (holder.state == ImageHolder.LOADED) {
             if (holder.isNull()) {
-                return true;
+                return false;
             }
 
             // failing to set imageview means that the soft reference was
@@ -340,7 +343,7 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
             boolean loaded = loadCachedIcon(view, fileId.mPath, fileId.mCategory);
             if (loaded) {
                 iterator.remove();
-                if(iconLoadListener != null)
+                if (iconLoadListener != null)
                     iconLoadListener.onIconLoadFinished(view);
             }
         }
@@ -349,6 +352,7 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
             requestLoading();
         }
     }
+
     // ComponentCallbacks2
     @Override
     public void onTrimMemory(int level) {
@@ -357,11 +361,13 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
             clear();
         }
     }
+
     // ComponentCallbacks2
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
 
     }
+
     // ComponentCallbacks2
     @Override
     public void onLowMemory() {

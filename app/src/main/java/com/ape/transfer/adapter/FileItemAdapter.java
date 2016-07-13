@@ -121,7 +121,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
 
     @Override
     public long getItemId(int position) {
-        return mFileItems.get(position).id;
+        return mFileItems.get(position).path.hashCode();
     }
 
     public void unChecked(ArrayList<FileItem> lists) {
@@ -156,6 +156,13 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
+            //update ui
+            FileItem item = (FileItem) v.getTag();
+            int index = mFileItems.indexOf(item);
+            boolean isSelected = item.selected;
+            item.selected = !isSelected;
+            notifyItemChanged(index);
+
             mListener.onItemClick(v);
         }
     }

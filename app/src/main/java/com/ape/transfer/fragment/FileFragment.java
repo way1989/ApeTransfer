@@ -141,9 +141,9 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onItemClick(View v) {
         FileItem item = (FileItem) v.getTag();
-        boolean isSelected = item.selected;
-        item.selected = !isSelected;
-        mMusicItemAdapter.notifyDataSetChanged();
+//        boolean isSelected = item.selected;
+//        item.selected = !isSelected;
+//        mMusicItemAdapter.notifyDataSetChanged();
         mListener.onFileItemChange(item);
     }
 

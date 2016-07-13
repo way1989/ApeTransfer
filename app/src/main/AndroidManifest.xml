@@ -122,6 +122,34 @@
             android:label="@string/about"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.NewPhoneConnectedActivity"
+            android:label="@string/about"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.NewPhoneExchangeActivity"
+            android:label="@string/about"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.OldPhoneConnectedActivity"
+            android:label="@string/about"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.OldPhonePickupActivity"
+            android:label="@string/about"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".activity.OldPhoneExchangeActivity"
+            android:label="@string/about"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
