@@ -87,7 +87,7 @@ public class ExchangeFragment extends Fragment {
     }
 
     @OnNeverAskAgain(Manifest.permission.CAMERA)
-    void showGotoSetting() {
+    void showCameraNeverAsk() {
         showNeverAskAgainDialog(R.string.enable_permission_procedure);
 
     }

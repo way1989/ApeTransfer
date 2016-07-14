@@ -8,8 +8,6 @@ import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.ape.transfer.util.Log;
 import com.tencent.bugly.crashreport.CrashReport;
 
-import pl.tajchert.nammu.Nammu;
-
 /**
  * Created by way on 16/6/10.
  */
@@ -25,10 +23,9 @@ public class App extends Application {
         super.onCreate();
         mContext = getApplicationContext();
         if (BuildConfig.BUGLY_ENABLED)
-            CrashReport.initCrashReport(mContext, getString(R.string.bugly_appid), false);
+            CrashReport.initCrashReport(mContext, String.valueOf(BuildConfig.BUGLY_APPID), false);
         //第二个参数是appkey，就是百川应用创建时候的appkey
-        FeedbackAPI.initAnnoy(this, getString(R.string.feedback_appkey));
-        Nammu.init(this);
+        FeedbackAPI.initAnnoy(this, String.valueOf(BuildConfig.FEEDBACK_APPKEY));
 //        SmileProcessor smileProcessor = new SmileProcessor(this);
 //        smileProcessor.loadEmoji();
         long maxMemory = Runtime.getRuntime().maxMemory();

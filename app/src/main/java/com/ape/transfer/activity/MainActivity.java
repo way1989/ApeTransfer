@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -40,9 +38,9 @@ import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
 import com.ape.transfer.fragment.TransferFragment;
-import com.ape.transfer.util.Log;
 import com.ape.transfer.util.OsUtil;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.Util;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.zxing.activity.CaptureActivity;
 
@@ -54,17 +52,21 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import pl.tajchert.nammu.Nammu;
-import pl.tajchert.nammu.PermissionCallback;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.OnShowRationale;
+import permissions.dispatcher.PermissionRequest;
+import permissions.dispatcher.RuntimePermissions;
 
+@RuntimePermissions
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener,
-        AdapterView.OnItemSelectedListener, PermissionCallback {
+        AdapterView.OnItemSelectedListener {
     private static final int PAGE_TRANSFER = 0;
     private static final int PAGE_EXCHANGE = 1;
     private static final int REQUEST_CODE = 2;
     private static final String TAG = "MainActivity";
-    private static final String PACKAGE_URI_PREFIX = "package:";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.nav_view)
@@ -133,7 +135,6 @@ public class MainActivity extends AppCompatActivity
         }
     };
     private ActionBarDrawerToggle toggle;
-    private long mRequestTimeMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -337,83 +338,68 @@ public class MainActivity extends AppCompatActivity
 
     @OnClick(R.id.fab)
     public void onClick() {
-        checkPermissionAndThenLoad();
+        MainActivityPermissionsDispatcher.startQrCodeScanWithCheck(this);
     }
 
-    private void checkPermissionAndThenLoad() {
-        //check for permission
-        if (Nammu.checkPermission(Manifest.permission.CAMERA)) {
-            Log.d(TAG, "checkPermissionAndThenLoad has permission...");
-            startActivity(new Intent(this, CaptureActivity.class));
-        } else {
-            if (Nammu.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
-                Log.d(TAG, "checkPermissionAndThenLoad shouldShowRequestPermissionRationale...");
-                new AlertDialog.Builder(this).setMessage(R.string.required_permissions_promo)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                tryRequestPermission();
-                            }
-                        }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+
+    private void showNeverAskAgainDialog(@StringRes int messageResId) {
+        new AlertDialog.Builder(this)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
+                    public void onClick(@NonNull DialogInterface dialog, int which) {
+                        Util.startSettingsPermission(getApplicationContext());
                     }
-                }).create().show();
-            } else {
-                Log.d(TAG, "checkPermissionAndThenLoad askForPermission...");
-                tryRequestPermission();
-            }
-        }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .setCancelable(false)
+                .setTitle(R.string.permission_never_ask_title)
+                .setMessage(messageResId)
+                .show();
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Nammu.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    private void showRationaleDialog(@StringRes int messageResId, final PermissionRequest request) {
+        new AlertDialog.Builder(this)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull DialogInterface dialog, int which) {
+                        request.proceed();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull DialogInterface dialog, int which) {
+                        request.cancel();
+                    }
+                })
+                .setCancelable(false)
+                .setTitle(R.string.permission_title)
+                .setMessage(messageResId)
+                .show();
     }
 
-    private void tryRequestPermission() {
-        Nammu.askForPermission(this, Manifest.permission.CAMERA, this);
-        mRequestTimeMillis = SystemClock.elapsedRealtime();
-    }
-
-    private void startSettingsPermission() {
-        final Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.parse(PACKAGE_URI_PREFIX + getPackageName()));
-        startActivity(intent);
-    }
-
-    @Override
-    public void permissionGranted() {
+    @NeedsPermission(Manifest.permission.CAMERA)
+    void startQrCodeScan() {
         startActivity(new Intent(this, CaptureActivity.class));
     }
 
     @Override
-    public void permissionRefused() {
-        final long currentTimeMillis = SystemClock.elapsedRealtime();
-        // If the permission request completes very quickly, it must be because the system
-        // automatically denied. This can happen if the user had previously denied it
-        // and checked the "Never ask again" check box.
-        if ((currentTimeMillis - mRequestTimeMillis) < 250L) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.enable_permission_procedure)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startSettingsPermission();
-                        }
-                    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            }).create().show();
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
 
-        } else {
-            finish();
-        }
+    @OnShowRationale(Manifest.permission.CAMERA)
+    void showCameraRationale(PermissionRequest request) {
+        showRationaleDialog(R.string.required_permissions_promo, request);
+    }
 
+    @OnPermissionDenied(Manifest.permission.CAMERA)
+    void showCameraDenied() {
+    }
+
+    @OnNeverAskAgain(Manifest.permission.CAMERA)
+    void showCameraNeverAsk() {
+        showNeverAskAgainDialog(R.string.enable_permission_procedure);
     }
 
     private static class SpinnerAdapter extends ArrayAdapter<String> implements ThemedSpinnerAdapter {

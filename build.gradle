@@ -45,5 +45,8 @@ ext {
     buglyVersion = '2.1.5'
     nanohttpdVersion = '2.3.0'
     zxingVersion = '3.2.1'
-    nammuVersion = '1.1.1'
+    eventbusVersion = '3.0.0'
+    glideVersion = '3.7.0'
+    circleimageviewVersion = '2.1.0'
+    permissionsdispatcherVersion = '2.1.3'
 }

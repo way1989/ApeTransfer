@@ -32,16 +32,16 @@ android {
             buildConfigField "boolean", "LOG_DEBUG", "true"
             //是否开启BUGLY
             buildConfigField "boolean", "BUGLY_ENABLED", "false"
-            resValue "string", "bugly_appid", BUGLY_APPID
-            resValue "string", "feedback_appkey", FEEDBACK_APPKEY
+            buildConfigField "int", "BUGLY_APPID", BUGLY_APPID
+            buildConfigField "int", "FEEDBACK_APPKEY", FEEDBACK_APPKEY
         }
         release {
             // 不显示Log
             buildConfigField "boolean", "LOG_DEBUG", "false"
             //是否开启ACRA
             buildConfigField "boolean", "BUGLY_ENABLED", "true"
-            resValue "string", "bugly_appid", BUGLY_APPID
-            resValue "string", "feedback_appkey", FEEDBACK_APPKEY
+            buildConfigField "int", "BUGLY_APPID", BUGLY_APPID
+            buildConfigField "int", "FEEDBACK_APPKEY", FEEDBACK_APPKEY
             signingConfig signingConfigs.release
             shrinkResources true
             minifyEnabled true
@@ -76,7 +76,6 @@ dependencies {
     compile "com.tencent.bugly:crashreport:$rootProject.buglyVersion"
     compile "org.nanohttpd:nanohttpd:$rootProject.nanohttpdVersion"
     compile "com.google.zxing:core:$rootProject.zxingVersion"
-    compile "com.github.tajchert:nammu:$rootProject.nammuVersion"
 
 //    compile project(':emoji')
 //    compile project(':filepicker')
