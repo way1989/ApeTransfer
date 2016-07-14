@@ -61,7 +61,28 @@ public class WifiApUtils {
      */
     public static final int WIFI_AP_STATE_FAILED = 14;
 
+    //Ap Change
+    public static final String ACTION_TETHER_STATE_CHANGED =
+            "android.net.conn.TETHER_STATE_CHANGED";
 
+    /**
+     * gives a String[] listing all the interfaces configured for
+     * tethering and currently available for tethering.
+     */
+    public static final String EXTRA_AVAILABLE_TETHER = "availableArray";
+
+    /**
+     * gives a String[] listing all the interfaces currently tethered
+     * (ie, has dhcp support and packets potentially forwarded/NATed)
+     */
+    public static final String EXTRA_ACTIVE_TETHER = "activeArray";
+
+    /**
+     * gives a String[] listing all the interfaces we tried to tether and
+     * failed.
+     * for any interfaces listed here.
+     */
+    public static final String EXTRA_ERRORED_TETHER = "erroredArray";
     /* 数据段begin */
     private final static String TAG = "WifiApUtils";
     // 单例

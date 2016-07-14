@@ -19,6 +19,8 @@ import com.ape.transfer.R;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.WifiApUtils;
 
+import java.util.ArrayList;
+
 public class WifiApService extends Service {
     private static final String TAG = "WifiApService";
     private static final int OPEN_WIFI_AP = 0;
@@ -44,6 +46,15 @@ public class WifiApService extends Service {
             } else if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)) {
                 int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, WifiManager.WIFI_STATE_UNKNOWN);
                 handleWifiStateChanged(state);
+            } else if (WifiApUtils.ACTION_TETHER_STATE_CHANGED.equals(action)) {
+                ArrayList<String> available = intent.getStringArrayListExtra(
+                        WifiApUtils.EXTRA_AVAILABLE_TETHER);
+                ArrayList<String> active = intent.getStringArrayListExtra(
+                        WifiApUtils.EXTRA_ACTIVE_TETHER);
+                ArrayList<String> errored = intent.getStringArrayListExtra(
+                        WifiApUtils.EXTRA_ERRORED_TETHER);
+
+                updateTetherState(available.toArray(), active.toArray(), errored.toArray());
             } else if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(action)) {
                 enableWifiSwitch();
             }
@@ -91,6 +102,7 @@ public class WifiApService extends Service {
         intentFilterForAp.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         intentFilterForAp.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
         intentFilterForAp.addAction(WifiApUtils.WIFI_AP_STATE_CHANGED_ACTION);
+        intentFilterForAp.addAction(WifiApUtils.ACTION_TETHER_STATE_CHANGED);
         registerReceiver(receiver, intentFilterForAp);
     }
 
@@ -106,6 +118,11 @@ public class WifiApService extends Service {
         mHandler.removeMessages(CLOSE_WIFI_AP);
         mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, CLOSE_WIFI_AP_DELAY);
         unregisterReceiver(receiver);
+    }
+
+    private void updateTetherState(Object[] available, Object[] tethered, Object[] errored) {
+        Log.i(TAG, "updateTetherState available.size = " + available.length + ", tethered.size = " + tethered.length
+                + ", errored.size = " + errored.length);
     }
 
     private void handleWifiApStateChanged(int state) {

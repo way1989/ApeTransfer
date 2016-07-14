@@ -173,7 +173,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
                             finish();
                         }
                     })
-                    .setNegativeButton(android.R.string.cancel, null).create().show();
+                    .setNegativeButton(android.R.string.cancel, null).show();
             return;
         }
 

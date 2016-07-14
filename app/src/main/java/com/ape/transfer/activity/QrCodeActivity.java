@@ -1,6 +1,7 @@
 package com.ape.transfer.activity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
@@ -13,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ape.transfer.R;
+import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.service.TransferService;
+import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
@@ -21,10 +25,13 @@ import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 import com.google.zxing.WriterException;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class QrCodeActivity extends ApBaseActivity {
+public class QrCodeActivity extends ApBaseActivity implements TransferService.Callback,
+        TransferServiceUtil.Callback{
     public static final String EXCHANGE_SSID_SUFFIX = "@exchange";
     private static final String TAG = "QrCodeActivity";
     @BindView(R.id.tv_qrcode)
@@ -42,36 +49,38 @@ public class QrCodeActivity extends ApBaseActivity {
     @BindView(R.id.mobile_data_warning)
     MobileDataWarningContainer mobileDataWarning;
 
+    private TransferService.P2PBinder mTransferService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr_code);
         ButterKnife.bind(this);
         startWifiAp();
+        TransferServiceUtil.getInstance().setCallback(this);
+        TransferServiceUtil.getInstance().bindTransferService();
     }
 
     @Override
     public void onBackPressed() {
-
         if ((mWifiApService != null && mWifiApService.isWifiApEnabled())) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.connect_dialog_title).setMessage(R.string.transfer_discontent)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-//                            if (mTransferService != null && !mTransferService.isEmpty()) {
-//                                if (mWifiApService.isWifiApEnabled()) {
-//                                    mTransferService.sendOffLine();
-//                                }
-//                                mTransferService.stopP2P();
-//                                TransferServiceUtil.getInstance().unbindTransferService();
-//                                TransferServiceUtil.getInstance().stopTransferService();
-//                            }
+                            if (mTransferService != null && !mTransferService.isEmpty()) {
+                                if (mWifiApService.isWifiApEnabled()) {
+                                    mTransferService.sendOffLine();
+                                }
+                                mTransferService.stopP2P();
+                                TransferServiceUtil.getInstance().unbindTransferService();
+                                TransferServiceUtil.getInstance().stopTransferService();
+                            }
                             stopWifiAp();
                             finish();
                         }
                     })
-                    .setNegativeButton(android.R.string.cancel, null).create().show();
+                    .setNegativeButton(android.R.string.cancel, null).show();
             return;
         }
 
@@ -93,7 +102,10 @@ public class QrCodeActivity extends ApBaseActivity {
     protected boolean shouldCloseWifiAp() {
         return true;
     }
-
+    private void startP2P() {
+        if (mTransferService != null && !mTransferService.isP2PRunning())
+            mTransferService.startP2P();
+    }
     @Override
     public void onWifiApStatusChanged(int status) {
         super.onWifiApStatusChanged(status);
@@ -101,6 +113,7 @@ public class QrCodeActivity extends ApBaseActivity {
 //        boolean hasInternet = TDevice.hasInternet();
         if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             updateUI();
+            startP2P();
         } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
                 status == WifiApUtils.WIFI_AP_STATE_FAILED) {
             mobileDataWarning.setVisibility(View.GONE);
@@ -123,5 +136,29 @@ public class QrCodeActivity extends ApBaseActivity {
         } catch (WriterException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onServiceConnected(TransferService.P2PBinder service) {
+        Log.i(TAG, "onServiceConnected... service = " + service);
+        mTransferService = service;
+        mTransferService.setCallback(this);
+    }
+
+    @Override
+    public void onServiceDisconnected() {
+        Log.i(TAG, "onServiceConnected... service = " + mTransferService);
+        mTransferService = null;
+    }
+
+    @Override
+    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+        Log.i(TAG, "onNeighborChanged... neighbors = " + neighbors);
+        if(!neighbors.isEmpty()){
+            Intent intent = new Intent(this, OldPhonePickupActivity.class);
+            intent.putExtra("neighbor", neighbors.get(0));
+            startActivity(intent);
+        }
+        finish();
     }
 }

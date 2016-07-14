@@ -22,10 +22,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
-        if (BuildConfig.BUGLY_ENABLED)
+        if (BuildConfig.BUGLY_ENABLED) {
             CrashReport.initCrashReport(mContext, String.valueOf(BuildConfig.BUGLY_APPID), false);
-        //第二个参数是appkey，就是百川应用创建时候的appkey
-        FeedbackAPI.initAnnoy(this, String.valueOf(BuildConfig.FEEDBACK_APPKEY));
+            FeedbackAPI.initAnnoy(this, String.valueOf(BuildConfig.FEEDBACK_APPKEY));
+        }
 //        SmileProcessor smileProcessor = new SmileProcessor(this);
 //        smileProcessor.loadEmoji();
         long maxMemory = Runtime.getRuntime().maxMemory();

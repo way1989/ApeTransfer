@@ -107,5 +107,5 @@
         android:layout_below="@id/ll_tip"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/newPhone_oldPhone_loading_marginTop"
-        android:background="@drawable/connect_normal" />
+        android:src="@anim/connectting_anim" />
 </RelativeLayout>
