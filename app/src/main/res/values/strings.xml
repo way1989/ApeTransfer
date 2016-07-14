@@ -177,4 +177,5 @@
     <string name="sended">Sending completed!</string>
     <string name="sending">Sending data...</string>
     <string name="permission_never_ask_title">you can grant access as</string>
+    <string name="message">Messages</string>
 </resources>
