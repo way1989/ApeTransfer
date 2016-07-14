@@ -6,7 +6,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <LinearLayout
+<!--    <LinearLayout
         android:id="@id/title"
         android:layout_width="fill_parent"
         android:layout_height="40.0dip"
@@ -20,15 +20,11 @@
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="@dimen/textSize_h3" />
-    </LinearLayout>
+    </LinearLayout>-->
 
     <include
         android:id="@+id/mobile_data_warning"
-        layout="@layout/subtitle_mobile_data"
-        android:layout_width="fill_parent"
-        android:layout_height="25.0dip"
-        android:layout_below="@id/title"
-        android:visibility="gone" />
+        layout="@layout/subtitle_mobile_data"/>
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -78,7 +74,7 @@
         android:layout_weight="1.0"
         android:gravity="center">
 
-        <com.vivo.easyshare.view.BounceRecyclerView
+        <android.support.v7.widget.RecyclerView
             android:id="@id/rv_process"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

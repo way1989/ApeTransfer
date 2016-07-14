@@ -25,6 +25,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -38,6 +39,8 @@ import android.widget.Toast;
 
 import com.ape.transfer.R;
 import com.ape.transfer.activity.BaseActivity;
+import com.ape.transfer.activity.NewPhoneConnectedActivity;
+import com.ape.transfer.activity.QrCodeActivity;
 import com.ape.transfer.util.DialogHelp;
 import com.ape.transfer.util.StringUtils;
 import com.ape.transfer.zxing.camera.CameraManager;
@@ -46,6 +49,9 @@ import com.ape.transfer.zxing.utils.BeepManager;
 import com.ape.transfer.zxing.utils.CaptureActivityHandler;
 import com.ape.transfer.zxing.utils.InactivityTimer;
 import com.google.zxing.Result;
+import com.google.zxing.client.result.ParsedResult;
+import com.google.zxing.client.result.ResultParser;
+import com.google.zxing.client.result.URIParsedResult;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -85,7 +91,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
 
     private Rect mCropRect = null;
     private boolean isHasSurface = false;
-    private boolean flag;
+    private boolean isFlashLightOn;
 
     public Handler getHandler() {
         return handler;
@@ -184,9 +190,8 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                               int height) {
-
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        //do nothing
     }
 
     /**
@@ -207,16 +212,33 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
 //
 //	startActivity(new Intent(CaptureActivity.this, ResultActivity.class)
 //		.putExtras(bundle));
-
-        handler.postDelayed(new Runnable() {
+        final ParsedResult result = ResultParser.parseResult(rawResult);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                handleParsedResult(result);
+            }
+        });
+        /*handler.postDelayed(new Runnable() {
 
             @Override
             public void run() {
                 handleText(rawResult.getText());
             }
-        }, 800);
+        }, 800);*/
     }
-
+    private void handleParsedResult(ParsedResult result){
+        switch (result.getType()) {
+            case URI:
+                URIParsedResult uriResult = (URIParsedResult) result;
+                String uri = uriResult.getURI();
+                showUrlOption(uri);
+                break;
+            default:
+                handleOtherText(result.getDisplayResult());
+                break;
+        }
+    }
     private void handleText(String text) {
 
         if (StringUtils.isUrl(text)) {
@@ -266,20 +288,28 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     }
 
     private void handleOtherText(final String text) {
-        // 判断是否符合基本的json格式
-        if (!text.matches("^\\{.*")) {
+        if(!TextUtils.isEmpty(text) && text.contains("ApeTransfer@")
+                &&text.endsWith(QrCodeActivity.EXCHANGE_SSID_SUFFIX) && text.split("@").length == 3){
+            Intent intent = new Intent(this, NewPhoneConnectedActivity.class);
+            intent.putExtra(NewPhoneConnectedActivity.ARGS_SSID, text);
+            startActivity(intent);
+            finish();
+        }else {
             showCopyTextOption(text);
-        } else {
-
         }
+        // 判断是否符合基本的json格式
+//        if (!text.matches("^\\{.*")) {
+//            showCopyTextOption(text);
+//        }
     }
 
-    private void showCopyTextOption(final String text) {
+    private void showCopyTextOption(String text) {
+        final String finalText = TextUtils.isEmpty(text) ? "null" : text;
         DialogHelp.getConfirmDialog(this, text, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 ClipboardManager cbm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                cbm.setText(text);
+                cbm.setText(finalText);
                 Toast.makeText(CaptureActivity.this, "复制成功", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -401,22 +431,16 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
         return 0;
     }
 
-    protected void light() {
-        if (flag == true) {
-            flag = false;
-            // 开闪光灯
-            cameraManager.openLight();
-            captureFlash.setBackgroundResource(R.drawable.qb_scan_btn_flash_down);
-        } else {
-            flag = true;
-            // 关闪光灯
-            cameraManager.offLight();
-            captureFlash.setBackgroundResource(R.drawable.qb_scan_btn_flash_nor);
-        }
+    protected void toggleFlashLight() {
+        if (!isFlashLightOn) cameraManager.openLight();
+        else cameraManager.offLight();
+        captureFlash.setBackgroundResource(isFlashLightOn ? R.drawable.qb_scan_btn_flash_nor
+                : R.drawable.qb_scan_btn_flash_down);
+        isFlashLightOn = !isFlashLightOn;
     }
 
     @OnClick(R.id.capture_flash)
     public void onClick() {
-        light();
+        toggleFlashLight();
     }
 }

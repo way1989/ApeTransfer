@@ -118,7 +118,7 @@ public class QrCodeActivity extends ApBaseActivity {
 
             WifiConfiguration wifiConfiguration = mWifiApService.getWifiApConfiguration();
             String ssid = wifiConfiguration.SSID;
-            Bitmap qrCode = QrCodeUtils.create2DCode("ApeExchange@" + ssid);
+            Bitmap qrCode = QrCodeUtils.create2DCode(ssid);
             ivQrcode.setImageBitmap(qrCode);
         } catch (WriterException e) {
             e.printStackTrace();

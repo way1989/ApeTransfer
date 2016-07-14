@@ -7,7 +7,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <LinearLayout
+<!--    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="40.0dip"
         android:background="@color/green"
@@ -20,7 +20,7 @@
             android:text="@string/new_phone_connected_title"
             android:textColor="@android:color/white"
             android:textSize="@dimen/textSize_h4" />
-    </LinearLayout>
+    </LinearLayout>-->
 
     <RelativeLayout
         android:layout_width="fill_parent"

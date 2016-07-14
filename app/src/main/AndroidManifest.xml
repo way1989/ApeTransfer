@@ -124,30 +124,30 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.NewPhoneConnectedActivity"
-            android:label="@string/about"
+            android:label="@string/new_phone_connected_title"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.NewPhoneExchangeActivity"
-            android:label="@string/about"
+            android:label="@string/new_phone_connected_title"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.OldPhoneConnectedActivity"
-            android:label="@string/about"
+            android:label="@string/old_phone_connected_title"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.OldPhonePickupActivity"
-            android:label="@string/about"
+            android:label="@string/old_phone_connected_title"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.OldPhoneExchangeActivity"
-            android:label="@string/about"
+            android:label="@string/old_phone_connected_title"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
     </application>
