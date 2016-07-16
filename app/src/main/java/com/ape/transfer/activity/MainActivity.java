@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity
 
         setupWifiMac();
         navigateTransfer.run();
+        startActivity(new Intent(this, OldPhonePickupActivity.class));
     }
 
     private void setupWifiMac() {
