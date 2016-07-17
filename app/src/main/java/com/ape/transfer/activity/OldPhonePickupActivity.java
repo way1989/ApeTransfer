@@ -203,6 +203,7 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
                 }
             } catch (java.lang.SecurityException e) {
                 Log.i(TAG, "Permission not satisified");
+                e.printStackTrace();
                 Utils.exitLockTaskModeIfNeeded(OldPhonePickupActivity.this);
                 finish();
             }

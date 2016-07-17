@@ -312,7 +312,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
         mCurrentProgress.mCurNum++;
         if (composer.getModuleType() == ModuleType.TYPE_APP) {
             if (mAppResultList == null) {
-                mAppResultList = new ArrayList<ResultDialog.ResultEntity>();
+                mAppResultList = new ArrayList<>();
             }
             int type = result ? ResultDialog.ResultEntity.SUCCESS : ResultDialog.ResultEntity.FAIL;
             ResultDialog.ResultEntity entity = new ResultDialog.ResultEntity(ModuleType.TYPE_APP, type);
@@ -334,9 +334,9 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     public void onEnd(Composer composer, boolean result) {
         int resultType = ResultDialog.ResultEntity.SUCCESS;
         if (mResultList == null) {
-            mResultList = new ArrayList<ResultDialog.ResultEntity>();
+            mResultList = new ArrayList<>();
         }
-        if (result == false) {
+        if (!result) {
             if (composer.getCount() == 0) {
                 resultType = ResultDialog.ResultEntity.NO_CONTENT;
             } else {

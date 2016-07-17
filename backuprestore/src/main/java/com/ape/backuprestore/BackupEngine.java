@@ -83,7 +83,7 @@ public class BackupEngine {
     private boolean mIsCancel = false;
     private Object mLock = new Object();
     private String mBackupFolder;
-    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<Integer, ArrayList<String>>();
+    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
 
     private static BackupEngine mSelfInstance;
 
@@ -359,8 +359,7 @@ public class BackupEngine {
                                     result = BackupResultType.Cancel;
                                     if (!mModuleList.contains(ModuleType.TYPE_APP)) {
                                         try {
-                                            if (new File(mBackupFolder) != null
-                                                    && new File(mBackupFolder).exists()) {
+                                            if (new File(mBackupFolder).exists()) {
                                                 deleteFolder(new File(mBackupFolder));
                                             }
                                         } catch (NullPointerException e) {
