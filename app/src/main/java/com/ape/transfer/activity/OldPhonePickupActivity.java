@@ -1,14 +1,27 @@
 package com.ape.transfer.activity;
 
+import android.app.ProgressDialog;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.ape.backuprestore.BackupEngine;
+import com.ape.backuprestore.BackupService;
 import com.ape.backuprestore.PersonalItemData;
+import com.ape.backuprestore.RecordXmlComposer;
+import com.ape.backuprestore.RecordXmlInfo;
+import com.ape.backuprestore.ResultDialog;
 import com.ape.backuprestore.modules.AppBackupComposer;
 import com.ape.backuprestore.modules.CalendarBackupComposer;
 import com.ape.backuprestore.modules.Composer;
@@ -18,7 +31,10 @@ import com.ape.backuprestore.modules.MusicBackupComposer;
 import com.ape.backuprestore.modules.NoteBookBackupComposer;
 import com.ape.backuprestore.modules.PictureBackupComposer;
 import com.ape.backuprestore.modules.SmsBackupComposer;
+import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.FileUtils;
 import com.ape.backuprestore.utils.ModuleType;
+import com.ape.backuprestore.utils.SDCardUtils;
 import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.OldPhonePickupAdapter;
@@ -26,17 +42,25 @@ import com.ape.transfer.util.Log;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by android on 16-7-13.
  */
-public class OldPhonePickupActivity extends BaseActivity implements OldPhonePickupAdapter.OnItemClickListener {
+public class OldPhonePickupActivity extends BaseActivity implements OldPhonePickupAdapter.OnItemClickListener,
+        BackupService.OnBackupStatusListener {
     private static final String TAG = "OldPhonePickupActivity";
+    protected BackupService.BackupBinder mBackupService;
+    protected ProgressDialog mProgressDialog;
     @BindView(R.id.mobile_data_warning)
     MobileDataWarningContainer mobileDataWarning;
     @BindView(R.id.rv_data_category)
@@ -48,12 +72,31 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
     private List<String> mMessageEnable = new ArrayList<>();
     private OldPhonePickupAdapter mAdapter;
     private InitPersonalDataTask mInitDataTask;
+    private ServiceConnection mServiceCon = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(final ComponentName name, final IBinder service) {
+            mBackupService = (BackupService.BackupBinder) service;
+            if (mBackupService != null) {
+                mBackupService.setOnBackupChangedListner(OldPhonePickupActivity.this);
+            }
+            afterServiceConnected();
+            Log.i(TAG, "onServiceConnected");
+        }
+
+        @Override
+        public void onServiceDisconnected(final ComponentName name) {
+            mBackupService = null;
+            Log.i(TAG, "onServiceDisconnected");
+        }
+    };
+    private String mBackupFolderPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_old_phone_pickup);
         ButterKnife.bind(this);
+        bindService();
         if (TDevice.hasInternet()) {
             mobileDataWarning.setVisibility(View.VISIBLE);
         }
@@ -62,6 +105,18 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
         rvDataCategory.setAdapter(mAdapter);
         mInitDataTask = new InitPersonalDataTask();
         mInitDataTask.execute();
+        createProgressDlg();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBackupService != null && mBackupService.getState() == Constants.State.INIT) {
+            stopService();
+        }
+        if (mBackupService != null) {
+            mBackupService.setOnBackupChangedListner(null);
+        }
     }
 
     private int getModulesCount(Composer... composers) {
@@ -90,6 +145,282 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
 
     @Override
     public void onItemClick(View v) {
+        btnSure.setEnabled(!getSelectedItemList().isEmpty());
+    }
+
+    @Override
+    public void onComposerChanged(final Composer composer) {
+        if (composer == null) {
+            Log.e(TAG, "onComposerChanged: error[composer is null]");
+            return;
+        }
+        Log.i(TAG, "onComposerChanged: type = " + composer.getModuleType()
+                + "Max = " + composer.getCount());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String msg = getProgressDlgMessage(composer.getModuleType());
+                Log.d(TAG, "mProgressDialog : " + mProgressDialog);
+                if (mProgressDialog != null
+                        && !mProgressDialog.isShowing()) {
+                    if (mBackupService != null
+                            && mBackupService.getState() != Constants.State.PAUSE) {
+                        showProgress(0, null);
+                    }
+                }
+                if (mProgressDialog != null) {
+                    mProgressDialog.setMessage(msg);
+                    mProgressDialog.setMax(composer.getCount());
+                    mProgressDialog.setProgress(0);
+                }
+            }
+        });
+
+    }
+
+    protected String getProgressDlgMessage(final int type) {
+        StringBuilder builder = new StringBuilder(getString(R.string.backuping));
+        builder.append("(");
+        builder.append(ModuleType.getModuleStringFromType(this, type));
+        builder.append(")");
+        return builder.toString();
+    }
+
+    @Override
+    public void onProgressChanged(Composer composer, final int progress) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null) {
+                    mProgressDialog.setProgress(progress);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onBackupEnd(BackupEngine.BackupResultType resultCode, ArrayList<ResultDialog.ResultEntity> resultRecord, ArrayList<ResultDialog.ResultEntity> appResultRecord) {
+        if (resultCode != BackupEngine.BackupResultType.Cancel) {
+            RecordXmlInfo backupInfo = new RecordXmlInfo();
+            backupInfo.setRestore(false);
+            backupInfo.setDevice(Utils.getPhoneSearialNumber());
+            backupInfo.setTime(String.valueOf(System.currentTimeMillis()));
+            RecordXmlComposer xmlCompopser = new RecordXmlComposer();
+            xmlCompopser.startCompose();
+            xmlCompopser.addOneRecord(backupInfo);
+            xmlCompopser.endCompose();
+            if (mBackupFolderPath != null && !mBackupFolderPath.isEmpty()) {
+                Utils.writeToFile(xmlCompopser.getXmlInfo(), mBackupFolderPath + File.separator
+                        + Constants.RECORD_XML);
+            }
+        } else {
+            Log.e(TAG, "ResultCode is cancel, not write record.xml");
+        }
+
+        final BackupEngine.BackupResultType iResultCode = resultCode;
+        final ArrayList<ResultDialog.ResultEntity> iResultRecord = resultRecord;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showBackupResult(iResultCode, iResultRecord);
+            }
+        });
+
+    }
+
+    private void showBackupResult(final BackupEngine.BackupResultType result,
+                                  final ArrayList<ResultDialog.ResultEntity> list) {
+        Log.i(TAG, "showBackupResult");
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+
+        if (result != BackupEngine.BackupResultType.Cancel) {
+            Toast.makeText(getApplicationContext(), R.string.backup_result, Toast.LENGTH_SHORT).show();
+        } else {
+            stopService();
+        }
+    }
+
+    @Override
+    public void onBackupErr(IOException e) {
+        if (mBackupService != null &&
+                mBackupService.getState() != Constants.State.INIT &&
+                mBackupService.getState() != Constants.State.FINISH) {
+            mBackupService.pauseBackup();
+        }
+    }
+
+    @OnClick(R.id.btn_sure)
+    public void onClick() {
+        if (Utils.getWorkingInfo() < 0) {
+            startBackup();
+        } else {
+            //showDialog(DialogID.DLG_RUNNING);
+        }
+    }
+
+    private ProgressDialog createProgressDlg() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            mProgressDialog.setMessage(getString(R.string.backuping));
+            mProgressDialog.setCancelable(true);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+            //mProgressDialog.setCancelMessage(mHandler.obtainMessage(MessageID.PRESS_BACK));
+        }
+        return mProgressDialog;
+    }
+
+    protected void showProgress(int defaltMax, String defaltModule) {
+        if (mProgressDialog == null) {
+            mProgressDialog = createProgressDlg();
+        }
+        Log.i(TAG, "no need to set max");
+        if (defaltMax != 0 && defaltModule != null) {
+            mProgressDialog.setMax(defaltMax);
+            mProgressDialog.setMessage(defaltModule);
+        }
+
+        if (this != null && !this.isFinishing()) {
+            try {
+                mProgressDialog.show();
+            } catch (WindowManager.BadTokenException e) {
+                Log.e(TAG, " BadTokenException :" + e.toString());
+            }
+        }
+    }
+
+    private void startBackup() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String folderName = dateFormat.format(
+                new Date(System.currentTimeMillis()));
+
+        String path = SDCardUtils
+                .getPersonalDataBackupPath(getApplicationContext());
+        if (path == null) {
+            return;
+        }
+        /** M: Bug Fix for CR ALPS01694645 @{ */
+        String pathSD = SDCardUtils
+                .getStoragePath(getApplicationContext());
+        if (SDCardUtils.getAvailableSize(pathSD) <= SDCardUtils.MINIMUM_SIZE) {
+            // no space
+            Log.d(TAG, "SDCard is full");
+            //mUiHandler.obtainMessage(DialogID.DLG_SDCARD_FULL).sendToTarget();
+            Toast.makeText(getApplicationContext(), "SDCard is full...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StringBuilder builder = new StringBuilder(path);
+        builder.append(File.separator);
+        builder.append(folderName);
+        mBackupFolderPath = builder.toString();
+        Log.d(TAG, "[processClickStart] mBackupFolderPath is " + mBackupFolderPath);
+        File folder = new File(mBackupFolderPath);
+        File[] files = null;
+        if (folder.exists()) {
+            files = folder.listFiles();
+        }
+        if (files != null && files.length > 0) {
+            Log.d(TAG, "[processClickStart] DLG_BACKUP_CONFIRM_OVERWRITE Here! ");
+            for (File file : files) {
+                FileUtils.deleteFileOrFolder(file);
+            }
+            return;
+        }
+        startPersonalDataBackup(mBackupFolderPath);
+    }
+
+    private void startPersonalDataBackup(String folderName) {
+        if (folderName == null || folderName.trim().equals("")) {
+            return;
+        }
+        final ArrayList<Integer> list = getSelectedItemList();
+        if (list.isEmpty())
+            return;
+
+        startService();
+        if (mBackupService != null) {
+            mBackupService.setBackupModelList(list);
+            if (list.contains(ModuleType.TYPE_MESSAGE)) {
+                ArrayList<String> params = new ArrayList<String>();
+                params.add(Constants.ModulePath.NAME_SMS);
+                params.add(Constants.ModulePath.NAME_MMS);
+                mBackupService.setBackupItemParam(ModuleType.TYPE_MESSAGE, params);
+            }
+            boolean ret = mBackupService.startBackup(folderName);
+            if (!ret) {
+                String path = SDCardUtils.getStoragePath(this);
+                if (path == null) {
+                    // no sdcard
+                    Log.d(TAG, "SDCard is removed");
+                    ret = true;
+                } else if (SDCardUtils.getAvailableSize(path) <= SDCardUtils.MINIMUM_SIZE) {
+                    // no space
+                    Log.d(TAG, "SDCard is full");
+                    ret = true;
+                    //mUiHandler.obtainMessage(DialogID.DLG_SDCARD_FULL).sendToTarget();
+                } else {
+                    Log.e(TAG, "Unknown error");
+                    Bundle b = new Bundle();
+                    b.putString("name", folderName.substring(folderName.lastIndexOf('/') + 1));
+                    //mUiHandler.obtainMessage(DialogID.DLG_CREATE_FOLDER_FAILED, b).sendToTarget();
+                }
+                stopService();
+            }
+        } else {
+            stopService();
+            Log.e(TAG, "startPersonalDataBackup: error! service is null");
+        }
+
+    }
+
+    private ArrayList<Integer> getSelectedItemList() {
+        ArrayList<Integer> list = new ArrayList<>();
+        int count = mAdapter.getItemCount();
+        for (int position = 0; position < count; position++) {
+            PersonalItemData item = (PersonalItemData) mAdapter.getItemByPosition(position);
+            if (item.isSelected()) {
+                list.add(item.getType());
+            }
+        }
+        return list;
+    }
+
+    protected void afterServiceConnected() {
+        //mBackupListener = new PersonalDataBackupStatusListener();
+        setOnBackupStatusListener();
+        //checkBackupState();
+    }
+
+    public void setOnBackupStatusListener() {
+        if (mBackupService != null) {
+            mBackupService.setOnBackupChangedListner(this);
+        }
+    }
+
+    private void bindService() {
+        this.getApplicationContext().bindService(new Intent(this, BackupService.class),
+                mServiceCon, Service.BIND_AUTO_CREATE);
+    }
+
+    private void unBindService() {
+        if (mBackupService != null) {
+            mBackupService.setOnBackupChangedListner(null);
+        }
+        this.getApplicationContext().unbindService(mServiceCon);
+    }
+
+    protected void startService() {
+        this.startService(new Intent(this, BackupService.class));
+    }
+
+    protected void stopService() {
+        if (mBackupService != null) {
+            mBackupService.reset();
+        }
+        this.stopService(new Intent(this, BackupService.class));
     }
 
     private class InitPersonalDataTask extends AsyncTask<Void, Void, Long> {
@@ -108,11 +439,10 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
         @Override
         protected void onPostExecute(Long arg0) {
             showLoadingContent(false);
-            setButtonsEnable(true);
             updateData(mBackupDataList);
-            //setOnBackupStatusListener(mBackupListener);
-            Log.i(TAG,
-                    "---onPostExecute----getTitle " + OldPhonePickupActivity.this.getTitle());
+            setButtonsEnable(!getSelectedItemList().isEmpty());
+            setOnBackupStatusListener();
+            Log.i(TAG, "---onPostExecute----getTitle " + OldPhonePickupActivity.this.getTitle());
             super.onPostExecute(arg0);
         }
 
@@ -201,7 +531,7 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
                         Log.i(TAG, "Skip module type: " + types[i]);
                     }
                 }
-            } catch (java.lang.SecurityException e) {
+            } catch (SecurityException e) {
                 Log.i(TAG, "Permission not satisified");
                 e.printStackTrace();
                 Utils.exitLockTaskModeIfNeeded(OldPhonePickupActivity.this);

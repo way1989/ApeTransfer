@@ -1,39 +1,160 @@
 package com.ape.backuprestore.modules;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 
 import com.ape.backuprestore.utils.ModuleType;
+import com.ape.backuprestore.utils.MyLogger;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * Created by android on 16-7-16.
  */
 public class AppRestoreComposer extends Composer {
+    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/AppRestoreComposer";
+    private int mIndex;
+    private List<String> mFileNameList;
+    private Object mLock = new Object();
+
+    /**
+     * @param context
+     */
     public AppRestoreComposer(Context context) {
         super(context);
     }
 
-    @Override
+    /**
+     * @return int
+     */
     public int getModuleType() {
         return ModuleType.TYPE_APP;
     }
 
-    @Override
+    /**
+     * @return int
+     */
     public int getCount() {
-        return 0;
+        int count = 0;
+        if (mFileNameList != null) {
+            count = mFileNameList.size();
+        }
+        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        return count;
     }
 
-    @Override
-    public boolean isAfterLast() {
-        return false;
-    }
-
-    @Override
+    /**
+     * @return boolean
+     */
     public boolean init() {
-        return false;
+        boolean result = false;
+        if (mParams != null) {
+            mFileNameList = mParams;
+            result = true;
+        }
+
+        MyLogger.logD(CLASS_TAG, "init():" + result + ", count:" + getCount());
+        return result;
     }
 
-    @Override
-    protected boolean implementComposeOneEntity() {
-        return false;
+    /**
+     * @return boolean
+     */
+    public boolean isAfterLast() {
+        boolean result = true;
+        if (mFileNameList != null) {
+            result = (mIndex >= mFileNameList.size());
+        }
+
+        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        return result;
     }
+
+    /**
+     * @return boolean
+     */
+    public boolean implementComposeOneEntity() {
+        boolean result = false;
+        if (mFileNameList != null && mIndex < mFileNameList.size()) {
+            try {
+                String apkFileName = mFileNameList.get(mIndex++);
+                File apkFile = new File(apkFileName);
+                if (apkFile.exists()) {
+                    /*PackageManager packageManager = mContext.getPackageManager();
+                    PackageInstallObserver installObserver = new PackageInstallObserver();
+
+                    packageManager.installPackage(
+                            Uri.fromFile(apkFile),
+                            installObserver,
+                            PackageManager.INSTALL_REPLACE_EXISTING
+                                    | PackageManager.INSTALL_ALLOW_DOWNGRADE,
+                            "test");
+
+                    synchronized (mLock) {
+                        while (!installObserver.mFinished) {
+                            try {
+                                mLock.wait();
+                            } catch (InterruptedException e) {
+                                MyLogger.logD(CLASS_TAG, "InterruptedException");
+                            }
+                        }
+
+                        if (installObserver.mResult == PackageManager.INSTALL_SUCCEEDED) {
+                            result = true;
+                            MyLogger.logD(CLASS_TAG, "install success");
+                        } else {
+                            MyLogger.logD(CLASS_TAG, "install fail, result:"
+                                    + installObserver.mResult);
+                        }
+                    }*/
+                } else {
+                    MyLogger.logD(CLASS_TAG, "install failed");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * onStart.
+     */
+    public void onStart() {
+        super.onStart();
+        //delteTempFolder();
+    }
+
+    /**
+     * onEnd.
+     */
+    public void onEnd() {
+        super.onEnd();
+        if (mFileNameList != null) {
+            mFileNameList.clear();
+        }
+        //delteTempFolder();
+        MyLogger.logD(CLASS_TAG, "onEnd()");
+    }
+
+    /**
+     * @author mtk81330
+     *
+     */
+//    class PackageInstallObserver extends IPackageInstallObserver.Stub {
+//        private boolean mFinished = false;
+//        private int mResult;
+//
+//        @Override
+//        public void packageInstalled(String name, int status) {
+//            synchronized (mLock) {
+//                mFinished = true;
+//                mResult = status;
+//                mLock.notifyAll();
+//            }
+//        }
+//    }
 }

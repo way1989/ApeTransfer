@@ -310,7 +310,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     @Override
     public void onOneFinished(Composer composer, boolean result) {
         mCurrentProgress.mCurNum++;
-        if (composer.getModuleType() == ModuleType.TYPE_APP) {
+        /*if (composer.getModuleType() == ModuleType.TYPE_APP) {
             if (mAppResultList == null) {
                 mAppResultList = new ArrayList<>();
             }
@@ -318,7 +318,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             ResultDialog.ResultEntity entity = new ResultDialog.ResultEntity(ModuleType.TYPE_APP, type);
             entity.setKey(mParasMap.get(ModuleType.TYPE_APP).get(mCurrentProgress.mCurNum - 1));
             mAppResultList.add(entity);
-        }
+        }*/
         if (mStatusListener != null) {
             mStatusListener.onProgressChanged(composer, mCurrentProgress.mCurNum);
         }

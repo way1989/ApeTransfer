@@ -15,21 +15,15 @@ public class SDCardUtils {
     private static final String CLASS_TAG = "SDCardUtils";
 
     public static String getSavePath() {
-
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
 
     public static String getStoragePath(Context context) {
         String storagePath = getSavePath();
-        if (storagePath == null) {
-            MyLogger.logD(CLASS_TAG, "getStoragePath: storagePath = " + storagePath);
-            return null;
-        }
-        storagePath = storagePath + File.separator + "backup";
+        storagePath = storagePath + File.separator + "ApeTransfer";
         MyLogger.logD(CLASS_TAG, "getStoragePath: path is " + storagePath);
         File file = new File(storagePath);
-
         if (file.exists() && file.isDirectory()) {
             return storagePath;
         } else if (file.mkdir()) {
