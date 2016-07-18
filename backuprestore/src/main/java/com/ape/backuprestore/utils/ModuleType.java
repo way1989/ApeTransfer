@@ -1,15 +1,13 @@
 package com.ape.backuprestore.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.Context;
 
+import java.util.HashMap;
+import java.util.Map;
 import com.ape.backuprestore.R;
 
 
 public class ModuleType {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/ModuleType";
     public static final int TYPE_INVALID = 0x0;
     public static final int TYPE_CONTACT = 0x1;
     public static final int TYPE_SMS = 0x2;
@@ -21,8 +19,10 @@ public class ModuleType {
     public static final int TYPE_MUSIC = 0x80;
     public static final int TYPE_NOTEBOOK = 0x100;
     public static final int TYPE_BOOKMARK = 0x200;
+    public static final int TYPE_CALL_LOG = 0x300;
+    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/ModuleType";
     //public static final int TYPE_SELECT = 0x400;
-    public static Map<Integer, String> sModuleTpyeFolderInfo = new HashMap<Integer, String>();
+    public static Map<Integer, String> sModuleTpyeFolderInfo = new HashMap<>();
 
     static {
         sModuleTpyeFolderInfo.put(TYPE_CONTACT, Constants.ModulePath.FOLDER_CONTACT);
@@ -37,6 +37,9 @@ public class ModuleType {
 
     }
 
+    private ModuleType() {
+    }
+
     public static String getModuleStringFromType(Context context, int type) {
         int resId = 0;
         switch (type) {
@@ -44,45 +47,42 @@ public class ModuleType {
 //            resId = R.string.contact_module;
 //            break;
 
-        case ModuleType.TYPE_CONTACT:
-            resId = R.string.contact_module;
-            break;
+            case ModuleType.TYPE_CONTACT:
+                resId = R.string.contact_module;
+                break;
 
-        case ModuleType.TYPE_MESSAGE:
-            resId = R.string.message_module;
-            break;
+            case ModuleType.TYPE_MESSAGE:
+                resId = R.string.message_module;
+                break;
 
-        case ModuleType.TYPE_CALENDAR:
-            resId = R.string.calendar_module;
-            break;
+            case ModuleType.TYPE_CALENDAR:
+                resId = R.string.calendar_module;
+                break;
 
-        case ModuleType.TYPE_PICTURE:
-            resId = R.string.picture_module;
-            break;
+            case ModuleType.TYPE_PICTURE:
+                resId = R.string.picture_module;
+                break;
 
-        case ModuleType.TYPE_APP:
-            resId = R.string.app_module;
-            break;
+            case ModuleType.TYPE_APP:
+                resId = R.string.app_module;
+                break;
 
-        case ModuleType.TYPE_MUSIC:
-            resId = R.string.music_module;
-            break;
+            case ModuleType.TYPE_MUSIC:
+                resId = R.string.music_module;
+                break;
 
-        case ModuleType.TYPE_NOTEBOOK:
-            resId = R.string.notebook_module;
-            break;
+            case ModuleType.TYPE_NOTEBOOK:
+                resId = R.string.notebook_module;
+                break;
 
 //        case ModuleType.TYPE_BOOKMARK:
 //            resId = R.string.bookmark_module;
 //            break;
 
-        default:
-            break;
+            default:
+                break;
         }
         MyLogger.logD(CLASS_TAG, "getModuleStringFromType: resId = " + resId);
         return context.getResources().getString(resId);
-    }
-
-    private ModuleType() {
     }
 }

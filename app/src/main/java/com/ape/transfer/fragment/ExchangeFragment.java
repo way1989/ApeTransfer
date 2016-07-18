@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import com.ape.transfer.R;
 import com.ape.transfer.activity.InviteFriendActivity;
 import com.ape.transfer.activity.OldPhonePickupActivity;
-import com.ape.transfer.activity.QrCodeActivity;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.zxing.activity.CaptureActivity;
 
@@ -75,7 +74,7 @@ public class ExchangeFragment extends Fragment {
 
     @NeedsPermission(Manifest.permission.CAMERA)
     void startQrCodeScan() {
-        startActivity(new Intent(getActivity(), CaptureActivity.class));
+        ExchangeFragmentPermissionsDispatcher.startRestoreWithCheck(this);
     }
 
     @OnShowRationale(Manifest.permission.CAMERA)
@@ -92,6 +91,7 @@ public class ExchangeFragment extends Fragment {
         showNeverAskAgainDialog(R.string.enable_permission_procedure);
 
     }
+
     @NeedsPermission({Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_CALENDAR, Manifest.permission.READ_SMS})
     void startBackup() {
@@ -113,6 +113,30 @@ public class ExchangeFragment extends Fragment {
     @OnNeverAskAgain({Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_CALENDAR, Manifest.permission.READ_SMS})
     void showBackupNeverAsk() {
+        showNeverAskAgainDialog(R.string.enable_permission_procedure);
+
+    }
+
+    @NeedsPermission({Manifest.permission.WRITE_CALL_LOG, Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_SMS})
+    void startRestore() {
+        startActivity(new Intent(getActivity(), CaptureActivity.class));
+    }
+
+    @OnShowRationale({Manifest.permission.WRITE_CALL_LOG, Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_SMS})
+    void showRestoreRationale(final PermissionRequest request) {
+        showRationaleDialog(R.string.required_permissions_promo, request);
+    }
+
+    @OnPermissionDenied({Manifest.permission.WRITE_CALL_LOG, Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_SMS})
+    void showRestoreDenied() {
+    }
+
+    @OnNeverAskAgain({Manifest.permission.WRITE_CALL_LOG, Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_SMS})
+    void showRestoreNeverAsk() {
         showNeverAskAgainDialog(R.string.enable_permission_procedure);
 
     }
