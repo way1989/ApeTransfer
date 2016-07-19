@@ -95,7 +95,7 @@ public class PictureBackupComposer extends Composer {
             }
         }
 
-        mFileNameList = new ArrayList<String>();
+        mFileNameList = new ArrayList<>();
 
         MyLogger.logD(CLASS_TAG, "init():" + result + ",count:" + getCount());
         return result;

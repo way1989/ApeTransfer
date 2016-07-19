@@ -36,7 +36,7 @@ public class SDCardUtils {
     public static String getPersonalDataBackupPath(Context context) {
         String path = getStoragePath(context);
         if (path != null) {
-            return path + File.separator + Constants.ModulePath.FOLDER_DATA;
+            return path + File.separator + Constants.ModulePath.FOLDER_BACKUP;
         }
 
         return path;

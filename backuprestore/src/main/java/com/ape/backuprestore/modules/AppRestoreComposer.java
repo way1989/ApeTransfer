@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 
+import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,6 +55,18 @@ public class AppRestoreComposer extends Composer {
         if (mParams != null) {
             mFileNameList = mParams;
             result = true;
+        }else {
+            String path = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_APP;
+            mFileNameList = new ArrayList<>();
+            File folder = new File(path);
+            if (folder.exists() && folder.isDirectory()) {
+                File[] fileLists = folder.listFiles();
+                for (File file : fileLists){
+                    if(file.isFile()){
+                        mFileNameList.add(file.getAbsolutePath());
+                    }
+                }
+            }
         }
 
         MyLogger.logD(CLASS_TAG, "init():" + result + ", count:" + getCount());

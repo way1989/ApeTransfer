@@ -3,6 +3,7 @@ package com.ape.backuprestore.modules;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
@@ -66,10 +67,10 @@ public class NoteBookRestoreComposer extends Composer {
         boolean result = false;
         String content = readFileContent(mParentFolderPath + File.separator
                 + Constants.ModulePath.FOLDER_NOTEBOOK + File.separator + Constants.ModulePath.NOTEBOOK_XML);
-        if (content != null) {
-            mRecordList = NoteBookXmlParser.parse(content.toString());
+        if (!TextUtils.isEmpty(content)) {
+            mRecordList = NoteBookXmlParser.parse(content);
         } else {
-            mRecordList = new ArrayList<NoteBookXmlInfo>();
+            mRecordList = new ArrayList<>();
         }
         result = true;
 
@@ -86,7 +87,7 @@ public class NoteBookRestoreComposer extends Composer {
         boolean result = true;
 
         if (mRecordList != null) {
-            result = (mIdx >= mRecordList.size()) ? true : false;
+            result = mIdx >= mRecordList.size();
         }
 
         MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);

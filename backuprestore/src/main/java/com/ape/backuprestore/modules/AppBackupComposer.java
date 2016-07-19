@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
-import com.ape.backuprestore.AppSnippet;
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
@@ -17,6 +16,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -78,37 +78,35 @@ public class AppBackupComposer extends Composer {
     @Override
     public boolean init() {
         boolean result = false;
-       final PackageManager pm = mContext.getPackageManager();
-//        if (mParams != null) {
-//            List<ApplicationInfo> tmpList = getUserAppInfoList(mContext);
-//            HashMap tmpMap = new HashMap<>();
-//            if (tmpList != null) {
-//                for (ApplicationInfo appInfo : tmpList) {
-//                    tmpMap.put(appInfo.packageName, appInfo);
-//                }
-//            }
-//
-//            mUserAppInfoList = new ArrayList<>();
-//            for (int i = 0; i < mParams.size(); ++i) {
-//                ApplicationInfo appInfo = (ApplicationInfo) tmpMap.get(mParams.get(i));
-//                if (appInfo != null) {
-//                    mUserAppInfoList.add(appInfo);
-//                }
-//            }
+        final PackageManager pm = mContext.getPackageManager();
+        if (mParams != null) {
+            List<ApplicationInfo> tmpList = getUserAppInfoList(mContext);
+            HashMap tmpMap = new HashMap<>();
+            if (tmpList != null) {
+                for (ApplicationInfo appInfo : tmpList) {
+                    tmpMap.put(appInfo.packageName, appInfo);
+                }
+            }
+
+            mUserAppInfoList = new ArrayList<>();
+            for (int i = 0; i < mParams.size(); ++i) {
+                ApplicationInfo appInfo = (ApplicationInfo) tmpMap.get(mParams.get(i));
+                if (appInfo != null) {
+                    mUserAppInfoList.add(appInfo);
+                }
+            }
+        } else {
             mUserAppInfoList = getUserAppInfoList(mContext);
-        Collections.sort(mUserAppInfoList, new Comparator<ApplicationInfo>() {
-            public int compare(ApplicationInfo object1, ApplicationInfo object2) {
-                String left = new StringBuilder(object1.loadLabel(pm)).toString();
-                String right = new StringBuilder(object1.loadLabel(pm)).toString();
-                if (left != null && right != null) {
+            Collections.sort(mUserAppInfoList, new Comparator<ApplicationInfo>() {
+                public int compare(ApplicationInfo object1, ApplicationInfo object2) {
+                    String left = object1.loadLabel(pm).toString();
+                    String right = object1.loadLabel(pm).toString();
                     return left.compareTo(right);
                 }
-                return 0;
-            }
-        });
-            result = true;
-            mAppIndex = 0;
-        //}
+            });
+        }
+        result = true;
+        mAppIndex = 0;
 
         MyLogger.logD(CLASS_TAG, "init():" + result);
         return result;
@@ -120,7 +118,8 @@ public class AppBackupComposer extends Composer {
         if (mUserAppInfoList != null && mAppIndex < mUserAppInfoList.size()) {
             ApplicationInfo appInfo = mUserAppInfoList.get(mAppIndex);
             String appSrc = appInfo.publicSourceDir;
-            String appDest = mParentFolderPath + File.separator + appInfo.packageName + Constants.ModulePath.FILE_EXT_APP;
+            String appDest = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_APP
+                    + File.separator + appInfo.packageName + Constants.ModulePath.FILE_EXT_APP;
             CharSequence tmpLable = "";
             if (appInfo.uid == -1) {
                 tmpLable = getApkFileLabel(mContext, appInfo.sourceDir, appInfo);
@@ -128,11 +127,9 @@ public class AppBackupComposer extends Composer {
                 tmpLable = appInfo.loadLabel(mContext.getPackageManager());
             }
             String label = (tmpLable == null) ? appInfo.packageName : tmpLable.toString();
-            MyLogger.logD(CLASS_TAG,
-                    mAppIndex + ":" + appSrc + ",pacageName:" + appInfo.packageName
-                            + ",sourceDir:" + appInfo.sourceDir + ",dataDir:" + appInfo.dataDir
-                            + ",lable:" + label);
-
+            MyLogger.logD(CLASS_TAG, mAppIndex + ":" + appSrc + ",pacageName:" + appInfo.packageName
+                    + ",sourceDir:" + appInfo.sourceDir + ",dataDir:" + appInfo.dataDir
+                    + ",lable:" + label);
             try {
                 copyFile(appSrc, appDest);
                 MyLogger.logD(CLASS_TAG, "addFile " + appSrc + "success");
@@ -213,7 +210,7 @@ public class AppBackupComposer extends Composer {
     public final void onStart() {
         super.onStart();
         if (getCount() > 0) {
-            File path = new File(mParentFolderPath);
+            File path = new File(mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_APP);
             if (!path.exists()) {
                 path.mkdirs();
             }

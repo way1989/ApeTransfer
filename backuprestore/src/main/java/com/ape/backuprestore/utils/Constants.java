@@ -51,8 +51,8 @@ public class Constants {
     public final static String MESSAGE_BOX_TYPE_OUTBOX = "4";
 
     public class ModulePath {
-        public static final String FOLDER_APP = "App";
-        public static final String FOLDER_DATA = "Data";
+        public static final String FOLDER_BACKUP = "Backup";
+        public static final String FOLDER_APP = "app";
         public static final String FOLDER_CALENDAR = "calendar";
         public static final String FOLDER_TEMP = "temp";
         public static final String FOLDER_CONTACT = "Contact";
@@ -70,6 +70,7 @@ public class Constants {
         public static final String NAME_SMS = "sms";
         public static final String NAME_PICTUREZIP = "picture.zip";
         public static final String NAME_MUSICZIP = "music.zip";
+        public static final String NAME_APPZIP = "app.zip";
 
         public static final String FILE_EXT_APP = ".apk";
         //public static final String FILE_EXT_CALENDAR = ".vcs";

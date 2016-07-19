@@ -141,9 +141,8 @@ public class NoteBookBackupComposer extends Composer {
                 path.mkdirs();
             }
 
-            if ((mXmlComposer = new NoteBookXmlComposer()) != null) {
-                mXmlComposer.startCompose();
-            }
+            mXmlComposer = new NoteBookXmlComposer();
+            mXmlComposer.startCompose();
         }
     }
 
