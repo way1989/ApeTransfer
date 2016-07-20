@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.ape.transfer.R;
 import com.ape.transfer.activity.InviteFriendActivity;
+import com.ape.transfer.activity.NewPhoneExchangeActivity;
 import com.ape.transfer.activity.OldPhonePickupActivity;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.zxing.activity.CaptureActivity;
@@ -120,7 +121,8 @@ public class ExchangeFragment extends Fragment {
     @NeedsPermission({Manifest.permission.WRITE_CALL_LOG, Manifest.permission.WRITE_CONTACTS,
             Manifest.permission.WRITE_CALENDAR, Manifest.permission.READ_SMS})
     void startRestore() {
-        startActivity(new Intent(getActivity(), CaptureActivity.class));
+        //startActivity(new Intent(getActivity(), CaptureActivity.class));
+        startActivity(new Intent(getActivity(), NewPhoneExchangeActivity.class));
     }
 
     @OnShowRationale({Manifest.permission.WRITE_CALL_LOG, Manifest.permission.WRITE_CONTACTS,

@@ -162,7 +162,7 @@ public class RestoreEngine {
         mModuleList = moduleList;
     }
 
-    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<Integer, ArrayList<String>>();
+    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
 
     /**
      * @param itemType type

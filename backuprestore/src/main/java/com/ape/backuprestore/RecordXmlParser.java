@@ -62,7 +62,7 @@ public class RecordXmlParser {
 
     public static ArrayList<RecordXmlInfo> parse(String recordString) {
         RecordXmlInfo record = null;
-        ArrayList<RecordXmlInfo> list = new ArrayList<RecordXmlInfo>();
+        ArrayList<RecordXmlInfo> list = new ArrayList<>();
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             XmlPullParser parser = factory.newPullParser();

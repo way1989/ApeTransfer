@@ -6,7 +6,7 @@ public class MyLogger {
     private MyLogger() {
     }
 
-    public static final String LOG_TAG = "DataTransfer";
+    public static final String LOG_TAG = "ApeTransfer";
     public static final String BACKUP_ACTIVITY_TAG = "BackupActivity: ";
     public static final String BACKUP_SERVICE_TAG = "BackupService: ";
     public static final String BACKUP_ENGINE_TAG = "BackupEngine: ";

@@ -91,6 +91,11 @@ public class SplashActivity extends AppCompatActivity {
         initViews();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
+    }
 
     private void initViews() {
         mColorDrawable = new ColorDrawable(Color.BLACK);
