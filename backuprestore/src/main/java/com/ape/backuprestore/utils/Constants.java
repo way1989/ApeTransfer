@@ -61,6 +61,7 @@ public class Constants {
         public static final String FOLDER_MUSIC = "music";
         public static final String FOLDER_PICTURE = "picture";
         public static final String FOLDER_NOTEBOOK = "notebook";
+        public static final String FOLDER_CALL_LOG = "calllog";
         public static final String FOLDER_SETTINGS = "settings";
         public static final String FOLDER_BOOKMARK = ""; //"bookmark";
 
@@ -89,6 +90,7 @@ public class Constants {
         public static final String SMS_VMSG = "sms.vmsg";
         public static final String MMS_XML = "msg_box.xml";
         public static final String NOTEBOOK_XML = "notebook.xml";
+        public static final String CALL_LOG_XML = "calllog.xml";
         public static final String SETTINGS_XML = "settings.xml";
 
     }
