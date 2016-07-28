@@ -80,6 +80,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     private ProgressDialog mProgressDialog;
     private boolean mIsStoped = false;
     private boolean mIsDestroyed = false;
+    private ArrayList<Integer> mRestoreModeLists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -301,14 +302,14 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
 
     private void showLoadingContent(boolean show) {
     }
-    private ArrayList<Integer> mRestoreModeLists;
+
     private void updateData(ArrayList<PersonalItemData> list) {
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             Toast.makeText(getApplicationContext(), "not restore datas...", Toast.LENGTH_SHORT).show();
             return;
         }
         mRestoreModeLists = new ArrayList<>();
-        for (PersonalItemData item : list){
+        for (PersonalItemData item : list) {
             mRestoreModeLists.add(item.getType());
         }
         startRestore();
@@ -443,6 +444,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
             }
         }
     }
+
     protected boolean errChecked() {
         boolean ret = false;
 
@@ -463,6 +465,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         }
         return ret;
     }
+
     private void showRestoreResult(ArrayList<ResultDialog.ResultEntity> list) {
         dismissProgressDialog();
         Bundle args = new Bundle();

@@ -68,8 +68,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private boolean lessThanStandard(long selfTime, long lastTime) {
         return (selfTime - lastTime) < (30 * 60 * 1000);
     }
-    private int getPercent(P2PFileInfo fileInfo){
-        return (int)((100.0f) * fileInfo.position / fileInfo.size);
+
+    private int getPercent(P2PFileInfo fileInfo) {
+        return (int) ((100.0f) * fileInfo.position / fileInfo.size);
     }
 
     @Override
@@ -124,10 +125,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     public void updateItem(P2PFileInfo fileInfo) {
         int index = mFileItems.indexOf(fileInfo);
-        if(index != -1){
+        if (index != -1) {
             P2PFileInfo info = mFileItems.get(index);
             info.position = fileInfo.position;
-            info.percent = (int)((100.0f) * fileInfo.position / fileInfo.size);
+            info.percent = (int) ((100.0f) * fileInfo.position / fileInfo.size);
             notifyItemChanged(index);
         }
     }

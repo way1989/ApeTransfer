@@ -30,6 +30,18 @@ public class InviteFriendActivity extends BaseActivity {
     private static final int BLUETOOTH_SHARE_REQUEST_CODE = 4098;
     private static final String TAG = "InviteFriendActivity";
     private static final int REQUEST_CODE_WRITE_SETTINGS = 2;
+    Runnable navigateShare = new Runnable() {
+        public void run() {
+            String url = getString(R.string.share_app);
+            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            sharingIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, url);
+            sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent chooserIntent = Intent.createChooser(sharingIntent, null);
+            startActivity(chooserIntent);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,19 +69,6 @@ public class InviteFriendActivity extends BaseActivity {
                 break;
         }
     }
-
-    Runnable navigateShare = new Runnable() {
-        public void run() {
-            String url = getString(R.string.share_app);
-            Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-            sharingIntent.setType("text/plain");
-            sharingIntent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
-            sharingIntent.putExtra(Intent.EXTRA_TEXT, url);
-            sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            Intent chooserIntent = Intent.createChooser(sharingIntent, null);
-            startActivity(chooserIntent);
-        }
-    };
 
     @TargetApi(Build.VERSION_CODES.M)
     private void requestWriteSettings() {

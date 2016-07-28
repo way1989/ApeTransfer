@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector
-  xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true" android:drawable="@drawable/exchange_btn_click" />
-    <item android:state_enabled="false" android:drawable="@drawable/zero_share_disable" />
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/exchange_btn_click" android:state_pressed="true" />
+    <item android:drawable="@drawable/zero_share_disable" android:state_enabled="false" />
     <item android:drawable="@drawable/exchange_btn_normal" />
 </selector>

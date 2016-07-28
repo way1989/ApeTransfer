@@ -37,11 +37,6 @@
 
 package com.ape.backuprestore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,16 +53,20 @@ import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class ResultDialog {
 
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/ResultDialog";
-
     public static final int RESULT_TYPE_BACKUP = 1;
     public static final int RESULT_TYPE_RESTRORE = 2;
+    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/ResultDialog";
 
     public static AlertDialog createResultDlg(final Context context, final int titleId,
-                                final Bundle args, final DialogInterface.OnClickListener listener) {
+                                              final Bundle args, final DialogInterface.OnClickListener listener) {
         AlertDialog dialog = new AlertDialog.Builder(context).setCancelable(false)
                 .setTitle(titleId).setPositiveButton(android.R.string.ok, listener)
                 .setAdapter(createEmptyAdapter(context), null)
@@ -93,29 +92,29 @@ public class ResultDialog {
             map.put(Constants.ITEM_NAME, ModuleType.getModuleStringFromType(context, item.mType));
             int resId = R.string.result_success;
             switch (item.mResult) {
-            case ResultEntity.NO_CONTENT:
-                resId = R.string.result_no_content;
-                break;
+                case ResultEntity.NO_CONTENT:
+                    resId = R.string.result_no_content;
+                    break;
 
-            case ResultEntity.FAIL:
-                resId = R.string.result_fail;
-                break;
+                case ResultEntity.FAIL:
+                    resId = R.string.result_fail;
+                    break;
 
-            default:
-                resId = R.string.result_success;
-                break;
+                default:
+                    resId = R.string.result_success;
+                    break;
             }
             map.put(Constants.ITEM_RESULT, context.getString(resId));
             dataMapList.add(map);
         }
-        String[] from = new String[] { Constants.ITEM_NAME, Constants.ITEM_RESULT };
-        int[] to = new int[] { R.id.module_name, R.id.result };
+        String[] from = new String[]{Constants.ITEM_NAME, Constants.ITEM_RESULT};
+        int[] to = new int[]{R.id.module_name, R.id.result};
         MyLogger.logI(CLASS_TAG, "createResultAdapter");
         return new ResultDialogAdapter(context, dataMapList, R.layout.result_list_item, from, to);
     }
 
     public static ResultDialogAdapter createAppResultAdapter(final List<AppSnippet> appSnippetList,
-                                                         final Context context, final Bundle args, final int resultType) {
+                                                             final Context context, final Bundle args, final int resultType) {
         List<Map<String, Object>> dataMapList = new ArrayList<Map<String, Object>>();
         List<ResultEntity> list = args.getParcelableArrayList(Constants.RESULT_KEY);
         if (list == null) {
@@ -148,21 +147,31 @@ public class ResultDialog {
             map.put(Constants.ITEM_RESULT, context.getString(resId));
             dataMapList.add(map);
         }
-        String[] from = new String[] { Constants.ITEM_NAME, Constants.ITEM_RESULT };
-        int[] to = new int[] { R.id.module_name, R.id.result };
+        String[] from = new String[]{Constants.ITEM_NAME, Constants.ITEM_RESULT};
+        int[] to = new int[]{R.id.module_name, R.id.result};
         MyLogger.logI(CLASS_TAG, "createAppResultAdapter");
         return new ResultDialogAdapter(context, dataMapList, R.layout.result_list_item, from, to);
     }
 
 
-
     public static class ResultEntity implements Parcelable {
         public static final int ENTITY_PERSONAL_DATA_ITEM = 0;
         public static final int ENTITY_APP_ITEM = 0;
-        public static final int SUCCESS  = 0;
+        public static final int SUCCESS = 0;
         public static final int FAIL = -1;
         public static final int NO_CONTENT = -2;
+        public static final Creator<ResultEntity> CREATOR = new Creator<ResultEntity>() {
 
+            @Override
+            public ResultEntity createFromParcel(Parcel in) {
+                return new ResultEntity(in);
+            }
+
+            @Override
+            public ResultEntity[] newArray(int size) {
+                return new ResultEntity[size];
+            }
+        };
         private int mType;
         private String mKey;
         private int mResult;
@@ -172,10 +181,6 @@ public class ResultDialog {
             mResult = result;
         }
 
-        public void setKey(String key) {
-            mKey = key;
-        }
-
 
         private ResultEntity(Parcel in) {
             mType = in.readInt();
@@ -183,12 +188,16 @@ public class ResultDialog {
             mKey = in.readString();
         }
 
-        public void setResult(int result) {
-            this.mResult = result;
+        public void setKey(String key) {
+            mKey = key;
         }
 
         public int getResult() {
             return mResult;
+        }
+
+        public void setResult(int result) {
+            this.mResult = result;
         }
 
         @Override
@@ -203,19 +212,6 @@ public class ResultDialog {
             dest.writeString(mKey);
         }
 
-        public static final Creator<ResultEntity> CREATOR = new Creator<ResultEntity>() {
-
-            @Override
-            public ResultEntity createFromParcel(Parcel in) {
-                return new ResultEntity(in);
-            }
-
-            @Override
-            public ResultEntity[] newArray(int size) {
-                return new ResultEntity[size];
-            }
-        };
-
     }
 
     private static class ResultDialogAdapter extends SimpleAdapter {
@@ -223,7 +219,7 @@ public class ResultDialog {
         private Context mContext;
 
         public ResultDialogAdapter(Context context, List<? extends Map<String, ?>> data,
-                int resource, String[] from, int[] to) {
+                                   int resource, String[] from, int[] to) {
             super(context, data, resource, from, to);
             mDataMapList = data;
             mContext = context;

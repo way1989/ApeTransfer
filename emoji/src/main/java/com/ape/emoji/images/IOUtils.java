@@ -117,17 +117,16 @@ public class IOUtils {
         return total.toString();
     }
 
-
-    public static interface ProgressListener {
-        public void onProgress(int bytes);
-    }
-
     public static String getFileExtension(String name) {
         int lastIndexOf = name.lastIndexOf(".");
         if (lastIndexOf == -1) {
             return ""; // empty extension
         }
         return name.substring(lastIndexOf + 1);
+    }
+
+    public static interface ProgressListener {
+        public void onProgress(int bytes);
     }
 
 }

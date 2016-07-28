@@ -8,5 +8,5 @@ package com.ape.emoji.smiles;
  * Created by Jesus Christ. Amen.
  */
 public interface SmilesRecentListener {
-     void onSmilesUpdated();
+    void onSmilesUpdated();
 }

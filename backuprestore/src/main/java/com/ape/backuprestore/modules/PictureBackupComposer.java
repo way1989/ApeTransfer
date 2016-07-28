@@ -9,7 +9,6 @@ import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
-import com.ape.backuprestore.utils.SDCardUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,8 +84,8 @@ public class PictureBackupComposer extends Composer {
 //                            }, null);
 //                }
 //            } else {
-                mPictureCursorArray[i] = mContext.getContentResolver().query(mPictureUriArray[i],
-                        mProjection, null, null, null);
+            mPictureCursorArray[i] = mContext.getContentResolver().query(mPictureUriArray[i],
+                    mProjection, null, null, null);
 //            }
 
             if (mPictureCursorArray[i] != null) {

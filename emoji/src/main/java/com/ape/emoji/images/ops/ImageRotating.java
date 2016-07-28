@@ -13,6 +13,10 @@ import com.ape.emoji.images.common.WorkCache;
  */
 public final class ImageRotating {
 
+    private ImageRotating() {
+
+    }
+
     public static Bitmap fixExif(Bitmap src, int rotationTag) {
         if (rotationTag <= 1 || rotationTag > 8) {
             return src;
@@ -77,9 +81,5 @@ public final class ImageRotating {
         canvas.setBitmap(null);
         src.recycle();
         return res;
-    }
-
-    private ImageRotating() {
-
     }
 }

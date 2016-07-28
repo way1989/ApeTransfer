@@ -44,24 +44,24 @@ public class SmsRestoreComposer extends Composer {
     private static final String XBOX = "X-BOX:";
     private static final String XREAD = "X-READ:";
 
- /*   private boolean deleteAllPhoneSms() {
-        boolean result = false;
-        if (mContext != null) {
-            MyLogger.logD(CLASS_TAG, "begin delete:" + System.currentTimeMillis());
-            int count = mContext.getContentResolver().delete(Uri.parse(Constants.URI_SMS),
-                    "type <> ?", new String[] { Constants.MESSAGE_BOX_TYPE_INBOX });
-            count += mContext.getContentResolver().delete(Uri.parse(Constants.URI_SMS), "date < ?",
-                    new String[] { Long.toString(mTime) });
+    /*   private boolean deleteAllPhoneSms() {
+           boolean result = false;
+           if (mContext != null) {
+               MyLogger.logD(CLASS_TAG, "begin delete:" + System.currentTimeMillis());
+               int count = mContext.getContentResolver().delete(Uri.parse(Constants.URI_SMS),
+                       "type <> ?", new String[] { Constants.MESSAGE_BOX_TYPE_INBOX });
+               count += mContext.getContentResolver().delete(Uri.parse(Constants.URI_SMS), "date < ?",
+                       new String[] { Long.toString(mTime) });
 
-            int count2 = mContext.getContentResolver().delete(WapPush.CONTENT_URI, null, null);
-            MyLogger.logD(CLASS_TAG, "deleteAllPhoneSms():" + count + " sms deleted!" + count2
-                    + "wappush deleted!");
-            result = true;
-            MyLogger.logD(CLASS_TAG, "end delete:" + System.currentTimeMillis());
-        }
+               int count2 = mContext.getContentResolver().delete(WapPush.CONTENT_URI, null, null);
+               MyLogger.logD(CLASS_TAG, "deleteAllPhoneSms():" + count + " sms deleted!" + count2
+                       + "wappush deleted!");
+               result = true;
+               MyLogger.logD(CLASS_TAG, "end delete:" + System.currentTimeMillis());
+           }
 
-        return result;
-    }*/
+           return result;
+       }*/
     private static final String XSEEN = "X-SEEN:";
     private static final String XSIMID = "X-SIMID:";
     private static final String XLOCKED = "X-LOCKED:";
@@ -74,6 +74,7 @@ public class SmsRestoreComposer extends Composer {
     private long mTime;
     private ArrayList<ContentProviderOperation> mOperationList;
     private ArrayList<SmsRestoreEntry> mVmessageList;
+
     /**
      * @param context
      */

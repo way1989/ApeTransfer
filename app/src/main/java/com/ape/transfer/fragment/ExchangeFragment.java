@@ -18,7 +18,6 @@ import com.ape.transfer.activity.InviteFriendActivity;
 import com.ape.transfer.activity.NewPhoneExchangeActivity;
 import com.ape.transfer.activity.OldPhonePickupActivity;
 import com.ape.transfer.util.Util;
-import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;

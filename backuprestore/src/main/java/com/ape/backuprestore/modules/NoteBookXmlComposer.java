@@ -56,7 +56,6 @@ public class NoteBookXmlComposer {
 
     /**
      * Creates a new <code>NoteBookXmlComposer</code> instance.
-     *
      */
     public NoteBookXmlComposer() {
     }

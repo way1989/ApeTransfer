@@ -75,7 +75,7 @@ public class WifiAPShareActivity extends ApBaseActivity {
             try {
                 boolean hasInternet = TDevice.hasInternet();
                 Log.i(TAG, "updateUI hasInternet = " + hasInternet);
-                if(hasInternet)
+                if (hasInternet)
                     mobileDataWarning.setVisibility(View.VISIBLE);
 
                 mNanoHTTPServer.start();

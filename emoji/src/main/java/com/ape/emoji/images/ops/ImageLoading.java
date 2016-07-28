@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 
-
 import com.ape.emoji.images.BitmapUtil;
 import com.ape.emoji.images.common.ImageFormat;
 import com.ape.emoji.images.common.ImageLoadException;
@@ -26,12 +25,14 @@ import java.io.IOException;
  */
 public class ImageLoading {
 
-    private static final int MAX_PIXELS = 1200 * 1200;
-    private static final int MAX_PIXELS_HQ = 1500 * 1500;
-
     public static final int JPEG_QUALITY = 80;
     public static final int JPEG_QUALITY_HQ = 90;
     public static final int JPEG_QUALITY_LOW = 55;
+    private static final int MAX_PIXELS = 1200 * 1200;
+    private static final int MAX_PIXELS_HQ = 1500 * 1500;
+
+    protected ImageLoading() {
+    }
 
     /**
      * Loading bitmap without any modifications
@@ -238,7 +239,6 @@ public class ImageLoading {
         return loadBitmapReuse(new UriSource(uri, context), dest);
     }
 
-
     /**
      * Saving image in jpeg to byte array with quality 80
      *
@@ -391,7 +391,6 @@ public class ImageLoading {
         int scale = getScaleFactor(source.getImageMetadata(), limit);
         return loadBitmap(source, scale);
     }
-
 
     /**
      * Loading bitmap from ImageSource with limit of amout of pixels
@@ -568,8 +567,5 @@ public class ImageLoading {
             scaledW /= 2;
         }
         return scale;
-    }
-
-    protected ImageLoading() {
     }
 }

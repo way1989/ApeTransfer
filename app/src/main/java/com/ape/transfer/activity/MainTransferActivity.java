@@ -19,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ape.transfer.App;
 import com.ape.transfer.R;
@@ -212,7 +211,7 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
         if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             boolean hasInternet = TDevice.hasInternet();
             Log.i(TAG, "updateUI hasInternet = " + hasInternet);
-            if(hasInternet)
+            if (hasInternet)
                 mobileDataWarning.setVisibility(View.VISIBLE);
 
             tvStatus.setText(R.string.waiting_connect);

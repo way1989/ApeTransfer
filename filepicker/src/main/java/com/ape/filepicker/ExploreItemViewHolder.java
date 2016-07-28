@@ -47,7 +47,7 @@ public class ExploreItemViewHolder {
 
     public void setSelected(boolean selected) {
         //selectedView.setSelected(selected);
-        selectedView.setVisibility(selected? View.VISIBLE:View.GONE);
+        selectedView.setVisibility(selected ? View.VISIBLE : View.GONE);
     }
 
     public void disableSubtitle() {
@@ -70,11 +70,11 @@ public class ExploreItemViewHolder {
         typeView.setText(fileType);
     }
 
-    public ImageView getIconView(){
+    public ImageView getIconView() {
         return imageView;
     }
 
-    public TextView getTypeView(){
+    public TextView getTypeView() {
         return typeView;
     }
 }

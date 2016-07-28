@@ -50,10 +50,10 @@ public class FilePickerActivity extends BasePickerActivity {
             selectItem(item, itemView);
             //returnResult();
             Adapter adapter = parent.getAdapter();
-            if(adapter instanceof  ExplorerAdapter){
-                ((ExplorerAdapter)adapter).notifyDataSetChanged();
-            }else if(adapter instanceof  WelcomeExplorerAdapter){
-                ((WelcomeExplorerAdapter)adapter).notifyDataSetChanged();
+            if (adapter instanceof ExplorerAdapter) {
+                ((ExplorerAdapter) adapter).notifyDataSetChanged();
+            } else if (adapter instanceof WelcomeExplorerAdapter) {
+                ((WelcomeExplorerAdapter) adapter).notifyDataSetChanged();
 
             }
         }

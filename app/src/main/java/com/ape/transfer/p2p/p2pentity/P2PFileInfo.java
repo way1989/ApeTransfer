@@ -67,7 +67,7 @@ public class P2PFileInfo {
         return (((P2PFileInfo) (o)).name.equals(name))
                 && (((P2PFileInfo) (o)).size == size)
                 && (((P2PFileInfo) (o)).type == type)
-                &&(((P2PFileInfo) (o)).md5.equals(md5))
+                && (((P2PFileInfo) (o)).md5.equals(md5))
                 && (((P2PFileInfo) (o)).path.equals(path));
     }
 
@@ -90,7 +90,7 @@ public class P2PFileInfo {
         return file;
     }
 
-    public interface Status{
+    public interface Status {
         public static final int STATUS_READY = 0;
         public static final int STATUS_SENDING = 1;
         public static final int STATUS_RECEIVING = 2;
@@ -98,7 +98,7 @@ public class P2PFileInfo {
         public static final int STATUS_SCUEED = 4;
     }
 
-    public interface Direction{
+    public interface Direction {
         public static final int DIRECTION_SEND = 0;
         public static final int DIRECTION_RECEIVE = 1;
     }

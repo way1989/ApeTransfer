@@ -47,8 +47,8 @@ import java.util.ArrayList;
 
 /**
  * Describe class CallLogXmlParser here.
- *
- *
+ * <p/>
+ * <p/>
  * Created: Mon May 14 09:26:00 2012
  *
  * @author
@@ -57,7 +57,6 @@ import java.util.ArrayList;
 public class CallLogXmlParser {
     /**
      * Creates a new <code>CallLogXmlParser</code> instance.
-     *
      */
     public CallLogXmlParser() {
 
@@ -75,43 +74,43 @@ public class CallLogXmlParser {
             String tagName = "";
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 switch (eventType) {
-                case XmlPullParser.START_DOCUMENT:
-                    break;
+                    case XmlPullParser.START_DOCUMENT:
+                        break;
 
-                case XmlPullParser.START_TAG:
-                    record = new CallLogXmlInfo();
-                    tagName = parser.getName();
-                    if (tagName.equals(CallLogXmlInfo.RECORD)) {
-                        int attrNum = parser.getAttributeCount();
-                        for (int i = 0; i < attrNum; ++i) {
-                            String name = parser.getAttributeName(i);
-                            String value = parser.getAttributeValue(i);
-                            if (name.equals(CallLogXmlInfo.TITLE)) {
-                                record.setTitle(value);
-                            } else if (name.equals(CallLogXmlInfo.NOTE)) {
-                                record.setNote(value);
-                            } else if (name.equals(CallLogXmlInfo.CREATED)) {
-                                record.setCreated(value);
-                            } else if (name.equals(CallLogXmlInfo.MODIFIED)) {
-                                record.setModified(value);
-                            } else if (name.equals(CallLogXmlInfo.NOTEGROUP)) {
-                                record.setNoteGroup(value);
+                    case XmlPullParser.START_TAG:
+                        record = new CallLogXmlInfo();
+                        tagName = parser.getName();
+                        if (tagName.equals(CallLogXmlInfo.RECORD)) {
+                            int attrNum = parser.getAttributeCount();
+                            for (int i = 0; i < attrNum; ++i) {
+                                String name = parser.getAttributeName(i);
+                                String value = parser.getAttributeValue(i);
+                                if (name.equals(CallLogXmlInfo.TITLE)) {
+                                    record.setTitle(value);
+                                } else if (name.equals(CallLogXmlInfo.NOTE)) {
+                                    record.setNote(value);
+                                } else if (name.equals(CallLogXmlInfo.CREATED)) {
+                                    record.setCreated(value);
+                                } else if (name.equals(CallLogXmlInfo.MODIFIED)) {
+                                    record.setModified(value);
+                                } else if (name.equals(CallLogXmlInfo.NOTEGROUP)) {
+                                    record.setNoteGroup(value);
+                                }
+
+                                // Log.d(LogTag.RESTORE, "name:" + name + ",value:"
+                                // + value);
                             }
-
-                            // Log.d(LogTag.RESTORE, "name:" + name + ",value:"
-                            // + value);
                         }
-                    }
-                    break;
+                        break;
 
-                case XmlPullParser.END_TAG:
-                    if (parser.getName().equals(CallLogXmlInfo.RECORD) && record != null) {
-                        list.add(record);
-                    }
-                    break;
+                    case XmlPullParser.END_TAG:
+                        if (parser.getName().equals(CallLogXmlInfo.RECORD) && record != null) {
+                            list.add(record);
+                        }
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
 
                 eventType = parser.next();

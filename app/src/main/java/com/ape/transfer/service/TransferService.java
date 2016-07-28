@@ -88,7 +88,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo[] files) {
         Log.i(TAG, "QueryReceiving....");
         mP2PManager.ackReceive();
-        for(P2PFileInfo fileInfo : files){
+        for (P2PFileInfo fileInfo : files) {
             fileInfo.wifiMac = src.wifiMac;
             fileInfo.direction = P2PFileInfo.Direction.DIRECTION_RECEIVE;
             fileInfo.deleted = 0;
@@ -234,8 +234,8 @@ public class TransferService extends Service implements NeighborCallback, Receiv
 
         public void sendOffLine() {
             Log.i(TAG, "sendOffLine...");
-            if(!isEmpty()){
-                for(P2PNeighbor neighbor : mNeighbors){
+            if (!isEmpty()) {
+                for (P2PNeighbor neighbor : mNeighbors) {
                     mP2PManager.sendOffLine(neighbor);
                 }
             }

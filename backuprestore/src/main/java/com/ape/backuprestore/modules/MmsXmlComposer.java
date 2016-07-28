@@ -37,10 +37,12 @@
 
 package com.ape.backuprestore.modules;
 
+import android.util.Xml;
+
+import org.xmlpull.v1.XmlSerializer;
+
 import java.io.IOException;
 import java.io.StringWriter;
-import org.xmlpull.v1.XmlSerializer;
-import android.util.Xml;
 
 
 public class MmsXmlComposer {

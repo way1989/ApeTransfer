@@ -23,11 +23,11 @@ import java.util.ArrayList;
  * Created by android on 16-6-28.
  */
 public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHolder> {
+    private static FileIconLoader mFileIconLoader;
     private LayoutInflater mInflater;
     private ArrayList<FileItem> mFileItems;
     private OnItemClickListener mListener;
     private int mFileCategory;
-    private static FileIconLoader mFileIconLoader;
 
     public FileItemAdapter(Context context, int fileCategory,
                            OnItemClickListener onItemClickListener) {
@@ -79,7 +79,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         switch (mFileCategory) {
             case P2PConstant.TYPE.APP:
                 //holder.ivIcon.setImageResource(R.drawable.file_icon_apk);
-                mFileIconLoader.loadIcon(holder.ivIcon,item.path, item.id, P2PConstant.TYPE.APP);
+                mFileIconLoader.loadIcon(holder.ivIcon, item.path, item.id, P2PConstant.TYPE.APP);
                 holder.tvName.setText(item.fileName);
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;

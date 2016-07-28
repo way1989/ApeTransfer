@@ -31,8 +31,8 @@ public class Constants {
     public static final String RESULT_KEY = "result";
     public static final String INTENT_SD_SWAP = "com.mediatek.SD_SWAP";
     public static final String ACTION_SD_EXIST = "SD_EXIST";
-    public static final String SCAN_RESULT_KEY_PERSONAL_DATA  = "personalData";
-    public static final String SCAN_RESULT_KEY_APP_DATA  = "appData";
+    public static final String SCAN_RESULT_KEY_PERSONAL_DATA = "personalData";
+    public static final String SCAN_RESULT_KEY_APP_DATA = "appData";
 
     public static final String URI_CALENDAR_IMPORTER_EVENTS = "content://com.mediatek.calendarimporter/events";
     public static final String URI_MMS_SMS = "content://mms-sms/conversations/";

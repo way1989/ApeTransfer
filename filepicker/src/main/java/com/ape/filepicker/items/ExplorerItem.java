@@ -52,6 +52,13 @@ public class ExplorerItem {
         this.enabled = enabled;
     }
 
+    public static void loadIcon(String path, @NonNull ImageView image) {
+        Glide.with(image.getContext())
+                .load(path)
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(image);
+    }
 
     public String getTitle() {
         return file.getName();
@@ -85,7 +92,6 @@ public class ExplorerItem {
         return enabled;
     }
 
-
     public boolean isSelected() {
         return selected;
     }
@@ -118,9 +124,9 @@ public class ExplorerItem {
     }
 
     public void bindImage(ExploreItemViewHolder holder) {
-        if(!TextUtils.isEmpty(fileType)
-        &&(FileTypes.getType(fileType) == FileTypes.TYPE_PICTURE
-                || FileTypes.getType(fileType) == FileTypes.TYPE_VIDEO)){
+        if (!TextUtils.isEmpty(fileType)
+                && (FileTypes.getType(fileType) == FileTypes.TYPE_PICTURE
+                || FileTypes.getType(fileType) == FileTypes.TYPE_VIDEO)) {
             loadIcon(file.getAbsolutePath(), holder.getIconView());
             holder.setType("");
             return;
@@ -133,14 +139,6 @@ public class ExplorerItem {
             holder.setType(fileType);
         }
     }
-    public static void loadIcon(String path, @NonNull ImageView image) {
-        Glide.with(image.getContext())
-                .load(path)
-                .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(image);
-    }
-
 
     public Long getLastModified() {
         return file.lastModified();

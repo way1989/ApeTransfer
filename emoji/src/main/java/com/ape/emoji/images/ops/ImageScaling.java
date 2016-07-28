@@ -15,6 +15,9 @@ import com.ape.emoji.images.common.WorkCache;
  */
 public class ImageScaling {
 
+    protected ImageScaling() {
+    }
+
     /**
      * Scaling bitmap to fill rect with centering. Method keep aspect ratio.
      *
@@ -183,8 +186,5 @@ public class ImageScaling {
         paint.setFilterBitmap(true);
         canvas.drawBitmap(src, new Rect(x + 1, y + 1, sw - 1, sh - 1), new Rect(dx, dy, dw, dh), paint);
         canvas.setBitmap(null);
-    }
-
-    protected ImageScaling() {
     }
 }

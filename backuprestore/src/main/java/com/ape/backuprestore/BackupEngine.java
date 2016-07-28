@@ -40,7 +40,6 @@ package com.ape.backuprestore;
 import android.content.Context;
 import android.widget.Toast;
 
-
 import com.ape.backuprestore.modules.AppBackupComposer;
 import com.ape.backuprestore.modules.CalendarBackupComposer;
 import com.ape.backuprestore.modules.Composer;
@@ -64,15 +63,9 @@ import java.util.List;
 
 public class BackupEngine {
     private static final String CLASS_TAG = MyLogger.LOG_TAG + "/BackupEngine";
-
-    public interface OnBackupDoneListner {
-        public void onFinishBackup(BackupResultType result);
-    }
-
-    public enum BackupResultType {
-        Success, Fail, Error, Cancel
-    }
-
+    private static BackupEngine mSelfInstance;
+    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
+    ArrayList<Integer> mModuleList;
     private Context mContext;
     private ProgressReporter mProgressReporter;
     private List<Composer> mComposerList;
@@ -83,9 +76,13 @@ public class BackupEngine {
     private boolean mIsCancel = false;
     private Object mLock = new Object();
     private String mBackupFolder;
-    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
 
-    private static BackupEngine mSelfInstance;
+    public BackupEngine(final Context context, final ProgressReporter reporter) {
+        mContext = context;
+        mProgressReporter = reporter;
+        mComposerList = new ArrayList<Composer>();
+        mSelfInstance = this;
+    }
 
     public static BackupEngine getInstance(final Context context, final ProgressReporter reporter) {
         if (mSelfInstance == null) {
@@ -96,15 +93,6 @@ public class BackupEngine {
 
         return mSelfInstance;
     }
-
-    public BackupEngine(final Context context, final ProgressReporter reporter) {
-        mContext = context;
-        mProgressReporter = reporter;
-        mComposerList = new ArrayList<Composer>();
-        mSelfInstance = this;
-    }
-
-    ArrayList<Integer> mModuleList;
 
     public void setBackupModelList(ArrayList<Integer> moduleList) {
         reset();
@@ -214,49 +202,49 @@ public class BackupEngine {
 
             for (int type : list) {
                 switch (type) {
-                case ModuleType.TYPE_CONTACT:
-                    addComposer(new ContactBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_CONTACT:
+                        addComposer(new ContactBackupComposer(mContext));
+                        break;
 
-                case ModuleType.TYPE_CALENDAR:
-                    addComposer(new CalendarBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_CALENDAR:
+                        addComposer(new CalendarBackupComposer(mContext));
+                        break;
 
-                case ModuleType.TYPE_SMS:
-                    addComposer(new SmsBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_SMS:
+                        addComposer(new SmsBackupComposer(mContext));
+                        break;
 
-                case ModuleType.TYPE_MMS:
-                    addComposer(new MmsBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_MMS:
+                        addComposer(new MmsBackupComposer(mContext));
+                        break;
 
-                case ModuleType.TYPE_MESSAGE:
-                    addComposer(new MessageBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_MESSAGE:
+                        addComposer(new MessageBackupComposer(mContext));
+                        break;
 
-                case ModuleType.TYPE_APP:
-                    addComposer(new AppBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_APP:
+                        addComposer(new AppBackupComposer(mContext));
+                        break;
 
-                case ModuleType.TYPE_PICTURE:
-                    addComposer(new PictureBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_PICTURE:
+                        addComposer(new PictureBackupComposer(mContext));
+                        break;
 
-                case ModuleType.TYPE_MUSIC:
-                    addComposer(new MusicBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_MUSIC:
+                        addComposer(new MusicBackupComposer(mContext));
+                        break;
 
-                case ModuleType.TYPE_NOTEBOOK:
-                    addComposer(new NoteBookBackupComposer(mContext));
-                    break;
+                    case ModuleType.TYPE_NOTEBOOK:
+                        addComposer(new NoteBookBackupComposer(mContext));
+                        break;
 
 //                case ModuleType.TYPE_BOOKMARK:
 //                    addComposer(new BookmarkBackupComposer(mContext));
 //                    break;
 
-                default:
-                    result = false;
-                    break;
+                    default:
+                        result = false;
+                        break;
                 }
             }
 
@@ -268,8 +256,32 @@ public class BackupEngine {
         return result;
     }
 
+    private void deleteFolder(File file) {
+        if (file.exists()) {
+            if (file.isFile()) {
+                file.delete();
+            } else if (file.isDirectory()) {
+                File files[] = file.listFiles();
+                for (int i = 0; i < files.length; ++i) {
+                    this.deleteFolder(files[i]);
+                }
+            }
+
+            file.delete();
+        }
+    }
+
+    public enum BackupResultType {
+        Success, Fail, Error, Cancel
+    }
+
+    public interface OnBackupDoneListner {
+        public void onFinishBackup(BackupResultType result);
+    }
+
     private class BackupThread extends Thread {
         private final long mId;
+
         public BackupThread(long id) {
             super();
             mId = id;
@@ -289,11 +301,11 @@ public class BackupEngine {
                         composer.init();
                         composer.onStart();
                         MyLogger.logD(
-                            CLASS_TAG,
-                            "BackupThread->composer:" + composer.getModuleType() + " init finish");
+                                CLASS_TAG,
+                                "BackupThread->composer:" + composer.getModuleType() + " init finish");
                         while (!composer.isAfterLast() &&
-                               !composer.isCancel() &&
-                               mId == mThreadIdentifier) {
+                                !composer.isCancel() &&
+                                mId == mThreadIdentifier) {
                             if (mIsPause) {
                                 synchronized (mLock) {
                                     try {
@@ -392,21 +404,6 @@ public class BackupEngine {
                 String path = mBackupFolder + File.separator + backupFolderName;
                 FileUtils.scanPathforMediaStore(path, mContext);
             }
-        }
-    }
-
-    private void deleteFolder(File file) {
-        if (file.exists()) {
-            if (file.isFile()) {
-                file.delete();
-            } else if (file.isDirectory()) {
-                File files[] = file.listFiles();
-                for (int i = 0; i < files.length; ++i) {
-                    this.deleteFolder(files[i]);
-                }
-            }
-
-            file.delete();
         }
     }
 

@@ -5,12 +5,10 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.util.FileCategoryHelper;
-import com.ape.transfer.util.Log;
 import com.ape.transfer.util.Util;
 
 import java.io.File;

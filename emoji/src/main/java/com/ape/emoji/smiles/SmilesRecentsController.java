@@ -7,7 +7,6 @@ package com.ape.emoji.smiles;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -48,7 +47,7 @@ public class SmilesRecentsController extends ArrayList<Long> {
             super.remove(object);
         }
         add(0, object);
-        while(size()>32){
+        while (size() > 32) {
             remove(32);
         }
     }

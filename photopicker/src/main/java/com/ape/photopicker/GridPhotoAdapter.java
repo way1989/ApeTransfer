@@ -9,7 +9,6 @@ import android.widget.CheckBox;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 
-
 import com.ape.photopicker.PhotoPickActivity.GridViewCheckTag;
 
 /**

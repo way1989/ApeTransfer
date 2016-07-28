@@ -6,16 +6,15 @@ import android.view.MotionEvent;
 import android.view.View;
 
 /**
-* Created by Jesus Christ. Amen.
-*/
+ * Created by Jesus Christ. Amen.
+ */
 public class RepeatListener implements View.OnTouchListener {
 
-    private Handler handler = new Handler();
-
-    private int initialInterval;
     private final int normalInterval;
     private final View.OnClickListener clickListener;
-
+    private Handler handler = new Handler();
+    private int initialInterval;
+    private View downView;
     private Runnable handlerRunnable = new Runnable() {
         @Override
         public void run() {
@@ -27,8 +26,6 @@ public class RepeatListener implements View.OnTouchListener {
             clickListener.onClick(downView);
         }
     };
-
-    private View downView;
 
 
     public RepeatListener(int initialInterval, int normalInterval, View.OnClickListener clickListener) {

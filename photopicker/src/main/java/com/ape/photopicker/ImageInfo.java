@@ -8,11 +8,11 @@ import java.io.Serializable;
  */
 public class ImageInfo implements Serializable {
     private static final long serialVersionUID = 5792946298435140735L;
+    private static final String prefix = "file://";
     public String path;
     public long photoId;
     public int width;
     public int height;
-    private static final String prefix = "file://";
 
     public ImageInfo(String path) {
         this.path = pathAddPreFix(path);

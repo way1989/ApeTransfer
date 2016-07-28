@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ape.transfer.R;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
@@ -31,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class QrCodeActivity extends ApBaseActivity implements TransferService.Callback,
-        TransferServiceUtil.Callback{
+        TransferServiceUtil.Callback {
     public static final String EXCHANGE_SSID_SUFFIX = "@exchange";
     private static final String TAG = "QrCodeActivity";
     @BindView(R.id.tv_qrcode)
@@ -50,6 +49,7 @@ public class QrCodeActivity extends ApBaseActivity implements TransferService.Ca
     MobileDataWarningContainer mobileDataWarning;
 
     private TransferService.P2PBinder mTransferService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,10 +102,12 @@ public class QrCodeActivity extends ApBaseActivity implements TransferService.Ca
     protected boolean shouldCloseWifiAp() {
         return true;
     }
+
     private void startP2P() {
         if (mTransferService != null && !mTransferService.isP2PRunning())
             mTransferService.startP2P();
     }
+
     @Override
     public void onWifiApStatusChanged(int status) {
         super.onWifiApStatusChanged(status);
@@ -154,7 +156,7 @@ public class QrCodeActivity extends ApBaseActivity implements TransferService.Ca
     @Override
     public void onNeighborChanged(List<P2PNeighbor> neighbors) {
         Log.i(TAG, "onNeighborChanged... neighbors = " + neighbors);
-        if(!neighbors.isEmpty()){
+        if (!neighbors.isEmpty()) {
             Intent intent = new Intent(this, OldPhonePickupActivity.class);
             intent.putExtra("neighbor", neighbors.get(0));
             startActivity(intent);

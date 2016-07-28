@@ -61,15 +61,12 @@ import java.util.List;
 
 /**
  * @author mtk81330
- *
  */
 public class RestoreEngine {
     private static final String CLASS_TAG = MyLogger.LOG_TAG + "/RestoreEngine";
-
-    public interface OnRestoreDoneListner {
-        public void onFinishRestore(boolean bSuccess);
-    }
-
+    private static RestoreEngine sSelfInstance;
+    ArrayList<Integer> mModuleList;
+    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
     private Context mContext;
     private String mRestoreFolder;
     private OnRestoreDoneListner mRestoreDoneListner;
@@ -79,27 +76,26 @@ public class RestoreEngine {
     private Object mLock = new Object();
     private ProgressReporter mReporter;
     private List<Composer> mComposerList;
-    private static RestoreEngine sSelfInstance;
+
+    private RestoreEngine(Context context, ProgressReporter reporter) {
+        mContext = context;
+        mReporter = reporter;
+        mComposerList = new ArrayList<Composer>();
+    }
 
     /**
-     * @param context context
+     * @param context  context
      * @param reporter reporter
      * @return RestoreEngine
      */
     public static synchronized RestoreEngine getInstance(final Context context,
-            final ProgressReporter reporter) {
+                                                         final ProgressReporter reporter) {
         if (sSelfInstance == null) {
             sSelfInstance = new RestoreEngine(context, reporter);
         } else {
             sSelfInstance.updateInfo(context, reporter);
         }
         return sSelfInstance;
-    }
-
-    private RestoreEngine(Context context, ProgressReporter reporter) {
-        mContext = context;
-        mReporter = reporter;
-        mComposerList = new ArrayList<Composer>();
     }
 
     private final void updateInfo(final Context context, final ProgressReporter reporter) {
@@ -132,7 +128,8 @@ public class RestoreEngine {
                 mLock.notify();
             }
         }
-    */}
+    */
+    }
 
     /**
      * cancel.
@@ -152,8 +149,6 @@ public class RestoreEngine {
         mRestoreDoneListner = restoreEndListner;
     }
 
-    ArrayList<Integer> mModuleList;
-
     /**
      * @param moduleList list
      */
@@ -161,8 +156,6 @@ public class RestoreEngine {
         reset();
         mModuleList = moduleList;
     }
-
-    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
 
     /**
      * @param itemType type
@@ -224,61 +217,65 @@ public class RestoreEngine {
         boolean bSuccess = true;
         for (int type : list) {
             switch (type) {
-            case ModuleType.TYPE_CONTACT:
-                addComposer(new ContactRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_CONTACT:
+                    addComposer(new ContactRestoreComposer(mContext));
+                    break;
 
-            case ModuleType.TYPE_MESSAGE:
-                addComposer(new MessageRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_MESSAGE:
+                    addComposer(new MessageRestoreComposer(mContext));
+                    break;
 
-            case ModuleType.TYPE_SMS:
-                addComposer(new SmsRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_SMS:
+                    addComposer(new SmsRestoreComposer(mContext));
+                    break;
 
-            case ModuleType.TYPE_MMS:
-                addComposer(new MmsRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_MMS:
+                    addComposer(new MmsRestoreComposer(mContext));
+                    break;
 
-            case ModuleType.TYPE_PICTURE:
-                addComposer(new PictureRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_PICTURE:
+                    addComposer(new PictureRestoreComposer(mContext));
+                    break;
 
-            case ModuleType.TYPE_CALENDAR:
-                addComposer(new CalendarRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_CALENDAR:
+                    addComposer(new CalendarRestoreComposer(mContext));
+                    break;
 
-            case ModuleType.TYPE_APP:
-                addComposer(new AppRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_APP:
+                    addComposer(new AppRestoreComposer(mContext));
+                    break;
 
-            case ModuleType.TYPE_MUSIC:
-                addComposer(new MusicRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_MUSIC:
+                    addComposer(new MusicRestoreComposer(mContext));
+                    break;
 
-            case ModuleType.TYPE_NOTEBOOK:
-                addComposer(new NoteBookRestoreComposer(mContext));
-                break;
+                case ModuleType.TYPE_NOTEBOOK:
+                    addComposer(new NoteBookRestoreComposer(mContext));
+                    break;
 
 //            case ModuleType.TYPE_BOOKMARK:
 //                addComposer(new BookmarkRestoreComposer(mContext));
 //                break;
 
-            default:
-                bSuccess = false;
-                break;
+                default:
+                    bSuccess = false;
+                    break;
             }
         }
 
         return bSuccess;
     }
 
+    public interface OnRestoreDoneListner {
+        public void onFinishRestore(boolean bSuccess);
+    }
+
     /**
      * @author mtk81330
-     *
      */
     public class RestoreThread extends Thread {
         private final long mId;
+
         public RestoreThread(long id) {
             super();
             mId = id;
@@ -309,8 +306,8 @@ public class RestoreEngine {
                                             + " init finish");
                             composer.onStart();
                             while (!composer.isAfterLast() &&
-                                   !composer.isCancel() &&
-                                   mId == mThreadIdentifier) {
+                                    !composer.isCancel() &&
+                                    mId == mThreadIdentifier) {
                                 if (mIsPause) {
                                     synchronized (mLock) {
                                         try {
@@ -341,7 +338,7 @@ public class RestoreEngine {
                         MyLogger.logD(CLASS_TAG, "End restore:" + System.currentTimeMillis());
                         MyLogger.logD(CLASS_TAG,
                                 "RestoreThread composer: " + composer.getModuleType()
-                                + " compose finish");
+                                        + " compose finish");
                     }
                 } catch (java.util.ConcurrentModificationException e) {
                     MyLogger.logE(CLASS_TAG, "ConcurrentModificationException");

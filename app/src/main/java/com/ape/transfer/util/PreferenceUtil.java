@@ -90,7 +90,7 @@ public final class PreferenceUtil {
         editor.apply();
     }
 
-    public boolean isFirstRun(){
+    public boolean isFirstRun() {
         return mPreferences.getBoolean(PERFERENCE_FIRST_RUN, true);
     }
 }

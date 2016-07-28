@@ -36,8 +36,8 @@
         android:id="@+id/circles"
         android:layout_width="match_parent"
         android:layout_height="@dimen/guide_viewGroup_height"
-        android:layout_gravity="bottom"
         android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
         android:layout_marginBottom="@dimen/guide_viewGroup_marginBottom"
         android:gravity="center"
         android:orientation="horizontal" />

@@ -7,7 +7,7 @@
 
     <include
         android:id="@+id/mobile_data_warning"
-        layout="@layout/subtitle_mobile_data"/>
+        layout="@layout/subtitle_mobile_data" />
 
     <LinearLayout
         android:layout_width="fill_parent"

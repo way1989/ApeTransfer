@@ -90,8 +90,8 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void loadData() {
-        if(isAdded() && getUserVisibleHint()
-                && getLoaderManager().getLoader(LOADER_ID) == null){
+        if (isAdded() && getUserVisibleHint()
+                && getLoaderManager().getLoader(LOADER_ID) == null) {
             loadingEmptyContainer.showLoading();
             getLoaderManager().initLoader(0, null, FileFragment.this);
         }

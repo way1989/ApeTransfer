@@ -34,7 +34,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
 import com.ape.transfer.fragment.TransferFragment;
@@ -45,9 +44,7 @@ import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -105,12 +102,7 @@ public class MainActivity extends AppCompatActivity
     };
     Runnable navigateFeedback = new Runnable() {
         public void run() {
-            Map<String, String> map = new HashMap<>();
-            map.put("themeColor", "#4CAF50");
-            map.put("hideLoginSuccess", "true");
-            map.put("enableAudio", "0");
-            FeedbackAPI.setUICustomInfo(map);
-            FeedbackAPI.openFeedbackActivity(MainActivity.this);
+
         }
     };
 
@@ -167,7 +159,8 @@ public class MainActivity extends AppCompatActivity
 
     private void setupWifiMac() {
         if (TextUtils.isEmpty(PreferenceUtil.getInstance().getMac())) {
-            String mac = WifiApUtils.getInstance((WifiManager) getSystemService(Context.WIFI_SERVICE)).getWifiMacFromDevice();
+            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            String mac = WifiApUtils.getInstance(wifiManager).getWifiMacFromDevice();
             if (!TextUtils.isEmpty(mac))
                 PreferenceUtil.getInstance().setMac(mac);
             else

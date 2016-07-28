@@ -227,7 +227,8 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
             }
         }, 800);*/
     }
-    private void handleParsedResult(ParsedResult result){
+
+    private void handleParsedResult(ParsedResult result) {
         switch (result.getType()) {
             case URI:
                 URIParsedResult uriResult = (URIParsedResult) result;
@@ -239,6 +240,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
                 break;
         }
     }
+
     private void handleText(String text) {
 
         if (StringUtils.isUrl(text)) {
@@ -288,13 +290,13 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     }
 
     private void handleOtherText(final String text) {
-        if(!TextUtils.isEmpty(text) && text.contains("ApeTransfer@")
-                &&text.endsWith(QrCodeActivity.EXCHANGE_SSID_SUFFIX) && text.split("@").length == 3){
+        if (!TextUtils.isEmpty(text) && text.contains("ApeTransfer@")
+                && text.endsWith(QrCodeActivity.EXCHANGE_SSID_SUFFIX) && text.split("@").length == 3) {
             Intent intent = new Intent(this, NewPhoneConnectedActivity.class);
             intent.putExtra(NewPhoneConnectedActivity.ARGS_SSID, text);
             startActivity(intent);
             finish();
-        }else {
+        } else {
             showCopyTextOption(text);
         }
         // 判断是否符合基本的json格式

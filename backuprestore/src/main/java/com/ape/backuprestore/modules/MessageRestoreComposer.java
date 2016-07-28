@@ -98,7 +98,7 @@ public class MessageRestoreComposer extends Composer {
         if (mContext != null) {
             MyLogger.logD(CLASS_TAG, "begin delete:" + System.currentTimeMillis());
             count = mContext.getContentResolver().delete(Uri.parse(Constants.URI_MMS_SMS),
-                    "date < ?", new String[] { Long.toString(mTime) });
+                    "date < ?", new String[]{Long.toString(mTime)});
             MyLogger.logD(CLASS_TAG, "end delete:" + System.currentTimeMillis());
 
             result = true;

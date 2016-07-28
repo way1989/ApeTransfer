@@ -6,15 +6,15 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-<!--    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="fill_parent"
-        android:layout_height="@dimen/main_title_height"
-        android:background="@color/green"
-        android:gravity="center"
-        android:text="@string/new_phone_connected_title"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/textSize_h3" />-->
+    <!--    <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/main_title_height"
+            android:background="@color/green"
+            android:gravity="center"
+            android:text="@string/new_phone_connected_title"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/textSize_h3" />-->
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -97,8 +97,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/newPhone_oldPhone_loading_marginTop"
         android:gravity="bottom|center"
-        android:orientation="vertical"
-         />
+        android:orientation="vertical" />
 
     <ImageView
         android:id="@+id/iv_loading"

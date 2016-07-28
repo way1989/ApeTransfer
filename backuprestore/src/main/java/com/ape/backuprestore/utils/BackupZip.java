@@ -53,19 +53,15 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
- *
  * @author mtk81330
- *
  */
 public class BackupZip {
     private static final String CLASS_TAG = MyLogger.LOG_TAG + "/BackupZip";
-
+    ZipOutputStream mOutZip;
     private String mZipFile;
-
     private Boolean hasFinished = false;
 
     /**
-     *
      * @param zipfile
      * @throws IOException
      */
@@ -74,20 +70,15 @@ public class BackupZip {
         mZipFile = zipfile;
     }
 
-    public String getZipFileName() {
-        return mZipFile;
-    }
-
     /**
-     *
-     * @param zipFileString zipFileString
+     * @param zipFileString  zipFileString
      * @param bContainFolder bContainFolder
-     * @param bContainFile bContainFile
+     * @param bContainFile   bContainFile
      * @return List<String> List<String>
      * @throws IOException IOException
      */
     public static List<String> getFileList(String zipFileString, boolean bContainFolder,
-            boolean bContainFile) throws IOException {
+                                           boolean bContainFile) throws IOException {
 
         MyLogger.logI(CLASS_TAG, "GetFileList");
 
@@ -124,15 +115,15 @@ public class BackupZip {
     }
 
     /**
-     * @param zipFileString zipFileString
+     * @param zipFileString  zipFileString
      * @param bContainFolder bContainFolder
      * @param bContainFile
      * @param tmpString
-     * @throws IOException
      * @return List<String>.
+     * @throws IOException
      */
     public static List<String> getFileList(String zipFileString, boolean bContainFolder,
-            boolean bContainFile, String tmpString) throws IOException {
+                                           boolean bContainFile, String tmpString) throws IOException {
 
         MyLogger.logI(CLASS_TAG, "GetFileList");
 
@@ -179,7 +170,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param zipFileString
      * @param fileString
      * @return
@@ -212,7 +202,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param zipFileString
      * @param fileString
      * @return
@@ -246,7 +235,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param zipFileName
      * @return
      * @throws IOException
@@ -256,7 +244,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param zipFile
      * @param fileString
      * @return
@@ -287,7 +274,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param zipFile
      * @param fileString
      * @return
@@ -316,7 +302,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param zipFileName
      * @param srcFileName
      * @param destFileName
@@ -359,7 +344,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param zipFileString zipFileString
      * @param outPathString outPathString
      * @throws IOException IOException
@@ -403,7 +387,6 @@ public class BackupZip {
     } // end of func
 
     /**
-     *
      * @param srcFileString
      * @param zipFileString
      * @throws IOException
@@ -423,7 +406,7 @@ public class BackupZip {
     } // end of func
 
     private static void zipFiles(String folderString, String fileString,
-            ZipOutputStream zipOutputSteam) throws IOException {
+                                 ZipOutputStream zipOutputSteam) throws IOException {
         MyLogger.logI(CLASS_TAG, "ZipFiles(String, String, ZipOutputStream)");
 
         if (zipOutputSteam == null) {
@@ -466,7 +449,6 @@ public class BackupZip {
     } // end of func
 
     /**
-     *
      * @param srcFileString
      * @param zipFileString
      * @throws IOException
@@ -484,10 +466,11 @@ public class BackupZip {
         outZip.close();
     }
 
-    ZipOutputStream mOutZip;
+    public String getZipFileName() {
+        return mZipFile;
+    }
 
     /**
-     *
      * @param zipFileString
      * @throws IOException
      */
@@ -497,7 +480,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param fileName
      * @param fileContent
      * @throws IOException
@@ -509,7 +491,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param fileName
      * @param fileContent
      * @throws IOException
@@ -524,7 +505,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param srcFileName
      * @param desFileName
      * @throws IOException
@@ -548,7 +528,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @param srcPath
      * @param desPath
      * @throws IOException
@@ -582,7 +561,6 @@ public class BackupZip {
     }
 
     /**
-     *
      * @throws IOException
      */
     public void finish() throws IOException {

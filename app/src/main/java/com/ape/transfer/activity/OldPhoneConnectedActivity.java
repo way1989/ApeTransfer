@@ -9,7 +9,7 @@ import butterknife.ButterKnife;
 /**
  * Created by android on 16-7-13.
  */
-public class OldPhoneConnectedActivity extends BaseActivity{
+public class OldPhoneConnectedActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

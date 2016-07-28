@@ -49,11 +49,9 @@ import com.ape.backuprestore.R;
 
 
 public class NotifyManager {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/NotifyManager:";
     public static final int NOTIFY_NEW_DETECTION = 1;
     public static final int NOTIFY_BACKUPING = 2;
     public static final int NOTIFY_RESTORING = 3;
-
     public static final int FP_NEW_DETECTION_NOTIFY_TYPE_DEAFAULT = 0;
     public static final int FP_NEW_DETECTION_NOTIFY_TYPE_LIST = 1;
     public static final String FP_NEW_DETECTION_INTENT_LIST =
@@ -66,25 +64,24 @@ public class NotifyManager {
             "com.mediatek.backuprestore.intent.PersonalDataRestoreActivity";
     public static final String RESTORE_APPLICATION_INTENT =
             "com.mediatek.backuprestore.intent.AppRestoreActivity";
-
+    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/NotifyManager:";
+    // SystemUi can't cover quick frequency notification.
+    // So it requested update 2~3 item by second.
+    // For this issue, we add workaround : update 2 item by second
+    private static final long WAIT_TIME = 500;
+    private static NotifyManager sNotifyManager;
+    private static long sLastNotifyTime = 0;
     private Notification.Builder mNotification;
     private int mNotificationType;
     private Context mNotificationContext;
     private NotificationManager mNotificationManager;
     private int mMaxPercent = 100;
-    private static NotifyManager sNotifyManager;
-
-    // SystemUi can't cover quick frequency notification.
-    // So it requested update 2~3 item by second.
-    // For this issue, we add workaround : update 2 item by second
-    private static final long WAIT_TIME = 500;
-    private static long sLastNotifyTime = 0;
+    private boolean mNeedRefresh = false;
 
     /**
      * Constructor function.
      *
-     * @param context
-     *            environment context
+     * @param context environment context
      */
     private NotifyManager(Context context) {
         mNotificationContext = context;
@@ -215,22 +212,22 @@ public class NotifyManager {
         }
         PackageManager pm = mNotificationContext.getPackageManager();
         mNotification
-            .setAutoCancel(true)
-            .setContentTitle(contentTitle)
-            .setSmallIcon(R.drawable.ic_backuprestore_notify_am)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                        mNotificationContext,
-                        0,
-                        pm.getLaunchIntentForPackage(mNotificationContext.getPackageName()),
-                        PendingIntent.FLAG_UPDATE_CURRENT));
+                .setAutoCancel(true)
+                .setContentTitle(contentTitle)
+                .setSmallIcon(R.drawable.ic_backuprestore_notify_am)
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                mNotificationContext,
+                                0,
+                                pm.getLaunchIntentForPackage(mNotificationContext.getPackageName()),
+                                PendingIntent.FLAG_UPDATE_CURRENT));
         mNotificationManager.notify(mNotificationType, mNotification.getNotification());
     }
 
     /**
-     * @param contentText notification content
-     * @param mFileName file name
-     * @param type type
+     * @param contentText     notification content
+     * @param mFileName       file name
+     * @param type            type
      * @param currentProgress current progress.
      */
     public void showRestoreNotification(
@@ -282,18 +279,18 @@ public class NotifyManager {
             }
         }
         mNotification
-            .setAutoCancel(true)
-            .setOngoing(true)
-            .setContentTitle(contentTitle)
-            .setContentText(contentText)
-            .setSmallIcon(iconDrawableId)
-            .setWhen(System.currentTimeMillis())
-            .setContentIntent(getPendingIntenActivity(mFileName, intentFilter));
+                .setAutoCancel(true)
+                .setOngoing(true)
+                .setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setSmallIcon(iconDrawableId)
+                .setWhen(System.currentTimeMillis())
+                .setContentIntent(getPendingIntenActivity(mFileName, intentFilter));
 
         String percent = "" + (currentProgress * 100) / mMaxPercent + "%";
         mNotification
-            .setProgress(mMaxPercent, currentProgress, false)
-            .setContentInfo(percent);
+                .setProgress(mMaxPercent, currentProgress, false)
+                .setContentInfo(percent);
 
         if (mNotificationContext instanceof Service) {
             ((Service) mNotificationContext).startForeground(
@@ -344,6 +341,4 @@ public class NotifyManager {
     public void setRefreshFlag() {
         mNeedRefresh = true;
     }
-
-    private boolean mNeedRefresh = false;
 }

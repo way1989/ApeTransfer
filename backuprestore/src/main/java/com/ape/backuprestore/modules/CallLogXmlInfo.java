@@ -82,8 +82,7 @@ public class CallLogXmlInfo {
     /**
      * Sets the value of mTitle
      *
-     * @param argMTitle
-     *            Value to assign to this.mTitle
+     * @param argMTitle Value to assign to this.mTitle
      */
     public final void setTitle(final String argMTitle) {
         this.mTitle = argMTitle;
@@ -101,8 +100,7 @@ public class CallLogXmlInfo {
     /**
      * Sets the value of mNote
      *
-     * @param argMNote
-     *            Value to assign to this.mNote
+     * @param argMNote Value to assign to this.mNote
      */
     public final void setNote(final String argMNote) {
         this.mNote = argMNote;
@@ -120,8 +118,7 @@ public class CallLogXmlInfo {
     /**
      * Sets the value of mCreated
      *
-     * @param argMCreated
-     *            Value to assign to this.mCreated
+     * @param argMCreated Value to assign to this.mCreated
      */
     public final void setCreated(final String argMCreated) {
         this.mCreated = argMCreated;
@@ -139,8 +136,7 @@ public class CallLogXmlInfo {
     /**
      * Sets the value of mModified
      *
-     * @param argMModified
-     *            Value to assign to this.mModified
+     * @param argMModified Value to assign to this.mModified
      */
     public final void setModified(final String argMModified) {
         this.mModified = argMModified;
@@ -158,8 +154,7 @@ public class CallLogXmlInfo {
     /**
      * Sets the value of mNoteGroup
      *
-     * @param argMNoteGroup
-     *            Value to assign to this.mNoteGroup
+     * @param argMNoteGroup Value to assign to this.mNoteGroup
      */
     public final void setNoteGroup(final String argMNoteGroup) {
         this.mNoteGroup = argMNoteGroup;

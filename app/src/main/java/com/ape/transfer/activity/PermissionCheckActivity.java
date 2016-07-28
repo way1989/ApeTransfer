@@ -36,17 +36,18 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
         super.onCreate(savedInstanceState);
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mDialog != null && mDialog.isShowing())
+        if (mDialog != null && mDialog.isShowing())
             mDialog.dismiss();
         mDialog = null;
     }
 
     private void showRequestPermissionDialog() {
-        if(mDialog != null && mDialog.isShowing()) return;
-        if(mDialog == null) {
+        if (mDialog != null && mDialog.isShowing()) return;
+        if (mDialog == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.permission_title_all)
                     .setMessage(R.string.required_permissions_all)
@@ -167,6 +168,6 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
 
     @Override
     protected void permissionWriteSystemRefused() {
-       showRequestWriteSettingsDialog();
+        showRequestWriteSettingsDialog();
     }
 }

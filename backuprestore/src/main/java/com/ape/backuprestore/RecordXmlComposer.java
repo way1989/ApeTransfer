@@ -56,7 +56,6 @@ public class RecordXmlComposer {
 
     /**
      * Creates a new <code>RecordXmlComposer</code> instance.
-     *
      */
     public RecordXmlComposer() {
     }

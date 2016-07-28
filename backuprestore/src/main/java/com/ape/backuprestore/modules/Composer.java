@@ -38,6 +38,7 @@
 package com.ape.backuprestore.modules;
 
 //import com.mediatek.backuprestore.utils.BackupZip;
+
 import android.content.Context;
 
 import com.ape.backuprestore.ProgressReporter;
@@ -53,9 +54,9 @@ public abstract class Composer {
     // protected BackupZip mZipHandler;
     protected String mZipFileName;
     protected boolean mIsCancel = false;
-    private int mComposeredCount = 0;
     protected String mParentFolderPath;
     protected List<String> mParams;
+    private int mComposeredCount = 0;
 
     public Composer(Context context) {
         mContext = context;
@@ -77,12 +78,12 @@ public abstract class Composer {
         mReporter = reporter;
     }
 
-    synchronized public void setCancel(boolean cancel) {
-        mIsCancel = cancel;
-    }
-
     synchronized public boolean isCancel() {
         return mIsCancel;
+    }
+
+    synchronized public void setCancel(boolean cancel) {
+        mIsCancel = cancel;
     }
 
     public int getComposed() {

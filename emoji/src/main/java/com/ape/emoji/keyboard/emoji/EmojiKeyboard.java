@@ -37,7 +37,6 @@ import com.ape.emoji.keyboard.emoji.smiles.SmilePagerAdapter;
 import com.ape.emoji.smiles.SmilesPack;
 
 
-
 public class EmojiKeyboard extends BaseKeyboard implements OnSmileClickListener,
         OnBackspaceClickListener {
 

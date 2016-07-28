@@ -43,10 +43,9 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-
-import java.util.ArrayList;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 
 public class MmsXmlParser {
     private static final String CLASS_TAG = MyLogger.LOG_TAG + "/MmsXmlParser";
@@ -63,46 +62,46 @@ public class MmsXmlParser {
             String tagName = "";
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 switch (eventType) {
-                case XmlPullParser.START_DOCUMENT:
-                    break;
+                    case XmlPullParser.START_DOCUMENT:
+                        break;
 
-                case XmlPullParser.START_TAG:
-                    record = new MmsXmlInfo();
-                    tagName = parser.getName();
-                    if (tagName.equals(MmsXmlInfo.MmsXml.RECORD)) {
-                        int attrNum = parser.getAttributeCount();
-                        for (int i = 0; i < attrNum; ++i) {
-                            String name = parser.getAttributeName(i);
-                            String value = parser.getAttributeValue(i);
-                            if (name.equals(MmsXmlInfo.MmsXml.ID)) {
-                                record.setID(value);
-                            } else if (name.equals(MmsXmlInfo.MmsXml.ISREAD)) {
-                                record.setIsRead(value);
-                            } else if (name.equals(MmsXmlInfo.MmsXml.MSGBOX)) {
-                                record.setMsgBox(value);
-                            } else if (name.equals(MmsXmlInfo.MmsXml.DATE)) {
-                                record.setDate(value);
-                            } else if (name.equals(MmsXmlInfo.MmsXml.SIZE)) {
-                                record.setSize(value);
-                            } else if (name.equals(MmsXmlInfo.MmsXml.SIMID)) {
-                                record.setSimId(value);
-                            } else if (name.equals(MmsXmlInfo.MmsXml.ISLOCKED)) {
-                                record.setIsLocked(value);
+                    case XmlPullParser.START_TAG:
+                        record = new MmsXmlInfo();
+                        tagName = parser.getName();
+                        if (tagName.equals(MmsXmlInfo.MmsXml.RECORD)) {
+                            int attrNum = parser.getAttributeCount();
+                            for (int i = 0; i < attrNum; ++i) {
+                                String name = parser.getAttributeName(i);
+                                String value = parser.getAttributeValue(i);
+                                if (name.equals(MmsXmlInfo.MmsXml.ID)) {
+                                    record.setID(value);
+                                } else if (name.equals(MmsXmlInfo.MmsXml.ISREAD)) {
+                                    record.setIsRead(value);
+                                } else if (name.equals(MmsXmlInfo.MmsXml.MSGBOX)) {
+                                    record.setMsgBox(value);
+                                } else if (name.equals(MmsXmlInfo.MmsXml.DATE)) {
+                                    record.setDate(value);
+                                } else if (name.equals(MmsXmlInfo.MmsXml.SIZE)) {
+                                    record.setSize(value);
+                                } else if (name.equals(MmsXmlInfo.MmsXml.SIMID)) {
+                                    record.setSimId(value);
+                                } else if (name.equals(MmsXmlInfo.MmsXml.ISLOCKED)) {
+                                    record.setIsLocked(value);
+                                }
+
+                                MyLogger.logD(CLASS_TAG, "name:" + name + ",value:" + value);
                             }
-
-                            MyLogger.logD(CLASS_TAG, "name:" + name + ",value:" + value);
                         }
-                    }
-                    break;
+                        break;
 
-                case XmlPullParser.END_TAG:
-                    if (parser.getName().equals(MmsXmlInfo.MmsXml.RECORD) && record != null) {
-                        list.add(record);
-                    }
-                    break;
+                    case XmlPullParser.END_TAG:
+                        if (parser.getName().equals(MmsXmlInfo.MmsXml.RECORD) && record != null) {
+                            list.add(record);
+                        }
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
 
                 eventType = parser.next();

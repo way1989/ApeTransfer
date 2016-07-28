@@ -47,8 +47,8 @@ import java.util.ArrayList;
 
 /**
  * Describe class NoteBookXmlParser here.
- *
- *
+ * <p/>
+ * <p/>
  * Created: Mon May 14 09:26:00 2012
  *
  * @author
@@ -57,7 +57,6 @@ import java.util.ArrayList;
 public class NoteBookXmlParser {
     /**
      * Creates a new <code>NoteBookXmlParser</code> instance.
-     *
      */
     public NoteBookXmlParser() {
 
@@ -75,43 +74,43 @@ public class NoteBookXmlParser {
             String tagName = "";
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 switch (eventType) {
-                case XmlPullParser.START_DOCUMENT:
-                    break;
+                    case XmlPullParser.START_DOCUMENT:
+                        break;
 
-                case XmlPullParser.START_TAG:
-                    record = new NoteBookXmlInfo();
-                    tagName = parser.getName();
-                    if (tagName.equals(NoteBookXmlInfo.RECORD)) {
-                        int attrNum = parser.getAttributeCount();
-                        for (int i = 0; i < attrNum; ++i) {
-                            String name = parser.getAttributeName(i);
-                            String value = parser.getAttributeValue(i);
-                            if (name.equals(NoteBookXmlInfo.TITLE)) {
-                                record.setTitle(value);
-                            } else if (name.equals(NoteBookXmlInfo.NOTE)) {
-                                record.setNote(value);
-                            } else if (name.equals(NoteBookXmlInfo.CREATED)) {
-                                record.setCreated(value);
-                            } else if (name.equals(NoteBookXmlInfo.MODIFIED)) {
-                                record.setModified(value);
-                            } else if (name.equals(NoteBookXmlInfo.NOTEGROUP)) {
-                                record.setNoteGroup(value);
+                    case XmlPullParser.START_TAG:
+                        record = new NoteBookXmlInfo();
+                        tagName = parser.getName();
+                        if (tagName.equals(NoteBookXmlInfo.RECORD)) {
+                            int attrNum = parser.getAttributeCount();
+                            for (int i = 0; i < attrNum; ++i) {
+                                String name = parser.getAttributeName(i);
+                                String value = parser.getAttributeValue(i);
+                                if (name.equals(NoteBookXmlInfo.TITLE)) {
+                                    record.setTitle(value);
+                                } else if (name.equals(NoteBookXmlInfo.NOTE)) {
+                                    record.setNote(value);
+                                } else if (name.equals(NoteBookXmlInfo.CREATED)) {
+                                    record.setCreated(value);
+                                } else if (name.equals(NoteBookXmlInfo.MODIFIED)) {
+                                    record.setModified(value);
+                                } else if (name.equals(NoteBookXmlInfo.NOTEGROUP)) {
+                                    record.setNoteGroup(value);
+                                }
+
+                                // Log.d(LogTag.RESTORE, "name:" + name + ",value:"
+                                // + value);
                             }
-
-                            // Log.d(LogTag.RESTORE, "name:" + name + ",value:"
-                            // + value);
                         }
-                    }
-                    break;
+                        break;
 
-                case XmlPullParser.END_TAG:
-                    if (parser.getName().equals(NoteBookXmlInfo.RECORD) && record != null) {
-                        list.add(record);
-                    }
-                    break;
+                    case XmlPullParser.END_TAG:
+                        if (parser.getName().equals(NoteBookXmlInfo.RECORD) && record != null) {
+                            list.add(record);
+                        }
+                        break;
 
-                default:
-                    break;
+                    default:
+                        break;
                 }
 
                 eventType = parser.next();

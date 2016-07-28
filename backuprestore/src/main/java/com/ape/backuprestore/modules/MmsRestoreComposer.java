@@ -5,8 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.telephony.SmsManager;
-import android.telephony.SubscriptionInfo;
-import android.telephony.SubscriptionManager;
 
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
@@ -39,11 +37,29 @@ public class MmsRestoreComposer extends Composer {
     private ArrayList<MmsRestoreContent> mTmpPduList = null;
 
     /**
-     *
      * @param context
      */
     public MmsRestoreComposer(Context context) {
         super(context);
+    }
+
+    /**
+     * shouldParseContentDisposition.
+     *
+     * @return boolean
+     */
+    public static boolean shouldParseContentDisposition() {
+        boolean result = true;
+        try {
+            Bundle bundle = SmsManager.getDefault().getCarrierConfigValues();
+            if (bundle != null) {
+                result = bundle.getBoolean(SmsManager.MMS_CONFIG_SUPPORT_MMS_CONTENT_DISPOSITION,
+                        true);
+            }
+        } catch (NullPointerException e) {
+            MyLogger.logE(CLASS_TAG, "shouldParseContentDisposition : " + e.getMessage());
+        }
+        return result;
     }
 
     /**
@@ -78,7 +94,7 @@ public class MmsRestoreComposer extends Composer {
     public boolean init() {
         boolean result = false;
         mTmpPduList = new ArrayList<MmsRestoreContent>();
-        String path = mParentFolderPath + File.separator +  Constants.ModulePath.FOLDER_MMS + File.separator
+        String path = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_MMS + File.separator
                 + Constants.ModulePath.MMS_XML;
         MyLogger.logD(CLASS_TAG, "init():path:" + path);
         String content = getXmlInfo(path);
@@ -118,6 +134,33 @@ public class MmsRestoreComposer extends Composer {
     public boolean composeOneEntity() {
         return implementComposeOneEntity();
     }
+
+    /*    *//**
+     * Describe <code>deleteAllPhoneMms</code> method here.
+     *
+     * @return a <code>boolean</code> value
+     */
+    /*
+     * private boolean deleteAllPhoneMms() { boolean result = false; if
+     * (mContext != null) { int count =
+     * mContext.getContentResolver().delete(Uri.parse(Constants.URI_MMS),
+     * "msg_box <> ?", new String[] { Constants.MESSAGE_BOX_TYPE_INBOX }); count
+     * += mContext.getContentResolver().delete(Uri.parse(Constants.URI_MMS),
+     * "date < ?", new String[] { Long.toString(mTime) });
+     *
+     * MyLogger.logD(CLASS_TAG, "deleteAllPhoneMms():" + count +
+     * " mms deleted!"); result = true; }
+     *
+     * return result; }
+     *//**
+     * Describe <code>onStart</code> method here.
+     *
+     */
+    /*
+     * public void onStart() { super.onStart(); deleteAllPhoneMms();
+     *
+     * MyLogger.logD(CLASS_TAG, "onStart()"); }
+     */
 
     /**
      * Describe <code>implementComposeOneEntity</code> method here.
@@ -212,36 +255,8 @@ public class MmsRestoreComposer extends Composer {
         return result;
     }
 
-    /*    *//**
-     * Describe <code>deleteAllPhoneMms</code> method here.
-     *
-     * @return a <code>boolean</code> value
-     */
-    /*
-     * private boolean deleteAllPhoneMms() { boolean result = false; if
-     * (mContext != null) { int count =
-     * mContext.getContentResolver().delete(Uri.parse(Constants.URI_MMS),
-     * "msg_box <> ?", new String[] { Constants.MESSAGE_BOX_TYPE_INBOX }); count
-     * += mContext.getContentResolver().delete(Uri.parse(Constants.URI_MMS),
-     * "date < ?", new String[] { Long.toString(mTime) });
-     *
-     * MyLogger.logD(CLASS_TAG, "deleteAllPhoneMms():" + count +
-     * " mms deleted!"); result = true; }
-     *
-     * return result; }
-     *//**
-     * Describe <code>onStart</code> method here.
-     *
-     */
-    /*
-     * public void onStart() { super.onStart(); deleteAllPhoneMms();
-     *
-     * MyLogger.logD(CLASS_TAG, "onStart()"); }
-     */
-
     /**
      * Describe <code>onEnd</code> method here.
-     *
      */
     public void onEnd() {
         if (mPduList != null) {
@@ -265,8 +280,7 @@ public class MmsRestoreComposer extends Composer {
     /**
      * Describe <code>getMsgBoxUri</code> method here.
      *
-     * @param msgBox
-     *            a <code>String</code> value
+     * @param msgBox a <code>String</code> value
      * @return an <code>Uri</code> value
      */
     private Uri getMsgBoxUri(String msgBox) {
@@ -284,9 +298,73 @@ public class MmsRestoreComposer extends Composer {
     }
 
     /**
+     * Describe <code>readFileContent</code> method here.
      *
+     * @param fileName a <code>String</code> value
+     * @return a <code>byte[]</code> value
+     */
+    private byte[] readFileContent(String fileName) {
+        try {
+            InputStream is = new FileInputStream(fileName);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int len = -1;
+            byte[] buffer = new byte[512];
+            while ((len = is.read(buffer, 0, 512)) != -1) {
+                baos.write(buffer, 0, len);
+            }
+
+            is.close();
+            return baos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Describe <code>getXmlInfo</code> method here.
+     *
+     * @param fileName a <code>String</code> value
+     * @return a <code>String</code> value
+     */
+    private String getXmlInfo(String fileName) {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(fileName);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int len = -1;
+            byte[] buffer = new byte[512];
+            while ((len = is.read(buffer, 0, 512)) != -1) {
+                baos.write(buffer, 0, len);
+            }
+
+            return baos.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @author mtk81330
-     *
      */
     private class MmsRestoreThread extends Thread {
         @Override
@@ -347,103 +425,13 @@ public class MmsRestoreComposer extends Composer {
     }
 
     /**
-     *
      * @author mtk81330
-     *
      */
     private class MmsRestoreContent {
         Uri mMsgUri;
-        HashMap<String, String> mMsgInfo = new HashMap<String, String>() ;
+        HashMap<String, String> mMsgInfo = new HashMap<String, String>();
         RetrieveConf mRetrieveConf = null;
         NotificationInd mIndConf = null;
         SendReq mSendConf = null;
-    }
-
-
-    /**
-     * Describe <code>readFileContent</code> method here.
-     *
-     * @param fileName
-     *            a <code>String</code> value
-     * @return a <code>byte[]</code> value
-     */
-    private byte[] readFileContent(String fileName) {
-        try {
-            InputStream is = new FileInputStream(fileName);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int len = -1;
-            byte[] buffer = new byte[512];
-            while ((len = is.read(buffer, 0, 512)) != -1) {
-                baos.write(buffer, 0, len);
-            }
-
-            is.close();
-            return baos.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    /**
-     * Describe <code>getXmlInfo</code> method here.
-     *
-     * @param fileName
-     *            a <code>String</code> value
-     * @return a <code>String</code> value
-     */
-    private String getXmlInfo(String fileName) {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(fileName);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int len = -1;
-            byte[] buffer = new byte[512];
-            while ((len = is.read(buffer, 0, 512)) != -1) {
-                baos.write(buffer, 0, len);
-            }
-
-            return baos.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * shouldParseContentDisposition.
-     *
-     * @return boolean
-     */
-    public static boolean shouldParseContentDisposition() {
-        boolean result = true;
-        try {
-            Bundle bundle = SmsManager.getDefault().getCarrierConfigValues();
-            if (bundle != null) {
-                result = bundle.getBoolean(SmsManager.MMS_CONFIG_SUPPORT_MMS_CONTENT_DISPOSITION,
-                        true);
-            }
-        } catch (NullPointerException e) {
-            MyLogger.logE(CLASS_TAG, "shouldParseContentDisposition : " + e.getMessage());
-        }
-        return result;
     }
 }

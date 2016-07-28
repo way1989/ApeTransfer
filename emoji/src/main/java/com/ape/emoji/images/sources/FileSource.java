@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.os.Build;
 
-
 import com.ape.emoji.images.common.ImageFormat;
 import com.ape.emoji.images.common.ImageLoadException;
 import com.ape.emoji.images.common.ImageMetadata;

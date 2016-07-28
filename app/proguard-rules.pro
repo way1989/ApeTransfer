@@ -15,30 +15,23 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keepattributes LineNumberTable,SourceFile
+-dontwarn android.support.v4.**
+-dontwarn com.android.vcard.**
+-dontwarn android.provider.**
+-dontwarn android.telephony.**
+-dontwarn com.android.internal.telephony.**
+-dontwarn com.mediatek.internal.telephony.**
+-dontwarn com.ape.**
+-dontwarn com.google.android.mms.**
+
 #BUGLY
 -dontwarn com.tencent.bugly.**
 -keep public class com.tencent.bugly.**{*;}
 
--keepattributes LineNumberTable,SourceFile
--keep class android.support.**{*;}
 #Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
   public *;
 }
-
-#feedback
--keepattributes Signature
--keep class sun.misc.Unsafe { *; }
--keep class com.taobao.** {*;}
--keep class com.alibaba.** {*;}
--keep class com.alipay.** {*;}
--dontwarn com.taobao.**
--dontwarn com.alibaba.**
--dontwarn com.alipay.**
--keep class com.ut.** {*;}
--dontwarn com.ut.**
--keep class com.ta.** {*;}
--dontwarn com.ta.**
--keep class com.alibaba.sdk.android.feedback.** {*;}

@@ -11,25 +11,26 @@
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/send_layout_height"
         android:paddingLeft="@dimen/main_margin_left" />
+
     <include layout="@layout/loading_empty_container" />
-<!--    <FrameLayout
-        android:id="@+id/empty_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!--    <FrameLayout
+            android:id="@+id/empty_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/empty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/empty"
-            android:visibility="gone" />
-    </FrameLayout>-->
+            <TextView
+                android:id="@+id/empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/empty"
+                android:visibility="gone" />
+        </FrameLayout>-->
 </FrameLayout>

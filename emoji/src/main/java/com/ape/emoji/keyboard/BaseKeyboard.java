@@ -21,22 +21,19 @@ public class BaseKeyboard implements
         ViewTreeObserver.OnGlobalLayoutListener {
 
 
+    public static final int OVERLAY_PERMISSION_REQ_CODE = 735;
     private static final String TAG = "BaseKeyboard";
+    final WindowManager windowManager;
     protected Activity activity;
+    protected EditText messageBody;
+    Boolean pendingOpen = false;
+    int keyboardHeight = 0;
     private View decorView;
     private boolean softKeyboardListeningEnabled = true;
     private boolean emojiKeyboardIsOpening;
     private InputMethodManager inputMethodManager;
     private View emojiKeyboardView;
-    protected EditText messageBody;
-    public static final int OVERLAY_PERMISSION_REQ_CODE = 735;
-
-    Boolean pendingOpen = false;
-
     private KeyboardStatusListener keyboardStatusListener;
-
-    final WindowManager windowManager;
-    int keyboardHeight = 0;
     private boolean showingPending;
 
     private boolean showing;

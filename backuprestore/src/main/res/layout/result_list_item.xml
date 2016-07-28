@@ -2,23 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="48dip">
-    
-    <TextView android:id="@+id/module_name"
+
+    <TextView
+        android:id="@+id/module_name"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight = "1"
         android:layout_marginLeft="10dip"
-        android:singleLine="true"
+        android:layout_weight="1"
         android:ellipsize="marquee"
         android:gravity="center_vertical"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
-    
-    <TextView android:id="@+id/result"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/result"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight = "0"
         android:layout_marginRight="15dip"
-        android:singleLine="true"
+        android:layout_weight="0"
         android:gravity="center_vertical"
-        android:textAppearance="?android:attr/textAppearanceSmall"/>
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 </LinearLayout>

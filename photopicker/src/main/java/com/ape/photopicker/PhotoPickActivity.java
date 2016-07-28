@@ -124,7 +124,7 @@ public class PhotoPickActivity extends AppCompatActivity
         setContentView(R.layout.activity_photo_pick);
         sWidthPix = getResources().getDisplayMetrics().widthPixels;
         ActionBar actionBar = getSupportActionBar();
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -413,6 +413,7 @@ public class PhotoPickActivity extends AppCompatActivity
     static class GridViewCheckTag {
         View iconFore;
         String path = "";
+
         GridViewCheckTag(View iconFore) {
             this.iconFore = iconFore;
         }

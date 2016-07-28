@@ -2,9 +2,10 @@ package com.ape.backuprestore.utils;
 
 import android.content.Context;
 
+import com.ape.backuprestore.R;
+
 import java.util.HashMap;
 import java.util.Map;
-import com.ape.backuprestore.R;
 
 
 public class ModuleType {

@@ -9,7 +9,6 @@ import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
-import com.ape.backuprestore.utils.SDCardUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -86,8 +85,8 @@ public class MusicBackupComposer extends Composer {
 //                            }, null);
 //                }
 //            } else {
-                mMusicCursorArray[i] = mContext.getContentResolver().query(mMusicUriArray[i],
-                        mProjection, null, null, null);
+            mMusicCursorArray[i] = mContext.getContentResolver().query(mMusicUriArray[i],
+                    mProjection, null, null, null);
 //            }
             if (mMusicCursorArray[i] != null) {
                 mMusicCursorArray[i].moveToFirst();

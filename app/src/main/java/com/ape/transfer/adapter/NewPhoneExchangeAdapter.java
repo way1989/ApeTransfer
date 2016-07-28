@@ -63,7 +63,7 @@ public class NewPhoneExchangeAdapter extends RecyclerView.Adapter<NewPhoneExchan
     }
 
     public PersonalItemData getItemByPosition(int position) {
-        if(position < 0 || position >= getItemCount()) return null;
+        if (position < 0 || position >= getItemCount()) return null;
         return mPersonalItemDatas.get(position);
     }
 

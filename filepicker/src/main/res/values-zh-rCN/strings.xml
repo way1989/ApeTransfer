@@ -30,8 +30,6 @@
     <string name="picker_pictures_camera">相机</string>
 
 
-
-
     <!-- Metrics -->
     <plurals name="picker_time_minutes_ago">
         <item quantity="one">%d 分钟前</item>

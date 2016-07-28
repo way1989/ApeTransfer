@@ -71,6 +71,7 @@ public class SmsBackupComposer extends Composer {
     private static final String SUBJECT = "Subject;";
     Writer mWriter = null;
     private Cursor[] mSmsCursorArray = {null, null};
+
     public SmsBackupComposer(Context context) {
         super(context);
     }

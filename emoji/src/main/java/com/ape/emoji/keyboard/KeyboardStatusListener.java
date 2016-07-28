@@ -5,5 +5,6 @@ package com.ape.emoji.keyboard;
  */
 public interface KeyboardStatusListener {
     public void onDismiss();
+
     public void onShow();
 }

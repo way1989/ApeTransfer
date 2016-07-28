@@ -1,8 +1,6 @@
 package com.ape.backuprestore.modules;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
@@ -55,14 +53,14 @@ public class AppRestoreComposer extends Composer {
         if (mParams != null) {
             mFileNameList = mParams;
             result = true;
-        }else {
+        } else {
             String path = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_APP;
             mFileNameList = new ArrayList<>();
             File folder = new File(path);
             if (folder.exists() && folder.isDirectory()) {
                 File[] fileLists = folder.listFiles();
-                for (File file : fileLists){
-                    if(file.isFile()){
+                for (File file : fileLists) {
+                    if (file.isFile()) {
                         mFileNameList.add(file.getAbsolutePath());
                     }
                 }

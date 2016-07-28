@@ -3,10 +3,10 @@ package com.ape.backuprestore;
 import android.graphics.drawable.Drawable;
 
 public class AppSnippet {
+    public String mFileName; //only for restore
     private Drawable mIcon;
     private CharSequence mName;
     private String mPackageName;
-    public String mFileName; //only for restore
 
     public AppSnippet(Drawable icon, CharSequence name, String packageName) {
         mIcon = icon;

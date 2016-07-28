@@ -10,8 +10,9 @@ import butterknife.ButterKnife;
 /**
  * Created by android on 16-7-13.
  */
-public class OldPhoneExchangeActivity extends BaseActivity{
+public class OldPhoneExchangeActivity extends BaseActivity {
     private P2PNeighbor mP2PNeighbor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

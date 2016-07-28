@@ -68,8 +68,8 @@
         android:layout_width="fill_parent"
         android:layout_height="@dimen/history_storage_height"
         android:layout_alignParentBottom="true"
-        android:gravity="center"
         android:background="@drawable/btn_gray_selecter"
+        android:gravity="center"
         android:text="@string/invite_more"
         android:textColor="@android:color/black"
         android:textSize="@dimen/textSize_h9" />

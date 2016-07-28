@@ -3,14 +3,10 @@ package com.ape.backuprestore.utils;
 import android.util.Log;
 
 public class MyLogger {
-    private MyLogger() {
-    }
-
     public static final String LOG_TAG = "ApeTransfer";
     public static final String BACKUP_ACTIVITY_TAG = "BackupActivity: ";
     public static final String BACKUP_SERVICE_TAG = "BackupService: ";
     public static final String BACKUP_ENGINE_TAG = "BackupEngine: ";
-
     public static final String APP_TAG = "App: ";
     public static final String CONTACT_TAG = "Contact: ";
     public static final String MESSAGE_TAG = "Message: ";
@@ -21,6 +17,8 @@ public class MyLogger {
     public static final String NOTEBOOK_TAG = "NoteBook: ";
     public static final String SETTINGS_TAG = "Settings: ";
     public static final String BOOKMARK_TAG = "Bookmark: ";
+    private MyLogger() {
+    }
 
     public static void logV(String tag, String msg) {
         Log.v(tag, msg);

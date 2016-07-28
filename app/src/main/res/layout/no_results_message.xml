@@ -15,8 +15,8 @@
         android:layout_height="@dimen/white_note_height"
         android:layout_gravity="center_horizontal"
         android:paddingBottom="@dimen/white_note_padding_bottom"
-        android:src="@drawable/x_ic_blank_file"
-        android:scaleType="centerInside"/>
+        android:scaleType="centerInside"
+        android:src="@drawable/x_ic_blank_file" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,6 +57,6 @@
         android:fontFamily="sans-serif-light"
         android:gravity="center_horizontal"
         android:text="@string/empty"
-        android:visibility="gone"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="gone" />
 </com.ape.transfer.widget.NoResultsContainer>

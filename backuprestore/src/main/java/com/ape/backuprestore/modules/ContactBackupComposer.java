@@ -1,9 +1,6 @@
 package com.ape.backuprestore.modules;
 
 import android.content.Context;
-import android.provider.ContactsContract;
-import android.telephony.SubscriptionInfo;
-import android.telephony.SubscriptionManager;
 
 import com.android.vcard.VCardComposer;
 import com.android.vcard.VCardConfig;

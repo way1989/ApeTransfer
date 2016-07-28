@@ -32,8 +32,8 @@ public abstract class RequestWriteSettingsBaseActivity extends AppCompatActivity
     }
 
     protected void showRequestWriteSettingsDialog() {
-        if(mDialog != null && mDialog.isShowing()) return;
-        if(mDialog == null) {
+        if (mDialog != null && mDialog.isShowing()) return;
+        if (mDialog == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.request_write_settings_title).setMessage(R.string.request_write_settings_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -56,7 +56,7 @@ public abstract class RequestWriteSettingsBaseActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(mDialog != null && mDialog.isShowing())
+        if (mDialog != null && mDialog.isShowing())
             mDialog.dismiss();
         mDialog = null;
     }

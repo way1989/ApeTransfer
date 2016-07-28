@@ -4,7 +4,6 @@ import android.app.Application;
 import android.content.Context;
 import android.text.format.Formatter;
 
-import com.alibaba.sdk.android.feedback.impl.FeedbackAPI;
 import com.ape.transfer.util.Log;
 import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -25,9 +24,8 @@ public class App extends Application {
         mContext = getApplicationContext();
         if (BuildConfig.BUGLY_ENABLED) {
             CrashReport.initCrashReport(mContext, String.valueOf(BuildConfig.BUGLY_APPID), false);
-            FeedbackAPI.initAnnoy(this, String.valueOf(BuildConfig.FEEDBACK_APPKEY));
         }
-        if(BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG)
             LeakCanary.install(this);
 //        SmileProcessor smileProcessor = new SmileProcessor(this);
 //        smileProcessor.loadEmoji();

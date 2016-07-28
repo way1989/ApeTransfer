@@ -56,7 +56,6 @@ public class CallLogXmlComposer {
 
     /**
      * Creates a new <code>CallLogXmlComposer</code> instance.
-     *
      */
     public CallLogXmlComposer() {
     }

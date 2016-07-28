@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 /*
 * Copyright 2013, The Android Open Source Project
 *
@@ -18,7 +17,6 @@
 -->
 
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-        android:src="@drawable/ic_application_am"
-        android:autoMirrored="true">
-</bitmap>
+    android:autoMirrored="true"
+    android:src="@drawable/ic_application_am"></bitmap>
     

@@ -39,6 +39,70 @@ package com.ape.backuprestore.modules;
 
 public class MmsXmlInfo {
 
+    private String mId;
+    private String mIsRead;
+    private String mMsgBox;
+    private String mDate;
+    private String mSize;
+    private String mSimId;
+    private String mIsLocked;
+
+    public String getID() {
+        return (mId == null) ? "" : mId;
+    }
+
+    public void setID(String id) {
+        mId = id;
+    }
+
+    public String getIsRead() {
+        return ((mIsRead == null) || mIsRead.equals("")) ? "1" : mIsRead;
+    }
+
+    public void setIsRead(String isread) {
+        mIsRead = isread;
+    }
+
+    public String getMsgBox() {
+        return ((mMsgBox == null) || mMsgBox.equals("")) ? "1" : mMsgBox;
+    }
+
+    public void setMsgBox(String msgBox) {
+        mMsgBox = msgBox;
+    }
+
+    public String getDate() {
+        return (mDate == null) ? "" : mDate;
+    }
+
+    public void setDate(String date) {
+        mDate = date;
+    }
+
+    public String getSize() {
+        return ((mSize == null) || mSize.equals("")) ? "0" : mSize;
+    }
+
+    public void setSize(String size) {
+        mSize = size;
+    }
+
+    public String getSimId() {
+        return ((mSimId == null) || mSimId.equals("")) ? "0" : mSimId;
+    }
+
+    public void setSimId(String simId) {
+        mSimId = simId;
+    }
+
+    public String getIsLocked() {
+        return ((mIsLocked == null) || mIsLocked.equals("")) ? "0" : mIsLocked;
+    }
+
+    public void setIsLocked(String islocked) {
+        mIsLocked = islocked;
+    }
+
     public static class MmsXml {
         public static final String ROOT = "mms";
         public static final String RECORD = "record";
@@ -49,69 +113,5 @@ public class MmsXmlInfo {
         public static final String SIZE = "m_size";
         public static final String SIMID = "sim_id";
         public static final String ISLOCKED = "islocked";
-    }
-
-    private String mId;
-    private String mIsRead;
-    private String mMsgBox;
-    private String mDate;
-    private String mSize;
-    private String mSimId;
-    private String mIsLocked;
-
-    public void setID(String id) {
-        mId = id;
-    }
-
-    public String getID() {
-        return (mId == null) ? "" : mId;
-    }
-
-    public void setIsRead(String isread) {
-        mIsRead = isread;
-    }
-
-    public String getIsRead() {
-        return ((mIsRead == null) || mIsRead.equals("")) ? "1" : mIsRead;
-    }
-
-    public void setMsgBox(String msgBox) {
-        mMsgBox = msgBox;
-    }
-
-    public String getMsgBox() {
-        return ((mMsgBox == null) || mMsgBox.equals("")) ? "1" : mMsgBox;
-    }
-
-    public void setDate(String date) {
-        mDate = date;
-    }
-
-    public String getDate() {
-        return (mDate == null) ? "" : mDate;
-    }
-
-    public void setSize(String size) {
-        mSize = size;
-    }
-
-    public String getSize() {
-        return ((mSize == null) || mSize.equals("")) ? "0" : mSize;
-    }
-
-    public void setSimId(String simId) {
-        mSimId = simId;
-    }
-
-    public String getSimId() {
-        return ((mSimId == null) || mSimId.equals("")) ? "0" : mSimId;
-    }
-
-    public void setIsLocked(String islocked) {
-        mIsLocked = islocked;
-    }
-
-    public String getIsLocked() {
-        return ((mIsLocked == null) || mIsLocked.equals("")) ? "0" : mIsLocked;
     }
 }
