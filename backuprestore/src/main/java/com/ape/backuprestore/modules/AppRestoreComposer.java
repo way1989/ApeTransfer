@@ -1,10 +1,12 @@
 package com.ape.backuprestore.modules;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
+import com.ape.packagemanager.PackageManagerUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -94,18 +96,12 @@ public class AppRestoreComposer extends Composer {
                 String apkFileName = mFileNameList.get(mIndex++);
                 File apkFile = new File(apkFileName);
                 if (apkFile.exists()) {
-                    /*PackageManager packageManager = mContext.getPackageManager();
-                    PackageInstallObserver installObserver = new PackageInstallObserver();
+                    PackageManagerUtil packageManagerUtil = new PackageManagerUtil(mContext, mLock);
 
-                    packageManager.installPackage(
-                            Uri.fromFile(apkFile),
-                            installObserver,
-                            PackageManager.INSTALL_REPLACE_EXISTING
-                                    | PackageManager.INSTALL_ALLOW_DOWNGRADE,
-                            "test");
+                    packageManagerUtil.installPackage(apkFile);
 
                     synchronized (mLock) {
-                        while (!installObserver.mFinished) {
+                        while (!packageManagerUtil.isFinished()) {
                             try {
                                 mLock.wait();
                             } catch (InterruptedException e) {
@@ -113,14 +109,13 @@ public class AppRestoreComposer extends Composer {
                             }
                         }
 
-                        if (installObserver.mResult == PackageManager.INSTALL_SUCCEEDED) {
+                        if (packageManagerUtil.isSuccess()) {
                             result = true;
                             MyLogger.logD(CLASS_TAG, "install success");
                         } else {
-                            MyLogger.logD(CLASS_TAG, "install fail, result:"
-                                    + installObserver.mResult);
+                            MyLogger.logD(CLASS_TAG, "install fail");
                         }
-                    }*/
+                    }
                 } else {
                     MyLogger.logD(CLASS_TAG, "install failed");
                 }
@@ -151,22 +146,4 @@ public class AppRestoreComposer extends Composer {
         //delteTempFolder();
         MyLogger.logD(CLASS_TAG, "onEnd()");
     }
-
-    /**
-     * @author mtk81330
-     *
-     */
-//    class PackageInstallObserver extends IPackageInstallObserver.Stub {
-//        private boolean mFinished = false;
-//        private int mResult;
-//
-//        @Override
-//        public void packageInstalled(String name, int status) {
-//            synchronized (mLock) {
-//                mFinished = true;
-//                mResult = status;
-//                mLock.notifyAll();
-//            }
-//        }
-//    }
 }
