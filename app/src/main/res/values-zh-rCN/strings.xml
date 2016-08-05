@@ -180,8 +180,15 @@
     <string name="toast_send_failed">发送失败</string>
     <string name="toast_submit_success">反馈提交成功</string>
     <string name="toast_success_join_group">成功加入群组</string>
-    <string name="total_selected">共选择数据 %1$s, 对方手机内存</string>
+    <plurals name="total_selected">
+        <item quantity="zero">共选择 %d 项数据，将发送到新手机</item>
+        <item quantity="one">共选择 %d 项数据，将发送到新手机</item>
+        <item quantity="other">共选择 %d 项数据，将发送到新手机</item>
+    </plurals>
     <string name="sended">发送完成!</string>
     <string name="sending">数据发送中 ...</string>
     <string name="permission_never_ask_title">您可以通过以下方式授权</string>
+    <string name="backup_and_send">备份并发送</string>
+    <string name="backup_cost_more_time_prompt">备份应用，音乐，图片将会花费时间，是否继续？</string>
+    <string name="backup_zipping">正在压缩文件...</string>
 </resources>

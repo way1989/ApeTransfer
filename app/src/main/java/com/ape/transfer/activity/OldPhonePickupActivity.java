@@ -3,11 +3,13 @@ package com.ape.transfer.activity;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -24,6 +26,7 @@ import com.ape.backuprestore.RecordXmlInfo;
 import com.ape.backuprestore.ResultDialog;
 import com.ape.backuprestore.modules.AppBackupComposer;
 import com.ape.backuprestore.modules.CalendarBackupComposer;
+import com.ape.backuprestore.modules.CallLogBackupComposer;
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.modules.ContactBackupComposer;
 import com.ape.backuprestore.modules.MmsBackupComposer;
@@ -38,6 +41,7 @@ import com.ape.backuprestore.utils.SDCardUtils;
 import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.OldPhonePickupAdapter;
+import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.widget.MobileDataWarningContainer;
@@ -71,7 +75,10 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
     Button btnSure;
     private List<String> mMessageEnable = new ArrayList<>();
     private OldPhonePickupAdapter mAdapter;
+    private P2PNeighbor mP2PNeighbor;
     private InitPersonalDataTask mInitDataTask;
+    private String mFolderName;
+    private boolean mIsShowWarning = true;
     private ServiceConnection mServiceCon = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -99,6 +106,9 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
         bindService();
         if (TDevice.hasInternet()) {
             mobileDataWarning.setVisibility(View.VISIBLE);
+        }
+        if (getIntent().hasExtra("neighbor")) {
+            mP2PNeighbor = (P2PNeighbor) (getIntent().getSerializableExtra("neighbor"));
         }
         mAdapter = new OldPhonePickupAdapter(getApplicationContext(), this);
         rvDataCategory.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
@@ -143,9 +153,58 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
     private void showLoadingContent(boolean isShow) {
     }
 
+    private void showWarningForLargeFiles(PersonalItemData itemData, ArrayList<Integer> list) {
+        int type = itemData.getType();
+        switch (type) {
+            case ModuleType.TYPE_CONTACT:
+            case ModuleType.TYPE_CALL_LOG:
+            case ModuleType.TYPE_MESSAGE:
+            case ModuleType.TYPE_CALENDAR:
+                break;
+            case ModuleType.TYPE_MUSIC:
+            case ModuleType.TYPE_APP:
+            case ModuleType.TYPE_PICTURE:
+                if (itemData.isSelected() && mIsShowWarning) {
+                    showWarningDialog(itemData);
+                }
+                if (list.contains(ModuleType.TYPE_PICTURE) ||
+                        list.contains(ModuleType.TYPE_APP) ||
+                        list.contains(ModuleType.TYPE_MUSIC)) {
+                    mIsShowWarning = false;
+                } else {
+                    mIsShowWarning = true;
+                }
+                break;
+        }
+    }
+
+    private void showWarningDialog(final PersonalItemData itemData) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.connect_dialog_title).setMessage(R.string.backup_cost_more_time_prompt)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mIsShowWarning = false;
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mAdapter.notifyPersonalItemData(itemData);
+                        mIsShowWarning = true;
+                    }
+                }).show();
+    }
+
     @Override
     public void onItemClick(View v) {
+        ArrayList<Integer> selectedList = getSelectedItemList();
+        showWarningForLargeFiles((PersonalItemData) v.getTag(), selectedList);
         btnSure.setEnabled(!getSelectedItemList().isEmpty());
+        storageView.setText(getSelectedItemList().isEmpty() ?
+                getResources().getQuantityString(R.plurals.total_selected, 0, 0):
+                getResources().getQuantityString(R.plurals.total_selected, getSelectedItemList().size(),
+                        getSelectedItemList().size()));
     }
 
     @Override
@@ -293,7 +352,7 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
 
     private void startBackup() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        String folderName = dateFormat.format(
+        mFolderName = dateFormat.format(
                 new Date(System.currentTimeMillis()));
 
         String path = SDCardUtils
@@ -314,7 +373,7 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
 
         StringBuilder builder = new StringBuilder(path);
         builder.append(File.separator);
-        builder.append(folderName);
+        builder.append(mFolderName);
         mBackupFolderPath = builder.toString();
         Log.d(TAG, "[processClickStart] mBackupFolderPath is " + mBackupFolderPath);
         File folder = new File(mBackupFolderPath);
@@ -380,7 +439,7 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
         ArrayList<Integer> list = new ArrayList<>();
         int count = mAdapter.getItemCount();
         for (int position = 0; position < count; position++) {
-            PersonalItemData item = (PersonalItemData) mAdapter.getItemByPosition(position);
+            PersonalItemData item = mAdapter.getItemByPosition(position);
             if (item.isSelected()) {
                 list.add(item.getType());
             }
@@ -441,6 +500,7 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
             showLoadingContent(false);
             updateData(mBackupDataList);
             setButtonsEnable(!getSelectedItemList().isEmpty());
+            storageView.setText(getResources().getQuantityString(R.plurals.total_selected, getSelectedItemList().size(), getSelectedItemList().size()));
             setOnBackupStatusListener();
             Log.i(TAG, "---onPostExecute----getTitle " + OldPhonePickupActivity.this.getTitle());
             super.onPostExecute(arg0);
@@ -454,8 +514,9 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
                 int types[] = new int[]{
                         ModuleType.TYPE_CONTACT,
                         ModuleType.TYPE_MESSAGE,
-                        ModuleType.TYPE_PICTURE,
+                        ModuleType.TYPE_CALL_LOG,
                         ModuleType.TYPE_CALENDAR,
+                        ModuleType.TYPE_PICTURE,
                         ModuleType.TYPE_MUSIC,
                         ModuleType.TYPE_APP
                 };
@@ -518,6 +579,10 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
 //                        count = getModulesCount(new BookmarkBackupComposer(
 //                                OldPhonePickupActivity.this));
 //                        break;
+                        case ModuleType.TYPE_CALL_LOG:
+                            count = getModulesCount(new CallLogBackupComposer(
+                                    OldPhonePickupActivity.this));
+                            break;
                         default:
                             Log.i(TAG, "Unknown module type: " + types[i]);
                             break;

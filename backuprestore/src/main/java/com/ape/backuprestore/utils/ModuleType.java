@@ -23,18 +23,19 @@ public class ModuleType {
     public static final int TYPE_CALL_LOG = 0x300;
     private static final String CLASS_TAG = MyLogger.LOG_TAG + "/ModuleType";
     //public static final int TYPE_SELECT = 0x400;
-    public static Map<Integer, String> sModuleTpyeFolderInfo = new HashMap<>();
+    public static Map<Integer, String> sModuleTypeFolderInfo = new HashMap<>();
 
     static {
-        sModuleTpyeFolderInfo.put(TYPE_CONTACT, Constants.ModulePath.FOLDER_CONTACT);
-        sModuleTpyeFolderInfo.put(TYPE_SMS, Constants.ModulePath.FOLDER_SMS);
-        sModuleTpyeFolderInfo.put(TYPE_MMS, Constants.ModulePath.FOLDER_MMS);
-        sModuleTpyeFolderInfo.put(TYPE_CALENDAR, Constants.ModulePath.FOLDER_CALENDAR);
-        sModuleTpyeFolderInfo.put(TYPE_APP, Constants.ModulePath.FOLDER_APP);
-        sModuleTpyeFolderInfo.put(TYPE_PICTURE, Constants.ModulePath.FOLDER_PICTURE);
-        sModuleTpyeFolderInfo.put(TYPE_MUSIC, Constants.ModulePath.FOLDER_MUSIC);
-        sModuleTpyeFolderInfo.put(TYPE_NOTEBOOK, Constants.ModulePath.FOLDER_NOTEBOOK);
-//        sModuleTpyeFolderInfo.put(TYPE_BOOKMARK, ModulePath.FOLDER_BOOKMARK);
+        sModuleTypeFolderInfo.put(TYPE_CONTACT, Constants.ModulePath.FOLDER_CONTACT);
+        sModuleTypeFolderInfo.put(TYPE_SMS, Constants.ModulePath.FOLDER_SMS);
+        sModuleTypeFolderInfo.put(TYPE_MMS, Constants.ModulePath.FOLDER_MMS);
+        sModuleTypeFolderInfo.put(TYPE_CALENDAR, Constants.ModulePath.FOLDER_CALENDAR);
+        sModuleTypeFolderInfo.put(TYPE_APP, Constants.ModulePath.FOLDER_APP);
+        sModuleTypeFolderInfo.put(TYPE_PICTURE, Constants.ModulePath.FOLDER_PICTURE);
+        sModuleTypeFolderInfo.put(TYPE_MUSIC, Constants.ModulePath.FOLDER_MUSIC);
+        sModuleTypeFolderInfo.put(TYPE_NOTEBOOK, Constants.ModulePath.FOLDER_NOTEBOOK);
+        sModuleTypeFolderInfo.put(TYPE_CALL_LOG, Constants.ModulePath.FOLDER_CALL_LOG);
+//        sModuleTypeFolderInfo.put(TYPE_BOOKMARK, ModulePath.FOLDER_BOOKMARK);
 
     }
 
@@ -74,6 +75,10 @@ public class ModuleType {
 
             case ModuleType.TYPE_NOTEBOOK:
                 resId = R.string.notebook_module;
+                break;
+
+            case ModuleType.TYPE_CALL_LOG:
+                resId = R.string.calllog_module;
                 break;
 
 //        case ModuleType.TYPE_BOOKMARK:

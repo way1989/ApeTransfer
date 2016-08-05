@@ -173,9 +173,16 @@
     <string name="newphone_name">New phone %1$s</string>
     <string name="newphone_tip">Connected successfully! Waiting for data backup...</string>
     <string name="exchange_migrated_tip">Select data to back up:</string>
-    <string name="total_selected">Selected data %1$s, phone storage of the other device</string>
+    <plurals name="total_selected">
+        <item quantity="zero">Selected 0 datum, will send to your new phone</item>
+        <item quantity="one">Selected 1 datum, will send to your new phone</item>
+        <item quantity="other">Selected %d data, will send to your new phone</item>
+    </plurals>
     <string name="sended">Sending completed!</string>
     <string name="sending">Sending data...</string>
     <string name="permission_never_ask_title">you can grant access as</string>
     <string name="message">Messages</string>
+    <string name="backup_and_send">Backup and send</string>
+    <string name="backup_cost_more_time_prompt">Backup app,picture,music will cost more time,and continue?</string>
+    <string name="backup_zipping">Being compressed...</string>
 </resources>

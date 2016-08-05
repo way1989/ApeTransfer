@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.ape.backuprestore.modules.AppBackupComposer;
 import com.ape.backuprestore.modules.CalendarBackupComposer;
+import com.ape.backuprestore.modules.CallLogBackupComposer;
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.modules.ContactBackupComposer;
 import com.ape.backuprestore.modules.MessageBackupComposer;
@@ -238,6 +239,10 @@ public class BackupEngine {
                         addComposer(new NoteBookBackupComposer(mContext));
                         break;
 
+                    case ModuleType.TYPE_CALL_LOG:
+                        addComposer(new CallLogBackupComposer(mContext));
+                        break;
+
 //                case ModuleType.TYPE_BOOKMARK:
 //                    addComposer(new BookmarkBackupComposer(mContext));
 //                    break;
@@ -397,7 +402,7 @@ public class BackupEngine {
         }
 
         private void sendScanFileRequests(int moduleType, Context mContext) {
-            String backupFolderName = ModuleType.sModuleTpyeFolderInfo.get(moduleType);
+            String backupFolderName = ModuleType.sModuleTypeFolderInfo.get(moduleType);
             if (moduleType == ModuleType.TYPE_APP) {
                 FileUtils.scanPathforMediaStore(mBackupFolder, mContext);
             } else if (backupFolderName != null) {

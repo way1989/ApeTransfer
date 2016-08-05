@@ -13,7 +13,6 @@
         android:gravity="center"
         android:paddingBottom="@dimen/panel_storage_padding"
         android:paddingTop="@dimen/panel_storage_padding"
-        android:text="@string/total_selected"
         android:textColor="@color/gray_dark"
         android:textSize="@dimen/textSize_h5" />
 
@@ -22,7 +21,7 @@
         android:layout_width="@dimen/panel_btn_width"
         android:layout_height="@dimen/panel_btn_height"
         android:background="@drawable/bt_exchange_selector"
-        android:text="@android:string/ok"
+        android:text="@string/backup_and_send"
         android:textColor="@android:color/white"
         android:textSize="@dimen/textSize_h4" />
 </LinearLayout>

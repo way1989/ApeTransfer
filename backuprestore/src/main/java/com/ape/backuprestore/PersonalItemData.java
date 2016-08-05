@@ -14,6 +14,20 @@ public class PersonalItemData {
         mType = type;
         mCount = count;
         mIsEnable = !(count == 0);
+        setDefaultSelectedValue(mType);
+    }
+
+    private void setDefaultSelectedValue(int type) {
+        switch (type) {
+            case ModuleType.TYPE_CALENDAR:
+            case ModuleType.TYPE_CALL_LOG:
+            case ModuleType.TYPE_MESSAGE:
+            case ModuleType.TYPE_CONTACT:
+                if (mIsEnable) {
+                    mIsSelected = true;
+                }
+                break;
+        }
     }
 
     public int getType() {
@@ -46,7 +60,7 @@ public class PersonalItemData {
                 ret = R.drawable.icon_data_music_normal;
                 break;
 
-            case ModuleType.TYPE_NOTEBOOK:
+            case ModuleType.TYPE_CALL_LOG:
                 ret = R.drawable.icon_data_calllog_normal;
                 break;
             case ModuleType.TYPE_APP:
@@ -93,6 +107,9 @@ public class PersonalItemData {
                 break;
             case ModuleType.TYPE_APP:
                 ret = R.string.app_module;
+                break;
+            case ModuleType.TYPE_CALL_LOG:
+                ret = R.string.calllog_module;
                 break;
 //        case ModuleType.TYPE_BOOKMARK:
 //            ret = R.string.bookmark_module;

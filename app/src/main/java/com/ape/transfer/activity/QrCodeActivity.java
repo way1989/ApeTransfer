@@ -100,7 +100,7 @@ public class QrCodeActivity extends ApBaseActivity implements TransferService.Ca
 
     @Override
     protected boolean shouldCloseWifiAp() {
-        return true;
+        return false;//should not close the Wifi
     }
 
     private void startP2P() {

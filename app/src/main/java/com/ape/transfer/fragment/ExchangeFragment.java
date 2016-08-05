@@ -17,6 +17,7 @@ import com.ape.transfer.R;
 import com.ape.transfer.activity.InviteFriendActivity;
 import com.ape.transfer.activity.NewPhoneExchangeActivity;
 import com.ape.transfer.activity.OldPhonePickupActivity;
+import com.ape.transfer.activity.QrCodeActivity;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.zxing.activity.CaptureActivity;
 
@@ -96,8 +97,8 @@ public class ExchangeFragment extends Fragment {
     @NeedsPermission({Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_CALENDAR, Manifest.permission.READ_SMS})
     void startBackup() {
-        //startActivity(new Intent(getActivity(), QrCodeActivity.class));
-        startActivity(new Intent(getActivity(), OldPhonePickupActivity.class));
+        startActivity(new Intent(getActivity(), QrCodeActivity.class));
+        //startActivity(new Intent(getActivity(), OldPhonePickupActivity.class));
     }
 
     @OnShowRationale({Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS,

@@ -66,7 +66,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile "junit:junit:$rootProject.junitVersion"
     compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     compile "com.android.support:design:$rootProject.supportLibraryVersion"
@@ -76,20 +76,15 @@ dependencies {
     compile "com.tencent.bugly:crashreport:$rootProject.buglyVersion"
     compile "org.nanohttpd:nanohttpd:$rootProject.nanohttpdVersion"
     compile "com.google.zxing:core:$rootProject.zxingVersion"
-
-//    compile project(':emoji')
-//    compile project(':filepicker')
-//    compile project(':photopicker')
+    //    compile project(':emoji')
+    //    compile project(':filepicker')
+    //    compile project(':photopicker')
     compile project(':backuprestore')
-
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'de.hdodenhof:circleimageview:2.1.0'
-
-
     compile 'com.github.hotchemi:permissionsdispatcher:2.1.3'
     apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.3'
-
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'

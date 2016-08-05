@@ -17,6 +17,7 @@ public class TransferServiceUtil {
     private static TransferServiceUtil sTransferServiceUtil;
     private TransferService.P2PBinder mTransferService;
     private Callback mCallback;
+    private boolean mIsBound = false;
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -63,7 +64,7 @@ public class TransferServiceUtil {
         }
         startTransferService();//startP2P service first
         Intent bindIntent = new Intent(App.getContext(), TransferService.class);
-        App.getContext().bindService(bindIntent, mServiceConnection,
+        mIsBound = App.getContext().bindService(bindIntent, mServiceConnection,
                 Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
     }
 
@@ -74,7 +75,11 @@ public class TransferServiceUtil {
         if (mTransferService == null)
             return;
         try {
-            App.getContext().unbindService(mServiceConnection);
+            //java.lang.IllegalArgumentException: Service not registered
+            if (mIsBound) {
+                App.getContext().unbindService(mServiceConnection);
+                mIsBound = false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
