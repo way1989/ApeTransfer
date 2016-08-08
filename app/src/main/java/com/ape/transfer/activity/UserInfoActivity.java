@@ -44,8 +44,6 @@ public class UserInfoActivity extends BaseActivity implements TextWatcher {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_info);
-        ButterKnife.bind(this);
         ivEdit.setVisibility(View.GONE);
         editText.addTextChangedListener(this);
         editText.setText(Build.MODEL);
@@ -81,6 +79,11 @@ public class UserInfoActivity extends BaseActivity implements TextWatcher {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_user_info;
     }
 
     @OnClick({R.id.iv_edit, R.id.ll_head0, R.id.ll_head1, R.id.ll_head2, R.id.ll_head3})

@@ -45,7 +45,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainTransferActivity extends ApBaseActivity implements TransferService.Callback,
+public class MainTransferActivity extends BaseTransferActivity implements TransferService.Callback,
         TransferServiceUtil.Callback, FileFragment.OnFileItemChangeListener {
     private static final String TAG = "MainTransferActivity";
     @BindView(R.id.indicator)
@@ -92,29 +92,18 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     RelativeLayout root;
     @BindView(R.id.mobile_data_warning)
     MobileDataWarningContainer mobileDataWarning;
-    private TransferService.P2PBinder mTransferService;
 
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
     private P2PNeighbor mP2PNeighbor;
 
-    private void startP2P() {
-        if (mP2PNeighbor == null &&
-                mTransferService != null && !mTransferService.isP2PRunning())
-            mTransferService.startP2P();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maintransfer);
-        ButterKnife.bind(this);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
             actionBar.setElevation(0f);
-        TransferServiceUtil.getInstance().setCallback(this);
-        TransferServiceUtil.getInstance().bindTransferService();
 
         mP2PNeighbor = (P2PNeighbor) getIntent().getSerializableExtra("neighbor");
 
@@ -153,30 +142,8 @@ public class MainTransferActivity extends ApBaseActivity implements TransferServ
     }
 
     @Override
-    public void onBackPressed() {
-        if (mP2PNeighbor != null || (mWifiApService != null && mWifiApService.isWifiApEnabled())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.connect_dialog_title).setMessage(R.string.transfer_discontent)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (mTransferService != null && !mTransferService.isEmpty()) {
-                                if (mWifiApService.isWifiApEnabled()) {
-                                    mTransferService.sendOffLine();
-                                }
-                                mTransferService.stopP2P();
-                                TransferServiceUtil.getInstance().unbindTransferService();
-                                TransferServiceUtil.getInstance().stopTransferService();
-                            }
-                            stopWifiAp();
-                            finish();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null).show();
-            return;
-        }
-
-        super.onBackPressed();
+    protected int getLayout() {
+        return R.layout.activity_maintransfer;
     }
 
     private void setupWithNeighbor() {

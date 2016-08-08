@@ -34,12 +34,15 @@ public class AboutActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_about);
-        ButterKnife.bind(this);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null)
             actionBar.setElevation(0f);
         tvAppName.setText(R.string.app_name);
         tvVersion.setText(BuildConfig.VERSION_NAME);
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_about;
     }
 }

@@ -16,8 +16,11 @@ public class OldPhoneExchangeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_old_phone_exchange);
-        ButterKnife.bind(this);
         mP2PNeighbor = (P2PNeighbor) getIntent().getSerializableExtra("neighbor");
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_old_phone_exchange;
     }
 }

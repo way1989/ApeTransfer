@@ -13,7 +13,10 @@ public class OldPhoneConnectedActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_old_phone_connected);
-        ButterKnife.bind(this);
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_old_phone_connected;
     }
 }

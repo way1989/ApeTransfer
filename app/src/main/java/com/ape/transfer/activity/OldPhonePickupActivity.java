@@ -42,8 +42,12 @@ import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.OldPhonePickupAdapter;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.service.TransferService;
+import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.TDevice;
+import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import java.io.File;
@@ -54,14 +58,13 @@ import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * Created by android on 16-7-13.
  */
-public class OldPhonePickupActivity extends BaseActivity implements OldPhonePickupAdapter.OnItemClickListener,
-        BackupService.OnBackupStatusListener {
+public class OldPhonePickupActivity extends BaseTransferActivity implements OldPhonePickupAdapter.OnItemClickListener,
+        BackupService.OnBackupStatusListener, TransferService.Callback, TransferServiceUtil.Callback {
     private static final String TAG = "OldPhonePickupActivity";
     protected BackupService.BackupBinder mBackupService;
     protected ProgressDialog mProgressDialog;
@@ -79,6 +82,9 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
     private InitPersonalDataTask mInitDataTask;
     private String mFolderName;
     private boolean mIsShowWarning = true;
+
+    private TransferService.P2PBinder mTransferService;
+
     private ServiceConnection mServiceCon = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -101,8 +107,6 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_old_phone_pickup);
-        ButterKnife.bind(this);
         bindService();
         if (TDevice.hasInternet()) {
             mobileDataWarning.setVisibility(View.VISIBLE);
@@ -116,6 +120,11 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
         mInitDataTask = new InitPersonalDataTask();
         mInitDataTask.execute();
         createProgressDlg();
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_old_phone_pickup;
     }
 
     @Override
@@ -453,6 +462,33 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
         //checkBackupState();
     }
 
+    @Override
+    public void onWifiApStatusChanged(int status) {
+        super.onWifiApStatusChanged(status);
+        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (status == WifiApUtils.WIFI_AP_STATE_ENABLED));
+        if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+            boolean hasInternet = TDevice.hasInternet();
+            if (hasInternet)
+                mobileDataWarning.setVisibility(View.VISIBLE);
+
+            startP2P();
+        } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
+                status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+            mobileDataWarning.setVisibility(View.GONE);
+            finish();
+        }
+    }
+
+    @Override
+    protected String getSSID() {
+        return PreferenceUtil.getInstance().getAlias();
+    }
+
+    @Override
+    protected boolean shouldCloseWifiAp() {
+        return mTransferService == null || mTransferService.isEmpty();
+    }
+
     public void setOnBackupStatusListener() {
         if (mBackupService != null) {
             mBackupService.setOnBackupChangedListner(this);
@@ -480,6 +516,24 @@ public class OldPhonePickupActivity extends BaseActivity implements OldPhonePick
             mBackupService.reset();
         }
         this.stopService(new Intent(this, BackupService.class));
+    }
+
+    @Override
+    public void onServiceConnected(TransferService.P2PBinder service) {
+        mTransferService = service;
+        mTransferService.setCallback(OldPhonePickupActivity.this);
+    }
+
+    @Override
+    public void onServiceDisconnected() {
+        mTransferService = null;
+    }
+
+    @Override
+    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+        if (neighbors.size() <= 0) {
+            //finish();
+        }
     }
 
     private class InitPersonalDataTask extends AsyncTask<Void, Void, Long> {

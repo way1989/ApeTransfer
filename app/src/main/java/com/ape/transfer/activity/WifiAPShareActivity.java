@@ -45,10 +45,13 @@ public class WifiAPShareActivity extends ApBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wifi_apshare);
-        ButterKnife.bind(this);
         startWifiAp();
         mNanoHTTPServer = new AndroidWebServer(PORT);
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_wifi_apshare;
     }
 
     @Override

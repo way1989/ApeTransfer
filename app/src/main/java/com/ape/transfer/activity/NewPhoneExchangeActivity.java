@@ -85,8 +85,6 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_phone_exchange);
-        ButterKnife.bind(this);
 
         if (savedInstanceState != null) {
             mRestoreFolderPath = savedInstanceState.getString(RESTORE_PATH);
@@ -104,6 +102,11 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
          * activity onDestroy
          */
         this.bindService();
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_new_phone_exchange;
     }
 
     @Override

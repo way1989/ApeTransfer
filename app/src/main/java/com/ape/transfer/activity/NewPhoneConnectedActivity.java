@@ -85,8 +85,6 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_phone_connected);
-        ButterKnife.bind(this);
         mSSID = getIntent().getStringExtra(ARGS_SSID);
         if (TextUtils.isEmpty(mSSID)) {
             finish();
@@ -96,6 +94,11 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
         initDatas();
 
         connectSSID(mSSID);
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_new_phone_connected;
     }
 
     private void initDatas() {

@@ -103,12 +103,9 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
 
     @Override
     public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_qr_scan);
-        ButterKnife.bind(this);
+        super.onCreate(icicle);
 
         inactivityTimer = new InactivityTimer(this);
         beepManager = new BeepManager(this);
@@ -121,6 +118,11 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
         animation.setDuration(4500);
         animation.setRepeatCount(-1);
         animation.setRepeatMode(Animation.RESTART);
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_qr_scan;
     }
 
     @Override

@@ -29,7 +29,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class QrCodeActivity extends ApBaseActivity implements TransferService.Callback,
+public class QrCodeActivity extends BaseTransferActivity implements TransferService.Callback,
         TransferServiceUtil.Callback {
     public static final String EXCHANGE_SSID_SUFFIX = "@exchange";
     private static final String TAG = "QrCodeActivity";
@@ -48,43 +48,15 @@ public class QrCodeActivity extends ApBaseActivity implements TransferService.Ca
     @BindView(R.id.mobile_data_warning)
     MobileDataWarningContainer mobileDataWarning;
 
-    private TransferService.P2PBinder mTransferService;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qr_code);
-        ButterKnife.bind(this);
         startWifiAp();
-        TransferServiceUtil.getInstance().setCallback(this);
-        TransferServiceUtil.getInstance().bindTransferService();
     }
 
     @Override
-    public void onBackPressed() {
-        if ((mWifiApService != null && mWifiApService.isWifiApEnabled())) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.connect_dialog_title).setMessage(R.string.transfer_discontent)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (mTransferService != null && !mTransferService.isEmpty()) {
-                                if (mWifiApService.isWifiApEnabled()) {
-                                    mTransferService.sendOffLine();
-                                }
-                                mTransferService.stopP2P();
-                                TransferServiceUtil.getInstance().unbindTransferService();
-                                TransferServiceUtil.getInstance().stopTransferService();
-                            }
-                            stopWifiAp();
-                            finish();
-                        }
-                    })
-                    .setNegativeButton(android.R.string.cancel, null).show();
-            return;
-        }
-
-        super.onBackPressed();
+    protected int getLayout() {
+        return R.layout.activity_qr_code;
     }
 
     @Override
@@ -100,12 +72,7 @@ public class QrCodeActivity extends ApBaseActivity implements TransferService.Ca
 
     @Override
     protected boolean shouldCloseWifiAp() {
-        return false;//should not close the Wifi
-    }
-
-    private void startP2P() {
-        if (mTransferService != null && !mTransferService.isP2PRunning())
-            mTransferService.startP2P();
+        return mTransferService == null || mTransferService.isEmpty();
     }
 
     @Override

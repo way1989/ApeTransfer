@@ -46,8 +46,11 @@ public class InviteFriendActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_share_self);
-        ButterKnife.bind(this);
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_share_self;
     }
 
     @OnClick({R.id.bt_bluetooth, R.id.bt_saveTraffic, R.id.bt_more})

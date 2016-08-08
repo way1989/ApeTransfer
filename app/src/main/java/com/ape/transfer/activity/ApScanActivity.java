@@ -272,13 +272,16 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ap_scan);
-        ButterKnife.bind(this);
         initData();
 
         registerReceiver();
 
         startScanWifi();
+    }
+
+    @Override
+    protected int getLayout() {
+        return R.layout.activity_ap_scan;
     }
 
     private void initData() {

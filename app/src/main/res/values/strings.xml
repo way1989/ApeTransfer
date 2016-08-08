@@ -184,5 +184,4 @@
     <string name="message">Messages</string>
     <string name="backup_and_send">Backup and send</string>
     <string name="backup_cost_more_time_prompt">Backup app,picture,music will cost more time,and continue?</string>
-    <string name="backup_zipping">Being compressed...</string>
 </resources>
