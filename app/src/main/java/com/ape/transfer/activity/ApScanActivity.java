@@ -289,7 +289,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         rotateAnim.setInterpolator(new AccelerateDecelerateInterpolator());
         ivScan.startAnimation(rotateAnim);
 
-        mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         mWifiUtils = WifiUtils.getInstance(mWifiManager);
 
         ivHead.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);

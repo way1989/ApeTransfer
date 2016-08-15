@@ -22,6 +22,12 @@ public abstract class BaseTransferActivity extends ApBaseActivity implements Tra
         TransferServiceUtil.getInstance().bindTransferService();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        TransferServiceUtil.getInstance().setCallback(null);
+    }
+
     protected void startP2P() {
         if (mTransferService != null && !mTransferService.isP2PRunning())
             mTransferService.startP2P();
