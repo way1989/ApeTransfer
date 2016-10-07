@@ -14,7 +14,7 @@ android {
     }
     signingConfigs {
         release {
-            def filePrivateProperties = file("../local.properties")
+            def filePrivateProperties = file("../private.properties")
             if (filePrivateProperties.exists()) {
                 Properties propsPrivate = new Properties()
                 propsPrivate.load(new FileInputStream(filePrivateProperties))
@@ -34,6 +34,7 @@ android {
             buildConfigField "boolean", "BUGLY_ENABLED", "false"
             buildConfigField "int", "BUGLY_APPID", BUGLY_APPID
             buildConfigField "int", "FEEDBACK_APPKEY", FEEDBACK_APPKEY
+            signingConfig signingConfigs.release
         }
         release {
             // 不显示Log

@@ -100,7 +100,8 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMusicItemAdapter = new FileItemAdapter(getContext(), mFileCategory, this);
+        mMusicItemAdapter = new FileItemAdapter(getContext().getApplicationContext(),
+                mFileCategory, this);
         recyclerView.setLayoutManager(getLayoutManager());
         recyclerView.setAdapter(mMusicItemAdapter);
         loadData();

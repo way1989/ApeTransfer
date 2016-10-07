@@ -63,8 +63,8 @@ public abstract class RequestWriteSettingsBaseActivity extends AppCompatActivity
 
     @TargetApi(Build.VERSION_CODES.M)
     private void requestWriteSettings() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-        intent.setData(Uri.parse("package:" + getPackageName()));
+        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                Uri.parse("package:" + getPackageName()));
         startActivityForResult(intent, REQUEST_CODE_WRITE_SETTINGS);
     }
 
