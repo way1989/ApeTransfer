@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.graphics.SurfaceTexture;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +30,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -69,10 +71,10 @@ import butterknife.OnClick;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public final class CaptureActivity extends BaseActivity implements SurfaceHolder.Callback {
+public final class CaptureActivity extends BaseActivity implements TextureView.SurfaceTextureListener {
     private static final String TAG = "CaptureActivity";
     @BindView(R.id.capture_preview)
-    SurfaceView capturePreview;
+    TextureView capturePreview;
     @BindView(R.id.capture_scan_line)
     ImageView captureScanLine;
     @BindView(R.id.capture_crop_view)
@@ -90,7 +92,6 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
 
 
     private Rect mCropRect = null;
-    private boolean isHasSurface = false;
     private boolean isFlashLightOn;
 
     public Handler getHandler() {
@@ -140,15 +141,15 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
 
         handler = null;
 
-        if (isHasSurface) {
+        if (capturePreview.isAvailable()) {
             // The activity was paused but not stopped, so the surface still
             // exists. Therefore
             // surfaceCreated() won't be called, so init the camera here.
-            initCamera(capturePreview.getHolder());
+            initCamera(capturePreview.getSurfaceTexture());
         } else {
             // Install the callback and wait for surfaceCreated() to init the
             // camera.
-            capturePreview.getHolder().addCallback(this);
+            capturePreview.setSurfaceTextureListener(this);
         }
         inactivityTimer.onResume();
     }
@@ -162,8 +163,8 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
         inactivityTimer.onPause();
         beepManager.close();
         cameraManager.closeDriver();
-        if (!isHasSurface) {
-            capturePreview.getHolder().removeCallback(this);
+        if (capturePreview.isAvailable()) {
+            capturePreview.setSurfaceTextureListener(null);
         }
         super.onPause();
     }
@@ -172,28 +173,6 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     protected void onDestroy() {
         inactivityTimer.shutdown();
         super.onDestroy();
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        if (holder == null) {
-            Log.e(TAG,
-                    "*** WARNING *** surfaceCreated() gave us a null surface!");
-        }
-        if (!isHasSurface) {
-            isHasSurface = true;
-            initCamera(holder);
-        }
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        isHasSurface = false;
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        //do nothing
     }
 
     /**
@@ -325,8 +304,8 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
         }).show();
     }
 
-    private void initCamera(SurfaceHolder surfaceHolder) {
-        if (surfaceHolder == null) {
+    private void initCamera(SurfaceTexture surfaceTexture) {
+        if (surfaceTexture == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
         if (cameraManager.isOpen()) {
@@ -335,7 +314,7 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
             return;
         }
         try {
-            cameraManager.openDriver(surfaceHolder);
+            cameraManager.openDriver(surfaceTexture);
             // Creating the handler starts the preview, which can also throw a
             // RuntimeException.
             if (handler == null) {
@@ -446,5 +425,28 @@ public final class CaptureActivity extends BaseActivity implements SurfaceHolder
     @OnClick(R.id.capture_flash)
     public void onClick() {
         toggleFlashLight();
+    }
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        if (surface == null) {
+            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us a null surface!");
+        }
+        initCamera(surface);
+    }
+
+    @Override
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        return true;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
     }
 }

@@ -184,4 +184,12 @@
     <string name="message">Messages</string>
     <string name="backup_and_send">Backup and send</string>
     <string name="backup_cost_more_time_prompt">Backup app,picture,music will cost more time,and continue?</string>
+    <string name="bt_stop_received">Terminate receiving</string>
+    <string name="exchange_stop_recv">Terminate receiving?</string>
+    <string name="exchange_stop_send">Terminate sending?</string>
+    <string name="exit_toast">Tap again to exit the app</string>
+    <string name="received">Receiving completed!</string>
+    <string name="toast_send_failed">Send failed!</string>
+    <string name="toast_submit_success">Feedback submitted successfully</string>
+    <string name="toast_success_join_group">Joined group successfully</string>
 </resources>

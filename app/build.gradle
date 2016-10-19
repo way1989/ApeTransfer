@@ -11,6 +11,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
+        multiDexEnabled true
     }
     signingConfigs {
         release {

@@ -18,6 +18,7 @@ package com.ape.transfer.zxing.camera;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
@@ -64,11 +65,11 @@ public class CameraManager {
     /**
      * Opens the camera driver and initializes the hardware parameters.
      *
-     * @param holder The surface object which the camera will draw preview frames
+     * @param surfaceTexture The surface object which the camera will draw preview frames
      *               into.
      * @throws IOException Indicates the camera driver failed to open.
      */
-    public synchronized void openDriver(SurfaceHolder holder)
+    public synchronized void openDriver(SurfaceTexture surfaceTexture)
             throws IOException {
         Camera theCamera = camera;
         if (theCamera == null) {
@@ -84,7 +85,8 @@ public class CameraManager {
             }
             camera = theCamera;
         }
-        theCamera.setPreviewDisplay(holder);
+        //theCamera.setPreviewDisplay(holder);
+        theCamera.setPreviewTexture(surfaceTexture);
 
         if (!initialized) {
             initialized = true;
