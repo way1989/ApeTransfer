@@ -44,7 +44,7 @@ public class SendManager {
                 sender.dispatchCommMSG(what, (ParamIPMsg) obj);    //dispatch
                 break;
             }
-            case P2PConstant.Src.MANAGER: {
+            case P2PConstant.Src.MANAGER: {//准备发送或取消发送
                 Log.i(TAG, "disPatchMsg MANAGER");
                 if (what == P2PConstant.CommandNum.SEND_FILE_REQ) {
                     if (!mSenders.isEmpty())
