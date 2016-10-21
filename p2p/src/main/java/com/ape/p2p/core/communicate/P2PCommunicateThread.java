@@ -1,4 +1,4 @@
-package com.ape.p2p;
+package com.ape.p2p.core.communicate;
 
 import android.os.Handler;
 import android.text.TextUtils;
@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -58,12 +59,14 @@ public class P2PCommunicateThread extends Thread {
     }
 
     public void broadcastMSG(int cmd, int recipient) {
+
         try {
             sendMsg2Peer(InetAddress.getByName(P2PConstant.MULTI_ADDRESS), cmd, recipient, null);
-        } catch (IOException e) {
+        } catch (UnknownHostException e) {
             e.printStackTrace();
             mWorkHandler.sendMessage(mWorkHandler.obtainMessage(P2PConstant.Message.ERROR, e));
         }
+
     }
 
     public void sendMsg2Peer(InetAddress sendTo, int cmd, int recipient, String add) {

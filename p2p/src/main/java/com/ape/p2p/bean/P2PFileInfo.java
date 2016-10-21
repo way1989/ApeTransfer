@@ -4,6 +4,7 @@ package com.ape.p2p.bean;
 import android.os.Environment;
 
 import com.ape.p2p.util.P2PConstant;
+import com.ape.p2p.util.Util;
 
 import java.io.File;
 
@@ -13,8 +14,6 @@ import java.io.File;
  * android设备中的文件
  */
 public class P2PFileInfo {
-    private static String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
-            + File.separator + P2PConstant.FILE_SHARE_SAVE_PATH;
     public String path;
     public String name;
     public long size;
@@ -50,12 +49,7 @@ public class P2PFileInfo {
         size = Long.parseLong(str[6]);
         type = Integer.parseInt(str[7]);
 
-        savePath = getSavePath(type) + File.separator + name;
-    }
-
-    public static String getSavePath(int type) {
-        String[] typeStr = {"APP", "Picture", "Video", "Zip", "Document", "Music"};
-        return SAVE_DIR + File.separator + typeStr[type];
+        savePath = Util.getSavePath(type) + File.separator + name;
     }
 
     public int getPercent() {

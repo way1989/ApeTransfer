@@ -1,4 +1,4 @@
-package com.ape.p2p;
+package com.ape.p2p.core.communicate;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -12,7 +12,6 @@ import com.ape.p2p.p2ptimer.OSTimer;
 import com.ape.p2p.p2ptimer.Timeout;
 import com.ape.p2p.util.P2PConstant;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.util.HashMap;
 
