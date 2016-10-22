@@ -120,7 +120,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public long getItemId(int position) {
-        return mFileItems.get(position).md5.hashCode();
+        return mFileItems.get(position).md5.hashCode() + position;
     }
 
     public void updateItem(P2PFileInfo fileInfo) {
@@ -128,7 +128,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         if (index != -1) {
             P2PFileInfo info = mFileItems.get(index);
             info.position = fileInfo.position;
-            info.percent = (int) ((100.0f) * fileInfo.position / fileInfo.size);
+            //info.percent = (int) ((100.0f) * fileInfo.position / fileInfo.size);
             notifyItemChanged(index);
         }
     }

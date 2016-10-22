@@ -18,21 +18,14 @@ import java.util.Set;
  * Created by 郭攀峰 on 2015/9/21.
  */
 public class SendServer extends Thread {
-    private static final String tag = SendServer.class.getSimpleName();
+    private static final String TAG = "SendServer";
 
-    ISendServer handler;
-    int port;
-    Selector selector;
-    ServerSocketChannel serverSocketChannel;
-    boolean ready = false;
+    private ISendServer handler;
+    private Selector selector;
+    private ServerSocketChannel serverSocketChannel;
 
     public SendServer(ISendServer handler, int port) {
         this.handler = handler;
-        this.port = port;
-    }
-
-    @Override
-    public void run() {
         try {//创建服务器端的SocketChannel
             //获取一个通道管理器
             selector = Selector.open();
@@ -45,32 +38,37 @@ public class SendServer extends Thread {
             serverSocketChannel.socket().bind(new InetSocketAddress(port));
             //将通道管理器与该通道绑定，并为该通道注册accept事件，当该事件到达时selector.select()会返回，没有一直阻塞
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-            Log.i(tag, "socket server started.");
-
-            onReady();
+    @Override
+    public void run() {
+        try {
+            Log.i(TAG, "socket server started.");
 
             //采用轮询的方式监听selector上是否有需要处理的事件
             while (true) {
-                int keys = selector.select();//当注册的方法到达时，返回，否则一直会阻塞
-                if (isInterrupted())
-                    return;
-                if (keys > 0) {
-                    Set<SelectionKey> selectionKeys = selector.selectedKeys();
-                    Iterator<SelectionKey> it = selectionKeys.iterator();
-                    while (it.hasNext()) {
-                        SelectionKey key = it.next();
-                        if (key.isAcceptable()) {
-                            handler.handleAccept(key);
-                        }
-                        if (key.isReadable()) {
-                            handler.handleRead(key);
-                        }
-                        if (key.isWritable()) {
-                            handler.handleWrite(key);
-                        }
-                        it.remove();
+                if (isInterrupted()) return;
+
+                //当注册的方法到达时，返回，否则一直会阻塞
+                if (selector.select() == 0) continue;
+
+                Set<SelectionKey> selectionKeys = selector.selectedKeys();
+                Iterator<SelectionKey> it = selectionKeys.iterator();
+                while (it.hasNext()) {
+                    SelectionKey key = it.next();
+                    if (key.isAcceptable()) {
+                        handler.handleAccept(key);
                     }
+                    if (key.isReadable()) {
+                        handler.handleRead(key);
+                    }
+                    if (key.isWritable()) {
+                        handler.handleWrite(key);
+                    }
+                    it.remove();
                 }
             }
         } catch (IOException e) {
@@ -84,7 +82,7 @@ public class SendServer extends Thread {
     }
 
     private void release() {
-        Log.d(tag, "send server release");
+        Log.d(TAG, "send server release");
         if (serverSocketChannel != null) {
             try {
                 serverSocketChannel.socket().close();
@@ -102,22 +100,5 @@ public class SendServer extends Thread {
         }
     }
 
-    public void isReady() {
-        synchronized (this) {
-            while (ready == false) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
-    private void onReady() {
-        synchronized (this) {
-            ready = true;
-            notifyAll();
-        }
-    }
 }

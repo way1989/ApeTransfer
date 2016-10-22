@@ -15,9 +15,8 @@ public class P2PFileInfo {
     public String name;
     public long size;
     public int type;
-    public int percent;
-    public boolean success;
-    public long LengthNeeded = 0;
+    //public int percent;
+    //public boolean success;
 
 
     public String wifiMac;
@@ -51,16 +50,16 @@ public class P2PFileInfo {
         savePath = P2PManager.getSavePath(type) + File.separator + name;
     }
 
-    public int getPercent() {
-        return percent;
-    }
-
-    public void setPercent(int percent) {
-        this.percent = percent;
-        if (percent == 100) {
-            success = true;
-        }
-    }
+//    public int getPercent() {
+//        return percent;
+//    }
+//
+//    public void setPercent(int percent) {
+//        this.percent = percent;
+//        if (percent == 100) {
+//            success = true;
+//        }
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -83,9 +82,8 @@ public class P2PFileInfo {
         file.size = this.size;
         file.path = this.path;
         file.type = this.type;
-        file.percent = this.percent;
-        file.success = this.success;
-        file.LengthNeeded = this.LengthNeeded;
+        //file.percent = this.percent;
+//        file.success = this.success;
 
         return file;
     }

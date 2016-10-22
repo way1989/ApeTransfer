@@ -5,7 +5,6 @@ import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.p2p.p2pcore.P2PWorkHandler;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
-import com.ape.transfer.p2p.p2pentity.SocketTransInfo;
 import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
 import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
 import com.ape.transfer.util.Log;
@@ -20,22 +19,16 @@ public class Sender {
 
     P2PWorkHandler p2PHandler;
     P2PFileInfo[] files;
-    SendManager sendManager;
+    private SendManager sendManager;
     P2PNeighbor neighbor;
     ArrayList<SendTask> mSendTasks = new ArrayList<>();
     int index = 0;
-    boolean flagPercents = false;
 
     public Sender(P2PWorkHandler handler, SendManager man, P2PNeighbor n, P2PFileInfo[] fs) {
         this.p2PHandler = handler;
         this.sendManager = man;
         this.neighbor = n;
 
-       /* files = new P2PFileInfo[fs.length];
-        for (int i = 0; i < files.length; i++) {
-            files[i] = fs[i].duplicate();
-            files[i].percent = 0;
-        }*/
         files = fs;
     }
 
@@ -62,39 +55,29 @@ public class Sender {
         }
     }
 
-    public void dispatchTCPMsg(int cmd, ParamTCPNotify notify) {
+    public void dispatchTCPMsg(int cmd, P2PNeighbor notify) {
         switch (cmd) {
             case P2PConstant.CommandNum.SEND_PERCENTS: {
-                SocketTransInfo socketTransInfo = (SocketTransInfo) notify.Obj;
+                //SocketTransInfo socketTransInfo = (SocketTransInfo) notify.Obj;
                 P2PFileInfo fileInfo = files[index];
-                int lastPercent, percent;
-                lastPercent = fileInfo.getPercent();
+                //int lastPercent, percent;
+                //lastPercent = fileInfo.getPercent();
 
-                percent = (int) (((float) (fileInfo.size - (fileInfo.LengthNeeded - socketTransInfo.Transferred)) / fileInfo.size) * 100);
-                fileInfo.position = socketTransInfo.Transferred;//add by liweiping
-                ParamTCPNotify tcpNotify;
-                if (percent < 100) {
-                    if (percent != lastPercent) {
-                        fileInfo.setPercent(percent);
-                        tcpNotify = new ParamTCPNotify(neighbor, fileInfo);
-                        if (p2PHandler != null)
-                            p2PHandler.send2UI(P2PConstant.CommandNum.SEND_PERCENTS,
-                                    tcpNotify);
-
-                    }
-                } else if (percent == 100) {
-                    fileInfo.setPercent(percent);
-                    tcpNotify = new ParamTCPNotify(neighbor, fileInfo);
+                //percent = (int) (((float) fileInfo.position / fileInfo.size) * 100);
+                //fileInfo.position = socketTransInfo.Transferred;//add by liweiping
+                ParamTCPNotify tcpNotify = new ParamTCPNotify(neighbor, fileInfo);
+                if (p2PHandler != null)
                     p2PHandler.send2UI(P2PConstant.CommandNum.SEND_PERCENTS, tcpNotify);
-
+                if(fileInfo.position == fileInfo.size){
                     index++;
                     clearTask();
-                    if (index == files.length) {
-                        clearSelf();//add by liweiping for release send resource when all send finished
+                    if(index == files.length){
+                        clearSelf();
                         if (p2PHandler != null)
                             p2PHandler.send2UI(P2PConstant.CommandNum.SEND_OVER, neighbor);
                     }
                 }
+
                 break;
             }
             case P2PConstant.CommandNum.SEND_TCP_ESTABLISHED:
@@ -118,7 +101,7 @@ public class Sender {
     private void clearTask() {
         if (mSendTasks.size() > 0) {
             SendTask task = mSendTasks.get(0);
-            if (task != null && task.finished == false) {
+            if (task != null) {
                 task.quit();
             }
             mSendTasks.remove(0);

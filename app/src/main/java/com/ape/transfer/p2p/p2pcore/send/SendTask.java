@@ -7,8 +7,6 @@ import com.ape.transfer.p2p.p2pconstant.P2PConstant;
 import com.ape.transfer.p2p.p2pcore.P2PWorkHandler;
 import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
-import com.ape.transfer.p2p.p2pentity.SocketTransInfo;
-import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,21 +21,17 @@ import java.nio.channels.SocketChannel;
 public class SendTask extends OneByOneRunnable {
     public final static int TRANS_START = 1;
     public final static int TRANS_OVER = 2;
-    private static final String tag = SendTask.class.getSimpleName();
-    Sender sender;
-    SocketChannel socketChannel; //与客户端通信的通道
-    P2PWorkHandler p2PHandler;
-    P2PNeighbor neighbor;
-    SocketTransInfo socketTransInfo;
-    P2PFileInfo p2PFileInfo;
-    long lastTransferred;
-    int step;
-    RandomAccessFile randomAccessFile = null;
-    FileChannel fileChannel;
-    MappedByteBuffer mappedByteBuffer = null;
-    Thread thread;
-    boolean idle;
-    boolean finished = false;
+    private static final String TAG = "SendTask";
+    private Sender sender;
+    private SocketChannel socketChannel; //与客户端通信的通道
+    private P2PWorkHandler p2PHandler;
+    private P2PNeighbor neighbor;
+    //private SocketTransInfo socketTransInfo;
+    private P2PFileInfo mP2PFileInfo;
+    private RandomAccessFile randomAccessFile = null;
+    private FileChannel fileChannel;
+    private MappedByteBuffer mappedByteBuffer = null;
+    private Thread thread;
 
     public SendTask(Sender sender, SocketChannel socketChannel) {
         this.sender = sender;
@@ -48,14 +42,16 @@ public class SendTask extends OneByOneRunnable {
 
     @Override
     public void run() {
-        Log.d(tag, "send task run function");
-        super.pause();
+        Log.d(TAG, "send task run function");
+        super.run();
+        //super.pause();
         thread = Thread.currentThread();
 
         int len = 0;
-        idle = false;
+        long lastLen = 0;
+        final float update = mP2PFileInfo.size / 100.0f;
 
-        while (!idle) {
+        while (mP2PFileInfo.position != mP2PFileInfo.size) {
             if (Thread.interrupted()) {
                 release();
                 break;
@@ -64,70 +60,54 @@ public class SendTask extends OneByOneRunnable {
                 len = socketChannel.write(mappedByteBuffer);
             } catch (IOException e) {
                 e.printStackTrace();
-                notifySender(P2PConstant.CommandNum.SEND_LINK_ERROR, null);
+                notifySender(P2PConstant.CommandNum.SEND_LINK_ERROR);
                 release();
             }
 
-            socketTransInfo.Transferred += len;
-            socketTransInfo.Length -= len;
-            socketTransInfo.Offset += len;
+            mP2PFileInfo.position += len;
 
-            if (socketTransInfo.Length == 0) {
-                idle = true;
-                try {
-                    randomAccessFile.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                randomAccessFile = null;
-            }
-
-            if ((socketTransInfo.Transferred - lastTransferred) > step || idle) {
-                lastTransferred = socketTransInfo.Transferred;
-                if (sender.flagPercents == false || idle) {
-                    sender.flagPercents = true;
-                    notifySender(P2PConstant.CommandNum.SEND_PERCENTS, socketTransInfo);
-                }
+            if ((mP2PFileInfo.position - lastLen) > update) {
+                lastLen = mP2PFileInfo.position;
+                notifySender(P2PConstant.CommandNum.SEND_PERCENTS);
             }
         }// end of while
+        notifySender(P2PConstant.CommandNum.SEND_PERCENTS);
+        try {
+            randomAccessFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        randomAccessFile = null;
 
         if (Thread.interrupted())
             release();
 
-        super.resume();
+        //super.resume();
     }
 
     public int prepare() {
-        Log.d(tag, "send task prepare function");
+        Log.d(TAG, "send task prepare function sender.index = " + sender.index);
 
-        socketTransInfo = new SocketTransInfo(sender.index);
-        p2PFileInfo = sender.files[sender.index];
-        p2PFileInfo.LengthNeeded = p2PFileInfo.size;
-        socketTransInfo.Length = p2PFileInfo.size;
-        socketTransInfo.Offset = 0;
-        lastTransferred = 0;
+        mP2PFileInfo = sender.files[sender.index];
+        mP2PFileInfo.position = 0;
 
         try {
-            randomAccessFile = new RandomAccessFile(new File(p2PFileInfo.path), "r");
+            randomAccessFile = new RandomAccessFile(new File(mP2PFileInfo.path), "r");
             fileChannel = randomAccessFile.getChannel();
-            mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY,
-                    socketTransInfo.Offset, socketTransInfo.Length); //将文件映射到内存
-            step = (int) ((float) p2PFileInfo.size / 100 + 0.5);
+            mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, mP2PFileInfo.size); //将文件映射到内存
 
             return TRANS_START;
         } catch (IOException e) {
             e.printStackTrace();
-            return TRANS_OVER;
         }
+        return TRANS_OVER;
     }
 
-    public void notifySender(int cmd, Object obj) {
-        ParamTCPNotify notify = new ParamTCPNotify(neighbor, obj);
-        if (!finished) {
-            if (p2PHandler != null)
-                p2PHandler.send2Handler(cmd, P2PConstant.Src.SEND_TCP_THREAD,
-                        P2PConstant.Recipient.FILE_SEND, notify);
-        }
+    public void notifySender(int cmd) {
+        //ParamTCPNotify notify = new ParamTCPNotify(neighbor, obj);
+        if (p2PHandler != null)
+            p2PHandler.send2Handler(cmd, P2PConstant.Src.SEND_TCP_THREAD,
+                    P2PConstant.Recipient.FILE_SEND, neighbor);
     }
 
     public void quit() {
@@ -138,32 +118,29 @@ public class SendTask extends OneByOneRunnable {
     }
 
     private synchronized void release() {
-        if (!finished) {
-            if (socketChannel != null) {
-                try {
-                    socketChannel.socket().close();
-                    socketChannel.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        if (socketChannel != null) {
+            try {
+                socketChannel.socket().close();
+                socketChannel.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            if (randomAccessFile != null) {
-                try {
-                    randomAccessFile.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (fileChannel != null) {
-                try {
-                    fileChannel.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            finished = true;
         }
+        if (randomAccessFile != null) {
+            try {
+                randomAccessFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (fileChannel != null) {
+            try {
+                fileChannel.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 }

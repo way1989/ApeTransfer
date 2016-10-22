@@ -59,14 +59,12 @@ public class SendManager {
             }
             case P2PConstant.Src.SEND_TCP_THREAD: {
                 Log.i(TAG, "disPatchMsg SEND_TCP_THREAD");
-                String peerIP = ((ParamTCPNotify) obj).Neighbor.ip;
+                String peerIP = ((P2PNeighbor) obj).ip;
                 Sender sender = getSender(peerIP);
                 if (sender == null)
                     return;
-                if (what == P2PConstant.CommandNum.SEND_PERCENTS) {
-                    sender.flagPercents = false;
-                }
-                sender.dispatchTCPMsg(what, (ParamTCPNotify) obj);
+
+                sender.dispatchTCPMsg(what, (P2PNeighbor) obj);
                 break;
             }
 
@@ -106,7 +104,6 @@ public class SendManager {
             sendServerHandler = new SendServerHandler(this);
             sendServer = new SendServer(sendServerHandler, P2PConstant.PORT);
             sendServer.start();
-            sendServer.isReady();
         }
         mSenders.put(fileSender.neighbor.ip, fileSender);
     }

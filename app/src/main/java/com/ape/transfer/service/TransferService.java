@@ -107,8 +107,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
 
     @Override
     public void OnReceiving(P2PFileInfo file) {
-        Log.i(TAG, "OnReceiving.... percent = " + file.percent
-                + ", position = " + file.position + ", sumSize = " + file.size);
+        Log.i(TAG, "OnReceiving....  position = " + file.position + ", sumSize = " + file.size);
         file.status = P2PFileInfo.Status.STATUS_RECEIVING;
         TaskHistory.getInstance().updateFileInfo(file);
         EventBus.getDefault().post(new P2PFileInfoEvent(file));
@@ -208,8 +207,8 @@ public class TransferService extends Service implements NeighborCallback, Receiv
 
                 @Override
                 public void OnSending(P2PFileInfo file, P2PNeighbor dest) {
-                    Log.i(TAG, "OnSending...." + file.name + " percent = " + file.percent
-                            + ", position = " + file.position + ", sumSize = " + file.size);
+                    Log.i(TAG, "OnSending...." + file.name + ", position = " + file.position
+                            + ", sumSize = " + file.size);
                     file.status = P2PFileInfo.Status.STATUS_SENDING;
                     TaskHistory.getInstance().updateFileInfo(file);
                     EventBus.getDefault().post(new P2PFileInfoEvent(file));

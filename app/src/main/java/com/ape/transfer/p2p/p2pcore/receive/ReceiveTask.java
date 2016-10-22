@@ -13,7 +13,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.Socket;
 
 /**
@@ -21,14 +20,13 @@ import java.net.Socket;
  * 接收端的线程实现
  */
 public class ReceiveTask extends Thread {
-    private static final String tag = ReceiveTask.class.getSimpleName();
-    String sendIp;
-    Socket socket;
-    boolean finished = false;
-    File receiveFile;
-    BufferedOutputStream bufferedOutputStream;
-    BufferedInputStream bufferedInputStream;
-    byte[] readBuffer = new byte[512];
+    private static final String TAG = "ReceiveTask";
+    private String sendIp;
+    private Socket socket;
+    private boolean finished = false;
+    private BufferedOutputStream bufferedOutputStream;
+    private BufferedInputStream bufferedInputStream;
+    private byte[] READ_BUFFER = new byte[512];
     private P2PWorkHandler p2PHandler;
     private Receiver receiver;
 
@@ -50,7 +48,7 @@ public class ReceiveTask extends Thread {
 
                 P2PFileInfo fileInfo = receiver.files[i];
 
-                Log.d(tag, "prepare to receive file:" + fileInfo.name + "; files size = "
+                Log.d(TAG, "prepare to receive file:" + fileInfo.name + "; files size = "
                         + receiver.files.length);
 
                 String path = P2PManager.getSavePath(fileInfo.type);
@@ -58,7 +56,7 @@ public class ReceiveTask extends Thread {
                 if (!fileDir.exists())
                     fileDir.mkdirs();
 
-                receiveFile = new File(fileDir, fileInfo.name);
+                File receiveFile = new File(fileDir, fileInfo.name);
                 if (receiveFile.exists())
                     receiveFile.delete();
 
@@ -66,47 +64,48 @@ public class ReceiveTask extends Thread {
                         receiveFile));
 
                 long total = 0L;
-                int len = 0;
-                int lastPercent = 0, percent = 0;
+                int len;
+                long lasteLen = 0;
+                final float update = fileInfo.size/ 100.0f;
+                //int lastPercent = 0, percent;
                 bufferedInputStream = new BufferedInputStream(socket.getInputStream());
-                while ((len = bufferedInputStream.read(readBuffer)) != -1) {
+                while ((len = bufferedInputStream.read(READ_BUFFER)) != -1) {
                     if (isInterrupted()) {
                         receiveFile.delete();
                         break loop;
                     }
-                    bufferedOutputStream.write(readBuffer, 0, len);
+                    bufferedOutputStream.write(READ_BUFFER, 0, len);
 
                     total += len;
-                    percent = (int) (((float) total / fileInfo.size) * 100);
+                    //percent = (int) (((float) total / fileInfo.size) * 100);
                     fileInfo.position = total;//add by liweiping
-                    if (percent - lastPercent > 1 || percent == 100) {
-                        lastPercent = percent;
-                        fileInfo.setPercent(percent);
+                    if(fileInfo.position - lasteLen > update){
+                        lasteLen = total;
                         notifyReceiver(P2PConstant.CommandNum.RECEIVE_PERCENT, fileInfo);
                     }
+//                    if (percent - lastPercent > 1 || percent == 100) {
+//                        lastPercent = percent;
+//                        fileInfo.setPercent(percent);
+//                        notifyReceiver(P2PConstant.CommandNum.RECEIVE_PERCENT, fileInfo);
+//                    }
 
                     if (total >= fileInfo.size) {
-                        Log.d(tag, "total > file info size");
+                        Log.d(TAG, "total > file info size");
                         break;
                     }
                 } // end of while
-
-                receiveFile = null;
-                fileInfo.setPercent(100);
+                //fileInfo.setPercent(100);
                 notifyReceiver(P2PConstant.CommandNum.RECEIVE_PERCENT, fileInfo);
 
-                Log.d(tag, "receive file " + fileInfo.name + " success");
+                Log.d(TAG, "receive file " + fileInfo.name + " success");
 
                 socket.close();
 
                 if (i == receiver.files.length - 1) {
-                    Log.d(tag, "receive file over");
+                    Log.d(TAG, "receive file over");
                     notifyReceiver(P2PConstant.CommandNum.RECEIVE_OVER, null);
                     finished = true;
                 }
-            } catch (InterruptedIOException e) {
-                e.printStackTrace();
-                finished = true;
             } catch (IOException e) {
                 e.printStackTrace();
                 finished = true;

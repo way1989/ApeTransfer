@@ -62,7 +62,7 @@ public class SendServerHandler implements ISendServer {
             return;
         }
         sender.mSendTasks.add(sendTask);
-        sendTask.notifySender(P2PConstant.CommandNum.SEND_TCP_ESTABLISHED, null);
+        sendTask.notifySender(P2PConstant.CommandNum.SEND_TCP_ESTABLISHED);
     }
 
     @Override
