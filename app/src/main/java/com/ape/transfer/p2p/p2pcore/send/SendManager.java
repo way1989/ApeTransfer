@@ -9,7 +9,6 @@ import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
 import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
 import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
 import com.ape.transfer.p2p.p2pentity.param.ParamSendFiles;
-import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
 
 import java.util.HashMap;
 
@@ -19,20 +18,19 @@ import java.util.HashMap;
 public class SendManager {
     private static final String TAG = "SendManager";
 
-    private P2PWorkHandler p2PHandler;
-    private HashMap<String, Sender> mSenders;
+    private P2PWorkHandler mP2PWorkHandler;
+    private HashMap<String, Sender> mSenderHashMap;
 
-    private SendServer sendServer;
-    private SendServerHandler sendServerHandler;
+    private SendServer mSendServer;
 
     public SendManager(P2PWorkHandler handler) {
-        this.p2PHandler = handler;
-        mSenders = new HashMap<>();
+        this.mP2PWorkHandler = handler;
+        mSenderHashMap = new HashMap<>();
         init();
     }
 
     private void init() {
-        mSenders.clear();
+        mSenderHashMap.clear();
     }
 
     public void disPatchMsg(int what, Object obj, int src) {
@@ -47,7 +45,7 @@ public class SendManager {
             case P2PConstant.Src.MANAGER: {//准备发送或取消发送
                 Log.i(TAG, "disPatchMsg MANAGER");
                 if (what == P2PConstant.CommandNum.SEND_FILE_REQ) {
-                    if (!mSenders.isEmpty())
+                    if (!mSenderHashMap.isEmpty())
                         return;
                     ParamSendFiles param = (ParamSendFiles) obj;
                     invoke(param.neighbors, param.files);
@@ -79,55 +77,55 @@ public class SendManager {
         String add = stringBuffer.toString();
 
         for (P2PNeighbor neighbor : neighbors) {
-            P2PNeighbor melon = p2PHandler.getNeighborManager().getNeighbors()
+            P2PNeighbor melon = mP2PWorkHandler.getP2PPeerManager().getNeighbors()
                     .get(neighbor.ip);
             Sender sender = null;
             if (melon != null) {
-                sender = new Sender(p2PHandler, this, melon, files);
+                sender = new Sender(mP2PWorkHandler, this, melon, files);
             }
 
-            mSenders.put(neighbor.ip, sender);
+            mSenderHashMap.put(neighbor.ip, sender);
 
             if (melon != null) //通知对方，我要发送文件了
             {
-                if (p2PHandler != null)
-                    p2PHandler.send2Receiver(melon.inetAddress,
+                if (mP2PWorkHandler != null)
+                    mP2PWorkHandler.send2Receiver(melon.inetAddress,
                             P2PConstant.CommandNum.SEND_FILE_REQ, add);
             }
         }
     }
 
     public void startSend(String peerIP, Sender fileSender) {
-        if (sendServer == null) {
+        if (mSendServer == null) {
             Log.d(TAG, "SendManager start send");
 
-            sendServerHandler = new SendServerHandler(this);
-            sendServer = new SendServer(sendServerHandler, P2PConstant.PORT);
-            sendServer.start();
+            SendServerHandler sendServerHandler = new SendServerHandler(this);
+            mSendServer = new SendServer(sendServerHandler, P2PConstant.PORT);
+            mSendServer.start();
         }
-        mSenders.put(fileSender.neighbor.ip, fileSender);
+        mSenderHashMap.put(fileSender.neighbor.ip, fileSender);
     }
 
     public void removeSender(String peerIP) {
-        mSenders.remove(peerIP);
+        mSenderHashMap.remove(peerIP);
         checkAllOver();
     }
 
     public void checkAllOver() {
-        if (mSenders.isEmpty()) {
-            p2PHandler.releaseSend();
+        if (mSenderHashMap.isEmpty()) {
+            mP2PWorkHandler.releaseSend();
         }
     }
 
     public void quit() {
-        mSenders.clear();
-        if (sendServer != null) {
-            sendServer.quit();
-            sendServer = null;
+        mSenderHashMap.clear();
+        if (mSendServer != null) {
+            mSendServer.quit();
+            mSendServer = null;
         }
     }
 
     protected Sender getSender(String peerIP) {
-        return mSenders.get(peerIP);
+        return mSenderHashMap.get(peerIP);
     }
 }

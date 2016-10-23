@@ -96,7 +96,7 @@ public class P2PManager {
         mP2PMainThread.isReady();
 
         mP2PWorkHandler = (P2PWorkHandler) mP2PMainThread.getLooperHandler();
-        mP2PWorkHandler.init(this, mContext);
+        mP2PWorkHandler.init(this);
     }
 
     public void receiveFile(ReceiveFileCallback callback) {

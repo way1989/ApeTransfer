@@ -67,7 +67,7 @@ public class ReceiveManager {
             files[i] = new P2PFileInfo(strArray[i]);
         }
 
-        P2PNeighbor neighbor = p2PHandler.getNeighborManager().getNeighbors().get(peerIP);
+        P2PNeighbor neighbor = p2PHandler.getP2PPeerManager().getNeighbors().get(peerIP);
 
         receiver = new Receiver(this, neighbor, files);
 

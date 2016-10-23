@@ -1,7 +1,6 @@
 package com.ape.transfer.p2p.p2pcore;
 
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -29,34 +28,28 @@ import java.util.Enumeration;
  * Created by 郭攀峰 on 2015/9/19. 接收端和发送端的udp交互
  */
 public class P2PCommunicateThread extends Thread {
+    private static final String TAG = P2PCommunicateThread.class.getSimpleName();
 
-    private static final String tag = P2PCommunicateThread.class.getSimpleName();
+    private P2PWorkHandler mP2PWorkHandler;
 
-    private P2PWorkHandler p2PHandler;
-    private P2PManager p2PManager;
-
-    private DatagramSocket udpSocket;
-    private DatagramPacket sendPacket;
-    private DatagramPacket receivePacket;
-    private byte[] resBuffer = new byte[P2PConstant.BUFFER_LENGTH];
-    private byte[] sendBuffer = null;
-    private String[] mLocalIPs;
+    private DatagramSocket mUdpSocket;
+    private DatagramPacket mReceivePacket;
+    private byte[] RECEIVE_BUFFER = new byte[P2PConstant.BUFFER_LENGTH];
+    private ArrayList<String> mLocalIPs;
     private boolean isStopped = false;
+    private P2PNeighbor mSelf;
 
-    private Context mContext;
 
-    public P2PCommunicateThread(P2PManager manager, P2PWorkHandler handler, Context context) {
-        mContext = context;
-        this.p2PHandler = handler;
-        this.p2PManager = manager;
+    public P2PCommunicateThread(P2PNeighbor self, P2PWorkHandler handler) {
+        mSelf = self;
+        mP2PWorkHandler = handler;
         setPriority(MAX_PRIORITY);
         init();
     }
 
-    public void BroadcastMSG(int cmd, int recipient) {
+    public void broadcastMSG(int cmd, int recipient) {
         try {
-            sendMsg2Peer(
-                    InetAddress.getByName(P2PConstant.MULTI_ADDRESS)
+            sendMsg2Peer(InetAddress.getByName(P2PConstant.MULTI_ADDRESS)
                     /*P2PManager.getBroadcastAddress(mContext)*/, cmd, recipient, null);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -76,12 +69,12 @@ public class P2PCommunicateThread extends Thread {
 
     private synchronized void sendUdpData(String sendStr, InetAddress sendTo) {
         try {
-            sendBuffer = sendStr.getBytes(P2PConstant.FORMAT);
-            sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, sendTo,
+            byte[] sendBuffer = sendStr.getBytes(P2PConstant.FORMAT);
+            DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, sendTo,
                     P2PConstant.PORT);
-            if (udpSocket != null) {
-                udpSocket.send(sendPacket);
-                Log.d(tag, "send upd data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
+            if (mUdpSocket != null) {
+                mUdpSocket.send(sendPacket);
+                Log.d(TAG, "send upd data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,25 +84,25 @@ public class P2PCommunicateThread extends Thread {
     private void init() {
         mLocalIPs = getLocalAllIP();
         try {
-            udpSocket = new DatagramSocket(null);
-            udpSocket.setReuseAddress(true);
-            udpSocket.bind(new InetSocketAddress(P2PConstant.PORT));
+            mUdpSocket = new DatagramSocket(null);
+            mUdpSocket.setReuseAddress(true);
+            mUdpSocket.bind(new InetSocketAddress(P2PConstant.PORT));
         } catch (SocketException e) {
             e.printStackTrace();
-            if (udpSocket != null) {
-                udpSocket.close();
+            if (mUdpSocket != null) {
+                mUdpSocket.close();
                 isStopped = true;
                 return;
             }
         }
-        receivePacket = new DatagramPacket(resBuffer, P2PConstant.BUFFER_LENGTH);
+        mReceivePacket = new DatagramPacket(RECEIVE_BUFFER, P2PConstant.BUFFER_LENGTH);
         isStopped = false;
     }
 
     private SigMessage getSelfMsg(int cmd) {
         SigMessage msg = new SigMessage();
         msg.commandNum = cmd;
-        P2PNeighbor melonInfo = p2PManager.getSelfMeMelonInfo();
+        P2PNeighbor melonInfo = mSelf;
         if (melonInfo != null) {
             msg.senderAlias = melonInfo.alias;
             msg.senderIp = melonInfo.ip;
@@ -129,45 +122,36 @@ public class P2PCommunicateThread extends Thread {
     public void run() {
         while (!isStopped) {
             try {
-                udpSocket.receive(receivePacket);
+                mUdpSocket.receive(mReceivePacket);
             } catch (IOException e) {
                 e.printStackTrace();
                 isStopped = true;
                 break;
             }
-            if (receivePacket.getLength() == 0) {
-                continue;
-            }
-            String strReceive = null;
+            if (mReceivePacket == null || mReceivePacket.getLength() == 0) continue;//空消息直接忽略
+
+            String ip = mReceivePacket.getAddress().getHostAddress();
+            if (TextUtils.isEmpty(ip) || isLocal(ip)) continue;//空ip或者自己ip的消息直接忽略
+
+            String strReceive;
             try {
-                strReceive = new String(resBuffer, 0, receivePacket.getLength(),
-                        P2PConstant.FORMAT);
+                strReceive = new String(RECEIVE_BUFFER, 0, mReceivePacket.getLength(), P2PConstant.FORMAT);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
                 continue;
             }
-            String ip = receivePacket.getAddress().getHostAddress();
-            if (!TextUtils.isEmpty(ip)) {
-                if (!isLocal(ip)) //自己会收到自己的广播消息，进行过滤
-                {
-                    if (!isStopped) {
-                        Log.d(tag, "sig communicate process received udp message = "
-                                + strReceive);
-                        ParamIPMsg msg = new ParamIPMsg(strReceive,
-                                receivePacket.getAddress(), receivePacket.getPort());
-                        p2PHandler.send2Handler(msg.peerMSG.commandNum,
-                                P2PConstant.Src.COMMUNICATE, msg.peerMSG.recipient, msg);
-                    } else {
-                        break;
-                    }
-                }
-            } else {
-                isStopped = true;
-                break;
-            }
-            //
-            if (receivePacket != null)
-                receivePacket.setLength(P2PConstant.BUFFER_LENGTH);
+            if (TextUtils.isEmpty(strReceive)) continue;//空消息直接忽略
+
+            if (isStopped) break;//如果已经停止就跳出循环
+
+            Log.d(TAG, "sig communicate process received udp message = " + strReceive);
+            ParamIPMsg msg = new ParamIPMsg(strReceive, mReceivePacket.getAddress(),
+                    mReceivePacket.getPort());
+            mP2PWorkHandler.send2Handler(msg.peerMSG.commandNum, P2PConstant.Src.COMMUNICATE,
+                    msg.peerMSG.recipient, msg);
+
+            if (mReceivePacket != null)
+                mReceivePacket.setLength(P2PConstant.BUFFER_LENGTH);
         }
 
         release();
@@ -179,25 +163,21 @@ public class P2PCommunicateThread extends Thread {
     }
 
     private void release() {
-        Log.d(tag, "sigCommunicate release");
-        if (udpSocket != null)
-            udpSocket.close();
-        if (receivePacket != null)
-            receivePacket = null;
+        Log.d(TAG, "sigCommunicate release");
+        if (mUdpSocket != null)
+            mUdpSocket.close();
+        if (mReceivePacket != null)
+            mReceivePacket = null;
     }
 
     private boolean isLocal(String ip) {
-        for (int i = 0; i < mLocalIPs.length; i++) {
-            if (ip.equals(mLocalIPs[i]))
-                return true;
-        }
-
-        return false;
+        if (mLocalIPs == null || mLocalIPs.isEmpty())
+            return false;
+        return mLocalIPs.contains(ip);
     }
 
-    private String[] getLocalAllIP() {
-        ArrayList<String> IPs = new ArrayList<String>();
-
+    private ArrayList<String> getLocalAllIP() {
+        ArrayList<String> ipLists = new ArrayList<>();
         try {
             Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces();
             // 遍历所用的网络接口
@@ -207,17 +187,13 @@ public class P2PCommunicateThread extends Thread {
                 // 遍历每一个接口绑定的所有ip
                 while (inet.hasMoreElements()) {
                     InetAddress ip = inet.nextElement();
-                    if (!ip.isLoopbackAddress()) {
-//                            && InetAddressUtils.isIPv4Address(ip.getHostAddress())) {
-                        IPs.add(ip.getHostAddress());
-                    }
+                    if (!ip.isLoopbackAddress())
+                        ipLists.add(ip.getHostAddress());
                 }
-
             }
         } catch (SocketException e) {
             e.printStackTrace();
         }
-
-        return (String[]) IPs.toArray(new String[]{});
+        return ipLists;
     }
 }
