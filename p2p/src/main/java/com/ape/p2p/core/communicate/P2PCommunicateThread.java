@@ -1,12 +1,9 @@
 package com.ape.p2p.core.communicate;
 
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.ape.p2p.bean.P2PNeighbor;
 import com.ape.p2p.bean.ParamIPMsg;
-import com.ape.p2p.bean.SigMessage;
 import com.ape.p2p.util.P2PConstant;
 
 import java.io.IOException;
@@ -17,7 +14,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -31,17 +27,15 @@ public class P2PCommunicateThread extends Thread {
     private static final int PORT = 10000;
     private static final int BUFFER_LENGTH = 8192;
     private static final byte[] RECEIVE_BUFFER = new byte[BUFFER_LENGTH];
-    private Handler mWorkHandler;
-    private P2PNeighbor mSelf;
+    private Callback mCallback;
     private DatagramSocket mUDPSocket;
     private DatagramPacket mReceivePacket;
     private ArrayList<String> mLocalIPs;
     private boolean isStopped = false;
 
-    public P2PCommunicateThread(Handler workHandler, P2PNeighbor me) {
+    public P2PCommunicateThread(Callback workHandler) {
         setPriority(Thread.MAX_PRIORITY);
-        mWorkHandler = workHandler;
-        mSelf = me;
+        mCallback = workHandler;
 
         mLocalIPs = getLocalAllIP();
 
@@ -51,60 +45,36 @@ public class P2PCommunicateThread extends Thread {
             mUDPSocket.bind(new InetSocketAddress(PORT));
         } catch (SocketException e) {
             e.printStackTrace();
-            mWorkHandler.sendMessage(mWorkHandler.obtainMessage(P2PConstant.Message.ERROR, e));
+            //mCallback.sendMessage(mCallback.obtainMessage(P2PConstant.Message.ERROR, e));
+            mCallback.onError(e);
         }
 
         mReceivePacket = new DatagramPacket(RECEIVE_BUFFER, BUFFER_LENGTH);
         isStopped = false;
     }
 
-    public void broadcastMSG(int cmd, int recipient) {
+//    public void broadcastMSG(int cmd, int recipient) {
+//        try {
+//            sendMsg2Peer(InetAddress.getByName(P2PConstant.MULTI_ADDRESS), cmd, recipient, null);
+//        } catch (UnknownHostException e) {
+//            e.printStackTrace();
+//            mCallback.onError(e);
+//        }
+//    }
 
+
+    public synchronized void sendUdpData(String sendStr, InetAddress sendTo) {
+        Log.d(TAG, "send upd data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
         try {
-            sendMsg2Peer(InetAddress.getByName(P2PConstant.MULTI_ADDRESS), cmd, recipient, null);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            mWorkHandler.sendMessage(mWorkHandler.obtainMessage(P2PConstant.Message.ERROR, e));
-        }
-
-    }
-
-    public void sendMsg2Peer(InetAddress sendTo, int cmd, int recipient, String add) {
-        SigMessage sigMessage = getSelfMsg(cmd, mSelf);
-        sigMessage.addition = TextUtils.isEmpty(add) ? "null" : add;
-        sigMessage.recipient = recipient;
-        try {
-            sendUdpData(sigMessage.toProtocolString(), sendTo);
+            byte[] sendBuffer = sendStr.getBytes(P2PConstant.FORMAT);
+            DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, sendTo,
+                    P2PConstant.PORT);
+            if (mUDPSocket != null) mUDPSocket.send(sendPacket);
         } catch (IOException e) {
             e.printStackTrace();
-            mWorkHandler.sendMessage(mWorkHandler.obtainMessage(P2PConstant.Message.ERROR, e));
-        }
-    }
-
-    private synchronized void sendUdpData(String sendStr, InetAddress sendTo) throws IOException {
-        Log.d(TAG, "send upd data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
-        byte[] sendBuffer = sendStr.getBytes(P2PConstant.FORMAT);
-        DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, sendTo,
-                P2PConstant.PORT);
-        if (mUDPSocket != null) mUDPSocket.send(sendPacket);
-    }
-
-    private SigMessage getSelfMsg(int cmd, P2PNeighbor self) {
-        SigMessage msg = new SigMessage();
-        msg.commandNum = cmd;
-        if (self != null) {
-            msg.senderAlias = self.alias;
-            msg.senderIp = self.ip;
-            msg.senderAvatar = self.avatar;
-            msg.wifiMac = self.wifiMac;
-            msg.brand = self.brand;
-            msg.mode = self.mode;
-            msg.sdkInt = self.sdkInt;
-            msg.versionCode = self.versionCode;
-            msg.databaseVersion = self.databaseVersion;
+            mCallback.onError(e);
         }
 
-        return msg;
     }
 
     public void quit() {
@@ -128,7 +98,8 @@ public class P2PCommunicateThread extends Thread {
                 mUDPSocket.receive(mReceivePacket);
             } catch (IOException e) {
                 e.printStackTrace();
-                mWorkHandler.sendMessage(mWorkHandler.obtainMessage(P2PConstant.Message.ERROR, e));
+                //mCallback.sendMessage(mCallback.obtainMessage(P2PConstant.Message.ERROR, e));
+                mCallback.onError(e);
                 isStopped = true;
                 break;
             }
@@ -150,7 +121,8 @@ public class P2PCommunicateThread extends Thread {
 
             Log.d(TAG, "sig communicate process received udp message = " + strReceive);
             ParamIPMsg msg = new ParamIPMsg(strReceive, mReceivePacket.getAddress());
-            mWorkHandler.sendMessage(mWorkHandler.obtainMessage(P2PConstant.Message.MESSAGE, msg));
+            //mCallback.sendMessage(mCallback.obtainMessage(P2PConstant.Message.MESSAGE, msg));
+            mCallback.onParseMessage(msg);
 
             //重置
             if (mReceivePacket != null)
@@ -185,5 +157,11 @@ public class P2PCommunicateThread extends Thread {
             e.printStackTrace();
         }
         return ipLists;
+    }
+
+    interface Callback {
+        void onParseMessage(ParamIPMsg ipMsg);
+
+        void onError(Exception e);
     }
 }

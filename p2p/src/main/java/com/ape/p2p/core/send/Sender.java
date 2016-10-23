@@ -2,7 +2,6 @@ package com.ape.p2p.core.send;
 
 import com.ape.p2p.bean.P2PFileInfo;
 import com.ape.p2p.bean.P2PNeighbor;
-import com.ape.p2p.core.communicate.P2PWorkHandler;
 
 import java.util.ArrayList;
 

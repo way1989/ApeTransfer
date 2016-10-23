@@ -2,9 +2,10 @@ package com.ape.p2p.core.send;
 
 import android.util.Log;
 
-import com.ape.p2p.core.communicate.P2PWorkHandler;
+import com.ape.p2p.bean.ParamIPMsg;
 import com.ape.p2p.util.P2PConstant;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 
 /**
@@ -14,16 +15,27 @@ import java.util.HashMap;
 public class SendManager {
     private static final String TAG = "SendManager";
 
-    private P2PWorkHandler p2PHandler;
+    private Callback mCallback;
     private HashMap<String, Sender> mSenders;
 
     private SendServer sendServer;
     private SendServerHandler sendServerHandler;
 
-    public SendManager(P2PWorkHandler handler) {
-        this.p2PHandler = handler;
+    public SendManager(Callback callback) {
+        mCallback = callback;
         mSenders = new HashMap<>();
         init();
+    }
+
+    public void onParseMessage(ParamIPMsg ipMsg) {
+        switch (ipMsg.peerMSG.commandNum) {
+            default:
+                break;
+        }
+    }
+
+    public void stop() {
+
     }
 
     private void init() {
@@ -49,7 +61,7 @@ public class SendManager {
 
     public void checkAllOver() {
         if (mSenders.isEmpty()) {
-           quit();
+            quit();
         }
     }
 
@@ -63,5 +75,10 @@ public class SendManager {
 
     protected Sender getSender(String peerIP) {
         return mSenders.get(peerIP);
+    }
+
+    public interface Callback {
+        void sendMessage2Peer(InetAddress sendTo, int cmd, String add);
+
     }
 }

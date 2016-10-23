@@ -4,7 +4,6 @@ package com.ape.p2p.core.receive;
 import android.util.Log;
 
 import com.ape.p2p.bean.P2PFileInfo;
-import com.ape.p2p.core.communicate.P2PWorkHandler;
 import com.ape.p2p.util.P2PConstant;
 import com.ape.p2p.util.Util;
 

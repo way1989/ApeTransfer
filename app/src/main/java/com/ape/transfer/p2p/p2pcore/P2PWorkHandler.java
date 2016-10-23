@@ -39,6 +39,7 @@ public class P2PWorkHandler extends Handler {
     }
 
     public void init(P2PManager manager, Context context) {
+        Log.i(TAG, "thread id = " + Thread.currentThread().getId());
         this.p2PManager = manager;
         p2PCommunicate = new P2PCommunicateThread(p2PManager, this, context);
         p2PCommunicate.start();
@@ -66,6 +67,8 @@ public class P2PWorkHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {//进行网络相关操作
+        long id = Thread.currentThread().getId();
+        android.util.Log.i(TAG, "thread id = " + id);
         int src = msg.arg1;
         int dst = msg.arg2;
         switch (dst) {
@@ -130,15 +133,15 @@ public class P2PWorkHandler extends Handler {
     }
 
     public void send2Receiver(InetAddress peer, int cmd, String add) {
+        long id = Thread.currentThread().getId();
+        android.util.Log.i(TAG, "thread id = " + id);
         if (p2PCommunicate != null)
-            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Recipient.FILE_RECEIVE,
-                    add);
+            p2PCommunicate.sendMsg2Peer(peer, cmd, P2PConstant.Recipient.FILE_RECEIVE, add);
     }
 
     public void send2UI(int cmd, Object obj) {
         if (p2PManager != null)
-            p2PManager.getHandler().sendMessage(
-                    p2PManager.getHandler().obtainMessage(cmd, obj));
+            p2PManager.getHandler().sendMessage(p2PManager.getHandler().obtainMessage(cmd, obj));
     }
 
     public void send2Sender(InetAddress peer, int cmd, String add) {

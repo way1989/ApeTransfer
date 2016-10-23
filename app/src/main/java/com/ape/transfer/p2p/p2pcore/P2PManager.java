@@ -48,6 +48,8 @@ public class P2PManager {
 
     public P2PManager(Context context) {
         mContext = context;
+        long id = Thread.currentThread().getId();
+        android.util.Log.i(TAG, "thread id = " + id);
         mMainUIHandler = new P2PManagerHandler(this);
     }
 
