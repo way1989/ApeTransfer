@@ -61,7 +61,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     }
 
     private void init() {
-        mP2PManager = new P2PManager(getApplicationContext());
+        mP2PManager = new P2PManager();
     }
 
     @Override

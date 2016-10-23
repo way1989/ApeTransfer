@@ -11,37 +11,35 @@ import com.ape.transfer.p2p.p2pentity.param.ParamIPMsg;
 
 
 /**
- * Created by 郭攀峰 on 2015/9/21.
+ * Created by way on 2015/10/21.
  */
 public class Receiver {
-    private static final String tag = Receiver.class.getSimpleName();
-    public ReceiveManager receiveManager;
-    public P2PNeighbor neighbor;
-    public P2PFileInfo[] files;
-    public P2PWorkHandler p2PHandler;
-    protected ReceiveTask receiveTask = null;
-    boolean flagPercent = false;
+    private static final String TAG = "Receiver";
+    public ReceiveManager mReceiveManager;
+    public P2PNeighbor mNeighbor;
+    public P2PFileInfo[] mReceiveFileInfos;
+    public P2PWorkHandler mP2PWorkHandler;
 
     public Receiver(ReceiveManager receiveManager, P2PNeighbor neighbor,
                     P2PFileInfo[] files) {
-        this.receiveManager = receiveManager;
-        this.neighbor = neighbor;
-        this.files = files;
-        p2PHandler = receiveManager.p2PHandler;
+        this.mReceiveManager = receiveManager;
+        this.mNeighbor = neighbor;
+        this.mReceiveFileInfos = files;
+        mP2PWorkHandler = receiveManager.mP2PWorkHandler;
     }
 
     public void dispatchCommMSG(int cmd, ParamIPMsg ipMsg) {
         switch (cmd) {
             case P2PConstant.CommandNum.SEND_FILE_START: //接收端收到开始发送文件的消息
                 //开始tcp
-                Log.d(tag, "start receiver task");
-                receiveTask = new ReceiveTask(p2PHandler, this);
+                Log.d(TAG, "start receiver task");
+                ReceiveTask receiveTask = new ReceiveTask(mP2PWorkHandler, this);
                 receiveTask.start();
                 break;
             case P2PConstant.CommandNum.SEND_ABORT_SELF: //发送者退出
                 clearSelf();
-                if (p2PHandler != null) {
-                    p2PHandler.send2UI(cmd, ipMsg);
+                if (mP2PWorkHandler != null) {
+                    mP2PWorkHandler.send2UI(cmd, ipMsg);
                 }
                 break;
         }
@@ -52,13 +50,13 @@ public class Receiver {
             case P2PConstant.CommandNum.RECEIVE_TCP_ESTABLISHED:
                 break;
             case P2PConstant.CommandNum.RECEIVE_PERCENT:
-                if (p2PHandler != null)
-                    p2PHandler.send2UI(P2PConstant.CommandNum.RECEIVE_PERCENT, obj);
+                if (mP2PWorkHandler != null)
+                    mP2PWorkHandler.send2UI(P2PConstant.CommandNum.RECEIVE_PERCENT, obj);
                 break;
             case P2PConstant.CommandNum.RECEIVE_OVER:
                 clearSelf();
-                if (p2PHandler != null)
-                    p2PHandler.send2UI(P2PConstant.CommandNum.RECEIVE_OVER, null);
+                if (mP2PWorkHandler != null)
+                    mP2PWorkHandler.send2UI(P2PConstant.CommandNum.RECEIVE_OVER, null);
                 break;
         }
     }
@@ -66,19 +64,19 @@ public class Receiver {
     public void dispatchUIMSG(int cmd, Object obj) {
         switch (cmd) {
             case P2PConstant.CommandNum.RECEIVE_FILE_ACK: //发送接收文件的消息给发送者
-                if (p2PHandler != null)
-                    p2PHandler.send2Sender(neighbor.inetAddress, cmd, null);
+                if (mP2PWorkHandler != null)
+                    mP2PWorkHandler.send2Sender(mNeighbor.inetAddress, cmd, null);
                 break;
             case P2PConstant.CommandNum.RECEIVE_ABORT_SELF: //接收者退出
                 clearSelf();
                 //通知发送者接收者已经推出
-                if (p2PHandler != null)
-                    p2PHandler.send2Sender(neighbor.inetAddress, cmd, null);
+                if (mP2PWorkHandler != null)
+                    mP2PWorkHandler.send2Sender(mNeighbor.inetAddress, cmd, null);
                 break;
         }
     }
 
     private void clearSelf() {
-        receiveManager.init();
+        mReceiveManager.init();
     }
 }

@@ -33,23 +33,23 @@ public class ReceiveTask extends Thread {
     public ReceiveTask(P2PWorkHandler handler, Receiver receiver) {
         this.p2PHandler = handler;
         this.receiver = receiver;
-        this.sendIp = receiver.neighbor.ip;
+        this.sendIp = receiver.mNeighbor.ip;
     }
 
     @Override
     public void run() {
         loop:
-        for (int i = 0; i < receiver.files.length; i++) {
+        for (int i = 0; i < receiver.mReceiveFileInfos.length; i++) {
             if (isInterrupted())
                 break;
             try {
                 socket = new Socket(sendIp, P2PConstant.PORT);
                 notifyReceiver(P2PConstant.CommandNum.RECEIVE_TCP_ESTABLISHED, null);
 
-                P2PFileInfo fileInfo = receiver.files[i];
+                P2PFileInfo fileInfo = receiver.mReceiveFileInfos[i];
 
-                Log.d(TAG, "prepare to receive file:" + fileInfo.name + "; files size = "
-                        + receiver.files.length);
+                Log.d(TAG, "prepare to receive file:" + fileInfo.name + "; mReceiveFileInfos size = "
+                        + receiver.mReceiveFileInfos.length);
 
                 String path = P2PManager.getSavePath(fileInfo.type);
                 File fileDir = new File(path);
@@ -101,7 +101,7 @@ public class ReceiveTask extends Thread {
 
                 socket.close();
 
-                if (i == receiver.files.length - 1) {
+                if (i == receiver.mReceiveFileInfos.length - 1) {
                     Log.d(TAG, "receive file over");
                     notifyReceiver(P2PConstant.CommandNum.RECEIVE_OVER, null);
                     finished = true;

@@ -1,11 +1,9 @@
 package com.ape.transfer.p2p.p2pcore;
 
 
-import android.content.Context;
-import android.net.DhcpInfo;
-import android.net.wifi.WifiManager;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Message;
 
 import com.ape.transfer.p2p.p2pconstant.P2PConstant;
@@ -18,16 +16,16 @@ import com.ape.transfer.p2p.p2pentity.param.ParamTCPNotify;
 import com.ape.transfer.p2p.p2pinterface.NeighborCallback;
 import com.ape.transfer.p2p.p2pinterface.ReceiveFileCallback;
 import com.ape.transfer.p2p.p2pinterface.SendFileCallback;
+import com.ape.transfer.p2p.p2ptimer.OSTimer;
+import com.ape.transfer.p2p.p2ptimer.Timeout;
 import com.ape.transfer.util.Log;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 
 /**
- * Created by 郭攀峰 on 2015/9/17.
+ * Created by way on 2015/10/22.
  */
 public class P2PManager {
     private static final String TAG = "P2PManager";
@@ -37,19 +35,14 @@ public class P2PManager {
 
     private P2PNeighbor mNeighbor;
     private NeighborCallback mNeighborCallback;
-    private CustomHandlerThread mP2PMainThread;
     private P2PWorkHandler mP2PWorkHandler;
     private P2PManagerHandler mMainUIHandler;
 
     private ReceiveFileCallback mReceiveFileCallback;
     private SendFileCallback mSendFileCallback;
 
-    private Context mContext;
 
-    public P2PManager(Context context) {
-        mContext = context;
-        long id = Thread.currentThread().getId();
-        android.util.Log.i(TAG, "thread id = " + id);
+    public P2PManager() {
         mMainUIHandler = new P2PManagerHandler(this);
     }
 
@@ -58,44 +51,14 @@ public class P2PManager {
         return SAVE_DIR + File.separator + typeStr[type];
     }
 
-    /**
-     * 获取广播地址
-     *
-     * @param context
-     * @return
-     * @throws UnknownHostException
-     */
-    public static InetAddress getBroadcastAddress(Context context)
-            throws UnknownHostException {
-        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        DhcpInfo dhcp = wifi.getDhcpInfo();
-        if (dhcp == null) {
-            return InetAddress.getByName("255.255.255.255");
-        }
-        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-        byte[] quads = new byte[4];
-        for (int k = 0; k < 4; k++)
-            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-        return InetAddress.getByAddress(quads);
-    }
-
-    public static String getSaveDir() {
-        return SAVE_DIR;
-    }
-
-    public static void setSaveDir(String dir) {
-        SAVE_DIR = dir;
-    }
-
     public void start(P2PNeighbor melon, NeighborCallback melon_callback) {
         this.mNeighbor = melon;
         this.mNeighborCallback = melon_callback;
 
-        mP2PMainThread = new CustomHandlerThread("P2PThread", P2PWorkHandler.class);
-        mP2PMainThread.start();
-        mP2PMainThread.isReady();
+        HandlerThread handlerThread = new HandlerThread(TAG, Thread.MAX_PRIORITY);
+        handlerThread.start();
 
-        mP2PWorkHandler = (P2PWorkHandler) mP2PMainThread.getLooperHandler();
+        mP2PWorkHandler = new P2PWorkHandler(handlerThread.getLooper());
         mP2PWorkHandler.init(this);
     }
 
@@ -129,17 +92,11 @@ public class P2PManager {
     }
 
     public void stop() {
-        if (mP2PMainThread != null && mP2PWorkHandler != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "p2pManager stop");
-                    mP2PWorkHandler.release();
-                    mP2PWorkHandler = null;
-                    mP2PMainThread.quit();
-                    mP2PMainThread = null;
-                }
-            }).start();
+        if (mP2PWorkHandler != null) {
+            Log.d(TAG, "p2pManager stop");
+            mP2PWorkHandler.release();
+            mP2PWorkHandler.getLooper().quitSafely();
+            mP2PWorkHandler = null;
         }
     }
 
@@ -154,14 +111,17 @@ public class P2PManager {
     }
 
     public void sendOffLine(final P2PNeighbor neighbor) {
-        Log.i(TAG, "sendOffLine... neighbor = " + neighbor);
-        if (mP2PWorkHandler != null)
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    mP2PWorkHandler.send2Neighbor(neighbor.inetAddress, P2PConstant.CommandNum.OFF_LINE, null);
-                }
-            }).start();
+        Log.i(TAG, "sendOffLine... mNeighbor = " + neighbor);
+        if (mP2PWorkHandler == null) return;
+        Timeout timeOut = new Timeout() {
+            @Override
+            public void onTimeOut() {
+                android.util.Log.d(TAG, "sendOffLine... ");
+                mP2PWorkHandler.send2Neighbor(neighbor.inetAddress, P2PConstant.CommandNum.OFF_LINE, null);
+
+            }
+        };
+        new OSTimer(mP2PWorkHandler, timeOut, 0);
     }
 
     private static class P2PManagerHandler extends Handler {

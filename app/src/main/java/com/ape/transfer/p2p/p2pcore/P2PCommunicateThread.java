@@ -21,11 +21,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-//import org.apache.http.conn.util.InetAddressUtils;
-
 
 /**
- * Created by 郭攀峰 on 2015/9/19. 接收端和发送端的udp交互
+ * Created by way on 2016/10/19. 接收端和发送端的udp交互
  */
 public class P2PCommunicateThread extends Thread {
     private static final String TAG = P2PCommunicateThread.class.getSimpleName();
@@ -74,7 +72,7 @@ public class P2PCommunicateThread extends Thread {
                     P2PConstant.PORT);
             if (mUdpSocket != null) {
                 mUdpSocket.send(sendPacket);
-                Log.d(TAG, "send upd data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
+                Log.d(TAG, "send udp data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
             }
         } catch (IOException e) {
             e.printStackTrace();

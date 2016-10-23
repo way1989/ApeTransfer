@@ -10,21 +10,21 @@ import com.ape.transfer.p2p.p2pentity.param.ParamReceiveFiles;
 import com.ape.transfer.util.Log;
 
 /**
- * Created by 郭攀峰 on 2015/9/20.
+ * Created by way on 2016/10/20.
  */
 public class ReceiveManager {
 
     private static final String TAG = "ReceiveManager";
-    protected P2PWorkHandler p2PHandler;
-    private Receiver receiver;
+    P2PWorkHandler mP2PWorkHandler;
+    private Receiver mReceiver;
 
     public ReceiveManager(P2PWorkHandler handler) {
-        p2PHandler = handler;
+        mP2PWorkHandler = handler;
     }
 
     public void init() {
-        if (receiver != null)
-            receiver = null;
+        if (mReceiver != null)
+            mReceiver = null;
     }
 
     public void disPatchMsg(int cmd, Object obj, int src) {
@@ -34,21 +34,18 @@ public class ReceiveManager {
                 if (cmd == P2PConstant.CommandNum.SEND_FILE_REQ) {
                     invoke(paramIPMsg);
                 } else {
-                    if (receiver != null)
-                        receiver.dispatchCommMSG(cmd, paramIPMsg);
+                    if (mReceiver != null)
+                        mReceiver.dispatchCommMSG(cmd, paramIPMsg);
                 }
                 break;
             }
             case P2PConstant.Src.MANAGER:
-                if (receiver != null)
-                    receiver.dispatchUIMSG(cmd, obj);
+                if (mReceiver != null)
+                    mReceiver.dispatchUIMSG(cmd, obj);
                 break;
             case P2PConstant.Src.RECEIVE_TCP_THREAD:
-                if (cmd == P2PConstant.CommandNum.RECEIVE_PERCENT)
-                    if (receiver != null)
-                        receiver.flagPercent = false;
-                if (receiver != null)
-                    receiver.dispatchTCPMSG(cmd, obj);
+                if (mReceiver != null)
+                    mReceiver.dispatchTCPMSG(cmd, obj);
                 break;
         }
     }
@@ -67,12 +64,12 @@ public class ReceiveManager {
             files[i] = new P2PFileInfo(strArray[i]);
         }
 
-        P2PNeighbor neighbor = p2PHandler.getP2PPeerManager().getNeighbors().get(peerIP);
+        P2PNeighbor neighbor = mP2PWorkHandler.getP2PPeerManager().getNeighbors().get(peerIP);
 
-        receiver = new Receiver(this, neighbor, files);
+        mReceiver = new Receiver(this, neighbor, files);
 
         ParamReceiveFiles paramReceiveFiles = new ParamReceiveFiles(neighbor, files);
-        if (p2PHandler != null)
-            p2PHandler.send2UI(P2PConstant.CommandNum.SEND_FILE_REQ, paramReceiveFiles);
+        if (mP2PWorkHandler != null)
+            mP2PWorkHandler.send2UI(P2PConstant.CommandNum.SEND_FILE_REQ, paramReceiveFiles);
     }
 }

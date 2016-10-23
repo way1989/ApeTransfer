@@ -20,24 +20,24 @@ import java.util.Set;
 public class SendServer extends Thread {
     private static final String TAG = "SendServer";
 
-    private ISendServer handler;
-    private Selector selector;
-    private ServerSocketChannel serverSocketChannel;
+    private ISendServer mHandler;
+    private Selector mSelector;
+    private ServerSocketChannel mServerSocketChannel;
 
     public SendServer(ISendServer handler, int port) {
-        this.handler = handler;
+        this.mHandler = handler;
         try {//创建服务器端的SocketChannel
             //获取一个通道管理器
-            selector = Selector.open();
+            mSelector = Selector.open();
             //获取一个ServerSocket通道
-            serverSocketChannel = ServerSocketChannel.open();
+            mServerSocketChannel = ServerSocketChannel.open();
             //设置通道为非阻塞方式
-            serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.socket().setReuseAddress(true);//必须放在bind前面 否则没有用
+            mServerSocketChannel.configureBlocking(false);
+            mServerSocketChannel.socket().setReuseAddress(true);//必须放在bind前面 否则没有用
             //将该通道所对应的ServerSocket绑定到端口
-            serverSocketChannel.socket().bind(new InetSocketAddress(port));
+            mServerSocketChannel.socket().bind(new InetSocketAddress(port));
             //将通道管理器与该通道绑定，并为该通道注册accept事件，当该事件到达时selector.select()会返回，没有一直阻塞
-            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            mServerSocketChannel.register(mSelector, SelectionKey.OP_ACCEPT);
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -53,20 +53,20 @@ public class SendServer extends Thread {
                 if (isInterrupted()) return;
 
                 //当注册的方法到达时，返回，否则一直会阻塞
-                if (selector.select() == 0) continue;
+                if (mSelector.select() == 0) continue;
 
-                Set<SelectionKey> selectionKeys = selector.selectedKeys();
+                Set<SelectionKey> selectionKeys = mSelector.selectedKeys();
                 Iterator<SelectionKey> it = selectionKeys.iterator();
                 while (it.hasNext()) {
                     SelectionKey key = it.next();
                     if (key.isAcceptable()) {
-                        handler.handleAccept(key);
+                        mHandler.handleAccept(key);
                     }
                     if (key.isReadable()) {
-                        handler.handleRead(key);
+                        mHandler.handleRead(key);
                     }
                     if (key.isWritable()) {
-                        handler.handleWrite(key);
+                        mHandler.handleWrite(key);
                     }
                     it.remove();
                 }
@@ -83,17 +83,17 @@ public class SendServer extends Thread {
 
     private void release() {
         Log.d(TAG, "send server release");
-        if (serverSocketChannel != null) {
+        if (mServerSocketChannel != null) {
             try {
-                serverSocketChannel.socket().close();
-                serverSocketChannel.close();
+                mServerSocketChannel.socket().close();
+                mServerSocketChannel.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (selector != null) {
+        if (mSelector != null) {
             try {
-                selector.close();
+                mSelector.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

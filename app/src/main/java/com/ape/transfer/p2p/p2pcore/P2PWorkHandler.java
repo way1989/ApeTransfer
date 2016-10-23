@@ -69,7 +69,6 @@ public class P2PWorkHandler extends Handler {
                 mP2PCommunicateThread.broadcastMSG(P2PConstant.CommandNum.OFF_LINE, P2PConstant.Recipient.NEIGHBOR);
             }
         };
-        timeOut.onTimeOut();
         new OSTimer(this, timeOut, 0);
         new OSTimer(this, timeOut, 250);
     }
@@ -88,7 +87,7 @@ public class P2PWorkHandler extends Handler {
         int dst = msg.arg2;
         switch (dst) {
             case P2PConstant.Recipient.NEIGHBOR: //好友状态上线或者离线
-                Log.d(TAG, "received neighbor message");
+                Log.d(TAG, "received mNeighbor message");
                 if (mP2PPeerManager != null)
                     mP2PPeerManager.dispatchMSG((ParamIPMsg) msg.obj);
                 break;

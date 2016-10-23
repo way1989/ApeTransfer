@@ -20,32 +20,29 @@ import java.util.concurrent.TimeUnit;
  * Created by 郭攀峰 on 2015/9/21.
  */
 public class SendServerHandler implements ISendServer {
-    static final int CORE_POOL_SIZE = P2PConstant.MAXIMUM_POOL_SIZE;
-    static final int KEEP_ALIVE_TIME = 1;
-    static final TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
-    private static final String tag = SendServerHandler.class.getSimpleName();
-    SendManager sendManager;
-    BlockingQueue<Runnable> sendBlockingQueue;
-    ThreadPoolExecutor sendThreadPool;
+    private static final String TAG = "SendServerHandler";
+    private static final int CORE_POOL_SIZE = P2PConstant.MAXIMUM_POOL_SIZE;
+    private static final int KEEP_ALIVE_TIME = 1;
+    private SendManager mSendManager;
+    private ThreadPoolExecutor mThreadPoolExecutor;
 
     public SendServerHandler(SendManager sendManager) {
-        this.sendManager = sendManager;
-        sendBlockingQueue = new LinkedBlockingDeque<>();
-        sendThreadPool = new ThreadPoolExecutor(CORE_POOL_SIZE,
-                P2PConstant.MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, KEEP_ALIVE_TIME_UNIT,
-                sendBlockingQueue);
-        sendThreadPool.allowCoreThreadTimeOut(true);
+        this.mSendManager = sendManager;
+        mThreadPoolExecutor = new ThreadPoolExecutor(CORE_POOL_SIZE,
+                P2PConstant.MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.SECONDS,
+                new LinkedBlockingDeque<Runnable>());
+        mThreadPoolExecutor.allowCoreThreadTimeOut(true);
     }
 
     @Override
     public void handleAccept(SelectionKey key) throws IOException {
-        Log.d(tag, "handle accept");
+        Log.d(TAG, "handle accept");
 
         ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
         //获取客户端连接的通道
         SocketChannel socketChannel = serverSocketChannel.accept();
         String peerIp = socketChannel.socket().getInetAddress().getHostAddress();
-        Sender sender = sendManager.getSender(peerIp);
+        Sender sender = mSendManager.getSender(peerIp);
         if (sender == null) {
             socketChannel.close();
             return;
@@ -72,12 +69,11 @@ public class SendServerHandler implements ISendServer {
 
     @Override
     public void handleWrite(SelectionKey key) throws IOException {
-        Log.d(tag, "handle write");
+        Log.d(TAG, "handle write");
 
         SendTask sendTask = (SendTask) key.attachment();
         key.cancel();
 
-        sendTask.waitRun();
-        sendThreadPool.execute(sendTask);
+        mThreadPoolExecutor.execute(sendTask);
     }
 }
