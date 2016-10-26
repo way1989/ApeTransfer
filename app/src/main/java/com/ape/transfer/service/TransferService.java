@@ -65,7 +65,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     }
 
     @Override
-    public void NeighborFound(P2PNeighbor neighbor) {
+    public void onNeighborFound(P2PNeighbor neighbor) {
         if (neighbor == null)
             return;
         if (!mNeighbors.contains(neighbor) && !TextUtils.equals(neighbor.ip, mP2PManager.getSelfMeMelonInfo().ip)) {
@@ -77,7 +77,7 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     }
 
     @Override
-    public void NeighborRemoved(P2PNeighbor neighbor) {
+    public void onNeighborRemoved(P2PNeighbor neighbor) {
         if (neighbor != null) {
             mNeighbors.remove(neighbor);
             if (mCallback != null) mCallback.onNeighborChanged(mNeighbors);
@@ -85,8 +85,8 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     }
 
     @Override
-    public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo[] files) {
-        Log.i(TAG, "QueryReceiving....");
+    public boolean onQueryReceiving(P2PNeighbor src, P2PFileInfo[] files) {
+        Log.i(TAG, "onQueryReceiving....");
         mP2PManager.ackReceive();
         for (P2PFileInfo fileInfo : files) {
             fileInfo.wifiMac = src.wifiMac;
@@ -101,26 +101,26 @@ public class TransferService extends Service implements NeighborCallback, Receiv
     }
 
     @Override
-    public void BeforeReceiving(P2PNeighbor src, P2PFileInfo[] files) {
-        Log.i(TAG, "BeforeReceiving....");
+    public void onPreReceiving(P2PNeighbor src, P2PFileInfo[] files) {
+        Log.i(TAG, "onPreReceiving....");
     }
 
     @Override
-    public void OnReceiving(P2PFileInfo file) {
-        Log.i(TAG, "OnReceiving....  position = " + file.position + ", sumSize = " + file.size);
+    public void onReceiving(P2PFileInfo file) {
+        Log.i(TAG, "onReceiving....  position = " + file.position + ", sumSize = " + file.size);
         file.status = P2PFileInfo.Status.STATUS_RECEIVING;
         TaskHistory.getInstance().updateFileInfo(file);
         EventBus.getDefault().post(new P2PFileInfoEvent(file));
     }
 
     @Override
-    public void AfterReceiving() {
-        Log.i(TAG, "AfterReceiving....");
+    public void onPostReceiving() {
+        Log.i(TAG, "onPostReceiving....");
     }
 
     @Override
-    public void AbortReceiving(int error, String alias) {
-        Log.i(TAG, "AbortReceiving....");
+    public void onAbortReceiving(int error, String alias) {
+        Log.i(TAG, "onAbortReceiving....");
     }
 
     public interface Callback {
@@ -201,8 +201,8 @@ public class TransferService extends Service implements NeighborCallback, Receiv
             }
             mP2PManager.sendFile(new P2PNeighbor[]{mNeighbors.get(0)}, fileArray, new SendFileCallback() {
                 @Override
-                public void BeforeSending() {
-                    Log.i(TAG, "BeforeSending....");
+                public void onPreSending() {
+                    Log.i(TAG, "onPreSending....");
                 }
 
                 @Override
@@ -215,18 +215,18 @@ public class TransferService extends Service implements NeighborCallback, Receiv
                 }
 
                 @Override
-                public void AfterSending(P2PNeighbor dest) {
-                    Log.i(TAG, "AfterSending....");
+                public void onPostSending(P2PNeighbor dest) {
+                    Log.i(TAG, "onPostSending....");
                 }
 
                 @Override
-                public void AfterAllSending() {
-                    Log.i(TAG, "AfterAllSending....");
+                public void onPostAllSending() {
+                    Log.i(TAG, "onPostAllSending....");
                 }
 
                 @Override
-                public void AbortSending(int error, P2PNeighbor dest) {
-                    Log.i(TAG, "AbortSending....");
+                public void onAbortSending(int error, P2PNeighbor dest) {
+                    Log.i(TAG, "onAbortSending....");
                 }
             });
         }

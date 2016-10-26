@@ -9,13 +9,13 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
  * 我要发送实现的发送回调
  */
 public interface SendFileCallback {
-    public void BeforeSending();
+    public void onPreSending();
 
     public void OnSending(P2PFileInfo file, P2PNeighbor dest);
 
-    public void AfterSending(P2PNeighbor dest);
+    public void onPostSending(P2PNeighbor dest);
 
-    public void AfterAllSending();
+    public void onPostAllSending();
 
-    public void AbortSending(int error, P2PNeighbor dest);
+    public void onAbortSending(int error, P2PNeighbor dest);
 }

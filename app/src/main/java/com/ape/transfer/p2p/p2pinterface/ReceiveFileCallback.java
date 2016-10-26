@@ -9,13 +9,13 @@ import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
  * 我要接受实现的接收回掉
  */
 public interface ReceiveFileCallback {
-    public boolean QueryReceiving(P2PNeighbor src, P2PFileInfo files[]);
+    public boolean onQueryReceiving(P2PNeighbor src, P2PFileInfo files[]);
 
-    public void BeforeReceiving(P2PNeighbor src, P2PFileInfo files[]);
+    public void onPreReceiving(P2PNeighbor src, P2PFileInfo files[]);
 
-    public void OnReceiving(P2PFileInfo files);
+    public void onReceiving(P2PFileInfo files);
 
-    public void AfterReceiving();
+    public void onPostReceiving();
 
-    public void AbortReceiving(int error, String alias);
+    public void onAbortReceiving(int error, String alias);
 }

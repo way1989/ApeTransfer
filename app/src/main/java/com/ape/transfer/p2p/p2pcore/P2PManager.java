@@ -140,22 +140,22 @@ public class P2PManager {
             switch (msg.what) {
                 case P2PConstant.UI_MSG.ADD_NEIGHBOR:
                     if (manager.mNeighborCallback != null)
-                        manager.mNeighborCallback.NeighborFound((P2PNeighbor) msg.obj);
+                        manager.mNeighborCallback.onNeighborFound((P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.UI_MSG.REMOVE_NEIGHBOR:
                     if (manager.mNeighborCallback != null)
-                        manager.mNeighborCallback.NeighborRemoved((P2PNeighbor) msg.obj);
+                        manager.mNeighborCallback.onNeighborRemoved((P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.CommandNum.SEND_FILE_REQ: //收到请求发送文件
                     if (manager.mReceiveFileCallback != null) {
                         ParamReceiveFiles params = (ParamReceiveFiles) msg.obj;
-                        manager.mReceiveFileCallback.QueryReceiving(params.Neighbor,
+                        manager.mReceiveFileCallback.onQueryReceiving(params.Neighbor,
                                 params.Files);
                     }
                     break;
                 case P2PConstant.CommandNum.SEND_FILE_START: //发送端开始发送
                     if (manager.mSendFileCallback != null) {
-                        manager.mSendFileCallback.BeforeSending();
+                        manager.mSendFileCallback.onPreSending();
                     }
                     break;
                 case P2PConstant.CommandNum.SEND_PERCENTS:
@@ -166,29 +166,29 @@ public class P2PManager {
                     break;
                 case P2PConstant.CommandNum.SEND_OVER:
                     if (manager.mSendFileCallback != null)
-                        manager.mSendFileCallback.AfterSending((P2PNeighbor) msg.obj);
+                        manager.mSendFileCallback.onPostSending((P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.CommandNum.SEND_ABORT_SELF: //通知接收者，发送者退出了
                     if (manager.mReceiveFileCallback != null) {
                         ParamIPMsg paramIPMsg = (ParamIPMsg) msg.obj;
                         if (paramIPMsg != null)
-                            manager.mReceiveFileCallback.AbortReceiving(
+                            manager.mReceiveFileCallback.onAbortReceiving(
                                     P2PConstant.CommandNum.SEND_ABORT_SELF,
                                     paramIPMsg.peerMSG.senderAlias);
                     }
                     break;
                 case P2PConstant.CommandNum.RECEIVE_ABORT_SELF: //通知发送者，接收者退出了
                     if (manager.mSendFileCallback != null)
-                        manager.mSendFileCallback.AbortSending(msg.what,
+                        manager.mSendFileCallback.onAbortSending(msg.what,
                                 (P2PNeighbor) msg.obj);
                     break;
                 case P2PConstant.CommandNum.RECEIVE_OVER:
                     if (manager.mReceiveFileCallback != null)
-                        manager.mReceiveFileCallback.AfterReceiving();
+                        manager.mReceiveFileCallback.onPostReceiving();
                     break;
                 case P2PConstant.CommandNum.RECEIVE_PERCENT:
                     if (manager.mReceiveFileCallback != null)
-                        manager.mReceiveFileCallback.OnReceiving((P2PFileInfo) msg.obj);
+                        manager.mReceiveFileCallback.onReceiving((P2PFileInfo) msg.obj);
                     break;
             }
         }
