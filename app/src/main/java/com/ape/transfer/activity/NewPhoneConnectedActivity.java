@@ -32,7 +32,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * Created by android on 16-7-13.
  */
-public class NewPhoneConnectedActivity extends BaseActivity implements TransferService.Callback, TransferServiceUtil.Callback {
+public class NewPhoneConnectedActivity extends BaseActivity implements TransferServiceUtil.Callback {
     public static final String ARGS_SSID = "args_ssid";
     private static final String TAG = "NewPhoneConnectedActivity";
     private static final int MSG_START_P2P = 0;
@@ -203,7 +203,6 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
         Log.i(TAG, "onServiceConnected mTransferService = " + service);
         mTransferService = service;
         if (mTransferService != null) {
-            mTransferService.setCallback(this);
             startP2P();
         }
     }
@@ -214,7 +213,6 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
         mTransferService = null;
     }
 
-    @Override
     public void onPeerChanged(List<Peer> neighbors) {
         Log.i(TAG, "onPeerChanged neighbors = " + neighbors);
         if (!neighbors.isEmpty()) {

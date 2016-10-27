@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
+import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
@@ -26,8 +27,7 @@ import java.util.List;
 
 import butterknife.BindView;
 
-public class QrCodeActivity extends BaseTransferActivity implements TransferService.Callback,
-        TransferServiceUtil.Callback {
+public class QrCodeActivity extends BaseTransferActivity implements TransferServiceUtil.Callback {
     public static final String EXCHANGE_SSID_SUFFIX = "@exchange";
     private static final String TAG = "QrCodeActivity";
     @BindView(R.id.tv_qrcode)
@@ -73,21 +73,20 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
     }
 
     @Override
-    public void onWifiApStatusChanged(int status) {
-        super.onWifiApStatusChanged(status);
-        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (status == WifiApUtils.WIFI_AP_STATE_ENABLED));
+    public void onWifiApStatusChanged(ApStatusEvent event) {
+        super.onWifiApStatusChanged(event);
+        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
 //        boolean hasInternet = TDevice.hasInternet();
-        if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
-            updateUI();
+        if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+            updateUI(event.getSsid());
             startP2P();
-        } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
-                status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED) {
             mobileDataWarning.setVisibility(View.GONE);
             finish();
         }
     }
 
-    private void updateUI() {
+    private void updateUI(String ssid) {
         try {
             boolean hasInternet = TDevice.hasInternet();
             Log.i(TAG, "updateUI hasInternet = " + hasInternet);
@@ -95,8 +94,6 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
                 mobileDataWarning.setVisibility(View.VISIBLE);
             rlLoading.setVisibility(View.GONE);
 
-            WifiConfiguration wifiConfiguration = mWifiApService.getWifiApConfiguration();
-            String ssid = wifiConfiguration.SSID;
             Bitmap qrCode = QrCodeUtils.create2DCode(ssid);
             ivQrcode.setImageBitmap(qrCode);
         } catch (WriterException e) {
@@ -108,7 +105,6 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
     public void onServiceConnected(TransferService.P2PBinder service) {
         Log.i(TAG, "onServiceConnected... service = " + service);
         mTransferService = service;
-        mTransferService.setCallback(this);
     }
 
     @Override

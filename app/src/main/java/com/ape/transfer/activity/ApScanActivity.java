@@ -27,16 +27,18 @@ import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiUtils;
+import com.trello.rxlifecycle.ActivityEvent;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 public class ApScanActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "ApScanActivity";
@@ -277,6 +279,16 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         registerReceiver();
 
         startScanWifi();
+        RxBus.getInstance().toObservable(PeerEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<PeerEvent>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Action1<PeerEvent>() {
+                    @Override
+                    public void call(PeerEvent peerEvent) {
+                        //do some thing
+                        onPeerChange(peerEvent);
+                    }
+                });
     }
 
     @Override
@@ -316,16 +328,13 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(mWifiStateReceiver, intentFilter);
-        EventBus.getDefault().register(this);
     }
 
     private void unregisterReceiver() {
         unregisterReceiver(mWifiStateReceiver);
-        EventBus.getDefault().unregister(this);
     }
 
-    @Subscribe
-    public void onEventMainThread(PeerEvent event) {
+    public void onPeerChange(PeerEvent event) {
         Log.i(TAG, "onEventMainThread onPeerChanged：" + event.getMsg() + ", type = " + event.getType());
         Peer peer = event.getMsg();
         int type = event.getType();

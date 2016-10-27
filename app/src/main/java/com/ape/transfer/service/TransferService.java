@@ -24,10 +24,10 @@ import com.ape.transfer.provider.TaskHistory;
 import com.ape.transfer.provider.TransferDB;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.util.WifiUtils;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class TransferService extends Service {
                 DeviceHistory.getInstance().addDevice(peer);
                 mNeighbors.add(peer);
                 if (mCallback != null) mCallback.onPeerChanged(mNeighbors);
-                EventBus.getDefault().post(new PeerEvent(peer, PeerEvent.ADD));
+                RxBus.getInstance().post(new PeerEvent(peer, PeerEvent.ADD));
             }
         }
 
@@ -60,7 +60,7 @@ public class TransferService extends Service {
             if (peer != null) {
                 mNeighbors.remove(peer);
                 if (mCallback != null) mCallback.onPeerChanged(mNeighbors);
-                EventBus.getDefault().post(new PeerEvent(peer, PeerEvent.REMOVED));
+                RxBus.getInstance().post(new PeerEvent(peer, PeerEvent.REMOVED));
             }
         }
     };
@@ -77,7 +77,7 @@ public class TransferService extends Service {
                     + ", sumSize = " + file.size);
             file.status = TransferFile.Status.STATUS_SENDING;
             TaskHistory.getInstance().updateFileInfo(file);
-            EventBus.getDefault().post(new TransferFileEvent(file));
+            RxBus.getInstance().post(new TransferFileEvent(file));
         }
 
         @Override
@@ -115,7 +115,7 @@ public class TransferService extends Service {
             Log.i(TAG, "onReceiving....  position = " + file.position + ", sumSize = " + file.size);
             file.status = TransferFile.Status.STATUS_RECEIVING;
             TaskHistory.getInstance().updateFileInfo(file);
-            EventBus.getDefault().post(new TransferFileEvent(file));
+            RxBus.getInstance().post(new TransferFileEvent(file));
         }
 
         @Override

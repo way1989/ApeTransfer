@@ -2,7 +2,6 @@ package com.ape.transfer.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,17 +19,20 @@ import com.ape.transfer.fragment.loader.TaskLoader;
 import com.ape.transfer.model.TransferFileEvent;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.RxBus;
+import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Created by android on 16-7-5.
  */
-public class HistoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>,
+public class HistoryFragment extends RxFragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>,
         HistoryAdapter.OnItemClickListener {
     private static final String ARG_DIRECTION = "direction";
     private static final String TAG = "HistoryFragment";
@@ -69,18 +71,21 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, rootView);
-        EventBus.getDefault().register(this);
+        RxBus.getInstance().toObservable(TransferFileEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<TransferFileEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(new Action1<TransferFileEvent>() {
+                    @Override
+                    public void call(TransferFileEvent event) {
+                        //do some thing
+                        onTransferChange(event);
+                    }
+                });
         return rootView;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
-    }
 
-    @Subscribe
-    public void onEventMainThread(TransferFileEvent event) {
+    public void onTransferChange(TransferFileEvent event) {
         Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
         TransferFile fileInfo = event.getMsg();
         mAdapter.updateItem(fileInfo);

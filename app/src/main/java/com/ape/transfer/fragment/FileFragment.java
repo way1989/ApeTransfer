@@ -19,22 +19,26 @@ import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.FileItemLoader;
 import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
+import com.ape.transfer.model.TransferFileEvent;
 import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.RxBus;
 import com.ape.transfer.widget.LoadingEmptyContainer;
+import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.components.support.RxFragment;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Created by android on 16-6-28.
  */
-public class FileFragment extends Fragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>, FileItemAdapter.OnItemClickListener {
+public class FileFragment extends RxFragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>, FileItemAdapter.OnItemClickListener {
     private static final String TAG = "FileFragment";
     private static final String FILE_CATEGORY = "fileCategory";
     private static final int LOADER_ID = 0;
@@ -66,18 +70,20 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_file, container, false);
         ButterKnife.bind(this, view);
-        EventBus.getDefault().register(this);
+        RxBus.getInstance().toObservable(FileEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<FileEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(new Action1<FileEvent>() {
+                    @Override
+                    public void call(FileEvent event) {
+                        //do some thing
+                        onFileChange(event);
+                    }
+                });
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Subscribe
-    public void onEventMainThread(FileEvent event) {
+    public void onFileChange(FileEvent event) {
         Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
         ArrayList<FileItem> lists = event.getMsg();
         mMusicItemAdapter.unChecked(lists);

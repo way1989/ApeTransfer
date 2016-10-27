@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
+import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.util.AndroidWebServer;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
@@ -19,7 +20,6 @@ import com.ape.transfer.util.WifiUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import fi.iki.elonen.NanoHTTPD;
 
 public class WifiAPShareActivity extends ApBaseActivity {
@@ -71,9 +71,9 @@ public class WifiAPShareActivity extends ApBaseActivity {
     }
 
     @Override
-    public void onWifiApStatusChanged(int status) {
-        super.onWifiApStatusChanged(status);
-        if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+    protected void onWifiApStatusChanged(ApStatusEvent event) {
+        super.onWifiApStatusChanged(event);
+        if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             // 开启NanoHTTPServer
             try {
                 boolean hasInternet = TDevice.hasInternet();
@@ -85,8 +85,7 @@ public class WifiAPShareActivity extends ApBaseActivity {
                 rlLoading.setVisibility(View.GONE);
                 String ip = WifiUtils.getLocalIP();
                 tvStep2Ip.setText("192.168.43.1:8080");
-                WifiConfiguration wifiConfiguration = mWifiApService.getWifiApConfiguration();
-                tvSsid.setText(wifiConfiguration.SSID);
+                tvSsid.setText(event.getSsid());
                 Bitmap qrCode = QrCodeUtils.create2DCode("http://192.168.43.1:8080");
                 if (qrCode != null) {
                     ivCode.setVisibility(View.VISIBLE);
@@ -97,8 +96,7 @@ public class WifiAPShareActivity extends ApBaseActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
-                status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED) {
             mobileDataWarning.setVisibility(View.GONE);
             finish();
         }

@@ -41,6 +41,7 @@ import com.ape.backuprestore.utils.SDCardUtils;
 import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.OldPhonePickupAdapter;
+import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
@@ -64,7 +65,7 @@ import butterknife.OnClick;
  * Created by android on 16-7-13.
  */
 public class OldPhonePickupActivity extends BaseTransferActivity implements OldPhonePickupAdapter.OnItemClickListener,
-        BackupService.OnBackupStatusListener, TransferService.Callback, TransferServiceUtil.Callback {
+        BackupService.OnBackupStatusListener, TransferServiceUtil.Callback {
     private static final String TAG = "OldPhonePickupActivity";
     protected BackupService.BackupBinder mBackupService;
     protected ProgressDialog mProgressDialog;
@@ -457,23 +458,20 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     }
 
     protected void afterServiceConnected() {
-        //mBackupListener = new PersonalDataBackupStatusListener();
         setOnBackupStatusListener();
-        //checkBackupState();
     }
 
     @Override
-    public void onWifiApStatusChanged(int status) {
-        super.onWifiApStatusChanged(status);
-        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (status == WifiApUtils.WIFI_AP_STATE_ENABLED));
-        if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+    public void onWifiApStatusChanged(ApStatusEvent event) {
+        super.onWifiApStatusChanged(event);
+        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
+        if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             boolean hasInternet = TDevice.hasInternet();
             if (hasInternet)
                 mobileDataWarning.setVisibility(View.VISIBLE);
 
             startP2P();
-        } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
-                status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED) {
             mobileDataWarning.setVisibility(View.GONE);
             finish();
         }
@@ -521,7 +519,6 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     @Override
     public void onServiceConnected(TransferService.P2PBinder service) {
         mTransferService = service;
-        mTransferService.setCallback(OldPhonePickupActivity.this);
     }
 
     @Override

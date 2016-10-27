@@ -23,6 +23,7 @@ import com.ape.transfer.R;
 import com.ape.transfer.adapter.PagerAdapter;
 import com.ape.transfer.adapter.PhoneItemAdapter;
 import com.ape.transfer.fragment.FileFragment;
+import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.beans.Peer;
@@ -30,11 +31,11 @@ import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MainTransferActivity extends BaseTransferActivity implements TransferService.Callback,
+public class MainTransferActivity extends BaseTransferActivity implements
         TransferServiceUtil.Callback, FileFragment.OnFileItemChangeListener {
     private static final String TAG = "MainTransferActivity";
     @BindView(R.id.indicator)
@@ -168,11 +169,11 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
     }
 
     @Override
-    public void onWifiApStatusChanged(int status) {
-        super.onWifiApStatusChanged(status);
-        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (status == WifiApUtils.WIFI_AP_STATE_ENABLED));
+    public void onWifiApStatusChanged(ApStatusEvent event) {
+        super.onWifiApStatusChanged(event);
+        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
 //        boolean hasInternet = TDevice.hasInternet();
-        if (status == WifiApUtils.WIFI_AP_STATE_ENABLED) {
+        if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             boolean hasInternet = TDevice.hasInternet();
             Log.i(TAG, "updateUI hasInternet = " + hasInternet);
             if (hasInternet)
@@ -182,8 +183,7 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
             tvStatusInfo.setVisibility(View.VISIBLE);
             btnDisconnect.setEnabled(true);
             startP2P();
-        } else if (status == WifiApUtils.WIFI_AP_STATE_DISABLED ||
-                status == WifiApUtils.WIFI_AP_STATE_FAILED) {
+        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED) {
             mobileDataWarning.setVisibility(View.GONE);
             finish();
         }
@@ -193,7 +193,6 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
     public void onServiceConnected(TransferService.P2PBinder service) {
         Log.i(TAG, "onServiceConnected... service = " + service);
         mTransferService = service;
-        mTransferService.setCallback(MainTransferActivity.this);
 //        startP2P();
     }
 
@@ -237,7 +236,7 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
                 if (mTransferService != null)
                     mTransferService.sendFile(mFileItems);
 
-                EventBus.getDefault().post(new FileEvent(mFileItems));//post message to fragment
+                RxBus.getInstance().post(new FileEvent(mFileItems));//post message to fragment
                 mFileItems.clear();
                 updateSendUI();
                 break;

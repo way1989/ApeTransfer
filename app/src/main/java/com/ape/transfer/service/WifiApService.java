@@ -16,25 +16,26 @@ import android.provider.Settings;
 import android.text.TextUtils;
 
 import com.ape.transfer.R;
+import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.WifiApUtils;
 
 import java.util.ArrayList;
 
 public class WifiApService extends Service {
     private static final String TAG = "WifiApService";
+    public static final String ARG_SSID = "ssid";
     private static final int OPEN_WIFI_AP = 0;
     private static final int CLOSE_WIFI_AP = 1;
     private static final long CLOSE_WIFI_AP_DELAY = 250L;
 
 
-    private IBinder mBinder = new WifiApBinder();
     private WifiManager mWifiManager;
     private WifiApUtils mWifiApUtils;
     // 服务端MAC（本机）
     private String mWifiApSSID;
     private boolean isWifiDefaultEnabled;
-    private OnWifiApStatusListener mStatusListener;
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -82,7 +83,7 @@ public class WifiApService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "onBind");
-        return mBinder;
+        throw new RuntimeException("not support bind WifiApService!");
     }
 
     @Override
@@ -108,6 +109,15 @@ public class WifiApService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent == null || TextUtils.isEmpty(intent.getStringExtra(ARG_SSID))){
+            Log.i(TAG, "onStartCommand post status... intent = null or ssid = null");
+            postStatus(WifiApUtils.WIFI_AP_STATE_FAILED);
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
+        mWifiApSSID = intent.getStringExtra(ARG_SSID);
+        openWifiAp();
         return START_NOT_STICKY;
     }
 
@@ -115,8 +125,7 @@ public class WifiApService extends Service {
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        mHandler.removeMessages(CLOSE_WIFI_AP);
-        mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, CLOSE_WIFI_AP_DELAY);
+        closeWifiAp();
         unregisterReceiver(receiver);
     }
 
@@ -126,11 +135,9 @@ public class WifiApService extends Service {
     }
 
     private void handleWifiApStateChanged(int state) {
-        if (mStatusListener != null) {
-            mStatusListener.onWifiApStatusChanged(state);
-        } else {
-            stopSelf();
-        }
+        Log.i(TAG, "handleWifiApStateChanged... state = " + state);
+        postStatus(state);//发出通知
+
         switch (state) {
             case WifiApUtils.WIFI_AP_STATE_DISABLING:
                 Log.d(TAG, "wifi ap disabling");
@@ -210,14 +217,14 @@ public class WifiApService extends Service {
 
         String wifiMAC = mWifiApUtils.getWifiMacFromDevice();
         if (TextUtils.isEmpty(wifiMAC)) {
-            if (mStatusListener != null)
-                mStatusListener.onWifiApStatusChanged(WifiApUtils.WIFI_AP_STATE_FAILED);
+            Log.i(TAG, "post status... wifiMAC == null ");
+            postStatus(WifiApUtils.WIFI_AP_STATE_FAILED);
             return;
         }
         mWifiManager.setWifiEnabled(false);
         if (TextUtils.isEmpty(mWifiApSSID)) {
-            if (mStatusListener != null)
-                mStatusListener.onWifiApStatusChanged(WifiApUtils.WIFI_AP_STATE_FAILED);
+            Log.i(TAG, "post status... mWifiApSSID == null ");
+            postStatus(WifiApUtils.WIFI_AP_STATE_FAILED);
             return;
         }
         mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
@@ -231,45 +238,36 @@ public class WifiApService extends Service {
             mWifiManager.setWifiEnabled(isWifiDefaultEnabled);
         }
     }
-
-    public interface OnWifiApStatusListener {
-        void onWifiApStatusChanged(int status);
+    private boolean isWifiApEnabled() {
+        return mWifiApUtils.isWifiApEnabled();
+    }
+    private void openWifiAp() {
+        if(isWifiApEnabled()){
+            if(TextUtils.equals(getWifiApConfiguration().SSID, mWifiApSSID)){
+                Log.i(TAG, "post status... status == WifiApUtils.WIFI_AP_STATE_ENABLED ");
+                postStatus(WifiApUtils.WIFI_AP_STATE_ENABLED);
+            }else{
+                setWifiApDisabled();
+                mHandler.removeMessages(OPEN_WIFI_AP);
+                mHandler.sendEmptyMessageDelayed(OPEN_WIFI_AP, 2000L);
+            }
+            return;
+        }
+        mHandler.removeMessages(OPEN_WIFI_AP);
+        mHandler.sendEmptyMessage(OPEN_WIFI_AP);
     }
 
-    public class WifiApBinder extends Binder {
-
-        public void setOnWifiApStatusListener(OnWifiApStatusListener listener) {
-            mStatusListener = listener;
-        }
-
-        public boolean isWifiApEnabled() {
-            return mWifiApUtils.isWifiApEnabled();
-        }
-
-        public void setWifiApSSID(String ssid) {
-            mWifiApSSID = ssid;
-        }
-
-        public void openWifiAp() {
-            mHandler.removeMessages(OPEN_WIFI_AP);
-            mHandler.sendEmptyMessage(OPEN_WIFI_AP);
-        }
-
-        public void closeWifiAp() {
-            mHandler.removeMessages(CLOSE_WIFI_AP);
-            mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, CLOSE_WIFI_AP_DELAY);//delay close wifi ap to send offline message
-        }
-
-        public WifiConfiguration getWifiApConfiguration() {
-            return mWifiApUtils.getWifiApConfiguration();
-        }
-
-        /**
-         * reset.
-         */
-        public void reset() {
-
-        }
-
+    private void postStatus(int status) {
+        RxBus.getInstance().post(new ApStatusEvent(mWifiApSSID, status));
     }
+
+    private void closeWifiAp() {
+        mHandler.removeMessages(CLOSE_WIFI_AP);
+        mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, CLOSE_WIFI_AP_DELAY);//delay close wifi ap to send offline message
+    }
+
+    private WifiConfiguration getWifiApConfiguration() {
+        return mWifiApUtils.getWifiApConfiguration();
+    }
+
 }
