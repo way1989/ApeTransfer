@@ -115,7 +115,7 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
         if (mPeer != null) {
             ArrayList<Peer> list = new ArrayList<>();
             list.add(mPeer);
-            onNeighborChanged(list);
+            onPeerChanged(list);
         } else {
             startWifiAp();
         }
@@ -204,8 +204,8 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
     }
 
     @Override
-    public void onNeighborChanged(List<Peer> neighbors) {
-        Log.i(TAG, "onNeighborChanged... neighbors = " + neighbors);
+    public void onPeerChanged(List<Peer> neighbors) {
+        Log.i(TAG, "onPeerChanged... neighbors = " + neighbors);
         mPhoneItemAdapter.setDatas(neighbors);
         updateUI(neighbors.size() > 0);
     }

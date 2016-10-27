@@ -5,10 +5,10 @@ import com.ape.transfer.p2p.beans.TransferFile;
 /**
  * Created by android on 16-7-5.
  */
-public class P2PFileInfoEvent {
+public class TransferFileEvent {
     private TransferFile mMsg;
 
-    public P2PFileInfoEvent(TransferFile msg) {
+    public TransferFileEvent(TransferFile msg) {
         mMsg = msg;
     }
 

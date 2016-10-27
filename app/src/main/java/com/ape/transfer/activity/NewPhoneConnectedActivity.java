@@ -215,8 +215,8 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
     }
 
     @Override
-    public void onNeighborChanged(List<Peer> neighbors) {
-        Log.i(TAG, "onNeighborChanged neighbors = " + neighbors);
+    public void onPeerChanged(List<Peer> neighbors) {
+        Log.i(TAG, "onPeerChanged neighbors = " + neighbors);
         if (!neighbors.isEmpty()) {
 //            Intent intent = new Intent(this, NewPhoneExchangeActivity.class);
 //            intent.putExtra("neighbor", neighbors.get(0));

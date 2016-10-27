@@ -530,7 +530,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     }
 
     @Override
-    public void onNeighborChanged(List<Peer> neighbors) {
+    public void onPeerChanged(List<Peer> neighbors) {
         if (neighbors.size() <= 0) {
             //finish();
         }

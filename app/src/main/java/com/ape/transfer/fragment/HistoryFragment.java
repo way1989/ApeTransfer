@@ -17,7 +17,7 @@ import com.ape.transfer.R;
 import com.ape.transfer.adapter.HistoryAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.TaskLoader;
-import com.ape.transfer.model.P2PFileInfoEvent;
+import com.ape.transfer.model.TransferFileEvent;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.Log;
 
@@ -80,7 +80,7 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Subscribe
-    public void onEventMainThread(P2PFileInfoEvent event) {
+    public void onEventMainThread(TransferFileEvent event) {
         Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
         TransferFile fileInfo = event.getMsg();
         mAdapter.updateItem(fileInfo);

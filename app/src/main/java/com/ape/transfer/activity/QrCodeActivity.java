@@ -118,8 +118,8 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
     }
 
     @Override
-    public void onNeighborChanged(List<Peer> neighbors) {
-        Log.i(TAG, "onNeighborChanged... neighbors = " + neighbors);
+    public void onPeerChanged(List<Peer> neighbors) {
+        Log.i(TAG, "onPeerChanged... neighbors = " + neighbors);
         if (!neighbors.isEmpty()) {
             Intent intent = new Intent(this, OldPhonePickupActivity.class);
             intent.putExtra("neighbor", neighbors.get(0));

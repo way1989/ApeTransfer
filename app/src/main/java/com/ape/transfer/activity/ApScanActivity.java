@@ -22,21 +22,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ape.transfer.R;
+import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
-import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 
-public class ApScanActivity extends BaseActivity implements View.OnClickListener,
-        TransferService.Callback, TransferServiceUtil.Callback {
+public class ApScanActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "ApScanActivity";
     private static final int MSG_START_P2P = 0;
     private static final int MSG_START_SCAN_WIFI = 1;
@@ -59,7 +61,6 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     private boolean isHandleWifiConnected;
 
     private boolean isStartScan;
-    private TransferService.P2PBinder mTransferService;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -67,7 +68,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_START_P2P:
-                    initP2P();
+                    startP2P();
                     break;
                 case MSG_START_SCAN_WIFI:
                     startScanWifi();
@@ -295,25 +296,17 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         mineTvName.setText(PreferenceUtil.getInstance().getAlias());
     }
 
-    private void initP2P() {
-        Log.i(TAG, "init P2P mTransferService = " + mTransferService);
-        if (mTransferService == null) {
-            TransferServiceUtil.getInstance().setCallback(this);
-            TransferServiceUtil.getInstance().bindTransferService();
-        } else {
-            startP2P();
-        }
+    private void startP2P() {
+        Log.i(TAG, "startP2P...");
+        Intent intent = new Intent(this, TransferService.class);
+        intent.setAction(TransferService.ACTION_START_P2P);
+        startService(intent);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mTransferService != null && mTransferService.isEmpty()) {
-            TransferServiceUtil.getInstance().unbindTransferService();
-            TransferServiceUtil.getInstance().stopTransferService();
-        }
         unregisterReceiver();
-
         removeAllFromRadom(false);
     }
 
@@ -323,27 +316,26 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(mWifiStateReceiver, intentFilter);
+        EventBus.getDefault().register(this);
     }
 
     private void unregisterReceiver() {
         unregisterReceiver(mWifiStateReceiver);
+        EventBus.getDefault().unregister(this);
     }
 
-    private void startP2P() {
-        Log.i(TAG, "startP2P...");
-        mTransferService.startP2P();
-    }
-
-    @Override
-    public void onNeighborChanged(List<Peer> neighbors) {
-        Log.i(TAG, "onNeighborChanged neighbors = " + neighbors);
-        mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
-        if (!neighbors.isEmpty()) {
+    @Subscribe
+    public void onEventMainThread(PeerEvent event) {
+        Log.i(TAG, "onEventMainThread onPeerChanged：" + event.getMsg() + ", type = " + event.getType());
+        Peer peer = event.getMsg();
+        int type = event.getType();
+        if (peer != null && type == PeerEvent.ADD) {
+            mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
             Intent intent = new Intent(this, MainTransferActivity.class);
-            intent.putExtra("neighbor", neighbors.get(0));
+            intent.putExtra("neighbor", peer);
             startActivity(intent);
+            finish();
         }
-        finish();
     }
 
     @Override
@@ -394,19 +386,4 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
 
     }
 
-    @Override
-    public void onServiceConnected(TransferService.P2PBinder service) {
-        Log.i(TAG, "onServiceConnected mTransferService = " + service);
-        mTransferService = service;
-        if (mTransferService != null) {
-            mTransferService.setCallback(ApScanActivity.this);
-            startP2P();
-        }
-    }
-
-    @Override
-    public void onServiceDisconnected() {
-        Log.i(TAG, "onServiceDisconnected mTransferService = " + mTransferService);
-        mTransferService = null;
-    }
 }
