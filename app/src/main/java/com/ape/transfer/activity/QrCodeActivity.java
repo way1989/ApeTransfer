@@ -1,11 +1,9 @@
 package com.ape.transfer.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -13,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ape.transfer.R;
-import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
@@ -27,7 +25,6 @@ import com.google.zxing.WriterException;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class QrCodeActivity extends BaseTransferActivity implements TransferService.Callback,
         TransferServiceUtil.Callback {
@@ -121,7 +118,7 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
     }
 
     @Override
-    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+    public void onNeighborChanged(List<Peer> neighbors) {
         Log.i(TAG, "onNeighborChanged... neighbors = " + neighbors);
         if (!neighbors.isEmpty()) {
             Intent intent = new Intent(this, OldPhonePickupActivity.class);

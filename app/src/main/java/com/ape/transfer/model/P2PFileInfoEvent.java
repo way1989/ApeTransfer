@@ -1,18 +1,18 @@
 package com.ape.transfer.model;
 
-import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
+import com.ape.transfer.p2p.beans.TransferFile;
 
 /**
  * Created by android on 16-7-5.
  */
 public class P2PFileInfoEvent {
-    private P2PFileInfo mMsg;
+    private TransferFile mMsg;
 
-    public P2PFileInfoEvent(P2PFileInfo msg) {
+    public P2PFileInfoEvent(TransferFile msg) {
         mMsg = msg;
     }
 
-    public P2PFileInfo getMsg() {
+    public TransferFile getMsg() {
         return mMsg;
     }
 }

@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
+import com.ape.transfer.p2p.beans.TransferFile;
 
 import java.util.ArrayList;
 
@@ -63,10 +63,10 @@ public class TaskHistory {
                 TaskHistoryColumns.CREATE_TIME + " DESC");
     }
 
-    public ArrayList<P2PFileInfo> getAllFileInfos(boolean isSend) {
+    public ArrayList<TransferFile> getAllFileInfos(boolean isSend) {
         Cursor searches = queryFileInfos(isSend ? "0" : "1");
 
-        ArrayList<P2PFileInfo> results = new ArrayList<>();
+        ArrayList<TransferFile> results = new ArrayList<>();
         if (searches == null)
             return results;
         if (searches.getCount() < 1) {
@@ -76,7 +76,7 @@ public class TaskHistory {
 
         try {
             while (searches.moveToNext()) {
-                P2PFileInfo fileInfo = new P2PFileInfo();
+                TransferFile fileInfo = new TransferFile();
                 fileInfo.wifiMac = searches.getString(searches.getColumnIndex(TaskHistoryColumns.WIFI_MAC));
                 fileInfo.name = searches.getString(searches.getColumnIndex(TaskHistoryColumns.TITLE));
                 fileInfo.direction = searches.getInt(searches.getColumnIndex(TaskHistoryColumns.DIRECTION));
@@ -104,7 +104,7 @@ public class TaskHistory {
         return results;
     }
 
-    public void addFileInfo(P2PFileInfo fileInfo) {
+    public void addFileInfo(TransferFile fileInfo) {
         if (fileInfo == null) {
             return;
         }
@@ -136,7 +136,7 @@ public class TaskHistory {
         }
     }
 
-    public void updateFileInfo(P2PFileInfo fileInfo) {
+    public void updateFileInfo(TransferFile fileInfo) {
         if (fileInfo == null) {
             return;
         }

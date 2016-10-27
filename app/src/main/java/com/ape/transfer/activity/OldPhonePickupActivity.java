@@ -41,7 +41,7 @@ import com.ape.backuprestore.utils.SDCardUtils;
 import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.OldPhonePickupAdapter;
-import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
@@ -78,7 +78,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     Button btnSure;
     private List<String> mMessageEnable = new ArrayList<>();
     private OldPhonePickupAdapter mAdapter;
-    private P2PNeighbor mP2PNeighbor;
+    private Peer mPeer;
     private InitPersonalDataTask mInitDataTask;
     private String mFolderName;
     private boolean mIsShowWarning = true;
@@ -112,7 +112,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
             mobileDataWarning.setVisibility(View.VISIBLE);
         }
         if (getIntent().hasExtra("neighbor")) {
-            mP2PNeighbor = (P2PNeighbor) (getIntent().getSerializableExtra("neighbor"));
+            mPeer = (Peer) (getIntent().getSerializableExtra("neighbor"));
         }
         mAdapter = new OldPhonePickupAdapter(getApplicationContext(), this);
         rvDataCategory.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
@@ -530,7 +530,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     }
 
     @Override
-    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+    public void onNeighborChanged(List<Peer> neighbors) {
         if (neighbors.size() <= 0) {
             //finish();
         }

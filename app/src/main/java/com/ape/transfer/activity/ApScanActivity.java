@@ -22,7 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ape.transfer.R;
-import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ApScanActivity extends BaseActivity implements View.OnClickListener,
         TransferService.Callback, TransferServiceUtil.Callback {
@@ -336,7 +335,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     }
 
     @Override
-    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+    public void onNeighborChanged(List<Peer> neighbors) {
         Log.i(TAG, "onNeighborChanged neighbors = " + neighbors);
         mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
         if (!neighbors.isEmpty()) {

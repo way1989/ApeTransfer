@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.p2p.beans.Peer;
 
 /**
  * Created by android on 16-7-4.
@@ -48,7 +48,7 @@ public class DeviceHistory {
         onCreate(db);
     }
 
-    public void addDevice(P2PNeighbor neighbor) {
+    public void addDevice(Peer neighbor) {
         if (neighbor == null)
             return;
         final SQLiteDatabase database = mTransferDB.getWritableDatabase();
@@ -75,7 +75,7 @@ public class DeviceHistory {
         }
     }
 
-    public P2PNeighbor getDevice(String wifiMac) {
+    public Peer getDevice(String wifiMac) {
         if (TextUtils.isEmpty(wifiMac))
             return null;
         final SQLiteDatabase database = mTransferDB.getReadableDatabase();
@@ -88,7 +88,7 @@ public class DeviceHistory {
             return null;
         }
         cursor.moveToFirst();
-        P2PNeighbor neighbor = new P2PNeighbor();
+        Peer neighbor = new Peer();
         neighbor.wifiMac = cursor.getString(cursor.getColumnIndex(DeviceHistoryColumns.WIFI_MAC));
         neighbor.alias = cursor.getString(cursor.getColumnIndex(DeviceHistoryColumns.ALIAS));
         neighbor.avatar = cursor.getInt(cursor.getColumnIndex(DeviceHistoryColumns.AVATAR));

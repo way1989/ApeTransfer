@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.ape.transfer.R;
 import com.ape.transfer.activity.UserInfoActivity;
-import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.p2p.beans.Peer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  * Created by android on 16-6-28.
  */
 public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.ViewHolder> {
-    private ArrayList<P2PNeighbor> mNeighbors;
+    private ArrayList<Peer> mNeighbors;
     private LayoutInflater mInflater;
 
     public PhoneItemAdapter(Context context) {
@@ -28,7 +28,7 @@ public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.View
         mNeighbors = new ArrayList<>();
     }
 
-    public void setDatas(List<P2PNeighbor> neighbors) {
+    public void setDatas(List<Peer> neighbors) {
         mNeighbors.clear();
         mNeighbors.addAll(neighbors);
         notifyDataSetChanged();
@@ -42,7 +42,7 @@ public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final P2PNeighbor neighbor = mNeighbors.get(position);
+        final Peer neighbor = mNeighbors.get(position);
         holder.textView.setText(neighbor.alias);
         holder.ivAvatar.setImageResource(UserInfoActivity.HEAD[neighbor.avatar]);
         holder.checkBox.setVisibility(View.VISIBLE);

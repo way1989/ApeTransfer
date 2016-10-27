@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.activity.UserInfoActivity;
-import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
+import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.Util;
 
@@ -25,7 +25,7 @@ import java.util.ArrayList;
  */
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
     private LayoutInflater mInflater;
-    private ArrayList<P2PFileInfo> mFileItems;
+    private ArrayList<TransferFile> mFileItems;
     private OnItemClickListener mListener;
     private int mDirection;
 
@@ -38,7 +38,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         mDirection = direction;
     }
 
-    public void setDatas(ArrayList<P2PFileInfo> musicItems) {
+    public void setDatas(ArrayList<TransferFile> musicItems) {
         mFileItems = musicItems;
         notifyDataSetChanged();
     }
@@ -69,13 +69,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return (selfTime - lastTime) < (30 * 60 * 1000);
     }
 
-    private int getPercent(P2PFileInfo fileInfo) {
+    private int getPercent(TransferFile fileInfo) {
         return (int) ((100.0f) * fileInfo.position / fileInfo.size);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        P2PFileInfo item = mFileItems.get(position);
+        TransferFile item = mFileItems.get(position);
         holder.itemView.setTag(item);
 
         // 本条与上一条时间间隔不超过0.5小时就不显示本条时间
@@ -123,10 +123,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return mFileItems.get(position).md5.hashCode() + position;
     }
 
-    public void updateItem(P2PFileInfo fileInfo) {
+    public void updateItem(TransferFile fileInfo) {
         int index = mFileItems.indexOf(fileInfo);
         if (index != -1) {
-            P2PFileInfo info = mFileItems.get(index);
+            TransferFile info = mFileItems.get(index);
             info.position = fileInfo.position;
             //info.percent = (int) ((100.0f) * fileInfo.position / fileInfo.size);
             notifyItemChanged(index);

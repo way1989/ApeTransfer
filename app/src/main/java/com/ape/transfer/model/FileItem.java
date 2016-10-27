@@ -7,7 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.FileCategoryHelper;
 import com.ape.transfer.util.Util;
 
@@ -52,7 +52,7 @@ public class FileItem implements Serializable {
     public static ArrayList<FileItem> getMusicItems(Context context, int fileCategory) {
         ArrayList<FileItem> musicItems = new ArrayList<>();
 
-        if (fileCategory == P2PConstant.TYPE.APP) {
+        if (fileCategory == Constant.TYPE.APP) {
             musicItems.addAll(getThirdPartApp(context));
         }
 
@@ -125,7 +125,7 @@ public class FileItem implements Serializable {
         appInfo.dateModified = file.lastModified();
         appInfo.fileName = app.loadLabel(pkManager) + ".apk";
 
-        appInfo.type = P2PConstant.TYPE.APP;
+        appInfo.type = Constant.TYPE.APP;
         return appInfo;
     }
 

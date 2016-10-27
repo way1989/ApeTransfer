@@ -18,7 +18,7 @@ import com.ape.transfer.adapter.HistoryAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.TaskLoader;
 import com.ape.transfer.model.P2PFileInfoEvent;
-import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
+import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
@@ -82,7 +82,7 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     @Subscribe
     public void onEventMainThread(P2PFileInfoEvent event) {
         Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
-        P2PFileInfo fileInfo = event.getMsg();
+        TransferFile fileInfo = event.getMsg();
         mAdapter.updateItem(fileInfo);
     }
 

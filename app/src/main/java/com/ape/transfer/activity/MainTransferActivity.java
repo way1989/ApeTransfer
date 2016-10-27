@@ -1,12 +1,10 @@
 package com.ape.transfer.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
@@ -27,7 +25,7 @@ import com.ape.transfer.adapter.PhoneItemAdapter;
 import com.ape.transfer.fragment.FileFragment;
 import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
-import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
@@ -42,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainTransferActivity extends BaseTransferActivity implements TransferService.Callback,
@@ -96,7 +93,7 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
-    private P2PNeighbor mP2PNeighbor;
+    private Peer mPeer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +102,7 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
         if (actionBar != null)
             actionBar.setElevation(0f);
 
-        mP2PNeighbor = (P2PNeighbor) getIntent().getSerializableExtra("neighbor");
+        mPeer = (Peer) getIntent().getSerializableExtra("neighbor");
 
         tvMeName.setText(PreferenceUtil.getInstance().getAlias());
         ivMeAvatar.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
@@ -115,9 +112,9 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
         setupWithNeighbor();
         setupWithViewPager();
 
-        if (mP2PNeighbor != null) {
-            ArrayList<P2PNeighbor> list = new ArrayList<>();
-            list.add(mP2PNeighbor);
+        if (mPeer != null) {
+            ArrayList<Peer> list = new ArrayList<>();
+            list.add(mPeer);
             onNeighborChanged(list);
         } else {
             startWifiAp();
@@ -207,7 +204,7 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
     }
 
     @Override
-    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+    public void onNeighborChanged(List<Peer> neighbors) {
         Log.i(TAG, "onNeighborChanged... neighbors = " + neighbors);
         mPhoneItemAdapter.setDatas(neighbors);
         updateUI(neighbors.size() > 0);
@@ -220,7 +217,7 @@ public class MainTransferActivity extends BaseTransferActivity implements Transf
             btnDisconnect.setEnabled(true);
             btSend.setEnabled(true);
         } else {
-            if (mP2PNeighbor != null) {
+            if (mPeer != null) {
                 finish();
                 return;
             }

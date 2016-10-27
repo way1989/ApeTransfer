@@ -1,1 +1,1 @@
-include ':app', ':emoji', ':filepicker', ':photopicker', ':backuprestore', ':p2p'
+include ':app', ':emoji', ':filepicker', ':photopicker', ':backuprestore'

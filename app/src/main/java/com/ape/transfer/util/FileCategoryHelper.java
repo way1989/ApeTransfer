@@ -8,7 +8,7 @@ import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Video;
 
 import com.ape.transfer.R;
-import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.p2p.util.Constant;
 
 import java.util.HashMap;
 
@@ -18,17 +18,17 @@ public class FileCategoryHelper {
     private static final String TAG = "FileCategoryHelper";
     public static HashMap<Integer, Integer> categoryNames = new HashMap<Integer, Integer>();
     public static int[] sCategories = new int[]{
-            P2PConstant.TYPE.MUSIC, P2PConstant.TYPE.VIDEO, P2PConstant.TYPE.PIC,
-            P2PConstant.TYPE.DOC, P2PConstant.TYPE.ZIP, P2PConstant.TYPE.APP
+            Constant.TYPE.MUSIC, Constant.TYPE.VIDEO, Constant.TYPE.PIC,
+            Constant.TYPE.DOC, Constant.TYPE.ZIP, Constant.TYPE.APP
     };
 
     static {
-        categoryNames.put(P2PConstant.TYPE.MUSIC, R.string.category_music);
-        categoryNames.put(P2PConstant.TYPE.VIDEO, R.string.category_video);
-        categoryNames.put(P2PConstant.TYPE.PIC, R.string.category_picture);
-        categoryNames.put(P2PConstant.TYPE.DOC, R.string.category_document);
-        categoryNames.put(P2PConstant.TYPE.ZIP, R.string.category_zip);
-        categoryNames.put(P2PConstant.TYPE.APP, R.string.category_apk);
+        categoryNames.put(Constant.TYPE.MUSIC, R.string.category_music);
+        categoryNames.put(Constant.TYPE.VIDEO, R.string.category_video);
+        categoryNames.put(Constant.TYPE.PIC, R.string.category_picture);
+        categoryNames.put(Constant.TYPE.DOC, R.string.category_document);
+        categoryNames.put(Constant.TYPE.ZIP, R.string.category_zip);
+        categoryNames.put(Constant.TYPE.APP, R.string.category_apk);
     }
 
 
@@ -47,10 +47,10 @@ public class FileCategoryHelper {
     public static String buildSelectionByCategory(int cat) {
         String selection = null;
         switch (cat) {
-            case P2PConstant.TYPE.DOC:
+            case Constant.TYPE.DOC:
                 selection = buildDocSelection();
                 break;
-            case P2PConstant.TYPE.ZIP:
+            case Constant.TYPE.ZIP:
                 selection = "(format != 12289) and (";
                 for (String str : SUPPORTED_ARCHIVES) {
                     selection = selection + "(" + FileColumns.DATA + " LIKE '%"
@@ -59,7 +59,7 @@ public class FileCategoryHelper {
                 selection = selection.substring(0, selection.length() - 3);
                 selection += ")";
                 break;
-            case P2PConstant.TYPE.APP:
+            case Constant.TYPE.APP:
                 selection = FileColumns.DATA + " LIKE '%.apk'";
                 break;
             default:
@@ -72,18 +72,18 @@ public class FileCategoryHelper {
         Uri uri;
         String volumeName = "external";
         switch (cat) {
-            case P2PConstant.TYPE.DOC:
-            case P2PConstant.TYPE.ZIP:
-            case P2PConstant.TYPE.APP:
+            case Constant.TYPE.DOC:
+            case Constant.TYPE.ZIP:
+            case Constant.TYPE.APP:
                 uri = Files.getContentUri(volumeName);
                 break;
-            case P2PConstant.TYPE.MUSIC:
+            case Constant.TYPE.MUSIC:
                 uri = Audio.Media.getContentUri(volumeName);
                 break;
-            case P2PConstant.TYPE.VIDEO:
+            case Constant.TYPE.VIDEO:
                 uri = Video.Media.getContentUri(volumeName);
                 break;
-            case P2PConstant.TYPE.PIC:
+            case Constant.TYPE.PIC:
                 uri = Images.Media.getContentUri(volumeName);
                 break;
             default:
@@ -119,13 +119,13 @@ public class FileCategoryHelper {
 
     public static String buildSortOrder(int fileCategory) {
         switch (fileCategory) {
-            case P2PConstant.TYPE.DOC:
-            case P2PConstant.TYPE.ZIP:
-            case P2PConstant.TYPE.APP:
+            case Constant.TYPE.DOC:
+            case Constant.TYPE.ZIP:
+            case Constant.TYPE.APP:
                 return buildSortOrder(SortMethod.name);
-            case P2PConstant.TYPE.MUSIC:
-            case P2PConstant.TYPE.VIDEO:
-            case P2PConstant.TYPE.PIC:
+            case Constant.TYPE.MUSIC:
+            case Constant.TYPE.VIDEO:
+            case Constant.TYPE.PIC:
                 return buildSortOrder(SortMethod.date);
             default:
                 break;

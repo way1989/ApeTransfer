@@ -2,7 +2,7 @@ package com.ape.transfer.fragment.loader;
 
 import android.content.Context;
 
-import com.ape.transfer.p2p.p2pentity.P2PFileInfo;
+import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.provider.TaskHistory;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by android on 16-7-5.
  */
-public class TaskLoader extends BaseLoader<P2PFileInfo> {
+public class TaskLoader extends BaseLoader<TransferFile> {
     private int mDirection;
 
     public TaskLoader(Context context, int direction) {
@@ -20,7 +20,7 @@ public class TaskLoader extends BaseLoader<P2PFileInfo> {
 
     @Override
     public Result loadInBackground() {
-        ArrayList<P2PFileInfo> fileInfos = TaskHistory.getInstance().getAllFileInfos(mDirection == 0);
+        ArrayList<TransferFile> fileInfos = TaskHistory.getInstance().getAllFileInfos(mDirection == 0);
 
         Result result = new Result();
         result.lists = fileInfos;

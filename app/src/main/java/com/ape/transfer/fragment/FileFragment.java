@@ -19,7 +19,7 @@ import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.FileItemLoader;
 import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
-import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.widget.LoadingEmptyContainer;
 
@@ -109,9 +109,9 @@ public class FileFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private RecyclerView.LayoutManager getLayoutManager() {
         switch (mFileCategory) {
-            case P2PConstant.TYPE.APP:
-            case P2PConstant.TYPE.PIC:
-            case P2PConstant.TYPE.VIDEO:
+            case Constant.TYPE.APP:
+            case Constant.TYPE.PIC:
+            case Constant.TYPE.VIDEO:
                 return new GridLayoutManager(getContext(), 4);
             default:
                 return new LinearLayoutManager(getContext());

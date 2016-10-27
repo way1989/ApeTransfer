@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ape.transfer.R;
-import com.ape.transfer.p2p.p2pentity.P2PNeighbor;
+import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
@@ -27,7 +27,6 @@ import com.ape.transfer.util.WifiUtils;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -216,7 +215,7 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
     }
 
     @Override
-    public void onNeighborChanged(List<P2PNeighbor> neighbors) {
+    public void onNeighborChanged(List<Peer> neighbors) {
         Log.i(TAG, "onNeighborChanged neighbors = " + neighbors);
         if (!neighbors.isEmpty()) {
 //            Intent intent = new Intent(this, NewPhoneExchangeActivity.class);

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.model.FileItem;
-import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.FileIconLoader;
 import com.ape.transfer.util.GlideHelper;
 import com.ape.transfer.util.Util;
@@ -58,11 +58,11 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         switch (mFileCategory) {
-            case P2PConstant.TYPE.APP:
+            case Constant.TYPE.APP:
                 view = mInflater.inflate(R.layout.app_item, parent, false);
                 break;
-            case P2PConstant.TYPE.VIDEO:
-            case P2PConstant.TYPE.PIC:
+            case Constant.TYPE.VIDEO:
+            case Constant.TYPE.PIC:
                 view = mInflater.inflate(R.layout.video_item, parent, false);
                 break;
             default:
@@ -77,31 +77,31 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         FileItem item = mFileItems.get(position);
         holder.itemView.setTag(item);
         switch (mFileCategory) {
-            case P2PConstant.TYPE.APP:
+            case Constant.TYPE.APP:
                 //holder.ivIcon.setImageResource(R.drawable.file_icon_apk);
-                mFileIconLoader.loadIcon(holder.ivIcon, item.path, item.id, P2PConstant.TYPE.APP);
+                mFileIconLoader.loadIcon(holder.ivIcon, item.path, item.id, Constant.TYPE.APP);
                 holder.tvName.setText(item.fileName);
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
-            case P2PConstant.TYPE.VIDEO:
-            case P2PConstant.TYPE.PIC:
+            case Constant.TYPE.VIDEO:
+            case Constant.TYPE.PIC:
                 GlideHelper.loadCropResource(item.path, holder.ivIcon);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
-            case P2PConstant.TYPE.ZIP:
+            case Constant.TYPE.ZIP:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_rar);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
-            case P2PConstant.TYPE.DOC:
+            case Constant.TYPE.DOC:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_default);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
-            case P2PConstant.TYPE.MUSIC:
+            case Constant.TYPE.MUSIC:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_music);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));

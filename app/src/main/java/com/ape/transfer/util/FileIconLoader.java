@@ -41,7 +41,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.ape.transfer.R;
-import com.ape.transfer.p2p.p2pconstant.P2PConstant;
+import com.ape.transfer.p2p.util.Constant;
 
 import java.io.File;
 import java.lang.ref.SoftReference;
@@ -389,10 +389,10 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
 
         public static ImageHolder create(int cate) {
             switch (cate) {
-                case P2PConstant.TYPE.APP:
+                case Constant.TYPE.APP:
                     return new DrawableHolder();
-                case P2PConstant.TYPE.PIC:
-                case P2PConstant.TYPE.VIDEO:
+                case Constant.TYPE.PIC:
+                case Constant.TYPE.VIDEO:
                     return new BitmapHolder();
             }
 
@@ -503,15 +503,15 @@ public class FileIconLoader implements Callback, ComponentCallbacks2 {
                     // Assuming atomic behavior
                     holder.state = ImageHolder.LOADING;
                     switch (id.mCategory) {
-                        case P2PConstant.TYPE.APP:
+                        case Constant.TYPE.APP:
                             Drawable icon = Util.getApkIcon(mContext, id.mPath);
                             holder.setImage(icon);
                             holder.state = BitmapHolder.LOADED;
                             //holder.state = (icon != null) ? BitmapHolder.LOADED : BitmapHolder.NEEDED;
                             break;
-                        case P2PConstant.TYPE.PIC:
-                        case P2PConstant.TYPE.VIDEO:
-                            boolean isVideo = id.mCategory == P2PConstant.TYPE.VIDEO;
+                        case Constant.TYPE.PIC:
+                        case Constant.TYPE.VIDEO:
+                            boolean isVideo = id.mCategory == Constant.TYPE.VIDEO;
                             if (id.mId == 0)
                                 id.mId = getDbId(id.mPath, isVideo);
                             if (id.mId == 0) {
