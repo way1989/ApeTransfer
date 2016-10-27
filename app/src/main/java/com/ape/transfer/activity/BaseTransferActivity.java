@@ -5,14 +5,19 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
 import com.ape.transfer.R;
+import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
+import com.ape.transfer.util.RxBus;
+import com.trello.rxlifecycle.ActivityEvent;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Created by kui.xie on 16-8-5.
  */
-public abstract class BaseTransferActivity extends ApBaseActivity implements TransferServiceUtil.Callback,
-        TransferService.Callback {
+public abstract class BaseTransferActivity extends ApBaseActivity implements TransferServiceUtil.Callback {
     protected TransferService.P2PBinder mTransferService;
 
     @Override
@@ -20,7 +25,19 @@ public abstract class BaseTransferActivity extends ApBaseActivity implements Tra
         super.onCreate(savedInstanceState);
         TransferServiceUtil.getInstance().setCallback(this);
         TransferServiceUtil.getInstance().bindTransferService();
+        RxBus.getInstance().toObservable(PeerEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<PeerEvent>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Action1<PeerEvent>() {
+                    @Override
+                    public void call(PeerEvent peerEvent) {
+                        //do some thing
+                        onPeerChanged(peerEvent);
+                    }
+                });
     }
+
+    protected abstract void onPeerChanged(PeerEvent peerEvent);
 
     @Override
     protected void onDestroy() {

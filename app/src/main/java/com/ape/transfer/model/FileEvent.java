@@ -6,13 +6,13 @@ import java.util.ArrayList;
  * Created by android on 16-7-4.
  */
 public class FileEvent {
-    private ArrayList<FileItem> mMsg;
+    private ArrayList<FileItem> mFileItems;
 
-    public FileEvent(ArrayList<FileItem> msg) {
-        mMsg = msg;
+    public FileEvent(ArrayList<FileItem> fileItems) {
+        mFileItems = fileItems;
     }
 
-    public ArrayList<FileItem> getMsg() {
-        return mMsg;
+    public ArrayList<FileItem> getFileItemList() {
+        return mFileItems;
     }
 }

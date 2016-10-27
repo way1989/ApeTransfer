@@ -1,7 +1,6 @@
 package com.ape.transfer.activity;
 
 import android.graphics.Bitmap;
-import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;

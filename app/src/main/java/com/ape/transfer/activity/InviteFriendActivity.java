@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class InviteFriendActivity extends BaseActivity {

@@ -28,7 +28,6 @@ import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.util.WifiUtils;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,6 @@ public class TransferService extends Service {
     private IBinder mBinder = new P2PBinder();
     private P2PManager mP2PManager;
     private List<Peer> mNeighbors = new ArrayList<>();
-    private Callback mCallback;
     private boolean isP2pRunning;
     private PeerCallback mPeerCallback = new PeerCallback() {
         @Override
@@ -50,7 +48,6 @@ public class TransferService extends Service {
                 peer.lastTime = System.currentTimeMillis();
                 DeviceHistory.getInstance().addDevice(peer);
                 mNeighbors.add(peer);
-                if (mCallback != null) mCallback.onPeerChanged(mNeighbors);
                 RxBus.getInstance().post(new PeerEvent(peer, PeerEvent.ADD));
             }
         }
@@ -59,7 +56,6 @@ public class TransferService extends Service {
         public void onPeerRemoved(Peer peer) {
             if (peer != null) {
                 mNeighbors.remove(peer);
-                if (mCallback != null) mCallback.onPeerChanged(mNeighbors);
                 RxBus.getInstance().post(new PeerEvent(peer, PeerEvent.REMOVED));
             }
         }
@@ -240,15 +236,8 @@ public class TransferService extends Service {
         }
     }
 
-    public interface Callback {
-        void onPeerChanged(List<Peer> neighbors);
-    }
 
     public class P2PBinder extends Binder {
-        public void setCallback(Callback callback) {
-            mCallback = callback;
-        }
-
         public TransferService getService() {
             return TransferService.this;
         }

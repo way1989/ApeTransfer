@@ -67,6 +67,13 @@ public class OldPhonePickupAdapter extends RecyclerView.Adapter<OldPhonePickupAd
         return mPersonalItemDatas.get(position);
     }
 
+    public void notifyPersonalItemData(PersonalItemData itemData) {
+        int index = mPersonalItemDatas.indexOf(itemData);
+        boolean isSelected = itemData.isSelected();
+        itemData.setSelected(itemData.isEnable() && !isSelected);
+        notifyItemChanged(index);
+    }
+
     public interface OnItemClickListener {
         void onItemClick(View v);
     }
@@ -93,12 +100,5 @@ public class OldPhonePickupAdapter extends RecyclerView.Adapter<OldPhonePickupAd
 
             mListener.onItemClick(v);
         }
-    }
-
-    public void notifyPersonalItemData(PersonalItemData itemData) {
-        int index = mPersonalItemDatas.indexOf(itemData);
-        boolean isSelected = itemData.isSelected();
-        itemData.setSelected(itemData.isEnable() && !isSelected);
-        notifyItemChanged(index);
     }
 }

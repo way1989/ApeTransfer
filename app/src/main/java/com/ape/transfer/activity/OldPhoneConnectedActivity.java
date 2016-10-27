@@ -4,8 +4,6 @@ import android.os.Bundle;
 
 import com.ape.transfer.R;
 
-import butterknife.ButterKnife;
-
 /**
  * Created by android on 16-7-13.
  */

@@ -17,7 +17,7 @@ public class PeerEvent {
         this.type = type;
     }
 
-    public Peer getMsg() {
+    public Peer getPeer() {
         return peer;
     }
 

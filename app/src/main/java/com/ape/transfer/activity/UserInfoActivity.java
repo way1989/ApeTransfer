@@ -18,7 +18,6 @@ import com.ape.transfer.util.PreferenceUtil;
 import java.nio.charset.Charset;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class UserInfoActivity extends BaseActivity implements TextWatcher {

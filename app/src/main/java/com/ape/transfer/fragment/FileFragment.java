@@ -3,7 +3,6 @@ package com.ape.transfer.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,14 +18,12 @@ import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.FileItemLoader;
 import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
-import com.ape.transfer.model.TransferFileEvent;
 import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
 import com.ape.transfer.widget.LoadingEmptyContainer;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
-
 
 import java.util.ArrayList;
 
@@ -84,8 +81,8 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     }
 
     public void onFileChange(FileEvent event) {
-        Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
-        ArrayList<FileItem> lists = event.getMsg();
+        Log.i(TAG, "onEventMainThread收到了消息：" + event.getFileItemList());
+        ArrayList<FileItem> lists = event.getFileItemList();
         mMusicItemAdapter.unChecked(lists);
     }
 

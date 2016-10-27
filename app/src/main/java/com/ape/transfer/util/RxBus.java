@@ -12,9 +12,11 @@ import rx.subjects.Subject;
 public class RxBus {
     private static volatile RxBus sInstance;
     private final Subject subject;
+
     private RxBus() {
         subject = new SerializedSubject<>(PublishSubject.create());
     }
+
     public static RxBus getInstance() {
         if (sInstance == null) {
             synchronized (RxBus.class) {
@@ -25,9 +27,11 @@ public class RxBus {
         }
         return sInstance;
     }
+
     public void post(Object event) {
         subject.onNext(event);
     }
+
     public <T> Observable<T> toObservable(Class<T> eventType) {
         return subject.ofType(eventType);
     }

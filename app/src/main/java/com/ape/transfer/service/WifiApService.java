@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -24,8 +23,8 @@ import com.ape.transfer.util.WifiApUtils;
 import java.util.ArrayList;
 
 public class WifiApService extends Service {
-    private static final String TAG = "WifiApService";
     public static final String ARG_SSID = "ssid";
+    private static final String TAG = "WifiApService";
     private static final int OPEN_WIFI_AP = 0;
     private static final int CLOSE_WIFI_AP = 1;
     private static final long CLOSE_WIFI_AP_DELAY = 250L;
@@ -35,7 +34,6 @@ public class WifiApService extends Service {
     private WifiApUtils mWifiApUtils;
     // 服务端MAC（本机）
     private String mWifiApSSID;
-    private boolean isWifiDefaultEnabled;
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -62,6 +60,7 @@ public class WifiApService extends Service {
 
         }
     };
+    private boolean isWifiDefaultEnabled;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -109,7 +108,7 @@ public class WifiApService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if(intent == null || TextUtils.isEmpty(intent.getStringExtra(ARG_SSID))){
+        if (intent == null || TextUtils.isEmpty(intent.getStringExtra(ARG_SSID))) {
             Log.i(TAG, "onStartCommand post status... intent = null or ssid = null");
             postStatus(WifiApUtils.WIFI_AP_STATE_FAILED);
             stopSelf();
@@ -238,15 +237,17 @@ public class WifiApService extends Service {
             mWifiManager.setWifiEnabled(isWifiDefaultEnabled);
         }
     }
+
     private boolean isWifiApEnabled() {
         return mWifiApUtils.isWifiApEnabled();
     }
+
     private void openWifiAp() {
-        if(isWifiApEnabled()){
-            if(TextUtils.equals(getWifiApConfiguration().SSID, mWifiApSSID)){
+        if (isWifiApEnabled()) {
+            if (TextUtils.equals(getWifiApConfiguration().SSID, mWifiApSSID)) {
                 Log.i(TAG, "post status... status == WifiApUtils.WIFI_AP_STATE_ENABLED ");
                 postStatus(WifiApUtils.WIFI_AP_STATE_ENABLED);
-            }else{
+            } else {
                 setWifiApDisabled();
                 mHandler.removeMessages(OPEN_WIFI_AP);
                 mHandler.sendEmptyMessageDelayed(OPEN_WIFI_AP, 2000L);

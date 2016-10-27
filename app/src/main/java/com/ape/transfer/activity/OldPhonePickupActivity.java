@@ -42,6 +42,7 @@ import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.OldPhonePickupAdapter;
 import com.ape.transfer.model.ApStatusEvent;
+import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
@@ -212,7 +213,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
         showWarningForLargeFiles((PersonalItemData) v.getTag(), selectedList);
         btnSure.setEnabled(!getSelectedItemList().isEmpty());
         storageView.setText(getSelectedItemList().isEmpty() ?
-                getResources().getQuantityString(R.plurals.total_selected, 0, 0):
+                getResources().getQuantityString(R.plurals.total_selected, 0, 0) :
                 getResources().getQuantityString(R.plurals.total_selected, getSelectedItemList().size(),
                         getSelectedItemList().size()));
     }
@@ -527,10 +528,10 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     }
 
     @Override
-    public void onPeerChanged(List<Peer> neighbors) {
-        if (neighbors.size() <= 0) {
-            //finish();
-        }
+    protected void onPeerChanged(PeerEvent peerEvent) {
+        //if (neighbors.size() <= 0) {
+        //finish();
+        // }
     }
 
     private class InitPersonalDataTask extends AsyncTask<Void, Void, Long> {

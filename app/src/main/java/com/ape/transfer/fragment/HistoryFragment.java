@@ -23,7 +23,6 @@ import com.ape.transfer.util.RxBus;
 import com.trello.rxlifecycle.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
@@ -86,8 +85,8 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
 
 
     public void onTransferChange(TransferFileEvent event) {
-        Log.i(TAG, "onEventMainThread收到了消息：" + event.getMsg());
-        TransferFile fileInfo = event.getMsg();
+        Log.i(TAG, "onEventMainThread收到了消息：" + event.getTransferFile());
+        TransferFile fileInfo = event.getTransferFile();
         mAdapter.updateItem(fileInfo);
     }
 

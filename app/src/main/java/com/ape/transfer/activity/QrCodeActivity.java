@@ -2,7 +2,6 @@ package com.ape.transfer.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 
 import com.ape.transfer.R;
 import com.ape.transfer.model.ApStatusEvent;
+import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
@@ -22,8 +22,6 @@ import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 import com.google.zxing.WriterException;
-
-import java.util.List;
 
 import butterknife.BindView;
 
@@ -114,13 +112,15 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
     }
 
     @Override
-    public void onPeerChanged(List<Peer> neighbors) {
-        Log.i(TAG, "onPeerChanged... neighbors = " + neighbors);
-        if (!neighbors.isEmpty()) {
+    public void onPeerChanged(PeerEvent peerEvent) {
+        Log.i(TAG, "onPeerChanged：" + peerEvent.getPeer() + ", type = " + peerEvent.getType());
+        Peer peer = peerEvent.getPeer();
+        int type = peerEvent.getType();
+        if (peer != null && type == PeerEvent.ADD) {
             Intent intent = new Intent(this, OldPhonePickupActivity.class);
-            intent.putExtra("neighbor", neighbors.get(0));
+            intent.putExtra("neighbor", peer);
             startActivity(intent);
+            finish();
         }
-        finish();
     }
 }

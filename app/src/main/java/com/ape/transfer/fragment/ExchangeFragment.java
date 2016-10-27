@@ -15,8 +15,6 @@ import android.view.ViewGroup;
 
 import com.ape.transfer.R;
 import com.ape.transfer.activity.InviteFriendActivity;
-import com.ape.transfer.activity.NewPhoneExchangeActivity;
-import com.ape.transfer.activity.OldPhonePickupActivity;
 import com.ape.transfer.activity.QrCodeActivity;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.zxing.activity.CaptureActivity;

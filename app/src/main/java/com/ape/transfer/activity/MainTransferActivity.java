@@ -26,6 +26,7 @@ import com.ape.transfer.fragment.FileFragment;
 import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
+import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.service.TransferServiceUtil;
@@ -35,7 +36,6 @@ import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +95,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
     private Peer mPeer;
+    private List<Peer> mPeerList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,9 +115,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
         setupWithViewPager();
 
         if (mPeer != null) {
-            ArrayList<Peer> list = new ArrayList<>();
-            list.add(mPeer);
-            onPeerChanged(list);
+            onPeerChanged(new PeerEvent(mPeer, PeerEvent.ADD));
         } else {
             startWifiAp();
         }
@@ -203,10 +202,15 @@ public class MainTransferActivity extends BaseTransferActivity implements
     }
 
     @Override
-    public void onPeerChanged(List<Peer> neighbors) {
-        Log.i(TAG, "onPeerChanged... neighbors = " + neighbors);
-        mPhoneItemAdapter.setDatas(neighbors);
-        updateUI(neighbors.size() > 0);
+    protected void onPeerChanged(PeerEvent peerEvent) {
+        Log.i(TAG, "onPeerChanged... peerEvent = " + peerEvent);
+        if (peerEvent.getType() == PeerEvent.ADD) {
+            mPeerList.add(peerEvent.getPeer());
+        } else {
+            mPeerList.remove(peerEvent.getPeer());
+        }
+        mPhoneItemAdapter.setDatas(mPeerList);
+        updateUI(mPeerList.size() > 0);
     }
 
     private void updateUI(boolean hasNeighbor) {

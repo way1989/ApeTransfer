@@ -32,7 +32,6 @@ import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiUtils;
 import com.trello.rxlifecycle.ActivityEvent;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -286,7 +285,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                     @Override
                     public void call(PeerEvent peerEvent) {
                         //do some thing
-                        onPeerChange(peerEvent);
+                        onPeerChanged(peerEvent);
                     }
                 });
     }
@@ -334,9 +333,9 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         unregisterReceiver(mWifiStateReceiver);
     }
 
-    public void onPeerChange(PeerEvent event) {
-        Log.i(TAG, "onEventMainThread onPeerChanged：" + event.getMsg() + ", type = " + event.getType());
-        Peer peer = event.getMsg();
+    public void onPeerChanged(PeerEvent event) {
+        Log.i(TAG, "onPeerChanged：" + event.getPeer() + ", type = " + event.getType());
+        Peer peer = event.getPeer();
         int type = event.getType();
         if (peer != null && type == PeerEvent.ADD) {
             mHandler.removeMessages(MSG_CONNECT_TIMEOUT);

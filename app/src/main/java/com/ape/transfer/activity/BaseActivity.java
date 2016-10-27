@@ -3,7 +3,6 @@ package com.ape.transfer.activity;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
@@ -32,5 +31,7 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected abstract @LayoutRes int getLayout();
+    protected abstract
+    @LayoutRes
+    int getLayout();
 }

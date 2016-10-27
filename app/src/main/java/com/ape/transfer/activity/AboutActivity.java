@@ -12,7 +12,6 @@ import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class AboutActivity extends BaseActivity {
 
