@@ -115,11 +115,11 @@ public abstract class ApBaseActivity extends BaseActivity {
         super.onDestroy();
         if (shouldCloseWifiAp()) {
             stopWifiAp();
-            try {
-                unregisterReceiver(receiver);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        }
+        try {
+            unregisterReceiver(receiver);
+        } catch (Exception e) {
+            //ignore this exception
         }
     }
 

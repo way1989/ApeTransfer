@@ -13,6 +13,7 @@ import com.ape.transfer.activity.UserInfoActivity;
 import com.ape.transfer.p2p.beans.Peer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.View
         mNeighbors = new ArrayList<>();
     }
 
-    public void setDatas(List<Peer> neighbors) {
+    public void setDatas(HashSet<Peer> neighbors) {
         mNeighbors.clear();
         mNeighbors.addAll(neighbors);
         notifyDataSetChanged();

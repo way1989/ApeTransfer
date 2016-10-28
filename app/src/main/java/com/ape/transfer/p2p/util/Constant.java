@@ -14,7 +14,7 @@ public class Constant {
 
     public static final String MSG_SEPARATOR = "\0";
 
-    public static final String MULTI_ADDRESS = "255.255.255.255";
+    public static final String MULTI_ADDRESS = "192.168.43.255";//手机的ip几乎都是192.168.43.xx
 
     public static final String FILE_SHARE_SAVE_PATH = "ApeTransfer";
 

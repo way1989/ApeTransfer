@@ -31,7 +31,7 @@ public class P2PManager {
     private static String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
             + File.separator + Constant.FILE_SHARE_SAVE_PATH;
 
-    private Peer mNeighbor;
+    private Peer mSelfPeer;
     private PeerCallback mPeerCallback;
     private WorkHandler mWorkHandler;
     private P2PManagerHandler mMainUIHandler;
@@ -50,7 +50,7 @@ public class P2PManager {
     }
 
     public void start(Peer melon, PeerCallback melon_callback) {
-        this.mNeighbor = melon;
+        this.mSelfPeer = melon;
         this.mPeerCallback = melon_callback;
 
         HandlerThread handlerThread = new HandlerThread(TAG, Thread.MAX_PRIORITY);
@@ -65,8 +65,7 @@ public class P2PManager {
         mWorkHandler.initReceive();
     }
 
-    public void sendFile(Peer[] dsts, TransferFile[] files,
-                         SendFileCallback callback) {
+    public void sendFile(Peer[] dsts, TransferFile[] files, SendFileCallback callback) {
         this.mSendFileCallback = callback;
         Log.i(TAG, "sendFile mWorkHandler = " + mWorkHandler);
         mWorkHandler.initSend();
@@ -81,8 +80,8 @@ public class P2PManager {
 //                Constant.Src.MANAGER, Constant.Recipient.FILE_RECEIVE, null);
 //    }
 
-    public Peer getSelfMeMelonInfo() {
-        return mNeighbor;
+    public Peer getSelfPeer() {
+        return mSelfPeer;
     }
 
     public Handler getHandler() {
@@ -90,12 +89,8 @@ public class P2PManager {
     }
 
     public void stop() {
-        if (mWorkHandler != null) {
-            Log.d(TAG, "p2pManager stop");
-            mWorkHandler.release();
-            mWorkHandler.getLooper().quitSafely();
-            mWorkHandler = null;
-        }
+        Log.d(TAG, "p2pManager stop");
+        mWorkHandler.release();
     }
 
     public void cancelReceive() {

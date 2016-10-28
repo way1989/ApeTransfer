@@ -11,6 +11,7 @@ import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,7 +38,9 @@ import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -94,7 +97,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
     private Peer mPeer;
-    private List<Peer> mPeerList = new ArrayList<>();
+    private HashSet<Peer> mPeerList = new HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +123,13 @@ public class MainTransferActivity extends BaseTransferActivity implements
         } else {
             startWifiAp();
         }
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
@@ -160,7 +170,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
 
     @Override
     protected boolean shouldCloseWifiAp() {
-        return mTransferService == null || mTransferService.isEmpty();
+        return isWifiApEnabled() && (mTransferService == null || mTransferService.isEmpty());
     }
 
     @Override
@@ -202,7 +212,8 @@ public class MainTransferActivity extends BaseTransferActivity implements
 
     @Override
     protected void onPostServiceConnected() {
-
+        //如果wifi热点已经开启或者没有建立热点的启动，则启动p2p
+        if(isWifiApEnabled() || mPeer != null) startP2P();
     }
 
     private void updateUI(boolean hasNeighbor) {

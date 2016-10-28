@@ -37,10 +37,10 @@
             android:layout_marginRight="@dimen/context_name_marginLeft"
             android:layout_toLeftOf="@id/iv_avatar"
             android:gravity="center"
-            android:singleLine="true"
             android:text="@string/main_receive"
             android:textColor="@color/gray_dark"
-            android:textSize="@dimen/textSize_h6" />
+            android:textSize="@dimen/textSize_h6"
+            android:maxLines="1"/>
 
         <RelativeLayout
             android:layout_width="@dimen/message_layout_width"

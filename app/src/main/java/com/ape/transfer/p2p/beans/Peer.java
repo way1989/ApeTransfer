@@ -1,6 +1,8 @@
 package com.ape.transfer.p2p.beans;
 
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 
@@ -25,15 +27,13 @@ public class Peer implements Serializable {
     public long lastTime;
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
+    public boolean equals(Object o) {
+        if (o == null)
             return false;
 
-        Peer s = (Peer) obj;
+        Peer peer = (Peer) o;
 
-        if ((s.ip == null))
-            return false;
+        return TextUtils.equals(peer.wifiMac, this.wifiMac);
 
-        return (this.ip.equals(s.ip));
     }
 }

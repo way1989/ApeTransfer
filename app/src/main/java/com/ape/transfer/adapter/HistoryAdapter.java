@@ -17,6 +17,7 @@ import com.ape.transfer.activity.UserInfoActivity;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.Util;
+import com.daimajia.numberprogressbar.NumberProgressBar;
 
 import java.util.ArrayList;
 
@@ -57,7 +58,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        if (mDirection == 0) {
+        if (mDirection == TransferFile.Direction.DIRECTION_SEND) {
             view = mInflater.inflate(R.layout.history_item_send, parent, false);
         } else {
             view = mInflater.inflate(R.layout.history_item_receive, parent, false);
@@ -70,7 +71,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     private int getPercent(TransferFile fileInfo) {
-        return (int) ((100.0f) * fileInfo.position / fileInfo.size);
+        return (int) ((100.0f * fileInfo.position) / fileInfo.size);
     }
 
     @Override
@@ -98,13 +99,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         if (item.position < item.size) {
             holder.progressBar.setVisibility(View.VISIBLE);
             holder.progressBar.setProgress(getPercent(item));
-            holder.tvPrecent.setText(getPercent(item) + "%");
+            //holder.tvPercent.setText(getPercent(item) + "%");
         } else {
             holder.progressBar.setVisibility(View.INVISIBLE);
-            holder.tvPrecent.setVisibility(View.INVISIBLE);
+            //holder.tvPercent.setVisibility(View.INVISIBLE);
             holder.tvInfo.setVisibility(View.VISIBLE);
         }
-        if (mDirection == 0) {
+        if (mDirection == TransferFile.Direction.DIRECTION_SEND) {
             holder.ivAvatar.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
             holder.tvTo.setText(App.getContext().getString(R.string.format_to));
         } else {
@@ -137,20 +138,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         void onItemClick(View v);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView tvTime;
-        public ImageView ivAvatar;
-        public TextView tvFrom;
-        public TextView tvTo;
-        public ImageView ivThumb;
-        public Button btnOperation;
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView tvTime;
+        ImageView ivAvatar;
+        TextView tvFrom;
+        TextView tvTo;
+        ImageView ivThumb;
+        Button btnOperation;
 
-        public TextView tvTitle;
-        public TextView tvInfo;
-        public TextView tvPrecent;
-        public ProgressBar progressBar;
+        TextView tvTitle;
+        TextView tvInfo;
+        //TextView tvPercent;
+        NumberProgressBar progressBar;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             tvTime = (TextView) itemView.findViewById(R.id.tv_time);
@@ -162,8 +163,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
             tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
             tvInfo = (TextView) itemView.findViewById(R.id.tv_info);
-            tvPrecent = (TextView) itemView.findViewById(R.id.tv_percent);
-            progressBar = (ProgressBar) itemView.findViewById(R.id.progressBar);
+            //tvPercent = (TextView) itemView.findViewById(R.id.tv_percent);
+            progressBar = (NumberProgressBar) itemView.findViewById(R.id.progressBar);
         }
 
         @Override

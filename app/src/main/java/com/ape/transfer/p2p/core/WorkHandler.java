@@ -6,11 +6,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.p2p.beans.param.ParamIPMsg;
 import com.ape.transfer.p2p.core.receive.ReceiveManager;
 import com.ape.transfer.p2p.core.send.SendManager;
-import com.ape.transfer.p2p.timer.OSTimer;
-import com.ape.transfer.p2p.timer.Timeout;
 import com.ape.transfer.p2p.util.Constant;
 
 import java.net.InetAddress;
@@ -40,7 +39,7 @@ public class WorkHandler extends Handler {
     public void init(P2PManager manager) {
         Log.i(TAG, "thread id = " + Thread.currentThread().getId());
         this.mP2PManager = manager;
-        mCommunicateThread = new CommunicateThread(mP2PManager.getSelfMeMelonInfo(), this);
+        mCommunicateThread = new CommunicateThread(mP2PManager.getSelfPeer(), this);
         mCommunicateThread.start();
 
         mPeerManager = new PeerManager(this);
@@ -49,28 +48,31 @@ public class WorkHandler extends Handler {
     }
 
     public void onLine() {
-        Timeout timeout = new Timeout() {
+        Log.d(TAG, "onLine... out");
+        this.postDelayed(new Runnable() {
             @Override
-            public void onTimeOut() {
-                Log.d(TAG, "onLine...");
+            public void run() {
+                Log.d(TAG, "onLine... post in");
                 mCommunicateThread.broadcastMSG(Constant.CommandNum.ON_LINE, Constant.Recipient.NEIGHBOR);
             }
-        };
-        //发送两个广播消息
-        new OSTimer(this, timeout, 250).start();
-        new OSTimer(this, timeout, 500).start();
+        }, 2000L);
     }
 
     public void offLine() {
-        Timeout timeOut = new Timeout() {
+        Log.d(TAG, "offLine... out");
+        this.post(new Runnable() {
             @Override
-            public void onTimeOut() {
-                Log.d(TAG, "offLine...");
-                mCommunicateThread.broadcastMSG(Constant.CommandNum.OFF_LINE, Constant.Recipient.NEIGHBOR);
+            public void run() {
+                Log.d(TAG, "offLine... post in");
+                for(Peer peer : mPeerManager.getNeighbors().values()){
+                    mCommunicateThread.sendMsg2Peer(peer.inetAddress, Constant.CommandNum.OFF_LINE,
+                            Constant.Recipient.NEIGHBOR, null);
+                }
+                //mCommunicateThread.broadcastMSG(Constant.CommandNum.OFF_LINE, Constant.Recipient.NEIGHBOR);
+                mCommunicateThread.quit();
+                WorkHandler.this.getLooper().quitSafely();
             }
-        };
-        new OSTimer(this, timeOut, 0);
-        new OSTimer(this, timeOut, 250);
+        });
     }
 
     public void initSend() {
@@ -106,31 +108,20 @@ public class WorkHandler extends Handler {
 
     public void release() {
         Log.d(TAG, "p2pHandler release");
+        releaseReceive();
+        releaseSend();
+        offLine();
+    }
 
+    private void releaseReceive() {
         if (mReceiveManager != null)
             mReceiveManager.quit();
-
-        if (mSendManager != null)
-            mSendManager.quit();
-
-        offLine();
-
-        Timeout timeout = new Timeout() {
-            @Override
-            public void onTimeOut() {
-                if (mCommunicateThread != null) {
-                    mCommunicateThread.quit();
-                    mCommunicateThread = null;
-                }
-            }
-        };
-        new OSTimer(this, timeout, 500);
-
-        mPeerManager = null;
+        mReceiveManager = null;
     }
 
     public void releaseSend() {
-        mSendManager.quit();
+        if (mSendManager != null)
+            mSendManager.quit();
         mSendManager = null;
     }
 

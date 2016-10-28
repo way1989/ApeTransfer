@@ -42,11 +42,12 @@ import rx.functions.Action1;
 public class ApScanActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "ApScanActivity";
     private static final int MSG_START_P2P = 0;
+    private static final long DELAY_START_P2P = 500L;
     private static final int MSG_START_SCAN_WIFI = 1;
     private static final int MSG_HANDLE_SCAN_RESULT = 2;
     private static final int MSG_CONNECT_TIMEOUT = 3;
     //private static final int MSG_SCAN_WIFI_TIMEOUT = 4;
-    private static final long CONNECT_TIMEOUT = 30000;
+    private static final long CONNECT_TIMEOUT = 20000L;
     @BindView(R.id.iv_scan)
     ImageView ivScan;
     @BindView(R.id.iv_head)
@@ -78,7 +79,9 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                     handleScanResult();
                     break;
                 case MSG_CONNECT_TIMEOUT:
-                    Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),
+                            R.string.text_connetion_tip,
+                            Toast.LENGTH_SHORT).show();
                     removeAllFromRadom(true);
                     break;
 //                case MSG_SCAN_WIFI_TIMEOUT:
@@ -117,8 +120,9 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                 if (!isHandleScanResult)
                     return;
                 if (mWifiManager.getConnectionInfo().getSSID().contains("ApeTransfer@")) {
+                    //不知道为什么连接上后又会断开,然后又连上,所以这里延迟一点
                     mHandler.removeMessages(MSG_START_P2P);
-                    mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 250L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+                    mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);
                 }
                 break;
             case CONNECTING:
@@ -359,8 +363,9 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         Log.i(TAG, "isWifiConnected = " + isWifiConnected + ", ssid = " + mWifiManager.getConnectionInfo().getSSID()
                 + ", ScanResult ssid = " + "\"" + ssid + "\"");
         if (isWifiConnected && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), "\"" + ssid + "\"")) {
+            //由于已经连接上了此wifi，所以直接启动p2p
             mHandler.removeMessages(MSG_START_P2P);
-            mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 250L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+            mHandler.sendEmptyMessage(MSG_START_P2P);
         } else {
             WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
             switch (type) {
