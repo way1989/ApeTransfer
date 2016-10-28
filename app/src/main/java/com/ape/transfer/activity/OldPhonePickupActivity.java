@@ -45,7 +45,6 @@ import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
-import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.TDevice;
@@ -65,8 +64,8 @@ import butterknife.OnClick;
 /**
  * Created by android on 16-7-13.
  */
-public class OldPhonePickupActivity extends BaseTransferActivity implements OldPhonePickupAdapter.OnItemClickListener,
-        BackupService.OnBackupStatusListener, TransferServiceUtil.Callback {
+public class OldPhonePickupActivity extends BaseTransferActivity implements
+        OldPhonePickupAdapter.OnItemClickListener, BackupService.OnBackupStatusListener {
     private static final String TAG = "OldPhonePickupActivity";
     protected BackupService.BackupBinder mBackupService;
     protected ProgressDialog mProgressDialog;
@@ -84,8 +83,6 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     private InitPersonalDataTask mInitDataTask;
     private String mFolderName;
     private boolean mIsShowWarning = true;
-
-    private TransferService.P2PBinder mTransferService;
 
     private ServiceConnection mServiceCon = new ServiceConnection() {
         @Override
@@ -113,8 +110,8 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
         if (TDevice.hasInternet()) {
             mobileDataWarning.setVisibility(View.VISIBLE);
         }
-        if (getIntent().hasExtra("neighbor")) {
-            mPeer = (Peer) (getIntent().getSerializableExtra("neighbor"));
+        if (getIntent().hasExtra(Peer.TAG)) {
+            mPeer = (Peer) (getIntent().getSerializableExtra(Peer.TAG));
         }
         mAdapter = new OldPhonePickupAdapter(getApplicationContext(), this);
         rvDataCategory.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
@@ -463,8 +460,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     }
 
     @Override
-    public void onWifiApStatusChanged(ApStatusEvent event) {
-        super.onWifiApStatusChanged(event);
+    protected void onWifiApStatusChanged(ApStatusEvent event) {
         Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
         if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             boolean hasInternet = TDevice.hasInternet();
@@ -518,20 +514,15 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements OldP
     }
 
     @Override
-    public void onServiceConnected(TransferService.P2PBinder service) {
-        mTransferService = service;
-    }
-
-    @Override
-    public void onServiceDisconnected() {
-        mTransferService = null;
-    }
-
-    @Override
     protected void onPeerChanged(PeerEvent peerEvent) {
         //if (neighbors.size() <= 0) {
         //finish();
         // }
+    }
+
+    @Override
+    protected void onPostServiceConnected() {
+
     }
 
     private class InitPersonalDataTask extends AsyncTask<Void, Void, Long> {

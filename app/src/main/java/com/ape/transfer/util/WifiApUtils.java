@@ -1,5 +1,6 @@
 package com.ape.transfer.util;
 
+import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -86,7 +87,7 @@ public class WifiApUtils {
     /* 数据段begin */
     private final static String TAG = "WifiApUtils";
     // 单例
-    private static WifiApUtils mWifiApServerManager;
+    private static WifiApUtils sWifiApUtils;
     // WifiManager引用
     private WifiManager mWifiManager;
 
@@ -97,12 +98,12 @@ public class WifiApUtils {
 
     /* 数据段end */
 
-    public synchronized static WifiApUtils getInstance(WifiManager wifiManager) {
-        if (mWifiApServerManager == null) {
-            mWifiApServerManager = new WifiApUtils(wifiManager);
+    public synchronized static WifiApUtils getInstance(Context context) {
+        if (sWifiApUtils == null) {
+            sWifiApUtils = new WifiApUtils((WifiManager) context.getSystemService(Context.WIFI_SERVICE));
         }
 
-        return mWifiApServerManager;
+        return sWifiApUtils;
     }
 
     //尝试获取MAC地址

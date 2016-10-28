@@ -9,10 +9,10 @@ import com.ape.transfer.p2p.beans.TransferFile;
  */
 public class ParamSendFiles {
     public Peer[] neighbors;
-    public TransferFile[] files;
+    public TransferFile[] transferFiles;
 
-    public ParamSendFiles(Peer[] neighbors, TransferFile[] files) {
+    public ParamSendFiles(Peer[] neighbors, TransferFile[] transferFiles) {
         this.neighbors = neighbors;
-        this.files = files;
+        this.transferFiles = transferFiles;
     }
 }

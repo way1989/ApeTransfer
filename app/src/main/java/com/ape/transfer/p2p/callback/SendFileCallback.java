@@ -9,7 +9,7 @@ import com.ape.transfer.p2p.beans.TransferFile;
  * 我要发送实现的发送回调
  */
 public interface SendFileCallback {
-    void onPreSending();
+    void onPreSending(TransferFile[] files, Peer peer);
 
     void onSending(TransferFile file, Peer dest);
 

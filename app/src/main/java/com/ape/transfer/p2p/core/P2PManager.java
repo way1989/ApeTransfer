@@ -15,8 +15,6 @@ import com.ape.transfer.p2p.beans.param.ParamTCPNotify;
 import com.ape.transfer.p2p.callback.PeerCallback;
 import com.ape.transfer.p2p.callback.ReceiveFileCallback;
 import com.ape.transfer.p2p.callback.SendFileCallback;
-import com.ape.transfer.p2p.timer.OSTimer;
-import com.ape.transfer.p2p.timer.Timeout;
 import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.Log;
 
@@ -110,20 +108,6 @@ public class P2PManager {
                 Constant.Src.MANAGER, Constant.Recipient.FILE_SEND, neighbor);
     }
 
-    public void sendOffLine(final Peer neighbor) {
-        Log.i(TAG, "sendOffLine... mNeighbor = " + neighbor);
-        if (mWorkHandler == null) return;
-        Timeout timeOut = new Timeout() {
-            @Override
-            public void onTimeOut() {
-                android.util.Log.d(TAG, "sendOffLine... ");
-                mWorkHandler.send2Neighbor(neighbor.inetAddress, Constant.CommandNum.OFF_LINE, null);
-
-            }
-        };
-        new OSTimer(mWorkHandler, timeOut, 0);
-    }
-
     private static class P2PManagerHandler extends Handler {
         private WeakReference<P2PManager> weakReference;
 
@@ -149,20 +133,22 @@ public class P2PManager {
                 case Constant.CommandNum.SEND_FILE_REQ: //收到请求发送文件
                     if (manager.mReceiveFileCallback != null) {
                         ParamReceiveFiles params = (ParamReceiveFiles) msg.obj;
-                        manager.mReceiveFileCallback.onPreReceiving(params.Neighbor,
-                                params.Files);
+                        manager.mReceiveFileCallback.onPreReceiving(params.peer,
+                                params.transferFiles);
                     }
                     break;
                 case Constant.CommandNum.SEND_FILE_START: //发送端开始发送
+                    ParamTCPNotify preNotify = (ParamTCPNotify) msg.obj;
                     if (manager.mSendFileCallback != null) {
-                        manager.mSendFileCallback.onPreSending();
+                        manager.mSendFileCallback.onPreSending((TransferFile[]) preNotify.object,
+                                preNotify.peer);
                     }
                     break;
                 case Constant.CommandNum.SEND_PERCENTS:
                     ParamTCPNotify notify = (ParamTCPNotify) msg.obj;
                     if (manager.mSendFileCallback != null)
-                        manager.mSendFileCallback.onSending((TransferFile) notify.Obj,
-                                notify.Neighbor);
+                        manager.mSendFileCallback.onSending((TransferFile) notify.object,
+                                notify.peer);
                     break;
                 case Constant.CommandNum.SEND_OVER:
                     if (manager.mSendFileCallback != null)

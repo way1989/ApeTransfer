@@ -340,7 +340,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         if (peer != null && type == PeerEvent.ADD) {
             mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
             Intent intent = new Intent(this, MainTransferActivity.class);
-            intent.putExtra("neighbor", peer);
+            intent.putExtra(Peer.TAG, peer);
             startActivity(intent);
             finish();
         }

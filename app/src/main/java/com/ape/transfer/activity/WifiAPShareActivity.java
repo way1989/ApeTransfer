@@ -71,7 +71,6 @@ public class WifiAPShareActivity extends ApBaseActivity {
 
     @Override
     protected void onWifiApStatusChanged(ApStatusEvent event) {
-        super.onWifiApStatusChanged(event);
         if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             // 开启NanoHTTPServer
             try {

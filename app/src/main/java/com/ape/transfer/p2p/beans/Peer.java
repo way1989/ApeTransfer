@@ -9,7 +9,7 @@ import java.net.InetAddress;
  * 局域网的用户
  */
 public class Peer implements Serializable {
-
+    public static final String TAG = "Peer";
     private static final long serialVersionUID = -5191365431255505545L;
     public String alias;
     public int avatar;

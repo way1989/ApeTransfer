@@ -39,7 +39,7 @@ public class Sender {
 //                //通知界面开始发送
 //                p2PHandler.send2UI(Constant.CommandNum.SEND_FILE_START, null);
 //                //通知接收端 开始发送文件
-//                p2PHandler.send2Receiver(ipmsg.peerIAddr,
+//                p2PHandler.send2Receiver(ipmsg.peerIAddress,
 //                        Constant.CommandNum.SEND_FILE_START, null);
 //                break;
             case Constant.CommandNum.RECEIVE_ABORT_SELF: //接收者退出

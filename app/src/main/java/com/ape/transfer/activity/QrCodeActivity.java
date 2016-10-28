@@ -14,7 +14,6 @@ import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
-import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
@@ -25,7 +24,7 @@ import com.google.zxing.WriterException;
 
 import butterknife.BindView;
 
-public class QrCodeActivity extends BaseTransferActivity implements TransferServiceUtil.Callback {
+public class QrCodeActivity extends BaseTransferActivity {
     public static final String EXCHANGE_SSID_SUFFIX = "@exchange";
     private static final String TAG = "QrCodeActivity";
     @BindView(R.id.tv_qrcode)
@@ -71,8 +70,7 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
     }
 
     @Override
-    public void onWifiApStatusChanged(ApStatusEvent event) {
-        super.onWifiApStatusChanged(event);
+    protected void onWifiApStatusChanged(ApStatusEvent event) {
         Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
 //        boolean hasInternet = TDevice.hasInternet();
         if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
@@ -100,18 +98,6 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
     }
 
     @Override
-    public void onServiceConnected(TransferService.P2PBinder service) {
-        Log.i(TAG, "onServiceConnected... service = " + service);
-        mTransferService = service;
-    }
-
-    @Override
-    public void onServiceDisconnected() {
-        Log.i(TAG, "onServiceConnected... service = " + mTransferService);
-        mTransferService = null;
-    }
-
-    @Override
     public void onPeerChanged(PeerEvent peerEvent) {
         Log.i(TAG, "onPeerChanged：" + peerEvent.getPeer() + ", type = " + peerEvent.getType());
         Peer peer = peerEvent.getPeer();
@@ -122,5 +108,10 @@ public class QrCodeActivity extends BaseTransferActivity implements TransferServ
             startActivity(intent);
             finish();
         }
+    }
+
+    @Override
+    protected void onPostServiceConnected() {
+
     }
 }

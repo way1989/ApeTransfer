@@ -123,7 +123,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
             finish();
             return;
         }
-        // update to avoid files deleted
+        // update to avoid transferFiles deleted
         if (new File(mRestoreFolderPath).exists()) {
             mPreviewTask = new FilePreviewTask();
             mPreviewTask.execute();

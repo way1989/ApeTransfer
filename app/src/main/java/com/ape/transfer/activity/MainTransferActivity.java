@@ -29,7 +29,6 @@ import com.ape.transfer.model.FileItem;
 import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
-import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.RxBus;
@@ -44,7 +43,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MainTransferActivity extends BaseTransferActivity implements
-        TransferServiceUtil.Callback, FileFragment.OnFileItemChangeListener {
+        FileFragment.OnFileItemChangeListener {
     private static final String TAG = "MainTransferActivity";
     @BindView(R.id.indicator)
     TabLayout indicator;
@@ -101,10 +100,12 @@ public class MainTransferActivity extends BaseTransferActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
+        //标题栏下无阴影
         if (actionBar != null)
             actionBar.setElevation(0f);
-
-        mPeer = (Peer) getIntent().getSerializableExtra("neighbor");
+        //是否有连接上的peer
+        if (getIntent().hasExtra(Peer.TAG))
+            mPeer = (Peer) getIntent().getSerializableExtra(Peer.TAG);
 
         tvMeName.setText(PreferenceUtil.getInstance().getAlias());
         ivMeAvatar.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
@@ -168,8 +169,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
     }
 
     @Override
-    public void onWifiApStatusChanged(ApStatusEvent event) {
-        super.onWifiApStatusChanged(event);
+    protected void onWifiApStatusChanged(ApStatusEvent event) {
         Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
 //        boolean hasInternet = TDevice.hasInternet();
         if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
@@ -189,19 +189,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
     }
 
     @Override
-    public void onServiceConnected(TransferService.P2PBinder service) {
-        Log.i(TAG, "onServiceConnected... service = " + service);
-        mTransferService = service;
-//        startP2P();
-    }
-
-    @Override
-    public void onServiceDisconnected() {
-        Log.i(TAG, "onServiceConnected... service = " + mTransferService);
-        mTransferService = null;
-    }
-
-    @Override
     protected void onPeerChanged(PeerEvent peerEvent) {
         Log.i(TAG, "onPeerChanged... peerEvent = " + peerEvent);
         if (peerEvent.getType() == PeerEvent.ADD) {
@@ -211,6 +198,11 @@ public class MainTransferActivity extends BaseTransferActivity implements
         }
         mPhoneItemAdapter.setDatas(mPeerList);
         updateUI(mPeerList.size() > 0);
+    }
+
+    @Override
+    protected void onPostServiceConnected() {
+
     }
 
     private void updateUI(boolean hasNeighbor) {

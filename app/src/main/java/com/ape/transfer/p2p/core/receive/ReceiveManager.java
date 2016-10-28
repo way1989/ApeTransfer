@@ -55,7 +55,7 @@ public class ReceiveManager {
     }
 
     private void invoke(ParamIPMsg paramIPMsg) {
-        String peerIP = paramIPMsg.peerIAddr.getHostAddress();
+        String peerIP = paramIPMsg.peerIAddress.getHostAddress();
 
         String[] strArray = paramIPMsg.peerMSG.addition.split(Constant.MSG_SEPARATOR);
         TransferFile[] files = new TransferFile[strArray.length];

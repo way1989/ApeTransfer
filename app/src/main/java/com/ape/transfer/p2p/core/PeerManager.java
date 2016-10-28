@@ -29,16 +29,16 @@ public class PeerManager {
         switch (ipmsg.peerMSG.commandNum) {
             case Constant.CommandNum.ON_LINE: //收到上线广播
                 Log.d(TAG, "receive on_line and send on_line_ans message");
-                addNeighbor(ipmsg.peerMSG, ipmsg.peerIAddr);
+                addNeighbor(ipmsg.peerMSG, ipmsg.peerIAddress);
                 //回复我上线
-                p2PHandler.send2Neighbor(ipmsg.peerIAddr, Constant.CommandNum.ON_LINE_ANS, null);
+                p2PHandler.send2Neighbor(ipmsg.peerIAddress, Constant.CommandNum.ON_LINE_ANS, null);
                 break;
             case Constant.CommandNum.ON_LINE_ANS: //收到对方上线的回复
                 Log.d(TAG, "received on_line_ans message");
-                addNeighbor(ipmsg.peerMSG, ipmsg.peerIAddr);
+                addNeighbor(ipmsg.peerMSG, ipmsg.peerIAddress);
                 break;
             case Constant.CommandNum.OFF_LINE:
-                delNeighbor(ipmsg.peerIAddr.getHostAddress());
+                delNeighbor(ipmsg.peerIAddress.getHostAddress());
                 break;
 
         }
@@ -64,6 +64,7 @@ public class PeerManager {
         neighbor.sdkInt = sigMessage.sdkInt;
         neighbor.versionCode = sigMessage.versionCode;
         neighbor.databaseVersion = sigMessage.databaseVersion;
+        neighbor.lastTime = System.currentTimeMillis();
         mNeighbors.put(ip, neighbor);
 
         p2PHandler.send2UI(Constant.UI_MSG.ADD_NEIGHBOR, neighbor);

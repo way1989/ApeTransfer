@@ -18,7 +18,6 @@ import android.widget.Toast;
 import com.ape.transfer.R;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
-import com.ape.transfer.service.TransferServiceUtil;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.TDevice;
@@ -32,7 +31,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * Created by android on 16-7-13.
  */
-public class NewPhoneConnectedActivity extends BaseActivity implements TransferServiceUtil.Callback {
+public class NewPhoneConnectedActivity extends BaseActivity {
     public static final String ARGS_SSID = "args_ssid";
     private static final String TAG = "NewPhoneConnectedActivity";
     private static final int MSG_START_P2P = 0;
@@ -50,7 +49,7 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
     ImageView ivLoading;
     @BindView(R.id.tv_subTitle)
     TextView tvSubTitle;
-    private TransferService.P2PBinder mTransferService;
+    private TransferService mTransferService;
     private WifiManager mWifiManager;
     private WifiUtils mWifiUtils;
     private String mSSID;
@@ -129,8 +128,6 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
     private void initP2P() {
         Log.i(TAG, "init P2P mTransferService = " + mTransferService);
         if (mTransferService == null) {
-            TransferServiceUtil.getInstance().setCallback(this);
-            TransferServiceUtil.getInstance().bindTransferService();
         } else {
             startP2P();
         }
@@ -196,21 +193,6 @@ public class NewPhoneConnectedActivity extends BaseActivity implements TransferS
             default:
                 break;
         }
-    }
-
-    @Override
-    public void onServiceConnected(TransferService.P2PBinder service) {
-        Log.i(TAG, "onServiceConnected mTransferService = " + service);
-        mTransferService = service;
-        if (mTransferService != null) {
-            startP2P();
-        }
-    }
-
-    @Override
-    public void onServiceDisconnected() {
-        Log.i(TAG, "onServiceDisconnected mTransferService = " + mTransferService);
-        mTransferService = null;
     }
 
     public void onPeerChanged(List<Peer> neighbors) {

@@ -14,7 +14,8 @@ public class OldPhoneExchangeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPeer = (Peer) getIntent().getSerializableExtra("neighbor");
+        if (getIntent().hasExtra(Peer.TAG))
+        mPeer = (Peer) getIntent().getSerializableExtra(Peer.TAG);
     }
 
     @Override

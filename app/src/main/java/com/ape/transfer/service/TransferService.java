@@ -45,7 +45,6 @@ public class TransferService extends Service {
             if (peer == null)
                 return;
             if (!mNeighbors.contains(peer)) {
-                peer.lastTime = System.currentTimeMillis();
                 DeviceHistory.getInstance().addDevice(peer);
                 mNeighbors.add(peer);
                 RxBus.getInstance().post(new PeerEvent(peer, PeerEvent.ADD));
@@ -63,8 +62,12 @@ public class TransferService extends Service {
 
     private SendFileCallback mSendFileCallback = new SendFileCallback() {
         @Override
-        public void onPreSending() {
+        public void onPreSending(TransferFile[] files, Peer peer) {
             Log.i(TAG, "onPreSending....");
+            for (TransferFile file :files) {
+                file.wifiMac = peer.wifiMac;
+                TaskHistory.getInstance().addFileInfo(file);
+            }
         }
 
         @Override
@@ -186,14 +189,13 @@ public class TransferService extends Service {
             info.path = item.path;
 
             File file = new File(item.path);
-            info.wifiMac = mNeighbors.get(0).wifiMac;
+            //info.wifiMac = mNeighbors.get(0).wifiMac;
             info.md5 = Util.getFileMD5(file);
             info.lastModify = file.lastModified();
             info.createTime = System.currentTimeMillis();
             info.status = TransferFile.Status.STATUS_READY;
             info.read = 1;
             info.deleted = 0;
-            TaskHistory.getInstance().addFileInfo(info);
 
             fileArray[i] = info;
         }
@@ -227,43 +229,10 @@ public class TransferService extends Service {
         mP2PManager.sendFile(new Peer[]{mNeighbors.get(0)}, sendFiles, mSendFileCallback);
     }
 
-    public void sendOffLine() {
-        Log.i(TAG, "sendOffLine...");
-        if (!isEmpty()) {
-            for (Peer neighbor : mNeighbors) {
-                mP2PManager.sendOffLine(neighbor);
-            }
-        }
-    }
-
-
     public class P2PBinder extends Binder {
         public TransferService getService() {
             return TransferService.this;
         }
 
-        public void startP2P() {
-            TransferService.this.startP2P();
-        }
-
-        public void stopP2P() {
-            TransferService.this.stopP2P();
-        }
-
-        public boolean isEmpty() {
-            return TransferService.this.isEmpty();
-        }
-
-        public boolean isP2PRunning() {
-            return TransferService.this.isP2PRunning();
-        }
-
-        public void sendFile(ArrayList<FileItem> fileItems) {
-            TransferService.this.sendFile(fileItems);
-        }
-
-        public void sendOffLine() {
-            TransferService.this.sendOffLine();
-        }
     }
 }

@@ -7,6 +7,7 @@ import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.p2p.beans.param.ParamIPMsg;
 import com.ape.transfer.p2p.beans.param.ParamSendFiles;
+import com.ape.transfer.p2p.beans.param.ParamTCPNotify;
 import com.ape.transfer.p2p.core.WorkHandler;
 import com.ape.transfer.p2p.util.Constant;
 
@@ -37,7 +38,7 @@ public class SendManager {
         switch (src) {
             case Constant.Src.COMMUNICATE: {
                 Log.i(TAG, "disPatchMsg COMMUNICATE");
-                String peerIP = ((ParamIPMsg) obj).peerIAddr.getHostAddress();
+                String peerIP = ((ParamIPMsg) obj).peerIAddress.getHostAddress();
                 Sender sender = getSender(peerIP);
                 sender.dispatchCommMSG(what, (ParamIPMsg) obj);    //dispatch
                 break;
@@ -48,7 +49,7 @@ public class SendManager {
                     if (!mSenderHashMap.isEmpty())
                         return;
                     ParamSendFiles param = (ParamSendFiles) obj;
-                    invoke(param.neighbors, param.files);
+                    invoke(param.neighbors, param.transferFiles);
                 } else if (what == Constant.CommandNum.SEND_ABORT_SELF) {
                     Sender sender = getSender(((Peer) obj).ip);
                     sender.dispatchUIMSG(what);
@@ -94,10 +95,9 @@ public class SendManager {
             }
 
             //通知界面开始发送
-            mWorkHandler.send2UI(Constant.CommandNum.SEND_FILE_START, null);
+            mWorkHandler.send2UI(Constant.CommandNum.SEND_FILE_START, new ParamTCPNotify(neighbor, files));
             //通知对方，我要发送文件了
-            mWorkHandler.send2Receiver(peer.inetAddress,
-                    Constant.CommandNum.SEND_FILE_REQ, add);
+            mWorkHandler.send2Receiver(peer.inetAddress, Constant.CommandNum.SEND_FILE_REQ, add);
         }
     }
 

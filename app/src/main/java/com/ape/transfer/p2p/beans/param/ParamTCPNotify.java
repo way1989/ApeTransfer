@@ -7,11 +7,11 @@ import com.ape.transfer.p2p.beans.Peer;
  * Created by way on 2016/10/20.
  */
 public class ParamTCPNotify {
-    public Peer Neighbor;
-    public Object Obj;
+    public Peer peer;
+    public Object object;
 
     public ParamTCPNotify(Peer dest, Object obj) {
-        Neighbor = dest;
-        Obj = obj;
+        peer = dest;
+        object = obj;
     }
 }

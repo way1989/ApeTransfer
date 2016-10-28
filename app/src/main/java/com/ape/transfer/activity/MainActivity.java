@@ -159,8 +159,7 @@ public class MainActivity extends AppCompatActivity
 
     private void setupWifiMac() {
         if (TextUtils.isEmpty(PreferenceUtil.getInstance().getMac())) {
-            WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-            String mac = WifiApUtils.getInstance(wifiManager).getWifiMacFromDevice();
+            String mac = WifiApUtils.getInstance(getApplicationContext()).getWifiMacFromDevice();
             if (!TextUtils.isEmpty(mac))
                 PreferenceUtil.getInstance().setMac(mac);
             else
