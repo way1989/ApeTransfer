@@ -90,7 +90,7 @@
         <activity
             android:name=".activity.MainTransferActivity"
             android:label="@string/select_file"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.HistoryActivity"

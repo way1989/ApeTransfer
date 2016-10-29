@@ -47,8 +47,7 @@ public class CommunicateThread extends Thread {
 
     public void broadcastMSG(int cmd, int recipient) {
         try {
-            sendMsg2Peer(InetAddress.getByName(Constant.MULTI_ADDRESS)
-                    /*P2PManager.getBroadcastAddress(mContext)*/, cmd, recipient, null);
+            sendMsg2Peer(InetAddress.getByName(Constant.MULTI_ADDRESS), cmd, recipient, null);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -56,10 +55,7 @@ public class CommunicateThread extends Thread {
 
     public void sendMsg2Peer(InetAddress sendTo, int cmd, int recipient, String add) {
         SigMessage sigMessage = getSelfMsg(cmd);
-        if (add == null)
-            sigMessage.addition = "null";
-        else
-            sigMessage.addition = add;
+        sigMessage.addition = TextUtils.isEmpty(add) ? "null" : add;
         sigMessage.recipient = recipient;
 
         sendUdpData(sigMessage.toProtocolString(), sendTo);
@@ -80,7 +76,7 @@ public class CommunicateThread extends Thread {
     }
 
     private void init() {
-        mLocalIPs = getLocalAllIP();
+        //mLocalIPs = getLocalAllIP();
         try {
             mUdpSocket = new DatagramSocket(null);
             mUdpSocket.setReuseAddress(true);
@@ -100,19 +96,18 @@ public class CommunicateThread extends Thread {
     private SigMessage getSelfMsg(int cmd) {
         SigMessage msg = new SigMessage();
         msg.commandNum = cmd;
-        Peer melonInfo = mSelf;
-        if (melonInfo != null) {
-            msg.senderAlias = melonInfo.alias;
-            msg.senderIp = melonInfo.ip;
-            msg.senderAvatar = melonInfo.avatar;
-            msg.wifiMac = melonInfo.wifiMac;
-            msg.brand = melonInfo.brand;
-            msg.mode = melonInfo.mode;
-            msg.sdkInt = melonInfo.sdkInt;
-            msg.versionCode = melonInfo.versionCode;
-            msg.databaseVersion = melonInfo.databaseVersion;
+        final Peer self = mSelf;
+        if (self != null) {
+            msg.senderAlias = self.alias;
+            msg.senderIp = self.ip;
+            msg.senderAvatar = self.avatar;
+            msg.wifiMac = self.wifiMac;
+            msg.brand = self.brand;
+            msg.mode = self.mode;
+            msg.sdkInt = self.sdkInt;
+            msg.versionCode = self.versionCode;
+            msg.databaseVersion = self.databaseVersion;
         }
-
         return msg;
     }
 
@@ -161,7 +156,8 @@ public class CommunicateThread extends Thread {
     }
 
     private void release() {
-        Log.d(TAG, "sigCommunicate release");
+        Log.d(TAG, "release");
+        mLocalIPs.clear();
         if (mUdpSocket != null)
             mUdpSocket.close();
         if (mReceivePacket != null)
@@ -169,7 +165,9 @@ public class CommunicateThread extends Thread {
     }
 
     private boolean isLocal(String ip) {
-        if (mLocalIPs == null || mLocalIPs.isEmpty())
+        if(mLocalIPs == null)
+            mLocalIPs = getLocalAllIP();
+        if (mLocalIPs.isEmpty())
             return false;
         return mLocalIPs.contains(ip);
     }
@@ -192,6 +190,7 @@ public class CommunicateThread extends Thread {
         } catch (SocketException e) {
             e.printStackTrace();
         }
+        Log.d(TAG, "getLocalAllIP size = " + ipLists.size());
         return ipLists;
     }
 }

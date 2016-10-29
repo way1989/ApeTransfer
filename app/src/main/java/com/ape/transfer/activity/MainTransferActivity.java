@@ -29,7 +29,6 @@ import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
-import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.RxBus;
@@ -38,9 +37,7 @@ import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -97,7 +94,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
     private Peer mPeer;
-    private HashSet<Peer> mPeerList = new HashSet<>();
+    private HashMap<String, Peer> mPeerHashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -200,14 +197,15 @@ public class MainTransferActivity extends BaseTransferActivity implements
 
     @Override
     protected void onPeerChanged(PeerEvent peerEvent) {
-        Log.i(TAG, "onPeerChanged... peerEvent = " + peerEvent);
+        Log.i(TAG, "onPeerChanged... type = " + peerEvent.getType() + ", peer = " + peerEvent.getPeer());
         if (peerEvent.getType() == PeerEvent.ADD) {
-            mPeerList.add(peerEvent.getPeer());
+            mPeerHashMap.put(peerEvent.getPeer().ip, peerEvent.getPeer());
         } else {
-            mPeerList.remove(peerEvent.getPeer());
+            mPeerHashMap.remove(peerEvent.getPeer().ip);
         }
-        mPhoneItemAdapter.setDatas(mPeerList);
-        updateUI(mPeerList.size() > 0);
+        Log.d(TAG, "onPeerChanged... process result size = " + mPeerHashMap.size());
+        mPhoneItemAdapter.setData(mPeerHashMap.values());
+        updateUI(mPeerHashMap.size() > 0);
     }
 
     @Override

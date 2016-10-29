@@ -17,64 +17,67 @@ import java.util.HashMap;
  */
 public class PeerManager {
     private static final String TAG = "PeerManager";
-    private WorkHandler p2PHandler;
-    private HashMap<String, Peer> mNeighbors;
+    private WorkHandler mWorkHandler;
+    private HashMap<String, Peer> mPeerHashMap;
 
     public PeerManager(WorkHandler handler) {
-        p2PHandler = handler;
-        mNeighbors = new HashMap<>();
+        mWorkHandler = handler;
+        mPeerHashMap = new HashMap<>();
     }
 
     public void dispatchMSG(ParamIPMsg ipmsg) {
         switch (ipmsg.peerMSG.commandNum) {
             case Constant.CommandNum.ON_LINE: //收到上线广播
                 Log.d(TAG, "receive on_line and send on_line_ans message");
-                addNeighbor(ipmsg.peerMSG, ipmsg.peerIAddress);
+                addPeer(ipmsg.peerMSG, ipmsg.peerIAddress);
                 //回复我上线
-                p2PHandler.send2Neighbor(ipmsg.peerIAddress, Constant.CommandNum.ON_LINE_ANS, null);
+                mWorkHandler.send2Neighbor(ipmsg.peerIAddress, Constant.CommandNum.ON_LINE_ANS, null);
                 break;
             case Constant.CommandNum.ON_LINE_ANS: //收到对方上线的回复
                 Log.d(TAG, "received on_line_ans message");
-                addNeighbor(ipmsg.peerMSG, ipmsg.peerIAddress);
+                addPeer(ipmsg.peerMSG, ipmsg.peerIAddress);
                 break;
             case Constant.CommandNum.OFF_LINE:
-                delNeighbor(ipmsg.peerIAddress.getHostAddress());
+                removePeer(ipmsg.peerIAddress.getHostAddress());
                 break;
 
         }
     }
 
-    public HashMap<String, Peer> getNeighbors() {
-        return mNeighbors;
+    public HashMap<String, Peer> getPeerHashMap() {
+        return mPeerHashMap;
     }
 
-    private void addNeighbor(SigMessage sigMessage, InetAddress address) {
+    private void addPeer(SigMessage sigMessage, InetAddress address) {
         String ip = address.getHostAddress();
-        Peer neighbor = mNeighbors.get(ip);
-        if (neighbor != null) return;
+        Log.d(TAG, "addPeer ip = " + ip + ", mPeerHashMap.size = "
+                + mPeerHashMap.size() + ", mPeerHashMap containsKey = " + mPeerHashMap.containsKey(ip));
+        Peer peer = mPeerHashMap.get(ip);
+        if (peer != null) return;
 
-        neighbor = new Peer();
-        neighbor.alias = sigMessage.senderAlias;
-        neighbor.avatar = sigMessage.senderAvatar;
-        neighbor.ip = ip;
-        neighbor.inetAddress = address;
-        neighbor.wifiMac = sigMessage.wifiMac;
-        neighbor.brand = sigMessage.brand;
-        neighbor.mode = sigMessage.mode;
-        neighbor.sdkInt = sigMessage.sdkInt;
-        neighbor.versionCode = sigMessage.versionCode;
-        neighbor.databaseVersion = sigMessage.databaseVersion;
-        neighbor.lastTime = System.currentTimeMillis();
-        mNeighbors.put(ip, neighbor);
+        peer = new Peer();
+        peer.alias = sigMessage.senderAlias;
+        peer.avatar = sigMessage.senderAvatar;
+        peer.ip = ip;
+        peer.inetAddress = address;
+        peer.wifiMac = sigMessage.wifiMac;
+        peer.brand = sigMessage.brand;
+        peer.mode = sigMessage.mode;
+        peer.sdkInt = sigMessage.sdkInt;
+        peer.versionCode = sigMessage.versionCode;
+        peer.databaseVersion = sigMessage.databaseVersion;
+        peer.lastTime = System.currentTimeMillis();
+        mPeerHashMap.put(ip, peer);
 
-        p2PHandler.send2UI(Constant.UI_MSG.ADD_NEIGHBOR, neighbor);
+        mWorkHandler.send2UI(Constant.UI_MSG.ADD_NEIGHBOR, peer);
     }
 
-    private void delNeighbor(String ip) {
-        Peer neighbor = mNeighbors.get(ip);
-        if (neighbor == null) return;
-        mNeighbors.remove(ip);
-        p2PHandler.send2UI(Constant.UI_MSG.REMOVE_NEIGHBOR, neighbor);
+    private void removePeer(String ip) {
+        Log.d(TAG, "addPeer ip = " + ip + ", mPeerHashMap containsKey = " + mPeerHashMap.containsKey(ip));
+        Peer peer = mPeerHashMap.get(ip);
+        if (peer == null) return;
+        mPeerHashMap.remove(ip);
+        mWorkHandler.send2UI(Constant.UI_MSG.REMOVE_NEIGHBOR, peer);
 
     }
 }

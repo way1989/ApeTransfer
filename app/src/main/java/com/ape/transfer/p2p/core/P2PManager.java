@@ -118,10 +118,12 @@ public class P2PManager {
 
             switch (msg.what) {
                 case Constant.UI_MSG.ADD_NEIGHBOR:
+                    Log.d(TAG, "handler ui ADD_NEIGHBOR manager.mPeerCallback = " + manager.mPeerCallback);
                     if (manager.mPeerCallback != null)
                         manager.mPeerCallback.onPeerFound((Peer) msg.obj);
                     break;
                 case Constant.UI_MSG.REMOVE_NEIGHBOR:
+                    Log.d(TAG, "handler ui REMOVE_NEIGHBOR manager.mPeerCallback = " + manager.mPeerCallback);
                     if (manager.mPeerCallback != null)
                         manager.mPeerCallback.onPeerRemoved((Peer) msg.obj);
                     break;

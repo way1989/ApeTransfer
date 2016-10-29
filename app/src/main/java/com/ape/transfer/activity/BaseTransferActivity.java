@@ -88,6 +88,7 @@ public abstract class BaseTransferActivity extends ApBaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         mTransferService.stopP2P();
                         unbindTransferService();
+                        stopTransferService();
                         stopWifiAp();
                         finish();
                     }

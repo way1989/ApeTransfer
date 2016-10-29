@@ -30,6 +30,7 @@ import com.ape.transfer.util.WifiUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class TransferService extends Service {
@@ -37,24 +38,27 @@ public class TransferService extends Service {
     private static final String TAG = "TransferService";
     private IBinder mBinder = new P2PBinder();
     private P2PManager mP2PManager;
-    private List<Peer> mNeighbors = new ArrayList<>();
+    private HashMap<String, Peer> mPeerHashMap = new HashMap<>();
     private boolean isP2pRunning;
     private PeerCallback mPeerCallback = new PeerCallback() {
         @Override
         public void onPeerFound(Peer peer) {
-            if (peer == null)
-                return;
-            if (!mNeighbors.contains(peer)) {
+            Log.d(TAG, "PeerCallback onPeerFound... peer = " + peer + ",  containsKey = "
+                    + mPeerHashMap.containsKey(peer.ip));
+            if(!mPeerHashMap.containsKey(peer.ip)) {
                 DeviceHistory.getInstance().addDevice(peer);
-                mNeighbors.add(peer);
+                mPeerHashMap.put(peer.ip, peer);
                 RxBus.getInstance().post(new PeerEvent(peer, PeerEvent.ADD));
             }
         }
 
         @Override
         public void onPeerRemoved(Peer peer) {
-            if (peer != null) {
-                mNeighbors.remove(peer);
+            Log.d(TAG, "PeerCallback onPeerRemoved... peer = " + peer+ ",  containsKey = "
+                    + mPeerHashMap.containsKey(peer.ip));
+
+            if (mPeerHashMap.containsKey(peer.ip)) {
+                mPeerHashMap.remove(peer.ip);
                 RxBus.getInstance().post(new PeerEvent(peer, PeerEvent.REMOVED));
             }
         }
@@ -150,7 +154,7 @@ public class TransferService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mNeighbors.clear();
+        mPeerHashMap.clear();
         if (mP2PManager != null) {
             mP2PManager.stop();
             isP2pRunning = false;
@@ -217,7 +221,7 @@ public class TransferService extends Service {
     }
 
     public boolean isEmpty() {
-        return mNeighbors.isEmpty();
+        return mPeerHashMap.isEmpty();
     }
 
     public boolean isP2PRunning() {
@@ -226,7 +230,8 @@ public class TransferService extends Service {
 
     public void sendFile(ArrayList<FileItem> fileItems) {
         TransferFile[] sendFiles = getTransferFiles(fileItems);
-        mP2PManager.sendFile(new Peer[]{mNeighbors.get(0)}, sendFiles, mSendFileCallback);
+        mP2PManager.sendFile(mPeerHashMap.values().toArray(new Peer[mPeerHashMap.size()]),
+                sendFiles, mSendFileCallback);
     }
 
     public class P2PBinder extends Binder {

@@ -28,12 +28,39 @@ public class Peer implements Serializable {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o)//先检查是否其自反性,后比较o是否为空,这样效率高
+            return true;
+
         if (o == null)
             return false;
 
-        Peer peer = (Peer) o;
+        if (!(o instanceof Peer))
+            return false;
 
-        return TextUtils.equals(peer.wifiMac, this.wifiMac);
+        final Peer peer = (Peer) o;
 
+        return TextUtils.equals(this.ip, peer.ip);
+    }
+
+    @Override
+    public int hashCode() {//hashCode主要是用来提高hash系统的查询效率。当hashCode中不进行任何操作时，可以直接让其返回 一常数，或者不进行重写。
+        return this.ip.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Peer{" +
+                "alias='" + alias + '\'' +
+                ", avatar=" + avatar +
+                ", ip='" + ip + '\'' +
+                ", inetAddress=" + inetAddress +
+                ", wifiMac='" + wifiMac + '\'' +
+                ", mode='" + mode + '\'' +
+                ", brand='" + brand + '\'' +
+                ", sdkInt=" + sdkInt +
+                ", versionCode=" + versionCode +
+                ", databaseVersion=" + databaseVersion +
+                ", lastTime=" + lastTime +
+                '}';
     }
 }

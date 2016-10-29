@@ -64,7 +64,7 @@ public class ReceiveManager {
             files[i] = new TransferFile(strArray[i]);
         }
 
-        Peer neighbor = mWorkHandler.getPeerManager().getNeighbors().get(peerIP);
+        Peer neighbor = mWorkHandler.getPeerManager().getPeerHashMap().get(peerIP);
         if (neighbor == null) {
             Log.i(TAG, "sender is exit...");
             return;

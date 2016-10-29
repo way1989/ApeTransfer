@@ -78,7 +78,7 @@ public class SendManager {
         String add = sb.toString();
 
         for (Peer neighbor : neighbors) {
-            Peer peer = mWorkHandler.getPeerManager().getNeighbors().get(neighbor.ip);
+            Peer peer = mWorkHandler.getPeerManager().getPeerHashMap().get(neighbor.ip);
             //如果对方不在线，则跳过
             if (peer == null) continue;
 

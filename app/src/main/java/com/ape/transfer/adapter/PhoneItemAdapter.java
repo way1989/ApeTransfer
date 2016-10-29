@@ -13,25 +13,24 @@ import com.ape.transfer.activity.UserInfoActivity;
 import com.ape.transfer.p2p.beans.Peer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Created by android on 16-6-28.
  */
 public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.ViewHolder> {
-    private ArrayList<Peer> mNeighbors;
+    private ArrayList<Peer> mPeers;
     private LayoutInflater mInflater;
 
     public PhoneItemAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
         setHasStableIds(true);
-        mNeighbors = new ArrayList<>();
+        mPeers = new ArrayList<>();
     }
 
-    public void setDatas(HashSet<Peer> neighbors) {
-        mNeighbors.clear();
-        mNeighbors.addAll(neighbors);
+    public void setData(Collection<Peer> peers) {
+        mPeers.clear();
+        mPeers.addAll(peers);
         notifyDataSetChanged();
     }
 
@@ -43,7 +42,7 @@ public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Peer neighbor = mNeighbors.get(position);
+        final Peer neighbor = mPeers.get(position);
         holder.textView.setText(neighbor.alias);
         holder.ivAvatar.setImageResource(UserInfoActivity.HEAD[neighbor.avatar]);
         holder.checkBox.setVisibility(View.VISIBLE);
@@ -51,12 +50,12 @@ public class PhoneItemAdapter extends RecyclerView.Adapter<PhoneItemAdapter.View
 
     @Override
     public int getItemCount() {
-        return mNeighbors.size();
+        return mPeers.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return mNeighbors.get(position).ip.hashCode();
+        return mPeers.get(position).ip.hashCode();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

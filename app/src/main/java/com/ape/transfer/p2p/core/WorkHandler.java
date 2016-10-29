@@ -64,11 +64,11 @@ public class WorkHandler extends Handler {
             @Override
             public void run() {
                 Log.d(TAG, "offLine... post in");
-                for(Peer peer : mPeerManager.getNeighbors().values()){
-                    mCommunicateThread.sendMsg2Peer(peer.inetAddress, Constant.CommandNum.OFF_LINE,
-                            Constant.Recipient.NEIGHBOR, null);
-                }
-                //mCommunicateThread.broadcastMSG(Constant.CommandNum.OFF_LINE, Constant.Recipient.NEIGHBOR);
+//                for(Peer peer : mPeerManager.getPeerHashMap().values()){
+//                    mCommunicateThread.sendMsg2Peer(peer.inetAddress, Constant.CommandNum.OFF_LINE,
+//                            Constant.Recipient.NEIGHBOR, null);
+//                }
+                mCommunicateThread.broadcastMSG(Constant.CommandNum.OFF_LINE, Constant.Recipient.NEIGHBOR);
                 mCommunicateThread.quit();
                 WorkHandler.this.getLooper().quitSafely();
             }
