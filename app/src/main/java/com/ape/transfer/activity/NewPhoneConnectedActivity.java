@@ -26,8 +26,6 @@ import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiUtils;
 import com.trello.rxlifecycle.ActivityEvent;
 
-import java.util.List;
-
 import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import rx.android.schedulers.AndroidSchedulers;
@@ -55,8 +53,6 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     ImageView ivLoading;
     @BindView(R.id.tv_subTitle)
     TextView tvSubTitle;
-    private WifiManager mWifiManager;
-    private WifiUtils mWifiUtils;
     private String mSSID;
     private Handler mHandler = new Handler() {
         @Override
@@ -117,8 +113,6 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     }
 
     private void initDatas() {
-        mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        mWifiUtils = WifiUtils.getInstance();
         tvNewPhone.setText(getString(R.string.newphone_name, PreferenceUtil.getInstance().getAlias()));
         ivHeadNewphone.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
         tvOldPhone.setText(getString(R.string.oldphone_name, mSSID.split("@")[1]));
@@ -152,16 +146,16 @@ public class NewPhoneConnectedActivity extends BaseActivity {
 
     private void connectSSID(String ssid) {
         boolean isWifiConnected = TDevice.isWifiConnected(getApplicationContext());
-        Log.i(TAG, "isWifiEnabled = " + mWifiManager.isWifiEnabled() + ", isWifiConnected = "
-                + isWifiConnected + ", ssid = " + mWifiManager.getConnectionInfo().getSSID()
+        Log.i(TAG, "isWifiEnabled = " + WifiUtils.getInstance().isWifiEnabled() + ", isWifiConnected = "
+                + isWifiConnected + ", ssid = " + WifiUtils.getInstance().getSSID()
                 + ", ScanResult ssid = " + "\"" + ssid + "\"");
-        if (mWifiManager.isWifiEnabled() && isWifiConnected && TextUtils.equals(
-                mWifiManager.getConnectionInfo().getSSID(), "\"" + ssid + "\"")) {
+        if (WifiUtils.getInstance().isWifiEnabled() && isWifiConnected && TextUtils.equals(
+                WifiUtils.getInstance().getSSID(), "\"" + ssid + "\"")) {
             mHandler.removeMessages(MSG_START_P2P);
             mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
         } else {
-            mWifiManager.setWifiEnabled(true);
-            mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(WifiUtils.AuthenticationType.TYPE_NONE, ssid, null));
+            WifiUtils.getInstance().setWifiEnabled(true);
+            WifiUtils.getInstance().connect(WifiUtils.getInstance().generateWifiConfiguration(WifiUtils.AuthenticationType.TYPE_NONE, ssid, null));
         }
         mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
         mHandler.sendEmptyMessageDelayed(MSG_CONNECT_TIMEOUT, CONNECT_TIMEOUT);//连接超时处理
@@ -180,11 +174,12 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     private void handleConnectState(NetworkInfo.State state) {
         switch (state) {
             case CONNECTED:
-                String ssid = mWifiManager.getConnectionInfo().getSSID();
+                String ssid = WifiUtils.getInstance().getSSID();
                 Log.d(TAG, "wifi connected ssid = " + ssid);
                 if (TextUtils.equals(ssid, mSSID)) {
                     mHandler.removeMessages(MSG_START_P2P);
-                    mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+                    //不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+                    mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);
                 }
                 break;
             case CONNECTING:

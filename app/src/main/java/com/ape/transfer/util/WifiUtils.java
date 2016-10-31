@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
 import com.ape.transfer.App;
@@ -17,35 +18,37 @@ import java.util.List;
 
 /**
  * @author liweiping
- * @description Wifi客户端Ap管理者，实质上是WifiManager的代理
+ * @description Wifi管理者，实质上是WifiManager的代理
  */
 public class WifiUtils {
-    public static final String DEFAULT_GATEWAY_IP = "192.168.43.1";
+    private static final String DEFAULT_GATEWAY_IP = "192.168.43.1";
     /* 数据段begin */
     private final static String TAG = "WifiUtils";
     // 单例
-    private static WifiUtils mWifiApClientManager;
+    private volatile static WifiUtils sWifiUtils;
 
     /* 数据段end */
     // WifiManager引用
     private WifiManager mWifiManager;
 
     /* 函数段begin */
-    private WifiUtils(WifiManager wifiManager) {
-        mWifiManager = wifiManager;
+    private WifiUtils() {
+        mWifiManager = (WifiManager) App.getContext().getSystemService(Context.WIFI_SERVICE);
     }
 
-    public synchronized static WifiUtils getInstance() {
-        if (mWifiApClientManager == null) {
-            WifiManager wifiManager = (WifiManager) App.getContext().getSystemService(Context.WIFI_SERVICE);
-            mWifiApClientManager = new WifiUtils(wifiManager);
+    public static WifiUtils getInstance() {
+        if (sWifiUtils == null) {
+            synchronized (WifiUtils.class) {
+                if (sWifiUtils == null) {
+                    sWifiUtils = new WifiUtils();
+                }
+            }
         }
-
-        return mWifiApClientManager;
+        return sWifiUtils;
     }
 
     /* 函数段begin */
-    public static String getLocalIP() {
+    public String getLocalIP() {
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
             Log.e("TransferService", "networkInterfaces = " + networkInterfaces);
@@ -59,7 +62,7 @@ public class WifiUtils {
                 while (addresses.hasMoreElements()) {
                     InetAddress address = addresses.nextElement();
                     if (!address.isLoopbackAddress() && (address instanceof Inet4Address)) {
-                        return address.getHostAddress().toString();
+                        return address.getHostAddress();
                     }
                 }
             }
@@ -90,7 +93,6 @@ public class WifiUtils {
     public boolean startScan() {
         return mWifiManager.startScan();
     }
-    /* 函数段end */
 
     public List<ScanResult> getScanResults() {
         return mWifiManager.getScanResults();
@@ -165,26 +167,25 @@ public class WifiUtils {
     }
 
     public boolean connect(WifiConfiguration config) {
-        if (mWifiManager == null || config == null) {
+        if (config == null) {
             return false;
         }
 
         int networkID = mWifiManager.addNetwork(config);
-        if (networkID == -1) {
-            return false;
-        }
+        return networkID != -1 && mWifiManager.enableNetwork(networkID, true);
 
-        return mWifiManager.enableNetwork(networkID, true);
-    }
-
-    public boolean isWifiOpen() {
-        int state = mWifiManager.getWifiState();
-        return state == WifiManager.WIFI_STATE_ENABLING ||
-                state == WifiManager.WIFI_STATE_ENABLED;
     }
 
     public boolean isWifiEnabled() {
         return mWifiManager.isWifiEnabled();
+    }
+
+    public WifiInfo getConnectionInfo() {
+        return mWifiManager.getConnectionInfo();
+    }
+
+    public String getSSID() {
+        return getConnectionInfo().getSSID();
     }
 
     // 认证加密类型

@@ -142,7 +142,7 @@ public class TransferService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mP2PManager = new P2PManager();
+        mP2PManager = P2PManager.getInstance();
     }
 
     @Override
@@ -175,7 +175,7 @@ public class TransferService extends Service {
         peer.versionCode = BuildConfig.VERSION_CODE;
         peer.databaseVersion = TransferDB.VERSION;
 
-        final String ip = WifiUtils.getLocalIP();
+        final String ip = WifiUtils.getInstance().getLocalIP();
         Log.i(TAG, "WifiUtils.getLocalIp = " + ip);
         peer.ip = ip;
         return peer;

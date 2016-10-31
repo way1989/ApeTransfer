@@ -7,11 +7,13 @@ import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ape.transfer.App;
+
 import java.lang.reflect.Method;
 
 /**
  * @author liweiping
- * @description Wifi服务端Ap管理者，实质上是WifiManager的代理
+ * @description Wifi热点Ap管理者
  */
 public class WifiApUtils {
     // Wifi AP广播action（本应该用反射获取，但为了减少不必要的代码，在这里定义，并与源码保持一致）
@@ -86,23 +88,26 @@ public class WifiApUtils {
     public static final String EXTRA_ERRORED_TETHER = "erroredArray";
     /* 数据段begin */
     private final static String TAG = "WifiApUtils";
-    // 单例
-    private static WifiApUtils sWifiApUtils;
+    /*单利对象*/
+    private volatile static WifiApUtils sWifiApUtils;
     // WifiManager引用
     private WifiManager mWifiManager;
 
     /* 函数段begin */
-    private WifiApUtils(WifiManager wifiManager) {
-        mWifiManager = wifiManager;
+    private WifiApUtils() {
+        mWifiManager = (WifiManager) App.getContext().getSystemService(Context.WIFI_SERVICE);
     }
 
     /* 数据段end */
 
-    public synchronized static WifiApUtils getInstance(Context context) {
+    public static WifiApUtils getInstance() {
         if (sWifiApUtils == null) {
-            sWifiApUtils = new WifiApUtils((WifiManager) context.getSystemService(Context.WIFI_SERVICE));
+            synchronized (WifiApUtils.class) {
+                if (sWifiApUtils == null) {
+                    sWifiApUtils = new WifiApUtils();
+                }
+            }
         }
-
         return sWifiApUtils;
     }
 

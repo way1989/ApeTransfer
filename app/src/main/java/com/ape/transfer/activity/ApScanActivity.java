@@ -56,8 +56,6 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     TextView mineTvName;
     @BindView(R.id.rl_phones)
     RelativeLayout rlPhones;
-    private WifiManager mWifiManager;
-    private WifiUtils mWifiUtils;
     private Animation rotateAnim;
     private boolean isHandleScanResult;
     private boolean isHandleWifiConnected;
@@ -119,7 +117,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                 isHandleWifiConnected = true;
                 if (!isHandleScanResult)
                     return;
-                if (mWifiManager.getConnectionInfo().getSSID().contains("ApeTransfer@")) {
+                if (WifiUtils.getInstance().getSSID().contains("ApeTransfer@")) {
                     //不知道为什么连接上后又会断开,然后又连上,所以这里延迟一点
                     mHandler.removeMessages(MSG_START_P2P);
                     mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);
@@ -184,7 +182,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
 
     private void parseScanResults() {
         List<ScanResult> filterResults = new ArrayList<>();
-        List<ScanResult> scanResults = mWifiUtils.getScanResults();
+        List<ScanResult> scanResults = WifiUtils.getInstance().getScanResults();
         Log.i(TAG, "parseScanResults size = " + scanResults.size());
         for (ScanResult scanResult : scanResults) {
             String ssid = scanResult.SSID;
@@ -258,14 +256,13 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void startScanWifi() {
-        Log.i(TAG, "startScanWifi... isWifiOpen = " + mWifiUtils.isWifiOpen());
+        Log.i(TAG, "startScanWifi... isWifiOpen = " + WifiUtils.getInstance().isWifiEnabled());
 
-        if (!mWifiUtils.isWifiOpen()) {
-            mWifiUtils.setWifiEnabled(true);
-            return;
+        if (!WifiUtils.getInstance().isWifiEnabled()) {
+            WifiUtils.getInstance().setWifiEnabled(true);
         }
 
-        mWifiUtils.startScan();
+        WifiUtils.getInstance().startScan();
         isStartScan = true;
         isHandleScanResult = false;
         isHandleWifiConnected = false;
@@ -303,9 +300,6 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         rotateAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
         rotateAnim.setInterpolator(new AccelerateDecelerateInterpolator());
         ivScan.startAnimation(rotateAnim);
-
-        mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        mWifiUtils = WifiUtils.getInstance();
 
         ivHead.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
         mineTvName.setText(PreferenceUtil.getInstance().getAlias());
@@ -360,22 +354,22 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         final String capabilities = scanResult.capabilities;
         final String ssid = scanResult.SSID;
         boolean isWifiConnected = TDevice.isWifiConnected(getApplicationContext());
-        Log.i(TAG, "isWifiConnected = " + isWifiConnected + ", ssid = " + mWifiManager.getConnectionInfo().getSSID()
+        Log.i(TAG, "isWifiConnected = " + isWifiConnected + ", ssid = " + WifiUtils.getInstance().getSSID()
                 + ", ScanResult ssid = " + "\"" + ssid + "\"");
-        if (isWifiConnected && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), "\"" + ssid + "\"")) {
+        if (isWifiConnected && TextUtils.equals(WifiUtils.getInstance().getSSID(), "\"" + ssid + "\"")) {
             //由于已经连接上了此wifi，所以直接启动p2p
             mHandler.removeMessages(MSG_START_P2P);
             mHandler.sendEmptyMessage(MSG_START_P2P);
         } else {
-            WifiUtils.AuthenticationType type = mWifiUtils.getWifiAuthenticationType(capabilities);
+            WifiUtils.AuthenticationType type = WifiUtils.getInstance().getWifiAuthenticationType(capabilities);
             switch (type) {
                 case TYPE_NONE:
-                    mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(type, ssid, null));
+                    WifiUtils.getInstance().connect(WifiUtils.getInstance().generateWifiConfiguration(type, ssid, null));
                     break;
                 case TYPE_WEP:
                 case TYPE_WPA:
                 case TYPE_WPA2:
-                    //mWifiUtils.onNeighborConnected(mWifiUtils.generateWifiConfiguration(type, ssid, "12345678"));
+                    //WifiUtils.getInstance().onNeighborConnected(WifiUtils.getInstance().generateWifiConfiguration(type, ssid, "12345678"));
                 default:
                     break;
             }

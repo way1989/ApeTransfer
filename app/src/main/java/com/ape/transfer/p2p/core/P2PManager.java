@@ -30,7 +30,8 @@ public class P2PManager {
 
     private static String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
             + File.separator + Constant.FILE_SHARE_SAVE_PATH;
-
+    /*单利对象*/
+    private volatile static P2PManager INSTANCE;
     private Peer mSelfPeer;
     private PeerCallback mPeerCallback;
     private WorkHandler mWorkHandler;
@@ -39,9 +40,24 @@ public class P2PManager {
     private ReceiveFileCallback mReceiveFileCallback;
     private SendFileCallback mSendFileCallback;
 
-
-    public P2PManager() {
+    private P2PManager() {
         mMainUIHandler = new P2PManagerHandler(this);
+    }
+
+    /**
+     * 获取单例
+     *
+     * @return
+     */
+    public static P2PManager getInstance() {
+        if (INSTANCE == null) {
+            synchronized (P2PManager.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new P2PManager();
+                }
+            }
+        }
+        return INSTANCE;
     }
 
     public static String getSavePath(int type) {

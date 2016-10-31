@@ -17,6 +17,7 @@ import com.ape.transfer.R;
 import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.WifiApUtils;
+import com.ape.transfer.util.WifiUtils;
 
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ public abstract class ApBaseActivity extends BaseActivity {
     private static final int OPEN_WIFI_AP = 0;
     private static final int CLOSE_WIFI_AP = 1;
     private static final long CLOSE_WIFI_AP_DELAY = 1000L;
+    private boolean isOpeningWifiAp;
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -51,9 +53,6 @@ public abstract class ApBaseActivity extends BaseActivity {
 
         }
     };
-    private boolean isOpeningWifiAp;
-    private WifiManager mWifiManager;
-    private WifiApUtils mWifiApUtils;
     private boolean isWifiDefaultEnabled;
     private Handler mHandler = new Handler() {
         @Override
@@ -65,6 +64,7 @@ public abstract class ApBaseActivity extends BaseActivity {
                     break;
                 case CLOSE_WIFI_AP:
                     setWifiApDisabled();
+                    WifiUtils.getInstance().setWifiEnabled(isWifiDefaultEnabled);
                     break;
             }
         }
@@ -87,7 +87,6 @@ public abstract class ApBaseActivity extends BaseActivity {
 
     protected void startWifiAp() {
         isOpeningWifiAp = true;
-        initData();
         registerReceiver();
         if (isWifiApEnabled()) {
             if (TextUtils.equals(getWifiApConfiguration().SSID, getSSID())) {
@@ -123,10 +122,6 @@ public abstract class ApBaseActivity extends BaseActivity {
         }
     }
 
-    private void initData() {
-        mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        mWifiApUtils = WifiApUtils.getInstance(getApplicationContext());
-    }
 
     private void registerReceiver() {
         IntentFilter intentFilterForAp = new IntentFilter();
@@ -225,36 +220,32 @@ public abstract class ApBaseActivity extends BaseActivity {
     }
 
     private void setWifiApEnabled() {
-        isWifiDefaultEnabled = mWifiManager.isWifiEnabled();
+        isWifiDefaultEnabled = WifiUtils.getInstance().isWifiEnabled();
 
-        String wifiMAC = mWifiApUtils.getWifiMacFromDevice();
+        String wifiMAC = WifiApUtils.getInstance().getWifiMacFromDevice();
         if (TextUtils.isEmpty(wifiMAC)) {
             Log.i(TAG, "post status... wifiMAC == null ");
             postStatus(WifiApUtils.WIFI_AP_STATE_FAILED);
             return;
         }
-        mWifiManager.setWifiEnabled(false);
+        WifiUtils.getInstance().setWifiEnabled(false);
         if (TextUtils.isEmpty(getSSID())) {
             Log.i(TAG, "post status... mWifiApSSID == null ");
             postStatus(WifiApUtils.WIFI_AP_STATE_FAILED);
             return;
         }
-        mWifiApUtils.setWifiApEnabled(mWifiApUtils.generateWifiConfiguration(
+        WifiApUtils.getInstance().setWifiApEnabled(WifiApUtils.getInstance().generateWifiConfiguration(
                 WifiApUtils.AuthenticationType.TYPE_NONE, getSSID(), wifiMAC, null), true);
 
     }
 
     private void setWifiApDisabled() {
-        if (mWifiApUtils != null && mWifiApUtils.isWifiApEnabled()) {
-            mWifiApUtils.setWifiApEnabled(null, false);
-            mWifiManager.setWifiEnabled(isWifiDefaultEnabled);
-        }
+        if (isWifiApEnabled())
+            WifiApUtils.getInstance().setWifiApEnabled(null, false);
     }
 
     protected boolean isWifiApEnabled() {
-        if(mWifiApUtils == null)
-            return false;
-        return mWifiApUtils.isWifiApEnabled();
+        return WifiApUtils.getInstance().isWifiApEnabled();
     }
 
     private void postStatus(final int status) {
@@ -267,7 +258,7 @@ public abstract class ApBaseActivity extends BaseActivity {
     }
 
     private WifiConfiguration getWifiApConfiguration() {
-        return mWifiApUtils.getWifiApConfiguration();
+        return WifiApUtils.getInstance().getWifiApConfiguration();
     }
 
 }

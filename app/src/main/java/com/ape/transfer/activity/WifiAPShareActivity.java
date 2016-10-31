@@ -81,7 +81,7 @@ public class WifiAPShareActivity extends ApBaseActivity {
 
                 mNanoHTTPServer.start();
                 rlLoading.setVisibility(View.GONE);
-                String ip = WifiUtils.getLocalIP();
+                //String ip = WifiUtils.getLocalIP();
                 tvStep2Ip.setText("192.168.43.1:8080");
                 tvSsid.setText(event.getSsid());
                 Bitmap qrCode = QrCodeUtils.create2DCode("http://192.168.43.1:8080");

@@ -200,22 +200,15 @@ public class TDevice {
     }
 
     public static boolean hasInternet() {
-        boolean flag;
-        if (((ConnectivityManager) App.getContext().getSystemService(
-                Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo() != null)
-            flag = true;
-        else
-            flag = false;
-        return flag;
+        ConnectivityManager connectivityManager = (ConnectivityManager) App.getContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager.getActiveNetworkInfo() != null;
     }
 
     public static boolean isWifiConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifiNetworkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiNetworkInfo.isConnected()) {
-            return true;
-        }
-        return false;
+        return wifiNetworkInfo.isConnected();
     }
 
     public static boolean gotoGoogleMarket(Activity activity, String pck) {
