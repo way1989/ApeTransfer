@@ -21,17 +21,14 @@ import java.util.List;
  * @description Wifi管理者，实质上是WifiManager的代理
  */
 public class WifiUtils {
-    private static final String DEFAULT_GATEWAY_IP = "192.168.43.1";
-    /* 数据段begin */
     private final static String TAG = "WifiUtils";
+    private static final String DEFAULT_GATEWAY_IP = "192.168.43.1";
     // 单例
     private volatile static WifiUtils sWifiUtils;
 
-    /* 数据段end */
     // WifiManager引用
     private WifiManager mWifiManager;
 
-    /* 函数段begin */
     private WifiUtils() {
         mWifiManager = (WifiManager) App.getContext().getSystemService(Context.WIFI_SERVICE);
     }
@@ -47,7 +44,14 @@ public class WifiUtils {
         return sWifiUtils;
     }
 
-    /* 函数段begin */
+    private String convertIPv4IntToStr(int ip) {
+        if (ip <= 0) {
+            return DEFAULT_GATEWAY_IP;
+        }
+
+        return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 24) & 0xFF);
+    }
+
     public String getLocalIP() {
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -71,14 +75,6 @@ public class WifiUtils {
         }
 
         return "";
-    }
-
-    private static String convertIPv4IntToStr(int ip) {
-        if (ip <= 0) {
-            return DEFAULT_GATEWAY_IP;
-        }
-
-        return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 24) & 0xFF);
     }
 
     public String getGatewayIP() {
@@ -113,8 +109,6 @@ public class WifiUtils {
 
         return AuthenticationType.TYPE_NONE;
     }
-
-    /* 数据段end */
 
     public WifiConfiguration generateWifiConfiguration(AuthenticationType type, String ssid, String password) {
         WifiConfiguration config = new WifiConfiguration();

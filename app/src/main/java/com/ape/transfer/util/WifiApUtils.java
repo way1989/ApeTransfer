@@ -93,12 +93,9 @@ public class WifiApUtils {
     // WifiManager引用
     private WifiManager mWifiManager;
 
-    /* 函数段begin */
     private WifiApUtils() {
         mWifiManager = (WifiManager) App.getContext().getSystemService(Context.WIFI_SERVICE);
     }
-
-    /* 数据段end */
 
     public static WifiApUtils getInstance() {
         if (sWifiApUtils == null) {
@@ -112,47 +109,36 @@ public class WifiApUtils {
     }
 
     //尝试获取MAC地址
-    private String tryGetMAC(WifiManager manager) {
-        WifiInfo wifiInfo = manager.getConnectionInfo();
+    private String getMacAddress() {
+        WifiInfo wifiInfo = mWifiManager.getConnectionInfo();
         if (wifiInfo == null || TextUtils.isEmpty(wifiInfo.getMacAddress())) {
             return null;
         }
         return wifiInfo.getMacAddress();
     }
 
-    //尝试读取MAC地址
     public String getWifiMacFromDevice() {
-        String mac = tryGetMAC(mWifiManager);
+        String mac = getMacAddress();
         if (!TextUtils.isEmpty(mac)) {
             return mac;
         }
 
         //获取失败，尝试打开wifi获取
-        tryOpenWifi(mWifiManager);
-        for (int count = 0; count < 5; count++) {
+        mWifiManager.setWifiEnabled(true);
+        for (int count = 0; count < 3; count++) {
             //如果第一次没有成功，第二次做500毫秒的延迟。
-            if (count != 0) {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            mac = tryGetMAC(mWifiManager);
+            mac = getMacAddress();
             if (!TextUtils.isEmpty(mac)) {
                 Log.i(TAG, "getWifiMacFromDevice try count = " + count);
                 return mac;
             }
         }
         return null;
-    }
-
-    //尝试打开wifi
-    private void tryOpenWifi(WifiManager manager) {
-        int state = manager.getWifiState();
-        if (state != WifiManager.WIFI_STATE_ENABLED && state != WifiManager.WIFI_STATE_ENABLING) {
-            manager.setWifiEnabled(true);
-        }
     }
 
     public WifiConfiguration getWifiApConfiguration() {
@@ -178,7 +164,6 @@ public class WifiApUtils {
 
         return ret;
     }
-    /* 函数段end */
 
     public boolean isWifiApEnabled() {
         boolean ret = false;
