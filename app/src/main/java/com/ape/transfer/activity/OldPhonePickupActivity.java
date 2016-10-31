@@ -303,6 +303,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements
         }
 
         if (result != BackupEngine.BackupResultType.Cancel) {
+            // TODO: 16-10-31 开始传输备份数据
             Toast.makeText(getApplicationContext(), R.string.backup_result, Toast.LENGTH_SHORT).show();
         } else {
             stopService();
@@ -349,7 +350,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements
             mProgressDialog.setMessage(defaltModule);
         }
 
-        if (this != null && !this.isFinishing()) {
+        if (!isFinishing()) {
             try {
                 mProgressDialog.show();
             } catch (WindowManager.BadTokenException e) {

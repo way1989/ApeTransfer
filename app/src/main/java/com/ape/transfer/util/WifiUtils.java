@@ -1,9 +1,12 @@
 package com.ape.transfer.util;
 
+import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+
+import com.ape.transfer.App;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -32,8 +35,9 @@ public class WifiUtils {
         mWifiManager = wifiManager;
     }
 
-    public synchronized static WifiUtils getInstance(WifiManager wifiManager) {
+    public synchronized static WifiUtils getInstance() {
         if (mWifiApClientManager == null) {
+            WifiManager wifiManager = (WifiManager) App.getContext().getSystemService(Context.WIFI_SERVICE);
             mWifiApClientManager = new WifiUtils(wifiManager);
         }
 

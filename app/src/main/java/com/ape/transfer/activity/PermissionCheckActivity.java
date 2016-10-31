@@ -22,7 +22,6 @@ import com.ape.transfer.util.OsUtil;
  * to grant permissions. However, the OS may not actually prompt the user if the user had
  * previously checked the "Never ask again" checkbox while denying the required permissions.
  */
-@SuppressWarnings("ALL")
 public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
     private static final String TAG = "PermissionCheckActivity";
     private static final int REQUIRED_PERMISSIONS_REQUEST_CODE = 1;
@@ -49,7 +48,7 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
         if (mDialog != null && mDialog.isShowing()) return;
         if (mDialog == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.permission_title_all)
+            builder.setTitle(R.string.permission_title)
                     .setMessage(R.string.required_permissions_all)
                     .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
@@ -73,16 +72,19 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
     public void onResume() {
         super.onResume();
         Log.i(TAG, "canWriteSystem = " + canWriteSystem());
-        if (canWriteSystem()) {
-            if (redirectIfNeeded()) {
+        if (OsUtil.hasRequiredPermissions()) {
+            checkNeedWriteSettingPermission();
+        } else {
+            showRequestPermissionDialog();
+        }
+    }
 
-            } else {
-                showRequestPermissionDialog();
-            }
+    private void checkNeedWriteSettingPermission() {
+        if (canWriteSystem()) {
+            redirect();
         } else {
             showRequestWriteSettingsDialog();
         }
-
     }
 
     private void tryRequestPermission() {
@@ -103,8 +105,7 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
             // We do not use grantResults as some of the granted permissions might have been
             // revoked while the permissions dialog box was being shown for the missing permissions.
             if (OsUtil.hasRequiredPermissions()) {
-                //Factory.get().onRequiredPermissionsAcquired();
-                redirect();
+                checkNeedWriteSettingPermission();//是否需要写系统设置
             } else {
                 final long currentTimeMillis = SystemClock.elapsedRealtime();
                 // If the permission request completes very quickly, it must be because the system
@@ -138,29 +139,16 @@ public class PermissionCheckActivity extends RequestWriteSettingsBaseActivity {
                 }).create().show();
     }
 
-    /**
-     * Returns true if the redirecting was performed
-     */
-    private boolean redirectIfNeeded() {
-        if (!OsUtil.hasRequiredPermissions()) {
-            return false;
-        }
-
-        redirect();
-        return true;
-    }
-
     private void redirect() {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
         finish();
     }
 
-
     @Override
     protected void permissionWriteSystemGranted() {
-        if (redirectIfNeeded()) {
-
+        if (OsUtil.hasRequiredPermissions()) {
+            redirect();
         } else {
             showRequestPermissionDialog();
         }

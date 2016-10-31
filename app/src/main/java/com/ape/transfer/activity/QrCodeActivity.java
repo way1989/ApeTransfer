@@ -104,7 +104,7 @@ public class QrCodeActivity extends BaseTransferActivity {
         int type = peerEvent.getType();
         if (peer != null && type == PeerEvent.ADD) {
             Intent intent = new Intent(this, OldPhonePickupActivity.class);
-            intent.putExtra("neighbor", peer);
+            intent.putExtra(Peer.TAG, peer);
             startActivity(intent);
             finish();
         }
@@ -112,6 +112,7 @@ public class QrCodeActivity extends BaseTransferActivity {
 
     @Override
     protected void onPostServiceConnected() {
-
+        //如果wifi热点已经开启或者没有建立热点的启动，则启动p2p
+        if(isWifiApEnabled()) startP2P();
     }
 }

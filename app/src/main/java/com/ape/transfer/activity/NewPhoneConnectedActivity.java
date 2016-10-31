@@ -16,17 +16,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ape.transfer.R;
+import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
+import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiUtils;
+import com.trello.rxlifecycle.ActivityEvent;
 
 import java.util.List;
 
 import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Created by android on 16-7-13.
@@ -36,7 +41,8 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     private static final String TAG = "NewPhoneConnectedActivity";
     private static final int MSG_START_P2P = 0;
     private static final int MSG_CONNECT_TIMEOUT = 3;
-    private static final long CONNECT_TIMEOUT = 30000;
+    private static final long CONNECT_TIMEOUT = 30000L;
+    private static final long DELAY_START_P2P = 500L;
     @BindView(R.id.iv_head_newphone)
     CircleImageView ivHeadNewphone;
     @BindView(R.id.tv_new_phone)
@@ -49,7 +55,6 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     ImageView ivLoading;
     @BindView(R.id.tv_subTitle)
     TextView tvSubTitle;
-    private TransferService mTransferService;
     private WifiManager mWifiManager;
     private WifiUtils mWifiUtils;
     private String mSSID;
@@ -59,7 +64,7 @@ public class NewPhoneConnectedActivity extends BaseActivity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_START_P2P:
-                    initP2P();
+                    startP2P();
                     break;
                 case MSG_CONNECT_TIMEOUT:
                     Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
@@ -84,6 +89,7 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSSID = getIntent().getStringExtra(ARGS_SSID);
+        Log.i(TAG, "ssid = " + mSSID);
         if (TextUtils.isEmpty(mSSID)) {
             finish();
             return;
@@ -92,6 +98,17 @@ public class NewPhoneConnectedActivity extends BaseActivity {
         initDatas();
 
         connectSSID(mSSID);
+
+        RxBus.getInstance().toObservable(PeerEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<PeerEvent>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Action1<PeerEvent>() {
+                    @Override
+                    public void call(PeerEvent peerEvent) {
+                        //do some thing
+                        onPeerChanged(peerEvent);
+                    }
+                });
     }
 
     @Override
@@ -101,7 +118,7 @@ public class NewPhoneConnectedActivity extends BaseActivity {
 
     private void initDatas() {
         mWifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        mWifiUtils = WifiUtils.getInstance(mWifiManager);
+        mWifiUtils = WifiUtils.getInstance();
         tvNewPhone.setText(getString(R.string.newphone_name, PreferenceUtil.getInstance().getAlias()));
         ivHeadNewphone.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
         tvOldPhone.setText(getString(R.string.oldphone_name, mSSID.split("@")[1]));
@@ -123,31 +140,27 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver();
-    }
-
-    private void initP2P() {
-        Log.i(TAG, "init P2P mTransferService = " + mTransferService);
-        if (mTransferService == null) {
-        } else {
-            startP2P();
-        }
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     private void startP2P() {
         Log.i(TAG, "startP2P...");
-        mTransferService.startP2P();
-        mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
-        mHandler.sendEmptyMessageDelayed(MSG_CONNECT_TIMEOUT, CONNECT_TIMEOUT);//连接超时处理
+        Intent intent = new Intent(this, TransferService.class);
+        intent.setAction(TransferService.ACTION_START_P2P);
+        startService(intent);
     }
 
     private void connectSSID(String ssid) {
         boolean isWifiConnected = TDevice.isWifiConnected(getApplicationContext());
-        Log.i(TAG, "isWifiConnected = " + isWifiConnected + ", ssid = " + mWifiManager.getConnectionInfo().getSSID()
+        Log.i(TAG, "isWifiEnabled = " + mWifiManager.isWifiEnabled() + ", isWifiConnected = "
+                + isWifiConnected + ", ssid = " + mWifiManager.getConnectionInfo().getSSID()
                 + ", ScanResult ssid = " + "\"" + ssid + "\"");
-        if (isWifiConnected && TextUtils.equals(mWifiManager.getConnectionInfo().getSSID(), "\"" + ssid + "\"")) {
+        if (mWifiManager.isWifiEnabled() && isWifiConnected && TextUtils.equals(
+                mWifiManager.getConnectionInfo().getSSID(), "\"" + ssid + "\"")) {
             mHandler.removeMessages(MSG_START_P2P);
-            mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 250L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+            mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
         } else {
+            mWifiManager.setWifiEnabled(true);
             mWifiUtils.connect(mWifiUtils.generateWifiConfiguration(WifiUtils.AuthenticationType.TYPE_NONE, ssid, null));
         }
         mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
@@ -167,12 +180,11 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     private void handleConnectState(NetworkInfo.State state) {
         switch (state) {
             case CONNECTED:
-                mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
                 String ssid = mWifiManager.getConnectionInfo().getSSID();
                 Log.d(TAG, "wifi connected ssid = " + ssid);
                 if (TextUtils.equals(ssid, mSSID)) {
                     mHandler.removeMessages(MSG_START_P2P);
-                    mHandler.sendEmptyMessageDelayed(MSG_START_P2P, 250L);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
+                    mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);//不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
                 }
                 break;
             case CONNECTING:
@@ -195,13 +207,17 @@ public class NewPhoneConnectedActivity extends BaseActivity {
         }
     }
 
-    public void onPeerChanged(List<Peer> neighbors) {
-        Log.i(TAG, "onPeerChanged neighbors = " + neighbors);
-        if (!neighbors.isEmpty()) {
-//            Intent intent = new Intent(this, NewPhoneExchangeActivity.class);
-//            intent.putExtra("neighbor", neighbors.get(0));
-//            startActivity(intent);
+    public void onPeerChanged(PeerEvent event) {
+        Log.i(TAG, "onPeerChanged：" + event.getPeer() + ", type = " + event.getType());
+        Peer peer = event.getPeer();
+        int type = event.getType();
+        if (peer != null && type == PeerEvent.ADD) {
             updateUI();
+            mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
+            Intent intent = new Intent(this, NewPhoneExchangeActivity.class);
+            intent.putExtra(Peer.TAG, peer);
+            startActivity(intent);
+            finish();
         }
     }
 

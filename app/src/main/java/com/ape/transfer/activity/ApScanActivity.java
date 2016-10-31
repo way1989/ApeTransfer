@@ -305,7 +305,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         ivScan.startAnimation(rotateAnim);
 
         mWifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        mWifiUtils = WifiUtils.getInstance(mWifiManager);
+        mWifiUtils = WifiUtils.getInstance();
 
         ivHead.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
         mineTvName.setText(PreferenceUtil.getInstance().getAlias());
