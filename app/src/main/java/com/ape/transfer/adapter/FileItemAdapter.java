@@ -92,19 +92,19 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
             case Constant.TYPE.ZIP:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_rar);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
-                holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
+                holder.tvDuration.setText(Util.formatDateString(item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             case Constant.TYPE.DOC:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_default);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
-                holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
+                holder.tvDuration.setText(Util.formatDateString(item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             case Constant.TYPE.MUSIC:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_music);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
-                holder.tvDuration.setText(Util.formatDateString(App.getContext(), item.dateModified));
+                holder.tvDuration.setText(Util.formatDateString(item.dateModified));
                 holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             default:

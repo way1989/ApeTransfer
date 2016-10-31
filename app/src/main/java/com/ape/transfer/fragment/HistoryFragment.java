@@ -16,7 +16,9 @@ import com.ape.transfer.R;
 import com.ape.transfer.adapter.HistoryAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.TaskLoader;
-import com.ape.transfer.model.TransferFileEvent;
+import com.ape.transfer.model.HistoryTransfer;
+import com.ape.transfer.model.NewTransferTaskEvent;
+import com.ape.transfer.model.TransferEvent;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
@@ -31,10 +33,10 @@ import rx.functions.Action1;
 /**
  * Created by android on 16-7-5.
  */
-public class HistoryFragment extends RxFragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>,
-        HistoryAdapter.OnItemClickListener {
-    private static final String ARG_DIRECTION = "direction";
+public class HistoryFragment extends RxFragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result> {
     private static final String TAG = "HistoryFragment";
+    private static final String ARG_DIRECTION = "direction";
+    private static final int LOAD_ID = 0x001;
     @BindView(R.id.history_list)
     RecyclerView historyList;
     @BindView(R.id.tv_empty)
@@ -70,33 +72,44 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, rootView);
-        RxBus.getInstance().toObservable(TransferFileEvent.class)
+        RxBus.getInstance().toObservable(TransferEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<TransferFileEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .subscribe(new Action1<TransferFileEvent>() {
+                .compose(this.<TransferEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(new Action1<TransferEvent>() {
                     @Override
-                    public void call(TransferFileEvent event) {
+                    public void call(TransferEvent event) {
                         //do some thing
                         onTransferChange(event);
+                    }
+                });
+        RxBus.getInstance().toObservable(NewTransferTaskEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<NewTransferTaskEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(new Action1<NewTransferTaskEvent>() {
+                    @Override
+                    public void call(NewTransferTaskEvent event) {
+                        //do some thing
+                        if(event.getDirection() == mDirection){
+                            getLoaderManager().restartLoader(LOAD_ID, null, HistoryFragment.this);
+                        }
                     }
                 });
         return rootView;
     }
 
 
-    public void onTransferChange(TransferFileEvent event) {
+    public void onTransferChange(TransferEvent event) {
         Log.i(TAG, "onEventMainThread收到了消息：" + event.getTransferFile());
-        TransferFile fileInfo = event.getTransferFile();
-        mAdapter.updateItem(fileInfo);
+        mAdapter.updateItem(new HistoryTransfer(event.getPeer(), event.getTransferFile()));
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new HistoryAdapter(getContext(), mDirection, this);
+        mAdapter = new HistoryAdapter(getContext(), mDirection);
         historyList.setLayoutManager(new LinearLayoutManager(getContext()));
         historyList.setAdapter(mAdapter);
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(LOAD_ID, null, this);
         rlEmpty.setVisibility(View.INVISIBLE);
     }
 
@@ -110,7 +123,7 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
         if (!data.lists.isEmpty()) {
             rlEmpty.setVisibility(View.INVISIBLE);
             historyList.setVisibility(View.VISIBLE);
-            mAdapter.setDatas(data.lists);
+            mAdapter.setData(data.lists);
         } else {
             historyList.setVisibility(View.INVISIBLE);
             rlEmpty.setVisibility(View.VISIBLE);
@@ -120,10 +133,5 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
     @Override
     public void onLoaderReset(Loader<BaseLoader.Result> loader) {
         mAdapter.reset();
-    }
-
-    @Override
-    public void onItemClick(View v) {
-
     }
 }

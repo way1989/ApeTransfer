@@ -96,7 +96,7 @@ public class TaskHistory {
                 results.add(fileInfo);
             }
         } finally {
-            if (searches != null) {
+            if (!searches.isClosed()) {
                 searches.close();
             }
         }

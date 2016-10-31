@@ -3,7 +3,9 @@ package com.ape.transfer.p2p.core.receive;
 
 import android.util.Log;
 
+import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.p2p.beans.TransferFile;
+import com.ape.transfer.p2p.beans.param.ParamTCPNotify;
 import com.ape.transfer.p2p.core.P2PManager;
 import com.ape.transfer.p2p.core.WorkHandler;
 import com.ape.transfer.p2p.util.Constant;
@@ -21,7 +23,7 @@ import java.net.Socket;
  */
 public class ReceiveTask extends Thread {
     private static final String TAG = "ReceiveTask";
-    private String sendIp;
+    private Peer sendPeer;
     private Socket socket;
     private boolean finished = false;
     private BufferedOutputStream bufferedOutputStream;
@@ -33,7 +35,7 @@ public class ReceiveTask extends Thread {
     public ReceiveTask(WorkHandler handler, Receiver receiver) {
         this.p2PHandler = handler;
         this.receiver = receiver;
-        this.sendIp = receiver.mNeighbor.ip;
+        this.sendPeer = receiver.mNeighbor;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class ReceiveTask extends Thread {
             if (isInterrupted())
                 break;
             try {
-                socket = new Socket(sendIp, Constant.FILE_TRANSFER_PORT);
+                socket = new Socket(sendPeer.ip, Constant.FILE_TRANSFER_PORT);
                 notifyReceiver(Constant.CommandNum.RECEIVE_TCP_ESTABLISHED, null);
 
                 TransferFile fileInfo = receiver.mReceiveFileInfos[i];
@@ -80,21 +82,15 @@ public class ReceiveTask extends Thread {
                     fileInfo.position = total;//add by liweiping
                     if (fileInfo.position - lastLen > update) {
                         lastLen = total;
-                        notifyReceiver(Constant.CommandNum.RECEIVE_PERCENT, fileInfo);
+                        notifyReceiver(Constant.CommandNum.RECEIVE_PERCENT, new ParamTCPNotify(sendPeer, fileInfo));
                     }
-//                    if (percent - lastPercent > 1 || percent == 100) {
-//                        lastPercent = percent;
-//                        fileInfo.setPercent(percent);
-//                        notifyReceiver(Constant.CommandNum.RECEIVE_PERCENT, fileInfo);
-//                    }
 
                     if (total >= fileInfo.size) {
                         Log.d(TAG, "total > file info size");
                         break;
                     }
                 } // end of while
-                //fileInfo.setPercent(100);
-                notifyReceiver(Constant.CommandNum.RECEIVE_PERCENT, fileInfo);
+                notifyReceiver(Constant.CommandNum.RECEIVE_PERCENT, new ParamTCPNotify(sendPeer, fileInfo));
 
                 Log.d(TAG, "receive file " + fileInfo.name + " success");
 
@@ -146,10 +142,8 @@ public class ReceiveTask extends Thread {
     }
 
     private void notifyReceiver(int cmd, Object obj) {
-        if (!finished) {
-            if (p2PHandler != null)
-                p2PHandler.send2Handler(cmd, Constant.Src.RECEIVE_TCP_THREAD,
-                        Constant.Recipient.FILE_RECEIVE, obj);
-        }
+        if (!finished && p2PHandler != null)
+            p2PHandler.send2Handler(cmd, Constant.Src.RECEIVE_TCP_THREAD,
+                    Constant.Recipient.FILE_RECEIVE, obj);
     }
 }

@@ -174,8 +174,9 @@ public class P2PManager {
                         manager.mReceiveFileCallback.onPostReceiving();
                     break;
                 case Constant.CommandNum.RECEIVE_PERCENT:
+                    ParamTCPNotify receiveNotify = (ParamTCPNotify) msg.obj;
                     if (manager.mReceiveFileCallback != null)
-                        manager.mReceiveFileCallback.onReceiving((TransferFile) msg.obj);
+                        manager.mReceiveFileCallback.onReceiving(receiveNotify.peer, (TransferFile) receiveNotify.object);
                     break;
             }
         }

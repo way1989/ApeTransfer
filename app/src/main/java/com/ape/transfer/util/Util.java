@@ -18,7 +18,11 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.SimpleFormatter;
+
+import static com.ape.transfer.util.FileCategoryHelper.SortMethod.date;
 
 /**
  * Created by android on 16-6-29.
@@ -26,13 +30,9 @@ import java.util.Date;
 public class Util {
     private static final String PACKAGE_URI_PREFIX = "package:";
 
-    public static String formatDateString(Context context, long time) {
-        DateFormat dateFormat = android.text.format.DateFormat
-                .getDateFormat(context);
-        DateFormat timeFormat = android.text.format.DateFormat
-                .getTimeFormat(context);
-        Date date = new Date(time);
-        return dateFormat.format(date) + " " + timeFormat.format(date);
+    public static String formatDateString(long time) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-DD HH:mm");
+        return formatter.format(new Date(time));
     }
 
     public static String getNameFromFilename(String filename) {

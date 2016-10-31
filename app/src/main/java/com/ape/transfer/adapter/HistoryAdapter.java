@@ -2,50 +2,38 @@ package com.ape.transfer.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.ape.transfer.App;
 import com.ape.transfer.R;
-import com.ape.transfer.activity.UserInfoActivity;
+import com.ape.transfer.model.HistoryTransfer;
 import com.ape.transfer.p2p.beans.TransferFile;
-import com.ape.transfer.util.PreferenceUtil;
-import com.ape.transfer.util.Util;
-import com.daimajia.numberprogressbar.NumberProgressBar;
 
 import java.util.ArrayList;
 
 /**
  * Created by android on 16-6-28.
  */
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryHolder> {
     private LayoutInflater mInflater;
-    private ArrayList<TransferFile> mFileItems;
-    private OnItemClickListener mListener;
+    private ArrayList<HistoryTransfer> mTransfers;
     private int mDirection;
 
-    public HistoryAdapter(Context context, int direction,
-                          OnItemClickListener onItemClickListener) {
+    public HistoryAdapter(Context context, int direction) {
         mInflater = LayoutInflater.from(context);
         setHasStableIds(true);
-        mFileItems = new ArrayList<>();
-        mListener = onItemClickListener;
+        mTransfers = new ArrayList<>();
         mDirection = direction;
     }
 
-    public void setDatas(ArrayList<TransferFile> musicItems) {
-        mFileItems = musicItems;
+    public void setData(ArrayList<HistoryTransfer> transfers) {
+        mTransfers = transfers;
         notifyDataSetChanged();
     }
 
     public void reset() {
-        mFileItems.clear();
+        mTransfers.clear();
         notifyDataSetChanged();
     }
 
@@ -56,120 +44,39 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public HistoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         if (mDirection == TransferFile.Direction.DIRECTION_SEND) {
             view = mInflater.inflate(R.layout.history_item_send, parent, false);
         } else {
             view = mInflater.inflate(R.layout.history_item_receive, parent, false);
         }
-        return new ViewHolder(view);
-    }
-
-    private boolean lessThanStandard(long selfTime, long lastTime) {
-        return (selfTime - lastTime) < (30 * 60 * 1000);
-    }
-
-    private int getPercent(TransferFile fileInfo) {
-        return (int) ((100.0f * fileInfo.position) / fileInfo.size);
+        return new HistoryHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        TransferFile item = mFileItems.get(position);
-        holder.itemView.setTag(item);
-
-        // 本条与上一条时间间隔不超过0.5小时就不显示本条时间
-        long lastTime = 0;
-        if (position > 0) {
-            lastTime = item.createTime;
-        }
-
-        long selfTime = item.createTime;
-        if (lessThanStandard(selfTime, lastTime)) {
-            holder.tvTime.setVisibility(View.GONE);
-        } else {
-            holder.tvTime.setVisibility(View.VISIBLE);
-            holder.tvTime.setText(Util.formatDateString(App.getContext(), selfTime));
-        }
-
-        holder.ivThumb.setImageResource(R.drawable.file_icon_default);
-        holder.tvTitle.setText(item.name);
-        holder.tvInfo.setText(Formatter.formatFileSize(App.getContext(), item.size));
-        if (item.position < item.size) {
-            holder.progressBar.setVisibility(View.VISIBLE);
-            holder.progressBar.setProgress(getPercent(item));
-            //holder.tvPercent.setText(getPercent(item) + "%");
-        } else {
-            holder.progressBar.setVisibility(View.INVISIBLE);
-            //holder.tvPercent.setVisibility(View.INVISIBLE);
-            holder.tvInfo.setVisibility(View.VISIBLE);
-        }
-        if (mDirection == TransferFile.Direction.DIRECTION_SEND) {
-            holder.ivAvatar.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
-            holder.tvTo.setText(App.getContext().getString(R.string.format_to));
-        } else {
-            holder.tvFrom.setText(App.getContext().getString(R.string.format_from));
-        }
-        holder.btnOperation.setVisibility(View.INVISIBLE);
+    public void onBindViewHolder(HistoryHolder holder, int position) {
+        HistoryTransfer data = mTransfers.get(position);
+        holder.setData(data);
     }
 
     @Override
     public int getItemCount() {
-        return mFileItems.size();
+        return mTransfers.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return mFileItems.get(position).md5.hashCode() + position;
+        return mTransfers.get(position).transferFile.hashCode();
     }
 
-    public void updateItem(TransferFile fileInfo) {
-        int index = mFileItems.indexOf(fileInfo);
+    public void updateItem(HistoryTransfer transfer) {
+        int index = mTransfers.indexOf(transfer);
         if (index != -1) {
-            TransferFile info = mFileItems.get(index);
-            info.position = fileInfo.position;
-            //info.percent = (int) ((100.0f) * fileInfo.position / fileInfo.size);
-            notifyItemChanged(index);
+            HistoryTransfer eventTransfer = mTransfers.get(index);
+            eventTransfer.transferFile.position = transfer.transferFile.position;
+            eventTransfer.updateProgress();
         }
     }
 
-    public interface OnItemClickListener {
-        void onItemClick(View v);
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView tvTime;
-        ImageView ivAvatar;
-        TextView tvFrom;
-        TextView tvTo;
-        ImageView ivThumb;
-        Button btnOperation;
-
-        TextView tvTitle;
-        TextView tvInfo;
-        //TextView tvPercent;
-        NumberProgressBar progressBar;
-
-        ViewHolder(View itemView) {
-            super(itemView);
-            itemView.setOnClickListener(this);
-            tvTime = (TextView) itemView.findViewById(R.id.tv_time);
-            ivAvatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
-            tvFrom = (TextView) itemView.findViewById(R.id.tv_from);
-            tvTo = (TextView) itemView.findViewById(R.id.tv_to);
-            ivThumb = (ImageView) itemView.findViewById(R.id.iv_thumb);
-            btnOperation = (Button) itemView.findViewById(R.id.btn_operate);
-
-            tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
-            tvInfo = (TextView) itemView.findViewById(R.id.tv_info);
-            //tvPercent = (TextView) itemView.findViewById(R.id.tv_percent);
-            progressBar = (NumberProgressBar) itemView.findViewById(R.id.progressBar);
-        }
-
-        @Override
-        public void onClick(View v) {
-            mListener.onItemClick(v);
-        }
-    }
 }

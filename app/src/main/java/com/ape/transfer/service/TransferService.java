@@ -10,8 +10,9 @@ import android.text.TextUtils;
 
 import com.ape.transfer.BuildConfig;
 import com.ape.transfer.model.FileItem;
+import com.ape.transfer.model.NewTransferTaskEvent;
 import com.ape.transfer.model.PeerEvent;
-import com.ape.transfer.model.TransferFileEvent;
+import com.ape.transfer.model.TransferEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.p2p.callback.PeerCallback;
@@ -31,7 +32,6 @@ import com.ape.transfer.util.WifiUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class TransferService extends Service {
     public static final String ACTION_START_P2P = "com.ape.transfer.startP2P";
@@ -72,6 +72,7 @@ public class TransferService extends Service {
                 file.wifiMac = peer.wifiMac;
                 TaskHistory.getInstance().addFileInfo(file);
             }
+            RxBus.getInstance().post(new NewTransferTaskEvent(TransferFile.Direction.DIRECTION_SEND));
         }
 
         @Override
@@ -80,7 +81,7 @@ public class TransferService extends Service {
                     + ", sumSize = " + file.size);
             file.status = TransferFile.Status.STATUS_SENDING;
             TaskHistory.getInstance().updateFileInfo(file);
-            RxBus.getInstance().post(new TransferFileEvent(file));
+            RxBus.getInstance().post(new TransferEvent(dest, file));
         }
 
         @Override
@@ -111,14 +112,15 @@ public class TransferService extends Service {
                 fileInfo.position = 0;
                 TaskHistory.getInstance().addFileInfo(fileInfo);
             }
+            RxBus.getInstance().post(new NewTransferTaskEvent(TransferFile.Direction.DIRECTION_RECEIVE));
         }
 
         @Override
-        public void onReceiving(TransferFile file) {
+        public void onReceiving(Peer src, TransferFile file) {
             Log.i(TAG, "onReceiving....  position = " + file.position + ", sumSize = " + file.size);
             file.status = TransferFile.Status.STATUS_RECEIVING;
             TaskHistory.getInstance().updateFileInfo(file);
-            RxBus.getInstance().post(new TransferFileEvent(file));
+            RxBus.getInstance().post(new TransferEvent(src, file));
         }
 
         @Override

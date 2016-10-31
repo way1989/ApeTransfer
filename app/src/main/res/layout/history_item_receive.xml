@@ -75,6 +75,7 @@
                 android:clickable="false"
                 android:focusable="false"
                 android:minWidth="@dimen/message_btn_width"
+                android:visibility="gone"
                 android:text="@android:string/cancel"
                 android:textColor="@color/green"
                 android:textSize="@dimen/textSize_h6" />

@@ -11,7 +11,7 @@ import com.ape.transfer.p2p.beans.TransferFile;
 public interface ReceiveFileCallback {
     void onPreReceiving(Peer src, TransferFile files[]);
 
-    void onReceiving(TransferFile files);
+    void onReceiving(Peer src, TransferFile files);
 
     void onPostReceiving();
 
