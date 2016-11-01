@@ -72,7 +72,7 @@ public class PictureBackupComposer extends Composer {
         boolean result = false;
         for (int i = 0; i < mPictureCursorArray.length; ++i) {
 //            if (mPictureUriArray[i] == MediaStore.Images.Media.EXTERNAL_CONTENT_URI) {
-//                String path = SDCardUtils.getStoragePath(mContext);
+//                String path = StorageUtils.getStoragePath(mContext);
 //                if (path != null && !path.trim().equals("")) {
 //                    String externalSDPath = "%"
 //                            + path.subSequence(0, path.lastIndexOf(File.separator)) + "%";

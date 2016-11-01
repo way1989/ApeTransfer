@@ -233,7 +233,7 @@ public class SmsBackupComposer extends Composer {
                 }
 
 
-                long simid = tmpCur.getLong(tmpCur.getColumnIndex(COLUMN_NAME_SIM_ID));
+                //long simid = tmpCur.getLong(tmpCur.getColumnIndex(COLUMN_NAME_SIM_ID));
                 String mSlotid = "0";
                 /*if (SystemProperties.getBoolean("ro.mediatek.gemini_support", false)
                         && simid >= 0) {
@@ -278,7 +278,7 @@ public class SmsBackupComposer extends Composer {
                     smsAddress = "";
                 }
 
-                String sc = tmpCur.getString(tmpCur.getColumnIndex(COLUMN_NAME_SC));
+                //String sc = tmpCur.getString(tmpCur.getColumnIndex(COLUMN_NAME_SC));
 
                 String body = tmpCur.getString(tmpCur.getColumnIndex(COLUMN_NAME_BODY));
 

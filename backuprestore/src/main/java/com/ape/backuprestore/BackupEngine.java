@@ -393,9 +393,7 @@ public class BackupEngine {
                 }
             } catch (SecurityException e) {
                 e.printStackTrace();
-                Toast.makeText(
-                        mContext,
-                        R.string.permission_not_satisfied_exit,
+                Toast.makeText(mContext, R.string.permission_not_satisfied_exit,
                         Toast.LENGTH_SHORT).show();
                 android.os.Process.killProcess(android.os.Process.myPid());
             }

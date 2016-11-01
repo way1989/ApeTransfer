@@ -1,40 +1,3 @@
-/* Copyright Statement:
- *
- * This software/firmware and related documentation ("MediaTek Software") are
- * protected under relevant copyright laws. The information contained herein is
- * confidential and proprietary to MediaTek Inc. and/or its licensors. Without
- * the prior written permission of MediaTek inc. and/or its licensors, any
- * reproduction, modification, use or disclosure of MediaTek Software, and
- * information contained herein, in whole or in part, shall be strictly
- * prohibited.
- *
- * MediaTek Inc. (C) 2010. All rights reserved.
- *
- * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
- * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE")
- * RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO RECEIVER
- * ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL
- * WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
- * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
- * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
- * INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND RECEIVER AGREES
- * TO LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
- * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
- * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
- * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
- * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
- * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
- * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO THE MEDIATEK SOFTWARE
- * RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, TO REVISE OR REPLACE THE
- * MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE FEES OR SERVICE
- * CHARGE PAID BY RECEIVER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
- *
- * The following software/firmware and/or related documentation ("MediaTek
- * Software") have been modified by MediaTek Inc. All revisions are subject to
- * any receiver's applicable license agreements with MediaTek Inc.
- */
-
 package com.ape.backuprestore;
 
 import android.app.Notification;
@@ -53,7 +16,7 @@ import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
 import com.ape.backuprestore.utils.NotifyManager;
-import com.ape.backuprestore.utils.SDCardUtils;
+import com.ape.backuprestore.utils.StorageUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,11 +24,11 @@ import java.util.HashMap;
 
 
 /**
- * @author mtk81330
+ * @author way
  */
 public class BackupService extends Service implements ProgressReporter, BackupEngine.OnBackupDoneListner {
     private static final String CLASS_TAG = MyLogger.LOG_TAG + "/BackupService";
-    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<Integer, ArrayList<String>>();
+    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
     NewDataNotifyReceiver mNotificationReceiver = null;
     private BackupBinder mBinder = new BackupBinder();
     private int mState;
@@ -74,7 +37,6 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     private BackupProgress mCurrentProgress = new BackupProgress();
     private OnBackupStatusListener mStatusListener;
     private BackupEngine.BackupResultType mResultType;
-    private ArrayList<ResultDialog.ResultEntity> mAppResultList;
     private boolean mComposerResult = true;
 
     @Override
@@ -92,7 +54,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
         super.onUnbind(intent);
         MyLogger.logI(CLASS_TAG, "onUnbind");
         // If SD card removed or full, kill process
-        SDCardUtils.killProcessIfNecessary(this);
+        StorageUtils.killProcessIfNecessary();
         return true;
     }
 
@@ -228,7 +190,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
                 }
             }
             mState = Constants.State.FINISH;
-            mStatusListener.onBackupEnd(result, mResultList, mAppResultList);
+            mStatusListener.onBackupEnd(result, mResultList);
         } else {
             mState = Constants.State.FINISH;
         }
@@ -269,31 +231,29 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
         /**
          * @param composer
          */
-        public void onComposerChanged(Composer composer);
+        void onComposerChanged(Composer composer);
 
         /**
          * @param composer composer
          * @param progress progress
          */
-        public void onProgressChanged(Composer composer, int progress);
+        void onProgressChanged(Composer composer, int progress);
 
         /**
-         * @param resultCode      resultCode
-         * @param resultRecord    resultRecord
-         * @param appResultRecord appResultRecord
+         * @param resultCode   resultCode
+         * @param resultRecord resultRecord
          */
-        public void onBackupEnd(final BackupEngine.BackupResultType resultCode,
-                                final ArrayList<ResultDialog.ResultEntity> resultRecord,
-                                final ArrayList<ResultDialog.ResultEntity> appResultRecord);
+        void onBackupEnd(final BackupEngine.BackupResultType resultCode,
+                         final ArrayList<ResultDialog.ResultEntity> resultRecord);
 
         /**
          * @param e IOException
          */
-        public void onBackupErr(IOException e);
+        void onBackupErr(IOException e);
     }
 
     /**
-     * @author mtk81330
+     * @author way
      */
     public static class BackupProgress {
         Composer mComposer;
@@ -303,7 +263,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     }
 
     /**
-     * @author mtk81330
+     * @author way
      */
     public class BackupBinder extends Binder {
         public int getState() {
@@ -409,9 +369,6 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             if (mResultList != null) {
                 mResultList.clear();
             }
-            if (mAppResultList != null) {
-                mAppResultList.clear();
-            }
             if (mParasMap != null) {
                 mParasMap.clear();
             }
@@ -433,13 +390,10 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             return mResultType;
         }
 
-        public ArrayList<ResultDialog.ResultEntity> getAppBackupResult() {
-            return mAppResultList;
-        }
     }
 
     /**
-     * @author mtk81330
+     * @author way
      */
     class NewDataNotifyReceiver extends BroadcastReceiver {
         public static final String CLASS_TAG = "NotificationReceiver";

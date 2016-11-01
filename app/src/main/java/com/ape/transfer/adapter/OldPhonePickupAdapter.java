@@ -34,6 +34,11 @@ public class OldPhonePickupAdapter extends RecyclerView.Adapter<OldPhonePickupAd
         notifyDataSetChanged();
     }
 
+    public void reset() {
+        mPersonalItemDatas.clear();
+        notifyDataSetChanged();
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.item_data, parent, false);

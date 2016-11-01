@@ -1,7 +1,6 @@
 package com.ape.backuprestore.utils;
 
 
-import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
@@ -9,19 +8,14 @@ import java.io.File;
 import java.io.IOException;
 
 
-public class SDCardUtils {
+public class StorageUtils {
 
     public final static int MINIMUM_SIZE = 512;
-    private static final String CLASS_TAG = "SDCardUtils";
+    private static final String CLASS_TAG = "StorageUtils";
 
-    public static String getSavePath() {
-        return Environment.getExternalStorageDirectory().getAbsolutePath();
-    }
-
-
-    public static String getStoragePath(Context context) {
-        String storagePath = getSavePath();
-        storagePath = storagePath + File.separator + "ApeTransfer";
+    public static String getStoragePath() {
+        String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + File.separator + "ApeTransfer" + File.separator + Constants.ModulePath.FOLDER_BACKUP;
         MyLogger.logD(CLASS_TAG, "getStoragePath: path is " + storagePath);
         File file = new File(storagePath);
         if (file.exists() && file.isDirectory()) {
@@ -33,26 +27,8 @@ public class SDCardUtils {
         }
     }
 
-    public static String getPersonalDataBackupPath(Context context) {
-        String path = getStoragePath(context);
-        if (path != null) {
-            return path + File.separator + Constants.ModulePath.FOLDER_BACKUP;
-        }
-
-        return path;
-    }
-
-    public static String getAppsBackupPath(Context context) {
-        String path = getStoragePath(context);
-        MyLogger.logD(CLASS_TAG, "getAppsBackupPath path = " + path);
-        if (path != null) {
-            return path + File.separator + Constants.ModulePath.FOLDER_APP;
-        }
-        return path;
-    }
-
-    public static boolean isSdCardAvailable(Context context) {
-        return (getStoragePath(context) != null);
+    public static String getBackupPath() {
+        return getStoragePath();
     }
 
     public static long getAvailableSize(String file) {
@@ -64,44 +40,44 @@ public class SDCardUtils {
         return totalSize;
     }
 
-    public static boolean isSdCardMissing(Context context) {
-        boolean isSDCardMissing = false;
-        String path = getStoragePath(context);
+    public static boolean isStorageMissing() {
+        boolean isStorageMissing = false;
+        String path = getStoragePath();
         if (path == null) {
-            isSDCardMissing = true;
+            isStorageMissing = true;
         } else {
             // create file to check for sure
             File temp = new File(path + File.separator + ".temp");
             if (temp.exists()) {
                 if (!temp.delete()) {
-                    isSDCardMissing = true;
+                    isStorageMissing = true;
                 }
             } else {
                 try {
                     if (!temp.createNewFile()) {
-                        isSDCardMissing = true;
+                        isStorageMissing = true;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     MyLogger.logE(CLASS_TAG, "Cannot create temp file");
-                    isSDCardMissing = true;
+                    isStorageMissing = true;
                 } finally {
                     temp.delete();
                 }
             }
         }
-        return isSDCardMissing;
+        return isStorageMissing;
     }
 
     /*
      * If SD card is removed or full, kill this process
      */
-    public static void killProcessIfNecessary(Context context) {
-        if (isSdCardMissing(context)) {
+    public static void killProcessIfNecessary() {
+        if (isStorageMissing()) {
             Log.i(CLASS_TAG, "SD card removed, kill process");
             Utils.killMyProcess();
         } else {
-            String path = getStoragePath(context);
+            String path = getStoragePath();
             if (getAvailableSize(path) <= MINIMUM_SIZE) {
                 Log.i(CLASS_TAG, "SD full, kill process");
                 Utils.killMyProcess();

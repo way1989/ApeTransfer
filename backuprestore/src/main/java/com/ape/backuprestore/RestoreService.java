@@ -49,7 +49,7 @@ import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
 import com.ape.backuprestore.utils.NotifyManager;
-import com.ape.backuprestore.utils.SDCardUtils;
+import com.ape.backuprestore.utils.StorageUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
         super.onUnbind(intent);
         MyLogger.logI(CLASS_TAG, "onUnbind");
         // If SD card removed or full, kill process
-        SDCardUtils.killProcessIfNecessary(this);
+        StorageUtils.killProcessIfNecessary();
         return true;
     }
 
@@ -212,7 +212,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
      */
     public void onFinishRestore(boolean bSuccess) {
         moveToState(Constants.State.FINISH);
-        if (SDCardUtils.getStoragePath(getApplicationContext()) == null) {
+        if (StorageUtils.getStoragePath() == null) {
             moveToState(Constants.State.INIT);
         }
         if (mRestoreStatusListener != null) {

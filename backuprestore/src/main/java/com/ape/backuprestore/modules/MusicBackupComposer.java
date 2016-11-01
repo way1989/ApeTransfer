@@ -74,7 +74,7 @@ public class MusicBackupComposer extends Composer {
         boolean result = false;
         for (int i = 0; i < mMusicCursorArray.length; ++i) {
 //            if (mMusicUriArray[i] == MediaStore.Audio.Media.EXTERNAL_CONTENT_URI) {
-//                String path = SDCardUtils.getStoragePath(mContext);
+//                String path = StorageUtils.getStoragePath(mContext);
 //                if (path != null && !path.trim().equals("")) {
 //                    String externalSDPath = "%"
 //                            + path.subSequence(0, path.lastIndexOf(File.separator)) + "%";

@@ -29,7 +29,7 @@ import com.ape.backuprestore.utils.BackupFilePreview;
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
-import com.ape.backuprestore.utils.SDCardUtils;
+import com.ape.backuprestore.utils.StorageUtils;
 import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
 
@@ -88,7 +88,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         if (savedInstanceState != null) {
             mRestoreFolderPath = savedInstanceState.getString(RESTORE_PATH);
         } else {
-            mRestoreFolderPath = SDCardUtils.getPersonalDataBackupPath(getApplicationContext());
+            mRestoreFolderPath = StorageUtils.getBackupPath();
         }
         if (mRestoreFolderPath == null) {
             finish();
@@ -117,7 +117,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     }
 
     private void init() {
-        if (SDCardUtils.getStoragePath(this) == null) {
+        if (StorageUtils.getStoragePath() == null) {
             MyLogger.logD(TAG, "SDCard is removed");
             Toast.makeText(this, R.string.nosdcard_notice, Toast.LENGTH_SHORT).show();
             finish();
@@ -191,7 +191,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         mRestoreService.setRestoreModelList(list);
         boolean ret = mRestoreService.startRestore(mRestoreFolderPath);
         if (ret) {
-            String path = SDCardUtils.getStoragePath(this);
+            String path = StorageUtils.getStoragePath();
             if (path == null) {
                 // no sdcard
                 MyLogger.logD(TAG, "SDCard is removed");
@@ -328,15 +328,18 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     }
 
     private void bindService() {
-        getApplicationContext().bindService(new Intent(this, RestoreService.class), mServiceCon,
-                Service.BIND_AUTO_CREATE);
+        bindService(new Intent(this, RestoreService.class), mServiceCon, Service.BIND_AUTO_CREATE);
     }
 
     private void unBindService() {
         if (mRestoreService != null) {
             mRestoreService.setOnRestoreChangedListner(null);
         }
-        getApplicationContext().unbindService(mServiceCon);
+        try {
+            unbindService(mServiceCon);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     protected void startService() {
@@ -450,15 +453,15 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     protected boolean errChecked() {
         boolean ret = false;
 
-        boolean isSDCardMissing = SDCardUtils.isSdCardMissing(this);
-        String path = SDCardUtils.getStoragePath(this);
+        boolean isStorageMissing = StorageUtils.isStorageMissing();
+        String path = StorageUtils.getStoragePath();
 
-        if (isSDCardMissing) {
+        if (isStorageMissing) {
             MyLogger.logI(TAG, "SDCard is removed");
             stopService(new Intent(this, RestoreService.class));
             Utils.exitLockTaskModeIfNeeded(this);
             finish();
-        } else if (SDCardUtils.getAvailableSize(path) <= SDCardUtils.MINIMUM_SIZE) {
+        } else if (StorageUtils.getAvailableSize(path) <= StorageUtils.MINIMUM_SIZE) {
             MyLogger.logI(TAG, "SDCard is full");
             ret = true;
 
