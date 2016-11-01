@@ -12,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.model.PeerEvent;
+import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
@@ -26,6 +27,7 @@ import rx.functions.Action1;
 public abstract class BaseTransferActivity extends ApBaseActivity {
     private static final String TAG = "BaseTransferActivity";
     protected TransferService mTransferService;
+    protected Peer mPeer;
     private boolean mIsBound = false;
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -47,6 +49,9 @@ public abstract class BaseTransferActivity extends ApBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getIntent().hasExtra(Peer.TAG)) {
+            mPeer = (Peer) (getIntent().getSerializableExtra(Peer.TAG));
+        }
         bindTransferService();
         RxBus.getInstance().toObservable(PeerEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -62,7 +67,15 @@ public abstract class BaseTransferActivity extends ApBaseActivity {
 
     protected abstract void onPeerChanged(PeerEvent peerEvent);
 
-    protected abstract void onPostServiceConnected();
+    protected void onPostServiceConnected(){
+        //如果wifi热点已经开启或者没有建立热点的启动，则启动p2p
+        if(isWifiApEnabled() || mPeer != null) startP2P();
+    }
+
+    @Override
+    protected boolean shouldCloseWifiAp() {
+        return isWifiApEnabled() && (mTransferService == null || mTransferService.isEmpty());
+    }
 
     @Override
     protected void onDestroy() {

@@ -65,11 +65,6 @@ public class QrCodeActivity extends BaseTransferActivity {
     }
 
     @Override
-    protected boolean shouldCloseWifiAp() {
-        return mTransferService == null || mTransferService.isEmpty();
-    }
-
-    @Override
     protected void onWifiApStatusChanged(ApStatusEvent event) {
         Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
 //        boolean hasInternet = TDevice.hasInternet();
@@ -110,9 +105,4 @@ public class QrCodeActivity extends BaseTransferActivity {
         }
     }
 
-    @Override
-    protected void onPostServiceConnected() {
-        //如果wifi热点已经开启或者没有建立热点的启动，则启动p2p
-        if(isWifiApEnabled()) startP2P();
-    }
 }

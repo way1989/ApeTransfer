@@ -93,7 +93,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
-    private Peer mPeer;
     private HashMap<String, Peer> mPeerHashMap = new HashMap<>();
 
     @Override
@@ -103,9 +102,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
         //标题栏下无阴影
         if (actionBar != null)
             actionBar.setElevation(0f);
-        //是否有连接上的peer
-        if (getIntent().hasExtra(Peer.TAG))
-            mPeer = (Peer) getIntent().getSerializableExtra(Peer.TAG);
 
         tvMeName.setText(PreferenceUtil.getInstance().getAlias());
         ivMeAvatar.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
@@ -166,11 +162,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
     }
 
     @Override
-    protected boolean shouldCloseWifiAp() {
-        return isWifiApEnabled() && (mTransferService == null || mTransferService.isEmpty());
-    }
-
-    @Override
     protected String getSSID() {
         return "ApeTransfer@" + PreferenceUtil.getInstance().getAlias();
     }
@@ -206,12 +197,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
         Log.d(TAG, "onPeerChanged... process result size = " + mPeerHashMap.size());
         mPhoneItemAdapter.setData(mPeerHashMap.values());
         updateUI(mPeerHashMap.size() > 0);
-    }
-
-    @Override
-    protected void onPostServiceConnected() {
-        //如果wifi热点已经开启或者没有建立热点的启动，则启动p2p
-        if(isWifiApEnabled() || mPeer != null) startP2P();
     }
 
     private void updateUI(boolean hasNeighbor) {

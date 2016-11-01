@@ -97,10 +97,10 @@ public abstract class ApBaseActivity extends BaseActivity {
                 mHandler.removeMessages(OPEN_WIFI_AP);
                 mHandler.sendEmptyMessageDelayed(OPEN_WIFI_AP, 2000L);
             }
-            return;
+        }else {
+            mHandler.removeMessages(OPEN_WIFI_AP);
+            mHandler.sendEmptyMessage(OPEN_WIFI_AP);
         }
-        mHandler.removeMessages(OPEN_WIFI_AP);
-        mHandler.sendEmptyMessage(OPEN_WIFI_AP);
     }
 
     protected void stopWifiAp() {
@@ -112,6 +112,7 @@ public abstract class ApBaseActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mHandler.removeCallbacksAndMessages(null);
         if (shouldCloseWifiAp()) {
             stopWifiAp();
         }

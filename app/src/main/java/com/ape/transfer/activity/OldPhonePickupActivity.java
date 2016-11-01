@@ -44,7 +44,6 @@ import com.ape.transfer.adapter.OldPhonePickupAdapter;
 import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
-import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.TDevice;
@@ -60,6 +59,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+
+import static com.ape.transfer.activity.QrCodeActivity.EXCHANGE_SSID_SUFFIX;
 
 /**
  * Created by android on 16-7-13.
@@ -79,7 +80,6 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements
     Button btnSure;
     private List<String> mMessageEnable = new ArrayList<>();
     private OldPhonePickupAdapter mAdapter;
-    private Peer mPeer;
     private InitPersonalDataTask mInitDataTask;
     private String mFolderName;
     private boolean mIsShowWarning = true;
@@ -106,13 +106,9 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindService();
-        if (TDevice.hasInternet()) {
-            mobileDataWarning.setVisibility(View.VISIBLE);
-        }
-        if (getIntent().hasExtra(Peer.TAG)) {
-            mPeer = (Peer) (getIntent().getSerializableExtra(Peer.TAG));
-        }
+        bindBackupService();
+
+        startWifiAp();//启动wifi热点
         mAdapter = new OldPhonePickupAdapter(getApplicationContext(), this);
         rvDataCategory.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
         rvDataCategory.setAdapter(mAdapter);
@@ -477,12 +473,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements
 
     @Override
     protected String getSSID() {
-        return PreferenceUtil.getInstance().getAlias();
-    }
-
-    @Override
-    protected boolean shouldCloseWifiAp() {
-        return mTransferService == null || mTransferService.isEmpty();
+        return "ApeTransfer@" + PreferenceUtil.getInstance().getAlias() + EXCHANGE_SSID_SUFFIX;
     }
 
     public void setOnBackupStatusListener() {
@@ -491,16 +482,16 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements
         }
     }
 
-    private void bindService() {
-        this.getApplicationContext().bindService(new Intent(this, BackupService.class),
+    private void bindBackupService() {
+        this.bindService(new Intent(this, BackupService.class),
                 mServiceCon, Service.BIND_AUTO_CREATE);
     }
 
-    private void unBindService() {
+    private void unBindBackupService() {
         if (mBackupService != null) {
             mBackupService.setOnBackupChangedListner(null);
         }
-        this.getApplicationContext().unbindService(mServiceCon);
+        this.unbindService(mServiceCon);
     }
 
     protected void startService() {
@@ -519,11 +510,6 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements
         //if (neighbors.size() <= 0) {
         //finish();
         // }
-    }
-
-    @Override
-    protected void onPostServiceConnected() {
-
     }
 
     private class InitPersonalDataTask extends AsyncTask<Void, Void, Long> {
