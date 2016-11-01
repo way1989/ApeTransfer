@@ -27,17 +27,17 @@ public class PeerManager {
 
     public void dispatchMSG(ParamIPMsg ipmsg) {
         switch (ipmsg.peerMSG.commandNum) {
-            case Constant.CommandNum.ON_LINE: //收到上线广播
+            case Constant.Command.ON_LINE: //收到上线广播
                 Log.d(TAG, "receive on_line and send on_line_ans message");
                 addPeer(ipmsg.peerMSG, ipmsg.peerIAddress);
                 //回复我上线
-                mWorkHandler.send2Neighbor(ipmsg.peerIAddress, Constant.CommandNum.ON_LINE_ANS, null);
+                mWorkHandler.send2Neighbor(ipmsg.peerIAddress, Constant.Command.ON_LINE_ANS, null);
                 break;
-            case Constant.CommandNum.ON_LINE_ANS: //收到对方上线的回复
+            case Constant.Command.ON_LINE_ANS: //收到对方上线的回复
                 Log.d(TAG, "received on_line_ans message");
                 addPeer(ipmsg.peerMSG, ipmsg.peerIAddress);
                 break;
-            case Constant.CommandNum.OFF_LINE:
+            case Constant.Command.OFF_LINE:
                 removePeer(ipmsg.peerIAddress.getHostAddress());
                 break;
 
@@ -69,7 +69,7 @@ public class PeerManager {
         peer.lastTime = System.currentTimeMillis();
         mPeerHashMap.put(ip, peer);
 
-        mWorkHandler.send2UI(Constant.UI_MSG.ADD_NEIGHBOR, peer);
+        mWorkHandler.send2UI(Constant.UI.ADD_NEIGHBOR, peer);
     }
 
     private void removePeer(String ip) {
@@ -77,7 +77,7 @@ public class PeerManager {
         Peer peer = mPeerHashMap.get(ip);
         if (peer == null) return;
         mPeerHashMap.remove(ip);
-        mWorkHandler.send2UI(Constant.UI_MSG.REMOVE_NEIGHBOR, peer);
+        mWorkHandler.send2UI(Constant.UI.REMOVE_NEIGHBOR, peer);
 
     }
 }

@@ -44,14 +44,6 @@ public class WifiUtils {
         return sWifiUtils;
     }
 
-    private String convertIPv4IntToStr(int ip) {
-        if (ip <= 0) {
-            return DEFAULT_GATEWAY_IP;
-        }
-
-        return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 24) & 0xFF);
-    }
-
     public String getLocalIP() {
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -80,6 +72,13 @@ public class WifiUtils {
     public String getGatewayIP() {
         DhcpInfo dhcpInfo = mWifiManager.getDhcpInfo();
         return convertIPv4IntToStr(dhcpInfo.serverAddress);
+    }
+
+    private String convertIPv4IntToStr(int ip) {
+        if (ip <= 0) {
+            return DEFAULT_GATEWAY_IP;
+        }
+        return (ip & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 24) & 0xFF);
     }
 
     public boolean setWifiEnabled(boolean enabled) {

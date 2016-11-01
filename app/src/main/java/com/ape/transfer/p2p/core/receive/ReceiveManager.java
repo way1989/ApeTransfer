@@ -31,7 +31,7 @@ public class ReceiveManager {
         switch (src) {
             case Constant.Src.COMMUNICATE: {
                 ParamIPMsg paramIPMsg = (ParamIPMsg) obj;
-                if (cmd == Constant.CommandNum.SEND_FILE_REQ) {
+                if (cmd == Constant.Command.SEND_FILE_REQ) {
                     invoke(paramIPMsg);
                 } else {
                     if (mReceiver != null)
@@ -50,7 +50,7 @@ public class ReceiveManager {
         }
     }
 
-    public void quit() {
+    public void stop() {
         init();
     }
 
@@ -74,10 +74,10 @@ public class ReceiveManager {
 
         ParamReceiveFiles paramReceiveFiles = new ParamReceiveFiles(neighbor, files);
         //通知UI,准备开始接收文件
-        mWorkHandler.send2UI(Constant.CommandNum.SEND_FILE_REQ, paramReceiveFiles);
+        mWorkHandler.send2UI(Constant.Command.SEND_FILE_REQ, paramReceiveFiles);
         //开始接收
-        mWorkHandler.send2Handler(Constant.CommandNum.SEND_FILE_START, Constant.Src.COMMUNICATE,
+        mWorkHandler.send2Handler(Constant.Command.SEND_FILE_START, Constant.Src.COMMUNICATE,
                 Constant.Recipient.FILE_RECEIVE, null);
-        //mReceiver.dispatchCommMSG(Constant.CommandNum.SEND_FILE_START, null);
+        //mReceiver.dispatchCommMSG(Constant.Command.SEND_FILE_START, null);
     }
 }

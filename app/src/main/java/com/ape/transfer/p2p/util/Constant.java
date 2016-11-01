@@ -30,12 +30,13 @@ public class Constant {
         int OTHER = 6;
     }
 
-    public interface UI_MSG {
+    public interface UI {
         int ADD_NEIGHBOR = 1000;
-        int REMOVE_NEIGHBOR = 10001;
+        int REMOVE_NEIGHBOR = 1001;
+        int STOP = 1002;
     }
 
-    public interface CommandNum {
+    public interface Command {
         int ON_LINE = 0;
         int OFF_LINE = 1;
         int ON_LINE_ANS = 2;

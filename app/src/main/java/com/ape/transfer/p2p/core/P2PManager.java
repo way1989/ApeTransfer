@@ -27,27 +27,28 @@ import java.lang.ref.WeakReference;
  */
 public class P2PManager {
     private static final String TAG = "P2PManager";
-
-    private static String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
+    private static final String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
             + File.separator + Constant.FILE_SHARE_SAVE_PATH;
-    /*单利对象*/
+    private static final String[] TYPE_DIR = {"APP", "Picture", "Video", "Zip", "Document", "Music", "Backup"};
+
     private volatile static P2PManager INSTANCE;
     private Peer mSelfPeer;
-    private PeerCallback mPeerCallback;
+    private HandlerThread mWorkThread;
     private WorkHandler mWorkHandler;
-    private P2PManagerHandler mMainUIHandler;
+    private MainUIHandler mMainUIHandler;
 
+    private PeerCallback mPeerCallback;
     private ReceiveFileCallback mReceiveFileCallback;
     private SendFileCallback mSendFileCallback;
 
     private P2PManager() {
-        mMainUIHandler = new P2PManagerHandler(this);
+        mMainUIHandler = new MainUIHandler(this);
     }
 
     /**
      * 获取单例
      *
-     * @return
+     * @return P2PManager
      */
     public static P2PManager getInstance() {
         if (INSTANCE == null) {
@@ -61,18 +62,17 @@ public class P2PManager {
     }
 
     public static String getSavePath(int type) {
-        String[] typeStr = {"APP", "Picture", "Video", "Zip", "Document", "Music", "Backup"};
-        return SAVE_DIR + File.separator + typeStr[type];
+        return SAVE_DIR + File.separator + TYPE_DIR[type];
     }
 
-    public void start(Peer melon, PeerCallback melon_callback) {
-        this.mSelfPeer = melon;
-        this.mPeerCallback = melon_callback;
+    public void start(Peer self, PeerCallback peerCallback) {
+        this.mSelfPeer = self;
+        this.mPeerCallback = peerCallback;
 
-        HandlerThread handlerThread = new HandlerThread(TAG, Thread.MAX_PRIORITY);
-        handlerThread.start();
+        mWorkThread = new HandlerThread(TAG, Thread.MAX_PRIORITY);
+        mWorkThread.start();
 
-        mWorkHandler = new WorkHandler(handlerThread.getLooper());
+        mWorkHandler = new WorkHandler(mWorkThread.getLooper());
         mWorkHandler.init(this);
     }
 
@@ -87,14 +87,9 @@ public class P2PManager {
         mWorkHandler.initSend();
 
         ParamSendFiles paramSendFiles = new ParamSendFiles(dsts, files);
-        mWorkHandler.send2Handler(Constant.CommandNum.SEND_FILE_REQ,
+        mWorkHandler.send2Handler(Constant.Command.SEND_FILE_REQ,
                 Constant.Src.MANAGER, Constant.Recipient.FILE_SEND, paramSendFiles);
     }
-
-//    public void ackReceive() {
-//        mWorkHandler.send2Handler(Constant.CommandNum.RECEIVE_FILE_ACK,
-//                Constant.Src.MANAGER, Constant.Recipient.FILE_RECEIVE, null);
-//    }
 
     public Peer getSelfPeer() {
         return mSelfPeer;
@@ -105,24 +100,40 @@ public class P2PManager {
     }
 
     public void stop() {
-        Log.d(TAG, "p2pManager stop");
-        mWorkHandler.release();
+        Log.d(TAG, "p2pManager stop... isStop = " + isStop());
+        if (!isStop())
+            mWorkHandler.stop();
+    }
+
+    public boolean isStop() {
+        return mWorkThread == null || mWorkHandler == null;
+    }
+
+    private void release() {
+        if (mWorkThread != null) {
+            mWorkThread.quitSafely();
+        }
+        mWorkThread = null;
+        if (mWorkHandler != null) {
+            mWorkHandler.getLooper().quitSafely();
+        }
+        mWorkHandler = null;
     }
 
     public void cancelReceive() {
-        mWorkHandler.send2Handler(Constant.CommandNum.RECEIVE_ABORT_SELF,
+        mWorkHandler.send2Handler(Constant.Command.RECEIVE_ABORT_SELF,
                 Constant.Src.MANAGER, Constant.Recipient.FILE_RECEIVE, null);
     }
 
     public void cancelSend(Peer neighbor) {
-        mWorkHandler.send2Handler(Constant.CommandNum.SEND_ABORT_SELF,
+        mWorkHandler.send2Handler(Constant.Command.SEND_ABORT_SELF,
                 Constant.Src.MANAGER, Constant.Recipient.FILE_SEND, neighbor);
     }
 
-    private static class P2PManagerHandler extends Handler {
+    private static class MainUIHandler extends Handler {
         private WeakReference<P2PManager> weakReference;
 
-        public P2PManagerHandler(P2PManager manager) {
+        public MainUIHandler(P2PManager manager) {
             this.weakReference = new WeakReference<>(manager);
         }
 
@@ -133,69 +144,73 @@ public class P2PManager {
                 return;
 
             switch (msg.what) {
-                case Constant.UI_MSG.ADD_NEIGHBOR:
+                case Constant.UI.ADD_NEIGHBOR:
                     Log.d(TAG, "handler ui ADD_NEIGHBOR manager.mPeerCallback = " + manager.mPeerCallback);
                     if (manager.mPeerCallback != null)
                         manager.mPeerCallback.onPeerFound((Peer) msg.obj);
                     break;
-                case Constant.UI_MSG.REMOVE_NEIGHBOR:
+                case Constant.UI.REMOVE_NEIGHBOR:
                     Log.d(TAG, "handler ui REMOVE_NEIGHBOR manager.mPeerCallback = " + manager.mPeerCallback);
                     if (manager.mPeerCallback != null)
                         manager.mPeerCallback.onPeerRemoved((Peer) msg.obj);
                     break;
-                case Constant.CommandNum.SEND_FILE_REQ: //收到请求发送文件
+                case Constant.Command.SEND_FILE_REQ: //收到请求发送文件
                     if (manager.mReceiveFileCallback != null) {
                         ParamReceiveFiles params = (ParamReceiveFiles) msg.obj;
                         manager.mReceiveFileCallback.onPreReceiving(params.peer,
                                 params.transferFiles);
                     }
                     break;
-                case Constant.CommandNum.SEND_FILE_START: //发送端开始发送
+                case Constant.Command.SEND_FILE_START: //发送端开始发送
                     ParamTCPNotify preNotify = (ParamTCPNotify) msg.obj;
                     if (manager.mSendFileCallback != null) {
                         manager.mSendFileCallback.onPreSending((TransferFile[]) preNotify.object,
                                 preNotify.peer);
                     }
                     break;
-                case Constant.CommandNum.SEND_PERCENTS:
+                case Constant.Command.SEND_PERCENTS:
                     ParamTCPNotify notify = (ParamTCPNotify) msg.obj;
                     if (manager.mSendFileCallback != null)
                         manager.mSendFileCallback.onSending((TransferFile) notify.object,
                                 notify.peer);
                     break;
-                case Constant.CommandNum.SEND_OVER:
+                case Constant.Command.SEND_OVER:
                     if (manager.mSendFileCallback != null)
                         manager.mSendFileCallback.onPostSending((Peer) msg.obj);
                     break;
-                case Constant.CommandNum.ALL_SEND_OVER:
+                case Constant.Command.ALL_SEND_OVER:
                     if (manager.mSendFileCallback != null)
                         manager.mSendFileCallback.onPostAllSending();
                     break;
-                case Constant.CommandNum.SEND_ABORT_SELF: //通知接收者，发送者退出了
+                case Constant.Command.SEND_ABORT_SELF: //通知接收者，发送者退出了
                     if (manager.mReceiveFileCallback != null) {
                         ParamIPMsg paramIPMsg = (ParamIPMsg) msg.obj;
                         if (paramIPMsg != null)
                             manager.mReceiveFileCallback.onAbortReceiving(
-                                    Constant.CommandNum.SEND_ABORT_SELF,
+                                    Constant.Command.SEND_ABORT_SELF,
                                     paramIPMsg.peerMSG.senderAlias);
                     }
                     break;
-                case Constant.CommandNum.RECEIVE_ABORT_SELF: //通知发送者，接收者退出了
+                case Constant.Command.RECEIVE_ABORT_SELF: //通知发送者，接收者退出了
                     if (manager.mSendFileCallback != null)
                         manager.mSendFileCallback.onAbortSending(msg.what,
                                 (Peer) msg.obj);
                     break;
-                case Constant.CommandNum.RECEIVE_OVER:
+                case Constant.Command.RECEIVE_OVER:
                     if (manager.mReceiveFileCallback != null)
                         manager.mReceiveFileCallback.onPostReceiving();
                     break;
-                case Constant.CommandNum.RECEIVE_PERCENT:
+                case Constant.Command.RECEIVE_PERCENT:
                     ParamTCPNotify receiveNotify = (ParamTCPNotify) msg.obj;
                     if (manager.mReceiveFileCallback != null)
                         manager.mReceiveFileCallback.onReceiving(receiveNotify.peer, (TransferFile) receiveNotify.object);
                     break;
+                case Constant.UI.STOP:
+                    manager.release();
+                    break;
             }
         }
     }
+
 
 }

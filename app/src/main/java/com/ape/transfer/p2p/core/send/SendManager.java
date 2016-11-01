@@ -45,12 +45,12 @@ public class SendManager {
             }
             case Constant.Src.MANAGER: {//准备发送或取消发送
                 Log.i(TAG, "disPatchMsg MANAGER");
-                if (what == Constant.CommandNum.SEND_FILE_REQ) {
+                if (what == Constant.Command.SEND_FILE_REQ) {
                     if (!mSenderHashMap.isEmpty())
                         return;
                     ParamSendFiles param = (ParamSendFiles) obj;
                     invoke(param.neighbors, param.transferFiles);
-                } else if (what == Constant.CommandNum.SEND_ABORT_SELF) {
+                } else if (what == Constant.Command.SEND_ABORT_SELF) {
                     Sender sender = getSender(((Peer) obj).ip);
                     sender.dispatchUIMSG(what);
                 }
@@ -95,9 +95,9 @@ public class SendManager {
             }
 
             //通知界面开始发送
-            mWorkHandler.send2UI(Constant.CommandNum.SEND_FILE_START, new ParamTCPNotify(neighbor, files));
+            mWorkHandler.send2UI(Constant.Command.SEND_FILE_START, new ParamTCPNotify(neighbor, files));
             //通知对方，我要发送文件了
-            mWorkHandler.send2Receiver(peer.inetAddress, Constant.CommandNum.SEND_FILE_REQ, add);
+            mWorkHandler.send2Receiver(peer.inetAddress, Constant.Command.SEND_FILE_REQ, add);
         }
     }
 
@@ -115,13 +115,13 @@ public class SendManager {
     public void removeSender(String peerIP) {
         mSenderHashMap.remove(peerIP);
         if (mSenderHashMap.isEmpty()) {
-            mWorkHandler.send2UI(Constant.CommandNum.ALL_SEND_OVER, null);//文件全部发送完毕
-            mWorkHandler.releaseSend();
+            mWorkHandler.send2UI(Constant.Command.ALL_SEND_OVER, null);//文件全部发送完毕
+            mWorkHandler.stopSend();
         }
 
     }
 
-    public void quit() {
+    public void stop() {
         mSenderHashMap.clear();
         if (mSendServer != null) {
             mSendServer.quit();

@@ -57,7 +57,7 @@ public class SendServerProxyProxy implements ISendServerProxy {
             return;
         }
         //sender.mSendTasks.add(sendTask);
-        sendTask.notifySender(Constant.CommandNum.SEND_TCP_ESTABLISHED);
+        sendTask.notifySender(Constant.Command.SEND_TCP_ESTABLISHED);
     }
 
     @Override

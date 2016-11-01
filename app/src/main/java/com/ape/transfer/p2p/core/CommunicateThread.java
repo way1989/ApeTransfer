@@ -34,7 +34,7 @@ public class CommunicateThread extends Thread {
     private DatagramPacket mReceivePacket;
     private byte[] RECEIVE_BUFFER = new byte[Constant.BUFFER_LENGTH];
     private ArrayList<String> mLocalIPs;
-    private boolean isStopped = false;
+    private volatile boolean exit = false;
     private Peer mSelf;
 
 
@@ -68,7 +68,7 @@ public class CommunicateThread extends Thread {
                     Constant.PORT);
             if (mUdpSocket != null) {
                 mUdpSocket.send(sendPacket);
-                Log.d(TAG, "send udp data = " + sendStr + "; sendto = " + sendTo.getHostAddress());
+                Log.d(TAG, "send udp data = " + sendStr + "; send to = " + sendTo.getHostAddress());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,12 +85,12 @@ public class CommunicateThread extends Thread {
             e.printStackTrace();
             if (mUdpSocket != null) {
                 mUdpSocket.close();
-                isStopped = true;
+                exit = true;
                 return;
             }
         }
         mReceivePacket = new DatagramPacket(RECEIVE_BUFFER, Constant.BUFFER_LENGTH);
-        isStopped = false;
+        exit = false;
     }
 
     private SigMessage getSelfMsg(int cmd) {
@@ -113,15 +113,16 @@ public class CommunicateThread extends Thread {
 
     @Override
     public void run() {
-        while (!isStopped) {
+        while (!exit) {
             try {
+                mReceivePacket.setLength(Constant.BUFFER_LENGTH);
                 mUdpSocket.receive(mReceivePacket);
             } catch (IOException e) {
                 e.printStackTrace();
-                isStopped = true;
+                exit = true;
                 break;
             }
-            if (mReceivePacket == null || mReceivePacket.getLength() == 0) continue;//空消息直接忽略
+            if (mReceivePacket.getLength() == 0) continue;//空消息直接忽略
 
             String ip = mReceivePacket.getAddress().getHostAddress();
             if (TextUtils.isEmpty(ip) || isLocal(ip)) continue;//空ip或者自己ip的消息直接忽略
@@ -135,33 +136,26 @@ public class CommunicateThread extends Thread {
             }
             if (TextUtils.isEmpty(strReceive)) continue;//空消息直接忽略
 
-            if (isStopped) break;//如果已经停止就跳出循环
+            if (exit) break;//如果已经停止就跳出循环
 
             Log.d(TAG, "sig communicate process received udp message = " + strReceive);
             ParamIPMsg msg = new ParamIPMsg(strReceive, mReceivePacket.getAddress(),
                     mReceivePacket.getPort());
             mWorkHandler.send2Handler(msg.peerMSG.commandNum, Constant.Src.COMMUNICATE,
                     msg.peerMSG.recipient, msg);
-
-            if (mReceivePacket != null)
-                mReceivePacket.setLength(Constant.BUFFER_LENGTH);
         }
 
-        release();
+        quit();
     }
 
     public void quit() {
-        isStopped = true;
-        release();
-    }
-
-    private void release() {
-        Log.d(TAG, "release");
+        Log.d(TAG, "quit...");
+        exit = true;
         mLocalIPs.clear();
         if (mUdpSocket != null)
             mUdpSocket.close();
-        if (mReceivePacket != null)
-            mReceivePacket = null;
+        mUdpSocket = null;
+        mReceivePacket = null;
     }
 
     private boolean isLocal(String ip) {

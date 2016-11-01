@@ -58,7 +58,7 @@ public class SendTask implements Runnable {
                 len = mSocketChannel.write(mMappedByteBuffer);
             } catch (IOException e) {
                 e.printStackTrace();
-                notifySender(Constant.CommandNum.SEND_LINK_ERROR);
+                notifySender(Constant.Command.SEND_LINK_ERROR);
                 release();
             }
 
@@ -66,10 +66,10 @@ public class SendTask implements Runnable {
 
             if ((mSendFileInfo.position - lastLen) > update) {
                 lastLen = mSendFileInfo.position;
-                notifySender(Constant.CommandNum.SEND_PERCENTS);
+                notifySender(Constant.Command.SEND_PERCENTS);
             }
         }// end of while
-        notifySender(Constant.CommandNum.SEND_PERCENTS);
+        notifySender(Constant.Command.SEND_PERCENTS);
         try {
             mRandomAccessFile.close();
         } catch (IOException e) {
@@ -108,11 +108,11 @@ public class SendTask implements Runnable {
                     Constant.Recipient.FILE_SEND, mNeighbor);
     }
 
-//    public void quit() {
+//    public void stop() {
 //        if (mCurrentThread != null && mCurrentThread.isAlive())
 //            mCurrentThread.interrupt();
 //        else
-//            release();
+//            stop();
 //    }
 
     private synchronized void release() {

@@ -6,7 +6,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.p2p.beans.param.ParamIPMsg;
 import com.ape.transfer.p2p.core.receive.ReceiveManager;
 import com.ape.transfer.p2p.core.send.SendManager;
@@ -53,7 +52,7 @@ public class WorkHandler extends Handler {
             @Override
             public void run() {
                 Log.d(TAG, "onLine... post in");
-                mCommunicateThread.broadcastMSG(Constant.CommandNum.ON_LINE, Constant.Recipient.NEIGHBOR);
+                mCommunicateThread.broadcastMSG(Constant.Command.ON_LINE, Constant.Recipient.NEIGHBOR);
             }
         }, 2000L);
     }
@@ -64,13 +63,10 @@ public class WorkHandler extends Handler {
             @Override
             public void run() {
                 Log.d(TAG, "offLine... post in");
-//                for(Peer peer : mPeerManager.getPeerHashMap().values()){
-//                    mCommunicateThread.sendMsg2Peer(peer.inetAddress, Constant.CommandNum.OFF_LINE,
-//                            Constant.Recipient.NEIGHBOR, null);
-//                }
-                mCommunicateThread.broadcastMSG(Constant.CommandNum.OFF_LINE, Constant.Recipient.NEIGHBOR);
+                mCommunicateThread.broadcastMSG(Constant.Command.OFF_LINE, Constant.Recipient.NEIGHBOR);
                 mCommunicateThread.quit();
-                WorkHandler.this.getLooper().quitSafely();
+                send2UI(Constant.UI.STOP, null);
+                //WorkHandler.this.getLooper().quitSafely();
             }
         });
     }
@@ -100,28 +96,28 @@ public class WorkHandler extends Handler {
                 break;
             case Constant.Recipient.FILE_RECEIVE: //接收文件
                 Log.d(TAG, "received file receive");
-                if (mReceiveManager != null)
-                    mReceiveManager.disPatchMsg(msg.what, msg.obj, src);
+                if (mReceiveManager == null) initReceive();
+                mReceiveManager.disPatchMsg(msg.what, msg.obj, src);
                 break;
         }
     }
 
-    public void release() {
-        Log.d(TAG, "p2pHandler release");
-        releaseReceive();
-        releaseSend();
+    public void stop() {
+        Log.d(TAG, "p2pHandler stop");
+        stopReceive();
+        stopSend();
         offLine();
     }
 
-    private void releaseReceive() {
+    private void stopReceive() {
         if (mReceiveManager != null)
-            mReceiveManager.quit();
+            mReceiveManager.stop();
         mReceiveManager = null;
     }
 
-    public void releaseSend() {
+    public void stopSend() {
         if (mSendManager != null)
-            mSendManager.quit();
+            mSendManager.stop();
         mSendManager = null;
     }
 

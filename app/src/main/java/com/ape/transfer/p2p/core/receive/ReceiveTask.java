@@ -46,7 +46,7 @@ public class ReceiveTask extends Thread {
                 break;
             try {
                 socket = new Socket(sendPeer.ip, Constant.FILE_TRANSFER_PORT);
-                notifyReceiver(Constant.CommandNum.RECEIVE_TCP_ESTABLISHED, null);
+                notifyReceiver(Constant.Command.RECEIVE_TCP_ESTABLISHED, null);
 
                 TransferFile fileInfo = receiver.mReceiveFileInfos[i];
 
@@ -82,7 +82,7 @@ public class ReceiveTask extends Thread {
                     fileInfo.position = total;//add by liweiping
                     if (fileInfo.position - lastLen > update) {
                         lastLen = total;
-                        notifyReceiver(Constant.CommandNum.RECEIVE_PERCENT, new ParamTCPNotify(sendPeer, fileInfo));
+                        notifyReceiver(Constant.Command.RECEIVE_PERCENT, new ParamTCPNotify(sendPeer, fileInfo));
                     }
 
                     if (total >= fileInfo.size) {
@@ -90,7 +90,7 @@ public class ReceiveTask extends Thread {
                         break;
                     }
                 } // end of while
-                notifyReceiver(Constant.CommandNum.RECEIVE_PERCENT, new ParamTCPNotify(sendPeer, fileInfo));
+                notifyReceiver(Constant.Command.RECEIVE_PERCENT, new ParamTCPNotify(sendPeer, fileInfo));
 
                 Log.d(TAG, "receive file " + fileInfo.name + " success");
 
@@ -98,7 +98,7 @@ public class ReceiveTask extends Thread {
 
                 if (i == receiver.mReceiveFileInfos.length - 1) {
                     Log.d(TAG, "receive file over");
-                    notifyReceiver(Constant.CommandNum.RECEIVE_OVER, null);
+                    notifyReceiver(Constant.Command.RECEIVE_OVER, null);
                     finished = true;
                 }
             } catch (IOException e) {

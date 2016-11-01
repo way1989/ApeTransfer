@@ -33,16 +33,16 @@ public class Sender {
 
     public void dispatchCommMSG(int cmd, ParamIPMsg ipmsg) {
         switch (cmd) {
-//            case Constant.CommandNum.RECEIVE_FILE_ACK:
+//            case Constant.Command.RECEIVE_FILE_ACK:
 //                Log.i(TAG, "dispatchCommMSG RECEIVE_FILE_ACK");
 //                startSelf();
 //                //通知界面开始发送
-//                p2PHandler.send2UI(Constant.CommandNum.SEND_FILE_START, null);
+//                p2PHandler.send2UI(Constant.Command.SEND_FILE_START, null);
 //                //通知接收端 开始发送文件
 //                p2PHandler.send2Receiver(ipmsg.peerIAddress,
-//                        Constant.CommandNum.SEND_FILE_START, null);
+//                        Constant.Command.SEND_FILE_START, null);
 //                break;
-            case Constant.CommandNum.RECEIVE_ABORT_SELF: //接收者退出
+            case Constant.Command.RECEIVE_ABORT_SELF: //接收者退出
                 Log.i(TAG, "dispatchCommMSG RECEIVE_ABORT_SELF");
                 clearSelf();
                 //通知UI
@@ -53,35 +53,35 @@ public class Sender {
 
     public void dispatchTCPMsg(int cmd, Peer notify) {
         switch (cmd) {
-            case Constant.CommandNum.SEND_PERCENTS: {
+            case Constant.Command.SEND_PERCENTS: {
                 TransferFile fileInfo = mSendFileQueue.peek();//取当前队列头的任务, 但不出队列
 
                 ParamTCPNotify tcpNotify = new ParamTCPNotify(neighbor, fileInfo);
-                p2PHandler.send2UI(Constant.CommandNum.SEND_PERCENTS, tcpNotify);
+                p2PHandler.send2UI(Constant.Command.SEND_PERCENTS, tcpNotify);
                 if (fileInfo.position == fileInfo.size) {
                     mSendFileQueue.poll();
                     //clearTask();
                     if (mSendFileQueue.isEmpty()) {
                         clearSelf();
-                        p2PHandler.send2UI(Constant.CommandNum.SEND_OVER, neighbor);
+                        p2PHandler.send2UI(Constant.Command.SEND_OVER, neighbor);
                     }
                 }
 
                 break;
             }
-            case Constant.CommandNum.SEND_TCP_ESTABLISHED:
+            case Constant.Command.SEND_TCP_ESTABLISHED:
                 break;
         }
     }
 
     public void dispatchUIMSG(int cmd) {
         switch (cmd) {
-            case Constant.CommandNum.SEND_ABORT_SELF:
+            case Constant.Command.SEND_ABORT_SELF:
                 clearSelf();
 
                 //notify peer
                 p2PHandler.send2Receiver(neighbor.inetAddress,
-                        Constant.CommandNum.SEND_ABORT_SELF, null);
+                        Constant.Command.SEND_ABORT_SELF, null);
 
                 break;
         }
@@ -91,7 +91,7 @@ public class Sender {
 //        if (mSendTasks.size() > 0) {
 //            SendTask task = mSendTasks.get(0);
 //            if (task != null) {
-//                task.quit();
+//                task.stop();
 //            }
 //            mSendTasks.remove(0);
 //        }
