@@ -17,9 +17,8 @@ import com.ape.transfer.adapter.HistoryAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.TaskLoader;
 import com.ape.transfer.model.HistoryTransfer;
-import com.ape.transfer.model.NewTransferTaskEvent;
+import com.ape.transfer.model.TransferTaskStartEvent;
 import com.ape.transfer.model.TransferEvent;
-import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
 import com.trello.rxlifecycle.FragmentEvent;
@@ -82,12 +81,12 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
                         onTransferChange(event);
                     }
                 });
-        RxBus.getInstance().toObservable(NewTransferTaskEvent.class)
+        RxBus.getInstance().toObservable(TransferTaskStartEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<NewTransferTaskEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .subscribe(new Action1<NewTransferTaskEvent>() {
+                .compose(this.<TransferTaskStartEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
+                .subscribe(new Action1<TransferTaskStartEvent>() {
                     @Override
-                    public void call(NewTransferTaskEvent event) {
+                    public void call(TransferTaskStartEvent event) {
                         //do some thing
                         if(event.getDirection() == mDirection){
                             getLoaderManager().restartLoader(LOAD_ID, null, HistoryFragment.this);

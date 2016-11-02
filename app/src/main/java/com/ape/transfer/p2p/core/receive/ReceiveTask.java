@@ -54,6 +54,10 @@ public class ReceiveTask extends Thread {
                         + receiver.mReceiveFileInfos.length);
 
                 String path = P2PManager.getSavePath(fileInfo.type);
+                if(fileInfo.type == Constant.TYPE.BACKUP){
+                    path += fileInfo.path.substring(fileInfo.path.indexOf(Constant.TYPE_NAME.BACKUP)
+                            + Constant.TYPE_NAME.BACKUP.length(), fileInfo.path.lastIndexOf(File.separator));
+                }
                 File fileDir = new File(path);
                 if (!fileDir.exists())
                     fileDir.mkdirs();

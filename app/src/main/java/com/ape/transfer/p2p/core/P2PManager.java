@@ -21,6 +21,8 @@ import com.ape.transfer.util.Log;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
+import static com.ape.transfer.p2p.util.Constant.TYPE_DIR;
+
 
 /**
  * Created by way on 2015/10/22.
@@ -29,7 +31,6 @@ public class P2PManager {
     private static final String TAG = "P2PManager";
     private static final String SAVE_DIR = Environment.getExternalStorageDirectory().getPath()
             + File.separator + Constant.FILE_SHARE_SAVE_PATH;
-    private static final String[] TYPE_DIR = {"APP", "Picture", "Video", "Zip", "Document", "Music", "Backup"};
 
     private volatile static P2PManager INSTANCE;
     private Peer mSelfPeer;
@@ -62,7 +63,7 @@ public class P2PManager {
     }
 
     public static String getSavePath(int type) {
-        return SAVE_DIR + File.separator + TYPE_DIR[type];
+        return SAVE_DIR + File.separator + Constant.TYPE_DIR[type];
     }
 
     public void start(Peer self, PeerCallback peerCallback) {

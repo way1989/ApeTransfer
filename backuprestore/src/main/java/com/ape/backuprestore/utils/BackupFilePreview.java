@@ -44,6 +44,7 @@ import com.ape.backuprestore.RecordXmlComposer;
 import com.ape.backuprestore.RecordXmlInfo;
 import com.ape.backuprestore.RecordXmlParser;
 import com.ape.backuprestore.modules.CalendarRestoreComposer;
+import com.ape.backuprestore.modules.CallLogRestoreComposer;
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.modules.ContactRestoreComposer;
 import com.ape.backuprestore.modules.MessageRestoreComposer;
@@ -52,7 +53,6 @@ import com.ape.backuprestore.modules.NoteBookRestoreComposer;
 import com.ape.backuprestore.modules.PictureRestoreComposer;
 
 import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,33 +60,55 @@ import java.util.HashMap;
 import java.util.List;
 
 public class BackupFilePreview {
-    private final String CLASS_TAG = MyLogger.LOG_TAG + "/BackupFilePreview";
-    private final int UN_PARESED_TYPE = -1;
-
+    private static final String TAG = "BackupFilePreview";
+    private volatile static BackupFilePreview INSTANCE;
+    private final int UN_PARSED_TYPE = -1;
     private File mFolderName = null;
     private long mSize = 0;
-    private int mTypes = UN_PARESED_TYPE;
+    private int mTypes = UN_PARSED_TYPE;
     private String backupTime;
     private boolean mIsRestored = false;
     private boolean mIsOtherBackup = true;
     private boolean mIsSelfBackup = true;
     private HashMap<Integer, Integer> mNumberMap = new HashMap<>();
 
-    public BackupFilePreview(File file) {
-        if (file == null) {
-            MyLogger.logE(CLASS_TAG, "constractor error! file is null");
-            return;
+    private BackupFilePreview() {
+
+    }
+
+    public static BackupFilePreview getInstance() {
+        if (INSTANCE == null) {
+            synchronized (BackupFilePreview.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new BackupFilePreview();
+                }
+            }
         }
+        return INSTANCE;
+    }
+
+    public boolean init() {
+        String path = StorageUtils.getBackupPath();
+        if(TextUtils.isEmpty(path))
+            return false;
+
+        File file = new File(path);
+        if (FileUtils.isEmptyFolder(file)) {
+            MyLogger.logE(TAG, "constractor error! file is null");
+            return false;
+        }
+
         mNumberMap.clear();
         mFolderName = file;
-        MyLogger.logI(CLASS_TAG, "new BackupFilePreview: file is " + file.getAbsolutePath());
+        MyLogger.logI(TAG, "new BackupFilePreview: file is " + mFolderName.getAbsolutePath());
         computeSize();
         checkRestored();
+        return true;
     }
 
     private void computeSize() {
         mSize = FileUtils.computeAllFileSizeInFolder(mFolderName);
-        MyLogger.logI(CLASS_TAG, "new BackupFilePreview: size = " + mSize);
+        MyLogger.logI(TAG, "new BackupFilePreview: size = " + mSize);
     }
 
     private void checkRestored() {
@@ -122,7 +144,7 @@ public class BackupFilePreview {
                 }
             }
         }
-        MyLogger.logI(CLASS_TAG, "mIsRestored = " + mIsRestored + ", mIsOtherBackup = " + mIsOtherBackup
+        MyLogger.logI(TAG, "mIsRestored = " + mIsRestored + ", mIsOtherBackup = " + mIsOtherBackup
                 + ", mIsSelfBackup = " + mIsSelfBackup);
     }
 
@@ -131,18 +153,17 @@ public class BackupFilePreview {
     }
 
     private void addToCurrentBackupHistory(String xmlFilePath) {
-        MyLogger.logD(CLASS_TAG, "addToCurrentBackupHistory() xmlFilePath : "
-                + xmlFilePath);
+        MyLogger.logD(TAG, "addToCurrentBackupHistory() xmlFilePath : " + xmlFilePath);
         RecordXmlInfo backupInfo = new RecordXmlInfo();
         backupInfo.setRestore(false);
         backupInfo.setDevice(Utils.getPhoneSearialNumber());
         backupInfo.setTime("" + System.currentTimeMillis());
-        RecordXmlComposer xmlCompopser = new RecordXmlComposer();
-        xmlCompopser.startCompose();
-        xmlCompopser.addOneRecord(backupInfo);
-        xmlCompopser.endCompose();
+        RecordXmlComposer xmlComposer = new RecordXmlComposer();
+        xmlComposer.startCompose();
+        xmlComposer.addOneRecord(backupInfo);
+        xmlComposer.endCompose();
         if (xmlFilePath != null && xmlFilePath.length() > 0) {
-            Utils.writeToFile(xmlCompopser.getXmlInfo(), xmlFilePath);
+            Utils.writeToFile(xmlComposer.getXmlInfo(), xmlFilePath);
         }
     }
 
@@ -152,7 +173,6 @@ public class BackupFilePreview {
      * @return add success return true, otherwise false.
      */
     private boolean addCurrentSN(List<RecordXmlInfo> recordList, String path) {
-        // TODO Auto-generated method stub
         boolean success = false;
         try {
             RecordXmlInfo restoreInfo = new RecordXmlInfo();
@@ -162,20 +182,18 @@ public class BackupFilePreview {
 
             recordList.add(restoreInfo);
 
-            RecordXmlComposer xmlCompopser = new RecordXmlComposer();
-            xmlCompopser.startCompose();
+            RecordXmlComposer xmlComposer = new RecordXmlComposer();
+            xmlComposer.startCompose();
             for (RecordXmlInfo record : recordList) {
-                xmlCompopser.addOneRecord(record);
+                xmlComposer.addOneRecord(record);
             }
-            xmlCompopser.endCompose();
-            Utils.writeToFile(xmlCompopser.getXmlInfo(), path);
+            xmlComposer.endCompose();
+            Utils.writeToFile(xmlComposer.getXmlInfo(), path);
             success = true;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-            return success;
         }
-        MyLogger.logI(CLASS_TAG, "addCurrentSN() success : " + success);
+        MyLogger.logI(TAG, "addCurrentSN() success : " + success);
         return success;
     }
 
@@ -184,7 +202,7 @@ public class BackupFilePreview {
     }
 
     public boolean isOtherDeviceBackup() {
-        MyLogger.logD(CLASS_TAG, "isOtherDeviceBackup() : " + mIsOtherBackup);
+        MyLogger.logD(TAG, "isOtherDeviceBackup() : " + mIsOtherBackup);
         return mIsOtherBackup;
     }
 
@@ -194,41 +212,22 @@ public class BackupFilePreview {
 
     public String getFileName() {
         String showNameString = mFolderName.getName();
-        if (showNameString != null && showNameString.length() == 14
-                && showNameString.trim().length() == 14) {
-            try {
-                Double.parseDouble(showNameString);
-                String showNameString2 = formatString(showNameString);
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                dateFormat.setLenient(false);
-                try {
-                    Date date = dateFormat.parse(showNameString2);
-                    showNameString = showNameString2;
-                } catch (ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (NullPointerException ne) {
-                    // TODO Auto-generated catch block
-                    ne.printStackTrace();
-                }
-            } catch (NumberFormatException e) {
-                return showNameString;
-            }
+        if (showNameString.length() == 14 && showNameString.trim().length() == 14) {
+            showNameString = formatString(showNameString);
         }
         return showNameString;
     }
 
     private String formatString(String showNameString) {
-        // TODO Auto-generated method stub
         if (showNameString != null) {
             String yearString = showNameString.substring(0, 4);
             String monthString = showNameString.substring(4, 6);
             String dayString = showNameString.substring(6, 8);
             String hourString = showNameString.substring(8, 10);
             String minString = showNameString.substring(10, 12);
-            String secrString = showNameString.substring(12, 14);
+            String secString = showNameString.substring(12, 14);
             return yearString + "-" + monthString + "-" + dayString + "  " + hourString + ":"
-                    + minString + ":" + secrString;
+                    + minString + ":" + secString;
         }
         return null;
     }
@@ -251,7 +250,7 @@ public class BackupFilePreview {
     }
 
     public int getBackupModules(Context context) {
-        if (mTypes == UN_PARESED_TYPE) {
+        if (mTypes == UN_PARSED_TYPE) {
             mTypes = peekBackupModules(context);
         }
         return mTypes;
@@ -272,8 +271,8 @@ public class BackupFilePreview {
                         Constants.ModulePath.FOLDER_MMS,
                         Constants.ModulePath.FOLDER_MUSIC,
                         Constants.ModulePath.FOLDER_PICTURE,
-                        Constants.ModulePath.FOLDER_SMS
-                        //, ModulePath.FOLDER_BOOKMARK
+                        Constants.ModulePath.FOLDER_SMS,
+                        Constants.ModulePath.FOLDER_CALL_LOG
                 };
 
                 int[] moduleTypes = new int[]{
@@ -282,8 +281,8 @@ public class BackupFilePreview {
                         ModuleType.TYPE_MESSAGE,
                         ModuleType.TYPE_MUSIC,
                         ModuleType.TYPE_PICTURE,
-                        ModuleType.TYPE_MESSAGE
-                        //, ModuleType.TYPE_BOOKMARK
+                        ModuleType.TYPE_MESSAGE,
+                        ModuleType.TYPE_CALL_LOG
                 };
 
                 if (file.isDirectory() && !FileUtils.isEmptyFolder(file)) {
@@ -300,7 +299,7 @@ public class BackupFilePreview {
                 }
             }
         }
-        MyLogger.logI(CLASS_TAG, "parseItemTypes: mTypes =  " + mTypes);
+        MyLogger.logI(TAG, "parseItemTypes: mTypes =  " + mTypes);
         return mTypes;
     }
 
@@ -331,9 +330,9 @@ public class BackupFilePreview {
                 composer = new PictureRestoreComposer(context);
                 break;
 
-//            case ModuleType.TYPE_BOOKMARK:
-//                composer = new BookmarkRestoreComposer(context);
-//                break;
+            case ModuleType.TYPE_CALL_LOG:
+                composer = new CallLogRestoreComposer(context);
+                break;
 
             default:
                 break;
@@ -342,20 +341,20 @@ public class BackupFilePreview {
             composer.setParentFolderPath(mFolderName.getAbsolutePath());
             composer.init();
             int count = composer.getCount();
-            MyLogger.logD(CLASS_TAG, "initNumByType: count = " + count);
+            MyLogger.logD(TAG, "initNumByType: count = " + count);
             mNumberMap.put(type, count);
         }
     }
 
     public int getItemCount(int type) {
-        MyLogger.logD(CLASS_TAG, "list.get(0).type = " + type);
-        MyLogger.logD(CLASS_TAG, "mNumberMap.size() = " + mNumberMap.size());
+        MyLogger.logD(TAG, "list.get(0).type = " + type);
+        MyLogger.logD(TAG, "mNumberMap.size() = " + mNumberMap.size());
         int count = 0;
         if (mNumberMap.get(type) != null) {
             count = mNumberMap.get(type);
         }
 
-        MyLogger.logD(CLASS_TAG, "getItemCount: type = " + type + ",count = " + count);
+        MyLogger.logD(TAG, "getItemCount: type = " + type + ",count = " + count);
         return count;
     }
 }

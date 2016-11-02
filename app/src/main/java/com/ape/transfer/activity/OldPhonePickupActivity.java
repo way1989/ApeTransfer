@@ -27,7 +27,6 @@ import com.ape.backuprestore.RecordXmlInfo;
 import com.ape.backuprestore.ResultDialog;
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.utils.Constants;
-import com.ape.backuprestore.utils.FileUtils;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.StorageUtils;
 import com.ape.backuprestore.utils.Utils;
@@ -37,9 +36,12 @@ import com.ape.transfer.fragment.loader.BackupDataLoader;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.model.PeerEvent;
+import com.ape.transfer.p2p.beans.TransferFile;
+import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.TDevice;
+import com.ape.transfer.util.Util;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.widget.MobileDataWarningContainer;
 
@@ -52,6 +54,7 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+import static com.ape.backuprestore.utils.FileUtils.deleteFileOrFolder;
 import static com.ape.transfer.activity.QrCodeActivity.EXCHANGE_SSID_SUFFIX;
 
 /**
@@ -70,9 +73,9 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
     TextView storageView;
     @BindView(R.id.btn_sure)
     Button btnSure;
+    ArrayList<TransferFile> mSendFiles = new ArrayList<>();
     private OldPhonePickupAdapter mAdapter;
     private boolean mIsShowWarning = true;
-
     private ServiceConnection mServiceCon = new ServiceConnection() {
         @Override
         public void onServiceConnected(final ComponentName name, final IBinder service) {
@@ -198,7 +201,11 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
                 mProgressDialog.setMessage(msg);
                 mProgressDialog.setMax(composer.getCount());
                 mProgressDialog.setProgress(0);
-                if (!mProgressDialog.isShowing()) mProgressDialog.show();
+                try {
+                    if (!mProgressDialog.isShowing()) mProgressDialog.show();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -224,12 +231,13 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
             backupInfo.setRestore(false);
             backupInfo.setDevice(Utils.getPhoneSearialNumber());
             backupInfo.setTime(String.valueOf(System.currentTimeMillis()));
-            RecordXmlComposer xmlCompopser = new RecordXmlComposer();
-            xmlCompopser.startCompose();
-            xmlCompopser.addOneRecord(backupInfo);
-            xmlCompopser.endCompose();
-            if (TextUtils.isEmpty(mBackupFolderPath)) {
-                Utils.writeToFile(xmlCompopser.getXmlInfo(), mBackupFolderPath + File.separator
+            RecordXmlComposer xmlComposer = new RecordXmlComposer();
+            xmlComposer.startCompose();
+            xmlComposer.addOneRecord(backupInfo);
+            xmlComposer.endCompose();
+            Log.i(TAG, "onBackupEnd.. write xml = " + xmlComposer.getXmlInfo() + ", dir = " + mBackupFolderPath);
+            if (!TextUtils.isEmpty(mBackupFolderPath)) {
+                Utils.writeToFile(xmlComposer.getXmlInfo(), mBackupFolderPath + File.separator
                         + Constants.RECORD_XML);
             }
         } else {
@@ -256,11 +264,52 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
 
         if (result != BackupEngine.BackupResultType.Cancel) {
             // TODO: 16-10-31 开始传输备份数据
-            Toast.makeText(getApplicationContext(),  "back result = "
+            Toast.makeText(getApplicationContext(), "back result = "
                     + (result == BackupEngine.BackupResultType.Success), Toast.LENGTH_SHORT).show();
-
+            send2Peer();
         } else {
             stopService();
+        }
+    }
+
+    private void send2Peer() {
+        File folder = new File(mBackupFolderPath);
+        File[] files = null;
+        if (folder.exists()) {
+            files = folder.listFiles();
+        }
+        if (files != null && files.length > 0) {
+            Log.d(TAG, "[processClickStart] DLG_BACKUP_CONFIRM_OVERWRITE Here! ");
+            for (File file : files) {
+                add2TransferList(file);
+            }
+        }
+        Log.i(TAG, "send files size = " + mSendFiles.size());
+        if(mTransferService != null)
+            mTransferService.sendBackupFile(mSendFiles);
+    }
+
+    private void add2TransferList(File file) {
+        if (!file.exists()) return;
+        if (file.isFile()) {
+            TransferFile info = new TransferFile();
+            info.name = file.getName();
+            info.type = Constant.TYPE.BACKUP;
+            info.size = file.length();
+            info.path = file.getAbsolutePath();
+
+            //info.wifiMac = mNeighbors.get(0).wifiMac;
+            info.md5 = Util.getFileMD5(file);
+            info.lastModify = file.lastModified();
+            info.createTime = System.currentTimeMillis();
+            info.status = TransferFile.Status.STATUS_READY;
+            info.read = 1;
+            info.deleted = 0;
+            mSendFiles.add(info);
+        } else if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File f : files)
+                add2TransferList(f);
         }
     }
 
@@ -293,8 +342,8 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
     }
 
     private void startBackup() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        String folderName = dateFormat.format(new Date(System.currentTimeMillis()));
+        //SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        //String folderName = dateFormat.format(new Date(System.currentTimeMillis()));
 
         String path = StorageUtils.getBackupPath();
         if (path == null) {
@@ -303,7 +352,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
             return;
         }
 
-        if (StorageUtils.getAvailableSize(StorageUtils.getStoragePath()) <= StorageUtils.MINIMUM_SIZE) {
+        if (StorageUtils.getAvailableSize(path) <= StorageUtils.MINIMUM_SIZE) {
             // no space
             Log.d(TAG, "SDCard is full");
             Toast.makeText(getApplicationContext(), "storage is full...", Toast.LENGTH_SHORT).show();
@@ -311,7 +360,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
             return;
         }
 
-        mBackupFolderPath = path + File.separator + folderName;
+        mBackupFolderPath = path;
         Log.d(TAG, "[processClickStart] mBackupFolderPath is " + mBackupFolderPath);
         File folder = new File(mBackupFolderPath);
         File[] files = null;
@@ -321,7 +370,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
         if (files != null && files.length > 0) {
             Log.d(TAG, "[processClickStart] DLG_BACKUP_CONFIRM_OVERWRITE Here! ");
             for (File file : files) {
-                FileUtils.deleteFileOrFolder(file);
+                deleteFileOrFolder(file);
             }
         }
         startPersonalDataBackup();
@@ -350,7 +399,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
             }
             boolean result = mBackupService.startBackup(mBackupFolderPath);
             if (!result) {
-                String path = StorageUtils.getStoragePath();
+                String path = StorageUtils.getBackupPath();
                 if (path == null) {
                     // no sdcard
                     Log.d(TAG, "SDCard is removed");
@@ -434,7 +483,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
     private void unBindBackupService() {
         try {
             unbindService(mServiceCon);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

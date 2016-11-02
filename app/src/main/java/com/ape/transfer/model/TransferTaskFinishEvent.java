@@ -4,10 +4,10 @@ package com.ape.transfer.model;
  * Created by android on 16-10-31.
  */
 
-public class NewTransferTaskEvent {
+public class TransferTaskFinishEvent {
     private int direction;
 
-    public NewTransferTaskEvent(int direction) {
+    public TransferTaskFinishEvent(int direction) {
         this.direction = direction;
     }
 

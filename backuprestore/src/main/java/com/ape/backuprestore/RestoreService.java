@@ -212,7 +212,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
      */
     public void onFinishRestore(boolean bSuccess) {
         moveToState(Constants.State.FINISH);
-        if (StorageUtils.getStoragePath() == null) {
+        if (StorageUtils.getBackupPath() == null) {
             moveToState(Constants.State.INIT);
         }
         if (mRestoreStatusListener != null) {

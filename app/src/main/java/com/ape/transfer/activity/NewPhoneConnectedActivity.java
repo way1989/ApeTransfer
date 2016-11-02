@@ -175,7 +175,7 @@ public class NewPhoneConnectedActivity extends BaseActivity {
         switch (state) {
             case CONNECTED:
                 String ssid = WifiUtils.getInstance().getSSID();
-                Log.d(TAG, "wifi connected ssid = " + ssid);
+                Log.d(TAG, "wifi connected ssid = " + ssid + ", mSSID = " + mSSID);
                 if (TextUtils.equals(ssid, mSSID)) {
                     mHandler.removeMessages(MSG_START_P2P);
                     //不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点

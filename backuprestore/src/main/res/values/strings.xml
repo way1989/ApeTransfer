@@ -17,7 +17,7 @@
     <string name="notebook_module">NoteBook</string>
     <string name="bookmark_module">Bookmark</string>
     <string name="backuping">Backing up (%1$s)</string>
-    <string name="restoring">Restoring</string>
+    <string name="restoring">Restoring (%1$s)</string>
     <string name="warning">Warning</string>
     <string name="cancel_backup_confirm">Cancel backup?</string>
     <string name="cancelling">Cancelling</string>

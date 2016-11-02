@@ -13,7 +13,7 @@ public class StorageUtils {
     public final static int MINIMUM_SIZE = 512;
     private static final String CLASS_TAG = "StorageUtils";
 
-    public static String getStoragePath() {
+    public static String getBackupPath() {
         String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "ApeTransfer" + File.separator + Constants.ModulePath.FOLDER_BACKUP;
         MyLogger.logD(CLASS_TAG, "getStoragePath: path is " + storagePath);
@@ -27,10 +27,6 @@ public class StorageUtils {
         }
     }
 
-    public static String getBackupPath() {
-        return getStoragePath();
-    }
-
     public static long getAvailableSize(String file) {
         android.os.StatFs stat = new android.os.StatFs(file);
         long count = stat.getAvailableBlocks();
@@ -42,7 +38,7 @@ public class StorageUtils {
 
     public static boolean isStorageMissing() {
         boolean isStorageMissing = false;
-        String path = getStoragePath();
+        String path = getBackupPath();
         if (path == null) {
             isStorageMissing = true;
         } else {
@@ -77,7 +73,7 @@ public class StorageUtils {
             Log.i(CLASS_TAG, "SD card removed, kill process");
             Utils.killMyProcess();
         } else {
-            String path = getStoragePath();
+            String path = getBackupPath();
             if (getAvailableSize(path) <= MINIMUM_SIZE) {
                 Log.i(CLASS_TAG, "SD full, kill process");
                 Utils.killMyProcess();

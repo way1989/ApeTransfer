@@ -26,8 +26,8 @@ import java.util.HashMap;
 /**
  * @author way
  */
-public class BackupService extends Service implements ProgressReporter, BackupEngine.OnBackupDoneListner {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/BackupService";
+public class BackupService extends Service implements ProgressReporter, BackupEngine.OnBackupDoneListener {
+    private static final String TAG = "BackupService";
     HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
     NewDataNotifyReceiver mNotificationReceiver = null;
     private BackupBinder mBinder = new BackupBinder();
@@ -41,7 +41,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
 
     @Override
     public IBinder onBind(Intent intent) {
-        MyLogger.logI(CLASS_TAG, "onBind");
+        MyLogger.logI(TAG, "onBind");
         return mBinder;
     }
 
@@ -52,7 +52,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
      */
     public boolean onUnbind(Intent intent) {
         super.onUnbind(intent);
-        MyLogger.logI(CLASS_TAG, "onUnbind");
+        MyLogger.logI(TAG, "onUnbind");
         // If SD card removed or full, kill process
         StorageUtils.killProcessIfNecessary();
         return true;
@@ -62,22 +62,16 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     public void onCreate() {
         super.onCreate();
         mState = Constants.State.INIT;
-        MyLogger.logI(CLASS_TAG, "onCreate");
+        MyLogger.logI(TAG, "onCreate");
         mNotificationReceiver = new NewDataNotifyReceiver();
         IntentFilter filter = new IntentFilter(Constants.ACTION_NEW_DATA_DETECTED);
         filter.setPriority(1000);
         registerReceiver(mNotificationReceiver, filter);
     }
 
-    /**
-     * @param intent
-     * @param flags
-     * @param startId
-     * @return int
-     */
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        MyLogger.logI(CLASS_TAG, "onStartCommand");
+        MyLogger.logI(TAG, "onStartCommand");
         return START_NOT_STICKY;
     }
 
@@ -86,7 +80,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
      */
     public void onRebind(Intent intent) {
         super.onRebind(intent);
-        MyLogger.logI(CLASS_TAG, "onRebind");
+        MyLogger.logI(TAG, "onRebind");
     }
 
     /**
@@ -95,9 +89,9 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        MyLogger.logI(CLASS_TAG, "onDestroy");
+        MyLogger.logI(TAG, "onDestroy");
         if (mBackupEngine != null && mBackupEngine.isRunning()) {
-            mBackupEngine.setOnBackupDoneListner(null);
+            mBackupEngine.setOnBackupDoneListener(null);
             mBackupEngine.cancel();
         }
 
@@ -124,15 +118,6 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     @Override
     public void onOneFinished(Composer composer, boolean result) {
         mCurrentProgress.mCurNum++;
-        /*if (composer.getModuleType() == ModuleType.TYPE_APP) {
-            if (mAppResultList == null) {
-                mAppResultList = new ArrayList<>();
-            }
-            int type = result ? ResultDialog.ResultEntity.SUCCESS : ResultDialog.ResultEntity.FAIL;
-            ResultDialog.ResultEntity entity = new ResultDialog.ResultEntity(ModuleType.TYPE_APP, type);
-            entity.setKey(mParasMap.get(ModuleType.TYPE_APP).get(mCurrentProgress.mCurNum - 1));
-            mAppResultList.add(entity);
-        }*/
         if (mStatusListener != null) {
             mStatusListener.onProgressChanged(composer, mCurrentProgress.mCurNum);
         }
@@ -158,7 +143,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
                 mComposerResult = false;
             }
         }
-        MyLogger.logD(CLASS_TAG, "one Composer end: type = " + composer.getModuleType()
+        MyLogger.logD(TAG, "one Composer end: type = " + composer.getModuleType()
                 + ", result = " + resultType);
         ResultDialog.ResultEntity item = new ResultDialog.ResultEntity(composer.getModuleType(), resultType);
         mResultList.add(item);
@@ -166,17 +151,15 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
 
     @Override
     public void onErr(IOException e) {
-        MyLogger.logD(CLASS_TAG, "onErr " + e.getMessage());
+        MyLogger.logD(TAG, "onErr " + e.getMessage());
         if (mStatusListener != null) {
             mStatusListener.onBackupErr(e);
         }
     }
 
-    /**
-     * onFinishBackup.
-     */
+    @Override
     public void onFinishBackup(BackupEngine.BackupResultType result) {
-        MyLogger.logD(CLASS_TAG, "onFinishBackup result = " + result);
+        MyLogger.logD(TAG, "onFinishBackup result = " + result);
         mResultType = result;
         if (mStatusListener != null) {
             if (mState == Constants.State.CANCELLING) {
@@ -219,12 +202,12 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        MyLogger.logD(CLASS_TAG, "onConfigurationChanged: setRefreshFlag");
+        MyLogger.logD(TAG, "onConfigurationChanged: setRefreshFlag");
         NotifyManager.getInstance(this).setRefreshFlag();
     }
 
     /**
-     * @author mtk81330
+     * @author way
      */
     public interface OnBackupStatusListener {
 
@@ -267,7 +250,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
      */
     public class BackupBinder extends Binder {
         public int getState() {
-            MyLogger.logI(CLASS_TAG, "getState: " + mState);
+            MyLogger.logI(TAG, "getState: " + mState);
             return mState;
         }
 
@@ -276,9 +259,9 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
          */
         public void setBackupModelList(ArrayList<Integer> list) {
             reset();
-            if (mBackupEngine == null) {
-                mBackupEngine = new BackupEngine(BackupService.this, BackupService.this);
-            }
+            if (mBackupEngine == null)
+                mBackupEngine = BackupEngine.getInstance(getApplicationContext(), BackupService.this);
+
             mBackupEngine.setBackupModelList(list);
         }
 
@@ -288,7 +271,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
          */
         public void setBackupItemParam(int itemType, ArrayList<String> paraList) {
             MyLogger.logD(
-                    CLASS_TAG,
+                    TAG,
                     "Param List Size is " + (paraList == null ? 0 : paraList.size()));
             mParasMap.put(itemType, paraList);
             mBackupEngine.setBackupItemParam(itemType, paraList);
@@ -308,15 +291,15 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
          */
         public boolean startBackup(String folderName) {
             stayForeground();
-            boolean ret = false;
-            mBackupEngine.setOnBackupDoneListner(BackupService.this);
+            boolean ret;
+            mBackupEngine.setOnBackupDoneListener(BackupService.this);
             ret = mBackupEngine.startBackup(folderName);
             if (ret) {
                 mState = Constants.State.RUNNING;
             } else {
-                mBackupEngine.setOnBackupDoneListner(null);
+                mBackupEngine.setOnBackupDoneListener(null);
             }
-            MyLogger.logD(CLASS_TAG, "startBackup: " + ret);
+            MyLogger.logD(TAG, "startBackup: " + ret);
             return ret;
         }
 
@@ -325,7 +308,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
          */
         public void stopForeground() {
             BackupService.this.stopForeground(true);
-            MyLogger.logD(CLASS_TAG, "stopFreground");
+            MyLogger.logD(TAG, "stopFreground");
         }
 
         /**
@@ -336,7 +319,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             if (mBackupEngine != null) {
                 mBackupEngine.pause();
             }
-            MyLogger.logD(CLASS_TAG, "pauseBackup");
+            MyLogger.logD(TAG, "pauseBackup");
         }
 
         /**
@@ -347,7 +330,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             if (mBackupEngine != null) {
                 mBackupEngine.cancel();
             }
-            MyLogger.logD(CLASS_TAG, "cancelBackup");
+            MyLogger.logD(TAG, "cancelBackup");
         }
 
         /**
@@ -358,7 +341,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             if (mBackupEngine != null) {
                 mBackupEngine.continueBackup();
             }
-            MyLogger.logD(CLASS_TAG, "continueBackup");
+            MyLogger.logD(TAG, "continueBackup");
         }
 
         /**

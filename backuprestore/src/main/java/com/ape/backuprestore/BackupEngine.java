@@ -1,40 +1,3 @@
-/* Copyright Statement:
- *
- * This software/firmware and related documentation ("MediaTek Software") are
- * protected under relevant copyright laws. The information contained herein is
- * confidential and proprietary to MediaTek Inc. and/or its licensors. Without
- * the prior written permission of MediaTek inc. and/or its licensors, any
- * reproduction, modification, use or disclosure of MediaTek Software, and
- * information contained herein, in whole or in part, shall be strictly
- * prohibited.
- *
- * MediaTek Inc. (C) 2010. All rights reserved.
- *
- * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
- * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE")
- * RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO RECEIVER
- * ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL
- * WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
- * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
- * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
- * INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND RECEIVER AGREES
- * TO LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
- * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
- * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
- * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
- * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
- * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
- * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO THE MEDIATEK SOFTWARE
- * RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, TO REVISE OR REPLACE THE
- * MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE FEES OR SERVICE
- * CHARGE PAID BY RECEIVER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
- *
- * The following software/firmware and/or related documentation ("MediaTek
- * Software") have been modified by MediaTek Inc. All revisions are subject to
- * any receiver's applicable license agreements with MediaTek Inc.
- */
-
 package com.ape.backuprestore;
 
 import android.content.Context;
@@ -63,25 +26,25 @@ import java.util.HashMap;
 import java.util.List;
 
 public class BackupEngine {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/BackupEngine";
+    private static final String TAG = "BackupEngine";
     private static BackupEngine mSelfInstance;
-    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
-    ArrayList<Integer> mModuleList;
+    private final Object mLock = new Object();
+    private HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
+    private ArrayList<Integer> mModuleList;
     private Context mContext;
     private ProgressReporter mProgressReporter;
     private List<Composer> mComposerList;
-    private OnBackupDoneListner mBackupDoneListner;
+    private OnBackupDoneListener mBackupDoneListener;
     private boolean mIsRunning = false;
     private long mThreadIdentifier = -1;
     private boolean mIsPause = false;
     private boolean mIsCancel = false;
-    private Object mLock = new Object();
     private String mBackupFolder;
 
-    public BackupEngine(final Context context, final ProgressReporter reporter) {
+    private BackupEngine(final Context context, final ProgressReporter reporter) {
         mContext = context;
         mProgressReporter = reporter;
-        mComposerList = new ArrayList<Composer>();
+        mComposerList = new ArrayList<>();
         mSelfInstance = this;
     }
 
@@ -95,19 +58,19 @@ public class BackupEngine {
         return mSelfInstance;
     }
 
-    public void setBackupModelList(ArrayList<Integer> moduleList) {
+    void setBackupModelList(ArrayList<Integer> moduleList) {
         reset();
         mModuleList = moduleList;
     }
 
-    public void setBackupItemParam(int itemType, ArrayList<String> paraList) {
+    void setBackupItemParam(int itemType, ArrayList<String> paraList) {
         mParasMap.put(itemType, paraList);
     }
 
-    public boolean startBackup(final String folderName) {
+    boolean startBackup(final String folderName) {
         boolean startSuccess = true;
         mBackupFolder = folderName;
-        MyLogger.logD(CLASS_TAG, "startBackup():" + folderName);
+        MyLogger.logD(TAG, "startBackup():" + folderName);
 
         Utils.isBackingUp = mIsRunning = true;
         if (setupComposer(mModuleList)) {
@@ -120,11 +83,11 @@ public class BackupEngine {
         return startSuccess;
     }
 
-    public final boolean isRunning() {
+    final boolean isRunning() {
         return mIsRunning;
     }
 
-    private final void updateInfo(final Context context, final ProgressReporter reporter) {
+    private void updateInfo(final Context context, final ProgressReporter reporter) {
         mContext = context;
         mProgressReporter = reporter;
     }
@@ -137,7 +100,7 @@ public class BackupEngine {
         return mIsPause;
     }
 
-    public final void continueBackup() {
+    final void continueBackup() {
         synchronized (mLock) {
             if (mIsPause) {
                 mIsPause = false;
@@ -156,8 +119,8 @@ public class BackupEngine {
         }
     }
 
-    public final void setOnBackupDoneListner(final OnBackupDoneListner listner) {
-        mBackupDoneListner = listner;
+    final void setOnBackupDoneListener(final OnBackupDoneListener listener) {
+        mBackupDoneListener = listener;
     }
 
     private void addComposer(final Composer composer) {
@@ -165,10 +128,10 @@ public class BackupEngine {
             int type = composer.getModuleType();
             ArrayList<String> params = mParasMap.get(type);
             if (params != null) {
-                MyLogger.logD(CLASS_TAG, "Params size is " + params);
+                MyLogger.logD(TAG, "Params size is " + params);
                 composer.setParams(params);
             } else {
-                MyLogger.logD(CLASS_TAG, "Params is null");
+                MyLogger.logD(TAG, "Params is null");
             }
             composer.setReporter(mProgressReporter);
             composer.setParentFolderPath(mBackupFolder);
@@ -190,16 +153,16 @@ public class BackupEngine {
     }
 
     private boolean setupComposer(final ArrayList<Integer> list) {
-        MyLogger.logD(CLASS_TAG, "setupComposer begin...");
+        MyLogger.logD(TAG, "setupComposer begin...");
 
         boolean result = true;
         File path = new File(mBackupFolder);
         if (!path.exists()) {
             result = path.mkdirs();
         }
-        MyLogger.logD(CLASS_TAG, "makedir end...");
+        MyLogger.logD(TAG, "makedir end...");
         if (result) {
-            MyLogger.logD(CLASS_TAG, "create folder " + mBackupFolder + " success");
+            MyLogger.logD(TAG, "create folder " + mBackupFolder + " success");
 
             for (int type : list) {
                 switch (type) {
@@ -243,19 +206,15 @@ public class BackupEngine {
                         addComposer(new CallLogBackupComposer(mContext));
                         break;
 
-//                case ModuleType.TYPE_BOOKMARK:
-//                    addComposer(new BookmarkBackupComposer(mContext));
-//                    break;
-
                     default:
                         result = false;
                         break;
                 }
             }
 
-            MyLogger.logD(CLASS_TAG, "setupComposer finish");
+            MyLogger.logD(TAG, "setupComposer finish");
         } else {
-            MyLogger.logE(CLASS_TAG, "setupComposer failed");
+            MyLogger.logE(TAG, "setupComposer failed");
             result = false;
         }
         return result;
@@ -267,8 +226,8 @@ public class BackupEngine {
                 file.delete();
             } else if (file.isDirectory()) {
                 File files[] = file.listFiles();
-                for (int i = 0; i < files.length; ++i) {
-                    this.deleteFolder(files[i]);
+                for (File file1 : files) {
+                    this.deleteFolder(file1);
                 }
             }
 
@@ -280,14 +239,14 @@ public class BackupEngine {
         Success, Fail, Error, Cancel
     }
 
-    public interface OnBackupDoneListner {
-        public void onFinishBackup(BackupResultType result);
+    interface OnBackupDoneListener {
+        void onFinishBackup(BackupResultType result);
     }
 
     private class BackupThread extends Thread {
         private final long mId;
 
-        public BackupThread(long id) {
+        BackupThread(long id) {
             super();
             mId = id;
         }
@@ -295,26 +254,23 @@ public class BackupEngine {
         @Override
         public void run() {
             try {
-                BackupResultType result = BackupResultType.Fail;
+                BackupResultType result;
 
-                MyLogger.logD(CLASS_TAG, "BackupThread begin...");
+                MyLogger.logD(TAG, "BackupThread begin...");
                 for (Composer composer : mComposerList) {
-                    MyLogger.logD(
-                            CLASS_TAG,
-                            "BackupThread->composer:" + composer.getModuleType() + " start...");
+                    MyLogger.logD(TAG, "BackupThread->composer:" + composer.getModuleType()
+                            + " start...");
                     if (!composer.isCancel() && mId == mThreadIdentifier) {
                         composer.init();
                         composer.onStart();
-                        MyLogger.logD(
-                                CLASS_TAG,
-                                "BackupThread->composer:" + composer.getModuleType() + " init finish");
-                        while (!composer.isAfterLast() &&
-                                !composer.isCancel() &&
+                        MyLogger.logD(TAG, "BackupThread->composer:" + composer.getModuleType()
+                                + " init finish");
+                        while (!composer.isAfterLast() && !composer.isCancel() &&
                                 mId == mThreadIdentifier) {
                             if (mIsPause) {
                                 synchronized (mLock) {
                                     try {
-                                        MyLogger.logD(CLASS_TAG, "BackupThread wait...");
+                                        MyLogger.logD(TAG, "BackupThread wait...");
                                         while (mIsPause) {
                                             mLock.wait();
                                         }
@@ -325,7 +281,7 @@ public class BackupEngine {
                             }
                             if (!composer.isCancel()) {
                                 composer.composeOneEntity();
-                                MyLogger.logD(CLASS_TAG, "BackupThread->composer:"
+                                MyLogger.logD(TAG, "BackupThread->composer:"
                                         + composer.getModuleType() + " compose one entiry");
                             }
                         }
@@ -344,8 +300,7 @@ public class BackupEngine {
 
                     // generateModleXmlInfo(composer);
 
-                    MyLogger.logD(
-                            CLASS_TAG,
+                    MyLogger.logD(TAG,
                             "BackupThread-> composer:" + composer.getModuleType() + " finish");
                 }
 
@@ -362,13 +317,13 @@ public class BackupEngine {
                 } else {
                     result = BackupResultType.Success;
                 }
-                MyLogger.logD(CLASS_TAG, "BackupThread run finish, result:" + result);
+                MyLogger.logD(TAG, "BackupThread run finish, result:" + result);
 
-                if (mBackupDoneListner != null) {
+                if (mBackupDoneListener != null) {
                     if (mIsPause) {
                         synchronized (mLock) {
                             try {
-                                MyLogger.logD(CLASS_TAG, "BackupThread wait before end...");
+                                MyLogger.logD(TAG, "BackupThread wait before end...");
                                 while (mIsPause) {
                                     mLock.wait();
                                 }
@@ -389,7 +344,7 @@ public class BackupEngine {
                             }
                         }
                     }
-                    mBackupDoneListner.onFinishBackup(result);
+                    mBackupDoneListener.onFinishBackup(result);
                 }
             } catch (SecurityException e) {
                 e.printStackTrace();

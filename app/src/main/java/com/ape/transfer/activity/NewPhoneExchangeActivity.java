@@ -5,9 +5,10 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -27,11 +28,19 @@ import com.ape.backuprestore.ResultDialog;
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.utils.BackupFilePreview;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.FileUtils;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
 import com.ape.backuprestore.utils.StorageUtils;
 import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
+import com.ape.transfer.fragment.loader.BaseLoader;
+import com.ape.transfer.fragment.loader.RestoreDataLoader;
+import com.ape.transfer.model.TransferTaskFinishEvent;
+import com.ape.transfer.p2p.beans.TransferFile;
+import com.ape.transfer.util.Log;
+import com.ape.transfer.util.RxBus;
+import com.trello.rxlifecycle.ActivityEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,15 +48,16 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Created by android on 16-7-13.
  */
-public class NewPhoneExchangeActivity extends BaseActivity implements RestoreService.OnRestoreStatusListener {
+public class NewPhoneExchangeActivity extends BaseActivity implements
+        LoaderManager.LoaderCallbacks<BaseLoader.Result>, RestoreService.OnRestoreStatusListener {
     private static final String TAG = "NewPhoneExchangeActivity";
-    private static final String RESTORE_PATH = "restorePath";
     protected RestoreService.RestoreBinder mRestoreService;
-    BackupFilePreview mPreview = null;
     @BindView(R.id.iv_complete)
     ImageView ivComplete;
     @BindView(R.id.loading)
@@ -63,19 +73,22 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     ServiceConnection mServiceCon = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mRestoreService = (RestoreService.RestoreBinder) service;
-
-            afterServiceConnected();
             MyLogger.logI(TAG, " onServiceConnected");
+            mRestoreService = (RestoreService.RestoreBinder) service;
+            if (mRestoreService != null) {
+                mRestoreService.setOnRestoreChangedListner(NewPhoneExchangeActivity.this);
+            }
         }
 
         public void onServiceDisconnected(ComponentName name) {
-            mRestoreService = null;
             MyLogger.logI(TAG, " onServiceDisconnected");
+            if (mRestoreService != null) {
+                mRestoreService.setOnRestoreChangedListner(null);
+            }
+            mRestoreService = null;
         }
     };
     private String mRestoreFolderPath;
-    private FilePreviewTask mPreviewTask;
     private ProgressDialog mProgressDialog;
     private boolean mIsStoped = false;
     private boolean mIsDestroyed = false;
@@ -85,22 +98,9 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            mRestoreFolderPath = savedInstanceState.getString(RESTORE_PATH);
-        } else {
-            mRestoreFolderPath = StorageUtils.getBackupPath();
-        }
-        if (mRestoreFolderPath == null) {
-            finish();
-            return;
-        }
-        MyLogger.logI(TAG, "onCreate with file " + mRestoreFolderPath);
         init();
-         /*
-         * bind Restore Service when activity onCreate, and unBind Service when
-         * activity onDestroy
-         */
-        this.bindService();
+
+        bindRestoreService();
     }
 
     @Override
@@ -117,18 +117,34 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     }
 
     private void init() {
-        if (StorageUtils.getStoragePath() == null) {
+        mRestoreFolderPath = StorageUtils.getBackupPath();
+
+        if (TextUtils.isEmpty(mRestoreFolderPath)) {
             MyLogger.logD(TAG, "SDCard is removed");
             Toast.makeText(this, R.string.nosdcard_notice, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-        // update to avoid transferFiles deleted
-        if (new File(mRestoreFolderPath).exists()) {
-            mPreviewTask = new FilePreviewTask();
-            mPreviewTask.execute();
-        }
-        createProgressDlg();
+
+        RxBus.getInstance().toObservable(TransferTaskFinishEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<TransferTaskFinishEvent>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Action1<TransferTaskFinishEvent>() {
+                    @Override
+                    public void call(TransferTaskFinishEvent finishEvent) {
+                        //do some thing
+                        if (finishEvent.getDirection() == TransferFile.Direction.DIRECTION_RECEIVE) {
+                            startLoadRestoreData();
+                        }
+                    }
+                });
+
+    }
+
+    private void startLoadRestoreData() {
+        setButtonsEnable(false);
+        showLoadingContent(true);
+        getSupportLoaderManager().initLoader(1, null, this);
     }
 
     @Override
@@ -148,10 +164,6 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         super.onDestroy();
         mIsDestroyed = true;
         MyLogger.logI(TAG, " onDestroy");
-        if (null != mPreviewTask) {
-            boolean result = mPreviewTask.cancel(true);
-            MyLogger.logD(TAG, "onDestory result : " + result);
-        }
 
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
@@ -168,13 +180,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         if (mRestoreService != null) {
             mRestoreService.setOnRestoreChangedListner(null);
         }
-        this.unBindService();
-    }
-
-    @Override
-    protected void onSaveInstanceState(final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(RESTORE_PATH, mRestoreFolderPath);
+        unBindRestoreService();
     }
 
     public void startRestore() {
@@ -191,7 +197,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         mRestoreService.setRestoreModelList(list);
         boolean ret = mRestoreService.startRestore(mRestoreFolderPath);
         if (ret) {
-            String path = StorageUtils.getStoragePath();
+            String path = StorageUtils.getBackupPath();
             if (path == null) {
                 // no sdcard
                 MyLogger.logD(TAG, "SDCard is removed");
@@ -202,10 +208,8 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
             setProgressDialogMessage(msg);
             setProgressDialogProgress(0);
             setProgress(0);
-            if (mPreview != null) {
-                int count = mPreview.getItemCount(list.get(0));
-                setProgressDialogMax(count);
-            }
+            int count = BackupFilePreview.getInstance().getItemCount(list.get(0));
+            setProgressDialogMax(count);
         } else {
             stopService();
         }
@@ -227,17 +231,13 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     }
 
     private String getProgressDlgMessage(int type) {
-        StringBuilder builder = new StringBuilder(getString(R.string.restoring));
 
-        builder.append("(").append(ModuleType.getModuleStringFromType(this, type)).append(")");
-        return builder.toString();
+        return getString(R.string.restoring, ModuleType.getModuleStringFromType(getApplicationContext(), type));
     }
 
     protected ProgressDialog createProgressDlg() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
-            if (mProgressDialog == null)
-                return null;
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             mProgressDialog.setMessage(getString(R.string.restoring));
             mProgressDialog.setCancelable(false);
@@ -293,23 +293,10 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
     public void setButtonsEnable(boolean enabled) {
     }
 
-    private void afterServiceConnected() {
-        setOnRestoreStatusListener();
-    }
-
-    private void setOnRestoreStatusListener() {
-        if (mRestoreService != null)
-            mRestoreService.setOnRestoreChangedListner(this);
-    }
-
     private void showLoadingContent(boolean show) {
     }
 
     private void updateData(ArrayList<PersonalItemData> list) {
-        if (list.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "not restore datas...", Toast.LENGTH_SHORT).show();
-            return;
-        }
         mRestoreModeLists = new ArrayList<>();
         for (PersonalItemData item : list) {
             mRestoreModeLists.add(item.getType());
@@ -327,17 +314,17 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         }
     }
 
-    private void bindService() {
+    private void bindRestoreService() {
         bindService(new Intent(this, RestoreService.class), mServiceCon, Service.BIND_AUTO_CREATE);
     }
 
-    private void unBindService() {
+    private void unBindRestoreService() {
         if (mRestoreService != null) {
             mRestoreService.setOnRestoreChangedListner(null);
         }
         try {
             unbindService(mServiceCon);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -454,7 +441,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         boolean ret = false;
 
         boolean isStorageMissing = StorageUtils.isStorageMissing();
-        String path = StorageUtils.getStoragePath();
+        String path = StorageUtils.getBackupPath();
 
         if (isStorageMissing) {
             MyLogger.logI(TAG, "SDCard is removed");
@@ -483,48 +470,29 @@ public class NewPhoneExchangeActivity extends BaseActivity implements RestoreSer
         }
     }
 
-    private class FilePreviewTask extends AsyncTask<Void, Void, Long> {
-        private int mModule = 0;
+    @Override
+    public Loader<BaseLoader.Result> onCreateLoader(int id, Bundle args) {
+        return new RestoreDataLoader(getApplicationContext());
+    }
 
-        @Override
-        protected void onPostExecute(Long arg0) {
-            super.onPostExecute(arg0);
-            int types[] = new int[]{
-                    ModuleType.TYPE_CONTACT,
-                    ModuleType.TYPE_MESSAGE,
-                    ModuleType.TYPE_PICTURE,
-                    ModuleType.TYPE_CALENDAR,
-                    ModuleType.TYPE_MUSIC,
-//                    ModuleType.TYPE_BOOKMARK
-            };
-
-            ArrayList<PersonalItemData> list = new ArrayList<>();
-            for (int type : types) {
-                if ((mModule & type) != 0) {
-                    PersonalItemData item = new PersonalItemData(type, 1);
-                    list.add(item);
-                }
-            }
-            updateData(list);
+    @Override
+    public void onLoadFinished(Loader<BaseLoader.Result> loader, BaseLoader.Result data) {
+        MyLogger.logD(TAG, "mIsDataInitialed is ok");
+        if (!data.lists.isEmpty()) {
+            Log.i(TAG, "updateData... mBackupDataList.size = " + data.lists.size());
+            updateData(data.lists);
             setButtonsEnable(true);
             showLoadingContent(false);
 
-            setOnRestoreStatusListener();
-            MyLogger.logD(TAG, "mIsDataInitialed is ok");
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
+        } else {
             setButtonsEnable(false);
-            showLoadingContent(true);
-        }
-
-        @Override
-        protected Long doInBackground(Void... arg0) {
-            mPreview = new BackupFilePreview(new File(mRestoreFolderPath));
-            mModule = mPreview.getBackupModules(NewPhoneExchangeActivity.this);
-            return null;
+            showLoadingContent(false);
         }
     }
+
+    @Override
+    public void onLoaderReset(Loader<BaseLoader.Result> loader) {
+        updateData(new ArrayList<PersonalItemData>());
+    }
+
 }

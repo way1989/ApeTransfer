@@ -1,6 +1,14 @@
 package com.ape.transfer.p2p.util;
 
 
+import static com.ape.transfer.p2p.util.Constant.TYPE_NAME.APP;
+import static com.ape.transfer.p2p.util.Constant.TYPE_NAME.BACKUP;
+import static com.ape.transfer.p2p.util.Constant.TYPE_NAME.DOCUMENT;
+import static com.ape.transfer.p2p.util.Constant.TYPE_NAME.MUSIC;
+import static com.ape.transfer.p2p.util.Constant.TYPE_NAME.PICTURE;
+import static com.ape.transfer.p2p.util.Constant.TYPE_NAME.VIDEO;
+import static com.ape.transfer.p2p.util.Constant.TYPE_NAME.ZIP;
+
 /**
  * Created by way on 2016/10/21.
  */
@@ -19,6 +27,17 @@ public class Constant {
     public static final String FILE_SHARE_SAVE_PATH = "ApeTransfer";
 
     public static final int MAXIMUM_POOL_SIZE = 4;
+    public static final String[] TYPE_DIR = {APP, PICTURE, VIDEO, ZIP, DOCUMENT, MUSIC, BACKUP};
+
+    public interface TYPE_NAME {
+        String APP = "App";
+        String PICTURE = "Picture";
+        String VIDEO = "Video";
+        String ZIP = "Zip";
+        String DOCUMENT = "Document";
+        String MUSIC = "Music";
+        String BACKUP = "Backup";
+    }
 
     public interface TYPE {
         int APP = 0;
@@ -27,8 +46,9 @@ public class Constant {
         int ZIP = 3;
         int DOC = 4;
         int MUSIC = 5;
-        int OTHER = 6;
+        int BACKUP = 6;
     }
+
 
     public interface UI {
         int ADD_NEIGHBOR = 1000;
