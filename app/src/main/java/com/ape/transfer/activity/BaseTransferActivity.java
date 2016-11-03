@@ -67,9 +67,9 @@ public abstract class BaseTransferActivity extends ApBaseActivity {
 
     protected abstract void onPeerChanged(PeerEvent peerEvent);
 
-    protected void onPostServiceConnected(){
+    protected void onPostServiceConnected() {
         //如果wifi热点已经开启或者没有建立热点的启动，则启动p2p
-        if(isWifiApEnabled() || mPeer != null) startP2P();
+        if (isWifiApEnabled() || mPeer != null) startP2P();
     }
 
     @Override

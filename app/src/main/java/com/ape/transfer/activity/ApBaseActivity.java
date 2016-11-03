@@ -5,28 +5,57 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Toast;
 
+import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;
 import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.util.Log;
+import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
 import com.ape.transfer.util.WifiUtils;
+import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
 
 public abstract class ApBaseActivity extends BaseActivity {
     private static final String TAG = "ApBaseActivity";
     private static final int OPEN_WIFI_AP = 0;
     private static final int CLOSE_WIFI_AP = 1;
+    private static final int CHECK_MOBILE_DATA_MSG = 2;
     private static final long CLOSE_WIFI_AP_DELAY = 1000L;
+    @BindView(R.id.mobile_data_warning)
+    MobileDataWarningContainer mobileDataWarning;
     private boolean isOpeningWifiAp;
+    private boolean isWifiDefaultEnabled;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case OPEN_WIFI_AP:
+                    setWifiApEnabled();
+                    break;
+                case CLOSE_WIFI_AP:
+                    setWifiApDisabled();
+                    WifiUtils.getInstance().setWifiEnabled(isWifiDefaultEnabled);
+                    break;
+                case CHECK_MOBILE_DATA_MSG:
+                    checkIfShowMobileDataWarning();
+                    break;
+            }
+        }
+    };
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -48,27 +77,25 @@ public abstract class ApBaseActivity extends BaseActivity {
 
                 updateTetherState(available.toArray(), active.toArray(), errored.toArray());
             } else if (Intent.ACTION_AIRPLANE_MODE_CHANGED.equals(action)) {
-                enableWifiSwitch();
+                handleAirplaneModeChanged();
+            } else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action)) {
+                //checkIfShowMobileDataWarning();
+                //该回调比较频繁，因此延时1s
+                mHandler.removeMessages(CHECK_MOBILE_DATA_MSG);
+                mHandler.sendEmptyMessageDelayed(CHECK_MOBILE_DATA_MSG, CLOSE_WIFI_AP_DELAY);
             }
 
         }
     };
-    private boolean isWifiDefaultEnabled;
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case OPEN_WIFI_AP:
-                    setWifiApEnabled();
-                    break;
-                case CLOSE_WIFI_AP:
-                    setWifiApDisabled();
-                    WifiUtils.getInstance().setWifiEnabled(isWifiDefaultEnabled);
-                    break;
-            }
-        }
-    };
+
+    private void checkIfShowMobileDataWarning() {
+        if (!WifiApUtils.getInstance().isWifiApEnabled()) return;
+        boolean isMobileNetConnected = TDevice.isMobileNetConnected();
+        mobileDataWarning.setVisibility(isMobileNetConnected ? View.VISIBLE : View.GONE);
+        if (BuildConfig.LOG_DEBUG)//just for debug
+            Toast.makeText(getApplicationContext(), isMobileNetConnected ? "当前正在使用数据流量..."
+                    : "数据流量已关闭...", Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onBackPressed() {
@@ -97,7 +124,7 @@ public abstract class ApBaseActivity extends BaseActivity {
                 mHandler.removeMessages(OPEN_WIFI_AP);
                 mHandler.sendEmptyMessageDelayed(OPEN_WIFI_AP, 2000L);
             }
-        }else {
+        } else {
             mHandler.removeMessages(OPEN_WIFI_AP);
             mHandler.sendEmptyMessage(OPEN_WIFI_AP);
         }
@@ -105,7 +132,7 @@ public abstract class ApBaseActivity extends BaseActivity {
 
     protected void stopWifiAp() {
         mHandler.removeMessages(CLOSE_WIFI_AP);
-        //delay close wifi ap to send offline messagecloseWifiAp();
+        //delay close wifi ap to send offline message;
         mHandler.sendEmptyMessageDelayed(CLOSE_WIFI_AP, CLOSE_WIFI_AP_DELAY);
     }
 
@@ -119,7 +146,7 @@ public abstract class ApBaseActivity extends BaseActivity {
         try {
             unregisterReceiver(receiver);
         } catch (Exception e) {
-            //ignore this exception
+            e.printStackTrace();
         }
     }
 
@@ -130,6 +157,7 @@ public abstract class ApBaseActivity extends BaseActivity {
         intentFilterForAp.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
         intentFilterForAp.addAction(WifiApUtils.WIFI_AP_STATE_CHANGED_ACTION);
         intentFilterForAp.addAction(WifiApUtils.ACTION_TETHER_STATE_CHANGED);
+        intentFilterForAp.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(receiver, intentFilterForAp);
     }
 
@@ -140,8 +168,7 @@ public abstract class ApBaseActivity extends BaseActivity {
     }
 
     private void handleWifiApStateChanged(int state) {
-        Log.i(TAG, "handleWifiApStateChanged... state = " + state);
-        postStatus(state);//发出通知
+        Log.i(TAG, "Ap state changed... state = " + state);
 
         switch (state) {
             case WifiApUtils.WIFI_AP_STATE_DISABLING:
@@ -150,6 +177,8 @@ public abstract class ApBaseActivity extends BaseActivity {
             case WifiApUtils.WIFI_AP_STATE_DISABLED:
                 Log.d(TAG, "wifi ap disabled");
                 //stopForeground(true);
+                if (!isOpeningWifiAp)//如果已经开启过热点,才有必要发送关闭的消息
+                    postStatus(state);//发出通知
                 break;
             case WifiApUtils.WIFI_AP_STATE_ENABLING:
                 Log.d(TAG, "wifi ap enabling");
@@ -157,50 +186,47 @@ public abstract class ApBaseActivity extends BaseActivity {
             case WifiApUtils.WIFI_AP_STATE_ENABLED:
                 Log.d(TAG, "wifi ap enabled");
                 isOpeningWifiAp = false;
-                stayForeground();
+                //stayForeground();
+                postStatus(state);//发出通知
                 break;
             case WifiApUtils.WIFI_AP_STATE_FAILED:
                 Log.d(TAG, "wifi ap failed");
                 isOpeningWifiAp = false;
                 //stopForeground(true);
+                postStatus(state);//发出通知
                 break;
             default:
+                Log.d(TAG, "wifi ap unknown state");
                 isOpeningWifiAp = false;
-                Log.e(TAG, "wifi ap state = " + state);
+                postStatus(WifiApUtils.WIFI_AP_STATE_FAILED);//发出通知
                 break;
         }
     }
 
     private void handleWifiStateChanged(int state) {
+        Log.i(TAG, "wifi state changed... state = " + state);
         switch (state) {
             case WifiManager.WIFI_STATE_DISABLING:
                 Log.d(TAG, "wifi disabling");
                 break;
-
             case WifiManager.WIFI_STATE_DISABLED:
                 Log.d(TAG, "wifi disabled");
                 break;
-
             case WifiManager.WIFI_STATE_ENABLING:
                 Log.d(TAG, "wifi enabling");
                 break;
-
             case WifiManager.WIFI_STATE_ENABLED:
                 Log.d(TAG, "wifi enabled");
-
                 break;
-
             case WifiManager.WIFI_STATE_UNKNOWN:
-                Log.d(TAG, "wifi unknown");
+                Log.d(TAG, "wifi unknown state");
                 break;
-
             default:
-                Log.e(TAG, "wifi state = " + state);
                 break;
         }
     }
 
-    private void enableWifiSwitch() {
+    private void handleAirplaneModeChanged() {
         boolean isAirplaneMode = Settings.Global.getInt(getContentResolver(),
                 Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
         if (!isAirplaneMode) {
@@ -254,6 +280,8 @@ public abstract class ApBaseActivity extends BaseActivity {
             @Override
             public void run() {
                 onWifiApStatusChanged(new ApStatusEvent(getSSID(), status));
+                mHandler.removeMessages(CHECK_MOBILE_DATA_MSG);
+                mHandler.sendEmptyMessageDelayed(CHECK_MOBILE_DATA_MSG, CLOSE_WIFI_AP_DELAY);
             }
         });
     }

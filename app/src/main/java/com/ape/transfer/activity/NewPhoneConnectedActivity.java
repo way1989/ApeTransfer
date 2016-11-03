@@ -145,7 +145,7 @@ public class NewPhoneConnectedActivity extends BaseActivity {
     }
 
     private void connectSSID(String ssid) {
-        boolean isWifiConnected = TDevice.isWifiConnected(getApplicationContext());
+        boolean isWifiConnected = TDevice.isWifiConnected();
         Log.i(TAG, "isWifiEnabled = " + WifiUtils.getInstance().isWifiEnabled() + ", isWifiConnected = "
                 + isWifiConnected + ", ssid = " + WifiUtils.getInstance().getSSID()
                 + ", ScanResult ssid = " + "\"" + ssid + "\"");

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingLeft="@dimen/bottom_user_list_paddingLeft"
-    android:paddingRight="@dimen/bottom_user_list_paddingLeft">
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/bottom_user_list_paddingLeft"
+                android:paddingRight="@dimen/bottom_user_list_paddingLeft">
 
     <ImageView
         android:id="@id/iv_avatar"
@@ -13,7 +13,7 @@
         android:layout_height="@dimen/user_avatar_width"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/user_avatar_marginTop"
-        android:src="@drawable/head_default" />
+        android:src="@drawable/head_default"/>
 
     <ImageView
         android:id="@+id/checkBox"
@@ -22,7 +22,7 @@
         android:layout_alignBottom="@id/iv_avatar"
         android:layout_marginLeft="-5.0dip"
         android:layout_toRightOf="@id/iv_avatar"
-        android:src="@drawable/selected" />
+        android:src="@drawable/selected"/>
 
     <TextView
         android:id="@+id/textView"
@@ -34,5 +34,5 @@
         android:gravity="center"
         android:singleLine="true"
         android:textColor="@color/black"
-        android:textSize="@dimen/textSize_h7" />
+        android:textSize="@dimen/textSize_h7"/>
 </RelativeLayout>

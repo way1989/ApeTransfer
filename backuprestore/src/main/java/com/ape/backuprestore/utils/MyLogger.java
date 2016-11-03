@@ -17,6 +17,7 @@ public class MyLogger {
     public static final String NOTEBOOK_TAG = "NoteBook: ";
     public static final String SETTINGS_TAG = "Settings: ";
     public static final String BOOKMARK_TAG = "Bookmark: ";
+
     private MyLogger() {
     }
 

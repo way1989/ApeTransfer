@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.ape.transfer.widget.MobileDataWarningContainer xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mobile_data_warning"
-    android:layout_width="match_parent"
-    android:layout_height="25.0dip"
-    android:background="@color/yellow_warning"
-    android:gravity="center"
-    android:orientation="horizontal"
-    android:paddingLeft="10.0dip"
-    android:paddingRight="10.0dip"
-    android:visibility="gone">
+                                                    android:id="@+id/mobile_data_warning"
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="25.0dip"
+                                                    android:background="@color/yellow_warning"
+                                                    android:gravity="center"
+                                                    android:orientation="horizontal"
+                                                    android:paddingLeft="10.0dip"
+                                                    android:paddingRight="10.0dip"
+                                                    android:visibility="gone">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="5.0dip"
-        android:src="@drawable/warning" />
+        android:src="@drawable/warning"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,10 +25,10 @@
         android:singleLine="true"
         android:text="@string/mobile_data_warning"
         android:textColor="@color/yellow_warning_text"
-        android:textSize="@dimen/textSize_h6" />
+        android:textSize="@dimen/textSize_h6"/>
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/warning_arrow" />
+        android:src="@drawable/warning_arrow"/>
 </com.ape.transfer.widget.MobileDataWarningContainer>

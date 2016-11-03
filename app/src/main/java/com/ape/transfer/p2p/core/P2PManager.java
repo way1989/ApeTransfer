@@ -21,8 +21,6 @@ import com.ape.transfer.util.Log;
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import static com.ape.transfer.p2p.util.Constant.TYPE_DIR;
-
 
 /**
  * Created by way on 2015/10/22.

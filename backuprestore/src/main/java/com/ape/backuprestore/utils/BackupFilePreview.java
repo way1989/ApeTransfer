@@ -89,7 +89,7 @@ public class BackupFilePreview {
 
     public boolean init() {
         String path = StorageUtils.getBackupPath();
-        if(TextUtils.isEmpty(path))
+        if (TextUtils.isEmpty(path))
             return false;
 
         File file = new File(path);

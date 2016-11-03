@@ -32,9 +32,7 @@ import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.RxBus;
-import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
-import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,8 +85,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
     ImageView ivDirection;
     @BindView(R.id.root)
     RelativeLayout root;
-    @BindView(R.id.mobile_data_warning)
-    MobileDataWarningContainer mobileDataWarning;
 
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
@@ -171,17 +167,12 @@ public class MainTransferActivity extends BaseTransferActivity implements
         Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
 //        boolean hasInternet = TDevice.hasInternet();
         if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
-            boolean hasInternet = TDevice.hasInternet();
-            Log.i(TAG, "updateUI hasInternet = " + hasInternet);
-            if (hasInternet)
-                mobileDataWarning.setVisibility(View.VISIBLE);
-
             tvStatus.setText(R.string.waiting_connect);
             tvStatusInfo.setVisibility(View.VISIBLE);
             btnDisconnect.setEnabled(true);
             startP2P();
-        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED) {
-            mobileDataWarning.setVisibility(View.GONE);
+        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED
+                || event.getStatus() == WifiApUtils.WIFI_AP_STATE_DISABLED) {
             finish();
         }
     }

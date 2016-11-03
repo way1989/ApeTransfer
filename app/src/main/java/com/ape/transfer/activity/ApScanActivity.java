@@ -353,7 +353,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
             return;
         final String capabilities = scanResult.capabilities;
         final String ssid = scanResult.SSID;
-        boolean isWifiConnected = TDevice.isWifiConnected(getApplicationContext());
+        boolean isWifiConnected = TDevice.isWifiConnected();
         Log.i(TAG, "isWifiConnected = " + isWifiConnected + ", ssid = " + WifiUtils.getInstance().getSSID()
                 + ", ScanResult ssid = " + "\"" + ssid + "\"");
         if (isWifiConnected && TextUtils.equals(WifiUtils.getInstance().getSSID(), "\"" + ssid + "\"")) {

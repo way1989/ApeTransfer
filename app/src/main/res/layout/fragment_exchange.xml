@@ -1,8 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragment.ExchangeFragment">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context=".fragment.ExchangeFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/subtitle_marginTop"
                 android:text="@string/subtitle_exchange"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"/>
 
             <ImageView
                 android:id="@+id/iv_banner"
@@ -32,7 +32,7 @@
                 android:layout_above="@+id/rl_invite"
                 android:layout_centerInParent="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/banner_exchange_bg" />
+                android:src="@drawable/banner_exchange_bg"/>
 
             <RelativeLayout
                 android:id="@+id/rl_invite"
@@ -53,7 +53,7 @@
                     android:singleLine="true"
                     android:text="@string/function_introduce_transfer"
                     android:textColor="@android:color/white"
-                    android:textSize="@dimen/textSize_h4" />
+                    android:textSize="@dimen/textSize_h4"/>
 
                 <ImageView
                     android:id="@+id/qr_image_tip"
@@ -62,7 +62,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="@dimen/qr_image_tip_margin_right"
-                    android:background="@drawable/icon_qr_tip_under" />
+                    android:background="@drawable/icon_qr_tip_under"/>
 
                 <ImageView
                     android:id="@+id/iv_invite"
@@ -72,7 +72,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="@dimen/iv_invite_tip_margin_left"
                     android:layout_marginRight="@dimen/iv_invite_tip_margin_right"
-                    android:background="@drawable/icon_invite_tip" />
+                    android:background="@drawable/icon_invite_tip"/>
             </RelativeLayout>
         </RelativeLayout>
 
@@ -101,7 +101,7 @@
                         android:id="@+id/mainSendBtn"
                         android:layout_width="@dimen/main_btn_width"
                         android:layout_height="@dimen/main_btn_width"
-                        android:background="@drawable/bt_oldphone_selector" />
+                        android:background="@drawable/bt_oldphone_selector"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -109,7 +109,7 @@
                         android:layout_marginTop="@dimen/main_text_marginTop"
                         android:text="@string/main_old_phone"
                         android:textColor="@color/black_light"
-                        android:textSize="@dimen/textSize_h4" />
+                        android:textSize="@dimen/textSize_h4"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -123,7 +123,7 @@
                         android:id="@+id/mainReceiveBtn"
                         android:layout_width="@dimen/main_btn_width"
                         android:layout_height="@dimen/main_btn_width"
-                        android:background="@drawable/bt_newphone_selector" />
+                        android:background="@drawable/bt_newphone_selector"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -131,7 +131,7 @@
                         android:layout_marginTop="@dimen/main_text_marginTop"
                         android:text="@string/main_new_phone"
                         android:textColor="@color/black_light"
-                        android:textSize="@dimen/textSize_h4" />
+                        android:textSize="@dimen/textSize_h4"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -142,7 +142,7 @@
                 android:layout_centerHorizontal="true"
                 android:text="@string/main_exchange_info"
                 android:textColor="@color/gray_dark"
-                android:textSize="@dimen/textSize_h5" />
+                android:textSize="@dimen/textSize_h5"/>
         </RelativeLayout>
     </LinearLayout>
 </FrameLayout>

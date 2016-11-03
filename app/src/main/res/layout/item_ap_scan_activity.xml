@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_vertical"
-    android:orientation="vertical">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_connect"
@@ -15,7 +15,7 @@
         android:text="@string/doconnect"
         android:textColor="@color/accent"
         android:textSize="@dimen/textSize_h6"
-        android:visibility="invisible" />
+        android:visibility="invisible"/>
 
     <RelativeLayout
         android:id="@+id/fl_phone"
@@ -30,7 +30,7 @@
             android:layout_height="@dimen/iv_item_loading_height"
             android:layout_centerInParent="true"
             android:background="@drawable/dialog_loading_anim_img"
-            android:visibility="invisible" />
+            android:visibility="invisible"/>
 
         <ImageView
             android:id="@id/iv_head"
@@ -38,7 +38,7 @@
             android:layout_height="@dimen/iv_item_head_height"
             android:layout_centerInParent="true"
             android:layout_marginTop="@dimen/iv_item_loading_marginTop"
-            android:background="@drawable/unconnect_normal" />
+            android:background="@drawable/unconnect_normal"/>
     </RelativeLayout>
 
     <TextView
@@ -49,5 +49,5 @@
         android:layout_centerHorizontal="true"
         android:text="vivo Xshot"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/textSize_h6" />
+        android:textSize="@dimen/textSize_h6"/>
 </RelativeLayout>

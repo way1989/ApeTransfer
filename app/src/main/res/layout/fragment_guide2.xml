@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#fff4f4f4"
-    android:scrollbars="none">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#fff4f4f4"
+            android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:layout_marginTop="@dimen/guide_text_marginTop"
             android:text="@string/guide2_title"
             android:textColor="@color/green"
-            android:textSize="@dimen/textSize_h1" />
+            android:textSize="@dimen/textSize_h1"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
             android:layout_marginTop="@dimen/guide_step_marginTop"
             android:text="@string/guide2_step1"
             android:textColor="@color/black_dark"
-            android:textSize="@dimen/textSize_h5" />
+            android:textSize="@dimen/textSize_h5"/>
 
         <TextView
             android:id="@id/tv_step2"
@@ -35,7 +35,7 @@
             android:layout_marginTop="@dimen/guide_step_marginTop"
             android:text="@string/guide2_step2"
             android:textColor="@color/black_dark"
-            android:textSize="@dimen/textSize_h5" />
+            android:textSize="@dimen/textSize_h5"/>
 
         <LinearLayout
             android:layout_width="@dimen/guide2_tranfericon_width"
@@ -49,14 +49,14 @@
             <ImageView
                 android:layout_width="@dimen/guide3_exchangeicon_wh"
                 android:layout_height="@dimen/guide3_exchangeicon_wh"
-                android:src="@drawable/transfer_file_focus" />
+                android:src="@drawable/transfer_file_focus"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/main_bottom_transfer"
                 android:textColor="@color/green"
-                android:textSize="@dimen/textSize_h5" />
+                android:textSize="@dimen/textSize_h5"/>
         </LinearLayout>
 
         <TextView
@@ -67,7 +67,7 @@
             android:lineSpacingExtra="@dimen/guide_lineSpacingExtra"
             android:text="@string/guide2_step3"
             android:textColor="@color/black_dark"
-            android:textSize="@dimen/textSize_h5" />
+            android:textSize="@dimen/textSize_h5"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -87,14 +87,14 @@
                     android:layout_width="@dimen/guide2_tranfericon_wh"
                     android:layout_height="@dimen/guide2_tranfericon_wh"
                     android:layout_marginBottom="@dimen/guide2_tranfericon_marginbottom"
-                    android:src="@drawable/guide_ap" />
+                    android:src="@drawable/guide_ap"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/creat_ap"
                     android:textColor="@color/green"
-                    android:textSize="@dimen/textSize_h5" />
+                    android:textSize="@dimen/textSize_h5"/>
             </LinearLayout>
 
             <LinearLayout
@@ -108,14 +108,14 @@
                     android:layout_width="@dimen/guide2_tranfericon_wh"
                     android:layout_height="@dimen/guide2_tranfericon_wh"
                     android:layout_marginBottom="@dimen/guide2_tranfericon_marginbottom"
-                    android:src="@drawable/guide_join" />
+                    android:src="@drawable/guide_join"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/connect_ap"
                     android:textColor="@color/green"
-                    android:textSize="@dimen/textSize_h5" />
+                    android:textSize="@dimen/textSize_h5"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -126,6 +126,6 @@
             android:lineSpacingExtra="@dimen/guide_lineSpacingExtra"
             android:text="@string/guide2_step4"
             android:textColor="@color/black_dark"
-            android:textSize="@dimen/textSize_h5" />
+            android:textSize="@dimen/textSize_h5"/>
     </LinearLayout>
 </ScrollView>

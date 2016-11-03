@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activity.InviteFriendActivity">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".activity.InviteFriendActivity">
 
     <RelativeLayout
         android:id="@+id/my_avatar"
@@ -25,7 +25,7 @@
             android:padding="10.0dip"
             android:text="@string/invite_share_bluetooth"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/textSize_h10" />
+            android:textSize="@dimen/textSize_h10"/>
 
         <Button
             android:id="@+id/bt_saveTraffic"
@@ -40,7 +40,7 @@
             android:padding="10.0dip"
             android:text="@string/invite_share_ap"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/textSize_h10" />
+            android:textSize="@dimen/textSize_h10"/>
 
         <ImageView
             android:id="@+id/iv_code"
@@ -49,7 +49,7 @@
             android:layout_below="@id/bt_saveTraffic"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/invite_code_marginTop"
-            android:src="@drawable/code" />
+            android:src="@drawable/code"/>
 
         <TextView
             android:id="@+id/tv_code_intro"
@@ -60,7 +60,7 @@
             android:gravity="center"
             android:text="@string/invite_share_code"
             android:textColor="@color/black_light"
-            android:textSize="@dimen/textSize_h6" />
+            android:textSize="@dimen/textSize_h6"/>
     </RelativeLayout>
 
     <Button
@@ -72,7 +72,7 @@
         android:gravity="center"
         android:text="@string/invite_more"
         android:textColor="@android:color/black"
-        android:textSize="@dimen/textSize_h9" />
+        android:textSize="@dimen/textSize_h9"/>
 
     <View
         android:id="@+id/dividing_line"
@@ -80,5 +80,5 @@
         android:layout_height="1px"
         android:layout_above="@id/bt_more"
         android:layout_marginTop="@dimen/aboutUs_listView_marginTop"
-        android:background="@color/divider_bg" />
+        android:background="@color/divider_bg"/>
 </RelativeLayout>

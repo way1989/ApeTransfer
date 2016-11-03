@@ -17,8 +17,8 @@ import com.ape.transfer.adapter.HistoryAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.TaskLoader;
 import com.ape.transfer.model.HistoryTransfer;
-import com.ape.transfer.model.TransferTaskStartEvent;
 import com.ape.transfer.model.TransferEvent;
+import com.ape.transfer.model.TransferTaskStartEvent;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
 import com.trello.rxlifecycle.FragmentEvent;
@@ -88,7 +88,7 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
                     @Override
                     public void call(TransferTaskStartEvent event) {
                         //do some thing
-                        if(event.getDirection() == mDirection){
+                        if (event.getDirection() == mDirection) {
                             getLoaderManager().restartLoader(LOAD_ID, null, HistoryFragment.this);
                         }
                     }

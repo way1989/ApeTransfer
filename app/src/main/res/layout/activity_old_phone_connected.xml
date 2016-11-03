@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@color/bg"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/bg"
+                android:fitsSystemWindows="true"
+                android:orientation="vertical">
 
     <!--   <TextView
            android:id="@+id/tv_title"
@@ -38,7 +38,7 @@
                 android:layout_height="83.0dip"
                 android:src="@drawable/head_default"
                 app:civ_border_color="@android:color/white"
-                app:civ_border_width="1.0px" />
+                app:civ_border_width="1.0px"/>
 
             <TextView
                 android:id="@+id/tv_oldphone"
@@ -47,7 +47,7 @@
                 android:layout_marginTop="@dimen/newphone_bottom_text_marginTop"
                 android:gravity="center"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/textSize_h5" />
+                android:textSize="@dimen/textSize_h5"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:text="@string/oldphone_connected_tip"
             android:textColor="@color/green"
-            android:textSize="@dimen/textSize_h2" />
+            android:textSize="@dimen/textSize_h2"/>
 
         <TextView
             android:id="@+id/tv_newphone"
@@ -76,7 +76,7 @@
             android:layout_marginTop="@dimen/newPhone_oldPhone_marginTop"
             android:gravity="center"
             android:text="@string/newphone_name"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"/>
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_newphone"
@@ -85,7 +85,7 @@
             android:layout_marginTop="@dimen/newPhone_oldPhone_text_marginTop"
             android:src="@drawable/head_default"
             app:civ_border_color="@android:color/white"
-            app:civ_border_width="1.0px" />
+            app:civ_border_width="1.0px"/>
     </LinearLayout>
 
     <LinearLayout
@@ -96,7 +96,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/newPhone_oldPhone_loading_marginTop"
         android:gravity="bottom|center"
-        android:orientation="vertical" />
+        android:orientation="vertical"/>
 
     <ImageView
         android:id="@+id/iv_loading"
@@ -105,5 +105,5 @@
         android:layout_below="@id/ll_tip"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/newPhone_oldPhone_loading_marginTop"
-        android:background="@drawable/connect_normal" />
+        android:background="@drawable/connect_normal"/>
 </RelativeLayout>

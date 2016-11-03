@@ -28,7 +28,6 @@ import com.ape.backuprestore.ResultDialog;
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.utils.BackupFilePreview;
 import com.ape.backuprestore.utils.Constants;
-import com.ape.backuprestore.utils.FileUtils;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.MyLogger;
 import com.ape.backuprestore.utils.StorageUtils;
@@ -92,7 +91,6 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
     private ProgressDialog mProgressDialog;
     private boolean mIsStoped = false;
     private boolean mIsDestroyed = false;
-    private ArrayList<Integer> mRestoreModeLists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,18 +181,17 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         unBindRestoreService();
     }
 
-    public void startRestore() {
+    public void startRestore(ArrayList<Integer> restoreModeLists) {
         if (!isCanStartRestore()) {
             return;
         }
         startService();
         MyLogger.logD(TAG, "startRestore");
-        ArrayList<Integer> list = mRestoreModeLists;
-        if (list.size() == 0) {
+        if (restoreModeLists.size() == 0) {
             Toast.makeText(this, getString(R.string.no_item_selected), Toast.LENGTH_SHORT).show();
             return;
         }
-        mRestoreService.setRestoreModelList(list);
+        mRestoreService.setRestoreModelList(restoreModeLists);
         boolean ret = mRestoreService.startRestore(mRestoreFolderPath);
         if (ret) {
             String path = StorageUtils.getBackupPath();
@@ -203,15 +200,27 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
                 MyLogger.logD(TAG, "SDCard is removed");
                 return;
             }
-            showProgressDialog();
-            String msg = getProgressDlgMessage(list.get(0));
-            setProgressDialogMessage(msg);
-            setProgressDialogProgress(0);
-            setProgress(0);
-            int count = BackupFilePreview.getInstance().getItemCount(list.get(0));
-            setProgressDialogMax(count);
+            int count = BackupFilePreview.getInstance().getItemCount(restoreModeLists.get(0));
+            int type = restoreModeLists.get(0);
+            showProgressDialog(count, type);
         } else {
             stopService();
+        }
+    }
+
+    private void showProgressDialog(int count, int type) {
+        if (mProgressDialog == null) {
+            mProgressDialog = createProgressDlg();
+        }
+        mProgressDialog.setMessage(getString(R.string.restoring,
+                ModuleType.getModuleStringFromType(getApplicationContext(), type)));
+        mProgressDialog.setMax(count);
+        mProgressDialog.setProgress(0);
+        try {
+            if (!mProgressDialog.isShowing())
+                mProgressDialog.show();
+        } catch (WindowManager.BadTokenException e) {
+            MyLogger.logE(TAG, " BadTokenException :" + e.toString());
         }
     }
 
@@ -230,11 +239,6 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         return true;
     }
 
-    private String getProgressDlgMessage(int type) {
-
-        return getString(R.string.restoring, ModuleType.getModuleStringFromType(getApplicationContext(), type));
-    }
-
     protected ProgressDialog createProgressDlg() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
@@ -245,45 +249,6 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         return mProgressDialog;
     }
 
-    protected void showProgressDialog() {
-        if (isFinishing()) {
-            return;
-        }
-        if (mProgressDialog == null) {
-            mProgressDialog = createProgressDlg();
-        }
-        try {
-            mProgressDialog.show();
-        } catch (WindowManager.BadTokenException e) {
-            MyLogger.logE(TAG, " BadTokenException :" + e.toString());
-        }
-    }
-
-    protected void setProgressDialogMax(int max) {
-        if (mProgressDialog == null) {
-            mProgressDialog = createProgressDlg();
-        }
-        mProgressDialog.setMax(max);
-    }
-
-    protected void setProgressDialogProgress(int value) {
-        if (mProgressDialog == null) {
-            mProgressDialog = createProgressDlg();
-        }
-        mProgressDialog.setProgress(value);
-    }
-
-    protected void setProgressDialogMessage(CharSequence message) {
-        if (mProgressDialog == null) {
-            mProgressDialog = createProgressDlg();
-        }
-        mProgressDialog.setMessage(message);
-    }
-
-    protected boolean isProgressDialogShowing() {
-        return mProgressDialog.isShowing();
-    }
-
     protected void dismissProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
@@ -291,17 +256,19 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
     }
 
     public void setButtonsEnable(boolean enabled) {
+        btnSure.setEnabled(enabled);
+        btnCancel.setEnabled(enabled);
     }
 
     private void showLoadingContent(boolean show) {
     }
 
     private void updateData(ArrayList<PersonalItemData> list) {
-        mRestoreModeLists = new ArrayList<>();
+        ArrayList<Integer> restoreModeLists = new ArrayList<>();
         for (PersonalItemData item : list) {
-            mRestoreModeLists.add(item.getType());
+            restoreModeLists.add(item.getType());
         }
-        startRestore();
+        startRestore(restoreModeLists);
     }
 
     @OnClick({R.id.btnSure, R.id.btnCancel})
@@ -345,10 +312,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         runOnUiThread(new Runnable() {
 
             public void run() {
-                String msg = getProgressDlgMessage(type);
-                setProgressDialogMessage(msg);
-                setProgressDialogMax(max);
-                setProgressDialogProgress(0);
+                showProgressDialog(max, type);
             }
         });
     }
@@ -380,14 +344,14 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         }
 
         if (hasSuccess) {
-            String recrodXmlFile = mRestoreFolderPath + File.separator + Constants.RECORD_XML;
-            String content = Utils.readFromFile(recrodXmlFile);
+            String recordXmlFile = mRestoreFolderPath + File.separator + Constants.RECORD_XML;
+            String content = Utils.readFromFile(recordXmlFile);
             ArrayList<RecordXmlInfo> recordList = new ArrayList<>();
             if (content != null) {
                 recordList = RecordXmlParser.parse(content.toString());
             }
-            RecordXmlComposer xmlCompopser = new RecordXmlComposer();
-            xmlCompopser.startCompose();
+            RecordXmlComposer xmlComposer = new RecordXmlComposer();
+            xmlComposer.startCompose();
 
             RecordXmlInfo restoreInfo = new RecordXmlInfo();
             restoreInfo.setRestore(true);
@@ -397,18 +361,18 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             boolean bAdded = false;
             for (RecordXmlInfo record : recordList) {
                 if (record.getDevice().equals(restoreInfo.getDevice())) {
-                    xmlCompopser.addOneRecord(restoreInfo);
+                    xmlComposer.addOneRecord(restoreInfo);
                     bAdded = true;
                 } else {
-                    xmlCompopser.addOneRecord(record);
+                    xmlComposer.addOneRecord(record);
                 }
             }
 
             if (!bAdded) {
-                xmlCompopser.addOneRecord(restoreInfo);
+                xmlComposer.addOneRecord(restoreInfo);
             }
-            xmlCompopser.endCompose();
-            Utils.writeToFile(xmlCompopser.getXmlInfo(), recrodXmlFile);
+            xmlComposer.endCompose();
+            Utils.writeToFile(xmlComposer.getXmlInfo(), recordXmlFile);
         }
         runOnUiThread(new Runnable() {
             @Override

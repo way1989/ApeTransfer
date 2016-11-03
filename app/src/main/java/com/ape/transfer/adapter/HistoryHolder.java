@@ -21,8 +21,6 @@ import com.daimajia.numberprogressbar.NumberProgressBar;
 
 import java.io.File;
 
-import static android.R.attr.path;
-
 /**
  * Created by android on 16-10-31.
  */
@@ -64,9 +62,9 @@ public class HistoryHolder extends RecyclerView.ViewHolder implements View.OnCli
         if (file.position < file.size)
             return;
         String filePath;
-        if(file.direction == TransferFile.Direction.DIRECTION_SEND){
+        if (file.direction == TransferFile.Direction.DIRECTION_SEND) {
             filePath = file.path;
-        }else {
+        } else {
             String path = P2PManager.getSavePath(file.type);
             filePath = path + File.separator + file.name;
         }

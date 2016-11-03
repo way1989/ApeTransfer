@@ -1,7 +1,6 @@
 package com.ape.backuprestore.modules;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;

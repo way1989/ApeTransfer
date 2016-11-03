@@ -159,7 +159,7 @@ public class CommunicateThread extends Thread {
     }
 
     private boolean isLocal(String ip) {
-        if(mLocalIPs == null)
+        if (mLocalIPs == null)
             mLocalIPs = getLocalAllIP();
         if (mLocalIPs.isEmpty())
             return false;

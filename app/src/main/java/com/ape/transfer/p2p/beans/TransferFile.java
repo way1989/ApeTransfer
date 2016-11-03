@@ -63,6 +63,7 @@ public class TransferFile {
         return (file.name.equals(name) && file.size == size && file.type == type
                 && file.createTime == createTime && file.md5.equals(md5) && file.path.equals(path));
     }
+
     @Override
     public int hashCode() {//hashCode主要是用来提高hash系统的查询效率。当hashCode中不进行任何操作时，可以直接让其返回 一常数，或者不进行重写。
         int result = 17;
@@ -74,6 +75,7 @@ public class TransferFile {
         result = 37 * result + path.hashCode();
         return result;
     }
+
     @Override
     public String toString() {
         return name + ":" + path + ":" + md5 + ":" + wifiMac + ":" + createTime + ":"

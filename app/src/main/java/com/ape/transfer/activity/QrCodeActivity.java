@@ -13,13 +13,10 @@ import com.ape.transfer.R;
 import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
-import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
-import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
-import com.ape.transfer.widget.MobileDataWarningContainer;
 import com.google.zxing.WriterException;
 
 import butterknife.BindView;
@@ -39,8 +36,6 @@ public class QrCodeActivity extends BaseTransferActivity {
     TextView tvPrompt;
     @BindView(R.id.rl_loading)
     RelativeLayout rlLoading;
-    @BindView(R.id.mobile_data_warning)
-    MobileDataWarningContainer mobileDataWarning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,24 +62,18 @@ public class QrCodeActivity extends BaseTransferActivity {
     @Override
     protected void onWifiApStatusChanged(ApStatusEvent event) {
         Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
-//        boolean hasInternet = TDevice.hasInternet();
         if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             updateUI(event.getSsid());
             startP2P();
-        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED) {
-            mobileDataWarning.setVisibility(View.GONE);
+        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED
+                || event.getStatus() == WifiApUtils.WIFI_AP_STATE_DISABLED) {
             finish();
         }
     }
 
     private void updateUI(String ssid) {
         try {
-            boolean hasInternet = TDevice.hasInternet();
-            Log.i(TAG, "updateUI hasInternet = " + hasInternet);
-            if (hasInternet)
-                mobileDataWarning.setVisibility(View.VISIBLE);
             rlLoading.setVisibility(View.GONE);
-
             Bitmap qrCode = QrCodeUtils.create2DCode(ssid);
             ivQrcode.setImageBitmap(qrCode);
         } catch (WriterException e) {

@@ -10,13 +10,9 @@ import android.widget.TextView;
 import com.ape.transfer.R;
 import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.util.AndroidWebServer;
-import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.QrCodeUtils;
-import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiApUtils;
-import com.ape.transfer.util.WifiUtils;
-import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import butterknife.BindView;
 import fi.iki.elonen.NanoHTTPD;
@@ -34,8 +30,6 @@ public class WifiAPShareActivity extends ApBaseActivity {
     ImageView ivCode;
     @BindView(R.id.rl_loading)
     RelativeLayout rlLoading;
-    @BindView(R.id.mobile_data_warning)
-    MobileDataWarningContainer mobileDataWarning;
 
     // NanoHTTPServer
     private NanoHTTPD mNanoHTTPServer;
@@ -69,16 +63,12 @@ public class WifiAPShareActivity extends ApBaseActivity {
         return true;
     }
 
+
     @Override
     protected void onWifiApStatusChanged(ApStatusEvent event) {
         if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
             // 开启NanoHTTPServer
             try {
-                boolean hasInternet = TDevice.hasInternet();
-                Log.i(TAG, "updateUI hasInternet = " + hasInternet);
-                if (hasInternet)
-                    mobileDataWarning.setVisibility(View.VISIBLE);
-
                 mNanoHTTPServer.start();
                 rlLoading.setVisibility(View.GONE);
                 //String ip = WifiUtils.getLocalIP();
@@ -94,8 +84,8 @@ public class WifiAPShareActivity extends ApBaseActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED) {
-            mobileDataWarning.setVisibility(View.GONE);
+        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED
+                || event.getStatus() == WifiApUtils.WIFI_AP_STATE_DISABLED) {
             finish();
         }
     }

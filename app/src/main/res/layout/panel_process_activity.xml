@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="@dimen/process_panel_height"
-    android:background="@color/white_dark"
-    android:gravity="center"
-    android:orientation="vertical">
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/process_panel_height"
+                android:background="@color/white_dark"
+                android:gravity="center"
+                android:orientation="vertical">
 
     <Button
         android:id="@+id/btnSure"
@@ -14,7 +14,7 @@
         android:text="@android:string/ok"
         android:textColor="@android:color/white"
         android:textSize="@dimen/textSize_h4"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnCancel"
@@ -23,5 +23,5 @@
         android:background="@drawable/bt_exchange_selector"
         android:text="@string/bt_stop_sending"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/textSize_h4" />
+        android:textSize="@dimen/textSize_h4"/>
 </RelativeLayout>

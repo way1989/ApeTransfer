@@ -10,10 +10,10 @@ import android.text.TextUtils;
 
 import com.ape.transfer.BuildConfig;
 import com.ape.transfer.model.FileItem;
-import com.ape.transfer.model.TransferTaskFinishEvent;
-import com.ape.transfer.model.TransferTaskStartEvent;
 import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.model.TransferEvent;
+import com.ape.transfer.model.TransferTaskFinishEvent;
+import com.ape.transfer.model.TransferTaskStartEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.p2p.callback.PeerCallback;
@@ -46,7 +46,7 @@ public class TransferService extends Service {
         public void onPeerFound(Peer peer) {
             Log.d(TAG, "PeerCallback onPeerFound... peer = " + peer + ",  containsKey = "
                     + mPeerHashMap.containsKey(peer.ip));
-            if(!mPeerHashMap.containsKey(peer.ip)) {
+            if (!mPeerHashMap.containsKey(peer.ip)) {
                 DeviceHistory.getInstance().addDevice(peer);
                 mPeerHashMap.put(peer.ip, peer);
                 RxBus.getInstance().post(new PeerEvent(peer, PeerEvent.ADD));
@@ -55,7 +55,7 @@ public class TransferService extends Service {
 
         @Override
         public void onPeerRemoved(Peer peer) {
-            Log.d(TAG, "PeerCallback onPeerRemoved... peer = " + peer+ ",  containsKey = "
+            Log.d(TAG, "PeerCallback onPeerRemoved... peer = " + peer + ",  containsKey = "
                     + mPeerHashMap.containsKey(peer.ip));
 
             if (mPeerHashMap.containsKey(peer.ip)) {
@@ -69,7 +69,7 @@ public class TransferService extends Service {
         @Override
         public void onPreSending(TransferFile[] files, Peer peer) {
             Log.i(TAG, "onPreSending....");
-            if(files[0].type != Constant.TYPE.BACKUP) {
+            if (files[0].type != Constant.TYPE.BACKUP) {
                 for (TransferFile file : files) {
                     file.wifiMac = peer.wifiMac;
                     TaskHistory.getInstance().addFileInfo(file);
@@ -82,7 +82,7 @@ public class TransferService extends Service {
         public void onSending(TransferFile file, Peer dest) {
             Log.i(TAG, "onSending...." + file.name + ", position = " + file.position
                     + ", sumSize = " + file.size);
-            if(file.type != Constant.TYPE.BACKUP) {
+            if (file.type != Constant.TYPE.BACKUP) {
                 file.status = TransferFile.Status.STATUS_SENDING;
                 TaskHistory.getInstance().updateFileInfo(file);
             }
@@ -109,7 +109,7 @@ public class TransferService extends Service {
         @Override
         public void onPreReceiving(Peer src, TransferFile[] files) {
             Log.i(TAG, "onPreReceiving....");
-            if(files[0].type != Constant.TYPE.BACKUP) {
+            if (files[0].type != Constant.TYPE.BACKUP) {
                 for (TransferFile fileInfo : files) {
                     fileInfo.wifiMac = src.wifiMac;
                     fileInfo.direction = TransferFile.Direction.DIRECTION_RECEIVE;
@@ -126,7 +126,7 @@ public class TransferService extends Service {
         @Override
         public void onReceiving(Peer src, TransferFile file) {
             Log.i(TAG, "onReceiving....  position = " + file.position + ", sumSize = " + file.size);
-            if(file.type != Constant.TYPE.BACKUP) {
+            if (file.type != Constant.TYPE.BACKUP) {
                 file.status = TransferFile.Status.STATUS_RECEIVING;
                 TaskHistory.getInstance().updateFileInfo(file);
             }
@@ -249,7 +249,7 @@ public class TransferService extends Service {
 
     public void sendBackupFile(ArrayList<TransferFile> sendFiles) {
         Peer[] peers = mPeerHashMap.values().toArray(new Peer[mPeerHashMap.size()]);
-        TransferFile[] transferFiles  = sendFiles.toArray(new TransferFile[sendFiles.size()]);
+        TransferFile[] transferFiles = sendFiles.toArray(new TransferFile[sendFiles.size()]);
         mP2PManager.sendFile(peers, transferFiles, mSendFileCallback);
     }
 

@@ -40,16 +40,12 @@ import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
-import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.Util;
 import com.ape.transfer.util.WifiApUtils;
-import com.ape.transfer.widget.MobileDataWarningContainer;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -65,8 +61,6 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
     private static final String TAG = "OldPhonePickupActivity";
     protected BackupService.BackupBinder mBackupService;
     protected ProgressDialog mProgressDialog;
-    @BindView(R.id.mobile_data_warning)
-    MobileDataWarningContainer mobileDataWarning;
     @BindView(R.id.rv_data_category)
     RecyclerView rvDataCategory;
     @BindView(R.id.storageView)
@@ -203,7 +197,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
                 mProgressDialog.setProgress(0);
                 try {
                     if (!mProgressDialog.isShowing()) mProgressDialog.show();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -285,7 +279,7 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
             }
         }
         Log.i(TAG, "send files size = " + mSendFiles.size());
-        if(mTransferService != null)
+        if (mTransferService != null)
             mTransferService.sendBackupFile(mSendFiles);
     }
 
@@ -433,10 +427,9 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
     protected void onWifiApStatusChanged(ApStatusEvent event) {
         Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
         if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
-            if (TDevice.hasInternet()) mobileDataWarning.setVisibility(View.VISIBLE);
             startP2P();
-        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED) {
-            mobileDataWarning.setVisibility(View.GONE);
+        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED
+                || event.getStatus() == WifiApUtils.WIFI_AP_STATE_DISABLED) {
             finish();
         }
     }

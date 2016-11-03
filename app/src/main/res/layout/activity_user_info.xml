@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:scrollbars="none"
-    tools:context="com.ape.transfer.activity.UserInfoActivity">
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            tools:context="com.ape.transfer.activity.UserInfoActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,14 +26,14 @@
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="@dimen/avatar_bg_padding"
                 android:layout_marginTop="@dimen/avatar_bg_padding"
-                android:src="@drawable/head_default0" />
+                android:src="@drawable/head_default0"/>
 
             <ImageView
                 android:id="@+id/iv_edit"
                 android:layout_width="@dimen/avatar_edit_width"
                 android:layout_height="@dimen/avatar_bg_height"
                 android:layout_centerInParent="true"
-                android:background="@drawable/take_photo_selecter" />
+                android:background="@drawable/take_photo_selecter"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -54,7 +54,7 @@
                     android:layout_height="@dimen/avatar_min_bg_height"
                     android:layout_centerInParent="true"
                     android:background="@drawable/head_default0_bg"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
 
                 <ImageView
                     android:layout_width="@dimen/avatar_min_width"
@@ -62,7 +62,7 @@
                     android:layout_centerInParent="true"
                     android:maxHeight="@dimen/avatar_min_height"
                     android:maxWidth="@dimen/avatar_min_width"
-                    android:src="@drawable/head_default0" />
+                    android:src="@drawable/head_default0"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -79,7 +79,7 @@
                     android:layout_height="@dimen/avatar_min_bg_height"
                     android:layout_centerInParent="true"
                     android:background="@drawable/head_default1_bg"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
 
                 <ImageView
                     android:layout_width="@dimen/avatar_min_width"
@@ -87,7 +87,7 @@
                     android:layout_centerInParent="true"
                     android:maxHeight="@dimen/avatar_min_height"
                     android:maxWidth="@dimen/avatar_min_width"
-                    android:src="@drawable/head_default1" />
+                    android:src="@drawable/head_default1"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -104,13 +104,13 @@
                     android:layout_height="@dimen/avatar_min_bg_height"
                     android:layout_centerInParent="true"
                     android:src="@drawable/head_default2_bg"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
 
                 <ImageView
                     android:layout_width="@dimen/avatar_min_width"
                     android:layout_height="@dimen/avatar_min_height"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/head_default2" />
+                    android:src="@drawable/head_default2"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -127,13 +127,13 @@
                     android:layout_height="@dimen/avatar_min_bg_height"
                     android:layout_centerInParent="true"
                     android:background="@drawable/head_default3_bg"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
 
                 <ImageView
                     android:layout_width="@dimen/avatar_min_width"
                     android:layout_height="@dimen/avatar_min_height"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/head_default3" />
+                    android:src="@drawable/head_default3"/>
             </RelativeLayout>
         </RelativeLayout>
 
@@ -164,7 +164,7 @@
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textCursorDrawable="@null"
-                    android:textSize="@dimen/textSize_h4" />
+                    android:textSize="@dimen/textSize_h4"/>
             </android.support.design.widget.TextInputLayout>
 
 
@@ -180,7 +180,7 @@
                 android:text="@string/nickname_info"
                 android:textColor="@color/gray_dark"
                 android:textSize="@dimen/textSize_h5"
-                android:visibility="visible" />
+                android:visibility="visible"/>
         </RelativeLayout>
     </LinearLayout>
 </ScrollView>
