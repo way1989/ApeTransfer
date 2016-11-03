@@ -24,7 +24,7 @@ import rx.functions.Action1;
 /**
  * Created by kui.xie on 16-8-5.
  */
-public abstract class BaseTransferActivity extends ApBaseActivity {
+public abstract class BaseTransferActivity extends BaseApCreateActivity {
     private static final String TAG = "BaseTransferActivity";
     protected TransferService mTransferService;
     protected Peer mPeer;

@@ -28,8 +28,8 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 
-public abstract class ApBaseActivity extends BaseActivity {
-    private static final String TAG = "ApBaseActivity";
+public abstract class BaseApCreateActivity extends BaseActivity {
+    private static final String TAG = "BaseApCreateActivity";
     private static final int OPEN_WIFI_AP = 0;
     private static final int CLOSE_WIFI_AP = 1;
     private static final int CHECK_MOBILE_DATA_MSG = 2;

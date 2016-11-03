@@ -1,15 +1,10 @@
 package com.ape.transfer.activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,35 +14,24 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ape.transfer.R;
 import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.p2p.beans.Peer;
-import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
-import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.TDevice;
 import com.ape.transfer.util.WifiUtils;
-import com.trello.rxlifecycle.ActivityEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
-public class ApScanActivity extends BaseActivity implements View.OnClickListener {
+import static com.tencent.bugly.crashreport.crash.c.e;
+
+public class ApScanActivity extends BaseWifiConnectActivity implements View.OnClickListener {
     private static final String TAG = "ApScanActivity";
-    private static final int MSG_START_P2P = 0;
-    private static final long DELAY_START_P2P = 500L;
-    private static final int MSG_START_SCAN_WIFI = 1;
-    private static final int MSG_HANDLE_SCAN_RESULT = 2;
-    private static final int MSG_CONNECT_TIMEOUT = 3;
-    //private static final int MSG_SCAN_WIFI_TIMEOUT = 4;
-    private static final long CONNECT_TIMEOUT = 20000L;
     @BindView(R.id.iv_scan)
     ImageView ivScan;
     @BindView(R.id.iv_head)
@@ -57,119 +41,42 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     @BindView(R.id.rl_phones)
     RelativeLayout rlPhones;
     private Animation rotateAnim;
-    private boolean isHandleScanResult;
-    private boolean isHandleWifiConnected;
+    private boolean isStartScan;//是否开始搜索
+    private boolean isHandleScanResult;//是否处理搜索结果
+    private boolean isHandleWifiConnected;//是否处理连接
 
-    private boolean isStartScan;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case MSG_START_P2P:
-                    startP2P();
-                    break;
-                case MSG_START_SCAN_WIFI:
-                    startScanWifi();
-                    break;
-                case MSG_HANDLE_SCAN_RESULT:
-                    handleScanResult();
-                    break;
-                case MSG_CONNECT_TIMEOUT:
-                    Toast.makeText(getApplicationContext(),
-                            R.string.text_connetion_tip,
-                            Toast.LENGTH_SHORT).show();
-                    removeAllFromRadom(true);
-                    break;
-//                case MSG_SCAN_WIFI_TIMEOUT:
-//                    Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
-//                    startScanWifi();
-//                    break;
+    @Override
+    protected void handleConnectState(NetworkInfo.State state) {
+        super.handleConnectState(state);
+        if (state == NetworkInfo.State.CONNECTED) {
+            if (isHandleWifiConnected)
+                return;
+            isHandleWifiConnected = true;
+            if (!isHandleScanResult)
+                return;
+            String ssid = WifiUtils.getInstance().getSSID();
+            if (ssid.startsWith("ApeTransfer@") && !ssid.endsWith("@exchange")) {
+                //不知道为什么连接上后又会断开,然后又连上,所以这里延迟一点
+                mHandler.removeMessages(MSG_START_P2P);
+                mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);
             }
-        }
-    };
-    BroadcastReceiver mWifiStateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(action)) {
-                int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1);
-                handleWifiState(state);
-            } else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(action)) {
-                Log.d(TAG, "wifi scanned");
-                mHandler.removeMessages(MSG_HANDLE_SCAN_RESULT);
-                mHandler.sendEmptyMessageDelayed(MSG_HANDLE_SCAN_RESULT, 250L);
-            } else if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(action)) {
-                NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
-                NetworkInfo.State state = networkInfo.getState();
-                handleConnectState(state);
-            }
-        }
-    };
-
-    private void handleConnectState(NetworkInfo.State state) {
-        switch (state) {
-            case CONNECTED:
-                Log.d(TAG, "wifi connected");
-                if (isHandleWifiConnected)
-                    return;
-                isHandleWifiConnected = true;
-                if (!isHandleScanResult)
-                    return;
-                if (WifiUtils.getInstance().getSSID().contains("ApeTransfer@")) {
-                    //不知道为什么连接上后又会断开,然后又连上,所以这里延迟一点
-                    mHandler.removeMessages(MSG_START_P2P);
-                    mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);
-                }
-                break;
-            case CONNECTING:
-                Log.d(TAG, "wifi connecting");
-                break;
-            case DISCONNECTED:
-                Log.d(TAG, "wifi disconnected");
-                break;
-            case DISCONNECTING:
-                Log.d(TAG, "wifi disconnecting");
-                break;
-            case SUSPENDED:
-                Log.d(TAG, "wifi suspended");
-                break;
-            case UNKNOWN:
-                Log.d(TAG, "wifi unknown");
-                break;
-            default:
-                break;
         }
     }
 
-    private void handleWifiState(int state) {
-        switch (state) {
-            case WifiManager.WIFI_STATE_DISABLING:
-                Log.d(TAG, "wifi disabling");
-                break;
-            case WifiManager.WIFI_STATE_DISABLED:
-                Log.d(TAG, "wifi disabled");
-                break;
-            case WifiManager.WIFI_STATE_ENABLING:
-                Log.d(TAG, "wifi enabling");
-                break;
-            case WifiManager.WIFI_STATE_ENABLED:
-                Log.d(TAG, "wifi enabled");
-                if (!isStartScan) {
-                    mHandler.removeMessages(MSG_START_SCAN_WIFI);
-                    mHandler.sendEmptyMessageDelayed(MSG_START_SCAN_WIFI, 250L);
-                }
-                break;
-            case WifiManager.WIFI_STATE_UNKNOWN:
-                Log.d(TAG, "wifi unknown");
-                break;
-            default:
-                break;
+    @Override
+    protected void handleWifiState(int state) {
+        super.handleWifiState(state);
+        if (state == WifiManager.WIFI_STATE_ENABLED) {
+            if (!isStartScan) {
+                startScanWifi();
+            }
         }
     }
 
-    private void handleScanResult() {
+    @Override
+    protected void handleScanResult() {
+        super.handleScanResult();
         Log.i(TAG, "handleScanResult... isStartScan = " + isStartScan + ", isHandleScanResult = " + isHandleScanResult);
 
         if (!isStartScan)
@@ -177,7 +84,11 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         if (isHandleScanResult)
             return;
         parseScanResults();
+    }
 
+    @Override
+    protected boolean isNeedScanWifi() {
+        return true;
     }
 
     private void parseScanResults() {
@@ -196,10 +107,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
             }
         }
         addToRandom(filterResults);
-
-        //have no ssid equal ApeTransfer, rescan system will scan every 15 second
-        //isHandleScanResult = false;
-        //startScanWifi();
+        mHandler.removeMessages(MSG_TIMEOUT);//扫描结束
     }
 
     private void addToRandom(List<ScanResult> filterResults) {
@@ -243,7 +151,7 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void removeAllFromRadom(boolean reScanWifi) {
-        mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
+        mHandler.removeMessages(MSG_TIMEOUT);
         rlPhones.removeAllViews();
         ivScan.startAnimation(rotateAnim);
         if (reScanWifi)
@@ -256,39 +164,27 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void startScanWifi() {
-        Log.i(TAG, "startScanWifi... isWifiOpen = " + WifiUtils.getInstance().isWifiEnabled());
+        Log.i(TAG, "startScanWifi... isStartScan = " + isStartScan
+                + ", isWifiOpen = " + WifiUtils.getInstance().isWifiEnabled());
 
-        if (!WifiUtils.getInstance().isWifiEnabled()) {
+        if (isStartScan) return;
+
+        if (!WifiUtils.getInstance().isWifiEnabled())
             WifiUtils.getInstance().setWifiEnabled(true);
-        }
 
-        WifiUtils.getInstance().startScan();
-        isStartScan = true;
+        isStartScan = WifiUtils.getInstance().startScan();
         isHandleScanResult = false;
         isHandleWifiConnected = false;
 
-//        mHandler.removeMessages(MSG_SCAN_WIFI_TIMEOUT);
-//        mHandler.sendEmptyMessageDelayed(MSG_SCAN_WIFI_TIMEOUT, 1500L);
+        mHandler.removeMessages(MSG_TIMEOUT);
+        mHandler.sendEmptyMessageDelayed(MSG_TIMEOUT, DURATION_TIMEOUT);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initData();
-
-        registerReceiver();
-
         startScanWifi();
-        RxBus.getInstance().toObservable(PeerEvent.class)
-                .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<PeerEvent>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribe(new Action1<PeerEvent>() {
-                    @Override
-                    public void call(PeerEvent peerEvent) {
-                        //do some thing
-                        onPeerChanged(peerEvent);
-                    }
-                });
     }
 
     @Override
@@ -305,38 +201,20 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
         mineTvName.setText(PreferenceUtil.getInstance().getAlias());
     }
 
-    private void startP2P() {
-        Log.i(TAG, "startP2P...");
-        Intent intent = new Intent(this, TransferService.class);
-        intent.setAction(TransferService.ACTION_START_P2P);
-        startService(intent);
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver();
         removeAllFromRadom(false);
     }
 
-    private void registerReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-        intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-        registerReceiver(mWifiStateReceiver, intentFilter);
-    }
-
-    private void unregisterReceiver() {
-        unregisterReceiver(mWifiStateReceiver);
-    }
 
     public void onPeerChanged(PeerEvent event) {
         Log.i(TAG, "onPeerChanged：" + event.getPeer() + ", type = " + event.getType());
         Peer peer = event.getPeer();
         int type = event.getType();
         if (peer != null && type == PeerEvent.ADD) {
-            mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
+            mHandler.removeMessages(MSG_TIMEOUT);
             Intent intent = new Intent(this, MainTransferActivity.class);
             intent.putExtra(Peer.TAG, peer);
             startActivity(intent);
@@ -374,8 +252,8 @@ public class ApScanActivity extends BaseActivity implements View.OnClickListener
                     break;
             }
         }
-        mHandler.removeMessages(MSG_CONNECT_TIMEOUT);
-        mHandler.sendEmptyMessageDelayed(MSG_CONNECT_TIMEOUT, CONNECT_TIMEOUT);//连接超时处理
+        mHandler.removeMessages(MSG_TIMEOUT);
+        mHandler.sendEmptyMessageDelayed(MSG_TIMEOUT, DURATION_TIMEOUT);//连接超时处理
 
         isHandleScanResult = true;
         isHandleWifiConnected = false;

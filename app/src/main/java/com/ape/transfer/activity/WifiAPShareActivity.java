@@ -17,7 +17,7 @@ import com.ape.transfer.util.WifiApUtils;
 import butterknife.BindView;
 import fi.iki.elonen.NanoHTTPD;
 
-public class WifiAPShareActivity extends ApBaseActivity {
+public class WifiAPShareActivity extends BaseApCreateActivity {
 
     /* 数据段begin */
     private static final String TAG = "WifiApServerActivity";
