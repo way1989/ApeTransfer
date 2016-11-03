@@ -53,8 +53,11 @@ public class ApScanActivity extends BaseWifiConnectActivity implements View.OnCl
             if (isHandleWifiConnected)
                 return;
             isHandleWifiConnected = true;
-            if (!isHandleScanResult)
+            if (!isHandleScanResult) {
+                isStartScan = false;
+                startScanWifi();
                 return;
+            }
             String ssid = WifiUtils.getInstance().getSSID();
             if (ssid.startsWith("ApeTransfer@") && !ssid.endsWith("@exchange")) {
                 //不知道为什么连接上后又会断开,然后又连上,所以这里延迟一点
@@ -68,9 +71,7 @@ public class ApScanActivity extends BaseWifiConnectActivity implements View.OnCl
     protected void handleWifiState(int state) {
         super.handleWifiState(state);
         if (state == WifiManager.WIFI_STATE_ENABLED) {
-            if (!isStartScan) {
-                startScanWifi();
-            }
+            startScanWifi();
         }
     }
 
@@ -97,7 +98,7 @@ public class ApScanActivity extends BaseWifiConnectActivity implements View.OnCl
         Log.i(TAG, "parseScanResults size = " + scanResults.size());
         for (ScanResult scanResult : scanResults) {
             String ssid = scanResult.SSID;
-            if (ssid.startsWith("ApeTransfer")) {
+            if (ssid.startsWith("ApeTransfer") && !ssid.endsWith("@exchange")) {
                 Log.i(TAG, "parseScanResults ssid = " + ssid);
                 String[] alias = ssid.split("@");
                 if (alias.length > 1) {
@@ -173,6 +174,7 @@ public class ApScanActivity extends BaseWifiConnectActivity implements View.OnCl
             WifiUtils.getInstance().setWifiEnabled(true);
 
         isStartScan = WifiUtils.getInstance().startScan();
+        Log.i(TAG, "startScanWifi... isStartScan = " + isStartScan);
         isHandleScanResult = false;
         isHandleWifiConnected = false;
 
