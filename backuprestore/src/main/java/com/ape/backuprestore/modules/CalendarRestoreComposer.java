@@ -6,7 +6,7 @@ import android.provider.CalendarContract;
 
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
+import com.ape.backuprestore.utils.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,7 +17,7 @@ import java.io.IOException;
  * Created by android on 16-7-16.
  */
 public class CalendarRestoreComposer extends Composer {
-    private static final String TAG = MyLogger.LOG_TAG + "/CalendarRestoreComposer";
+    private static final String TAG = Logger.LOG_TAG + "/CalendarRestoreComposer";
     private static final String COLUMN_ID = "_id";
     private static final Uri CALANDER_EVENT_URI = CalendarContract.Events.CONTENT_URI;
     private int mIndex;
@@ -36,7 +36,7 @@ public class CalendarRestoreComposer extends Composer {
 
     @Override
     public int getCount() {
-        MyLogger.logD(TAG, "getCount():" + mCount);
+        Logger.d(TAG, "getCount():" + mCount);
         return mCount;
     }
 
@@ -47,7 +47,7 @@ public class CalendarRestoreComposer extends Composer {
             result = (mIndex >= mCount);
         }
 
-        MyLogger.logD(TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -66,13 +66,13 @@ public class CalendarRestoreComposer extends Composer {
             result = true;
         }
 
-        MyLogger.logD(TAG, "init():" + result);
+        Logger.d(TAG, "init():" + result);
         return result;
     }
 
     @Override
     protected boolean implementComposeOneEntity() {
-        MyLogger.logD(TAG, "implementComposeOneEntity():" + mIndex++);
+        Logger.d(TAG, "implementComposeOneEntity():" + mIndex++);
         return mResult;
     }
 
@@ -88,13 +88,13 @@ public class CalendarRestoreComposer extends Composer {
                 }
             }
         } catch (IOException e) {
-            MyLogger.logE(TAG, "getCalendarEventNum read file failed");
+            Logger.e(TAG, "getCalendarEventNum read file failed");
         } finally {
             if (reader != null) {
                 try {
                     reader.close();
                 } catch (IOException e) {
-                    MyLogger.logE(TAG, "getCalendarEventNum close reader failed");
+                    Logger.e(TAG, "getCalendarEventNum close reader failed");
                 }
             }
         }
@@ -110,7 +110,7 @@ public class CalendarRestoreComposer extends Composer {
         String selection = CalendarContract.Events._ID + ">0";
         mContext.getContentResolver().delete(CALANDER_EVENT_URI, selection, null);
 
-        MyLogger.logD(TAG, "deleteAllCalendarEvents() and all events will be deleted!");
+        Logger.d(TAG, "deleteAllCalendarEvents() and all events will be deleted!");
         return true;
     }
 
@@ -119,14 +119,14 @@ public class CalendarRestoreComposer extends Composer {
         deleteAllCalendarEvents();
 
         super.onStart();
-        MyLogger.logD(TAG, "onStart()");
+        Logger.d(TAG, "onStart()");
     }
 
 
     public void onEnd() {
 
         super.onEnd();
-        MyLogger.logD(TAG, "onEnd()");
+        Logger.d(TAG, "onEnd()");
     }
 
 }

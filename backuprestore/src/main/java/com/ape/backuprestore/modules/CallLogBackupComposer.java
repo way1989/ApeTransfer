@@ -7,7 +7,7 @@ import android.provider.CallLog;
 
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
+import com.ape.backuprestore.utils.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,7 +64,7 @@ public class CallLogBackupComposer extends Composer {
             count = mCursor.getCount();
         }
 
-        MyLogger.logD(TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
@@ -75,7 +75,7 @@ public class CallLogBackupComposer extends Composer {
             result = mCursor.isAfterLast();
         }
 
-        MyLogger.logD(TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -88,7 +88,7 @@ public class CallLogBackupComposer extends Composer {
             result = true;
         }
 
-        MyLogger.logD(TAG, "init():" + result + ",count::" + (mCursor != null ? mCursor.getCount() : 0));
+        Logger.d(TAG, "init():" + result + ",count::" + (mCursor != null ? mCursor.getCount() : 0));
         return result;
     }
 

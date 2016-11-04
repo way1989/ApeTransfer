@@ -6,8 +6,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * Created by android on 16-7-16.
  */
 public class NoteBookRestoreComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/NoteBookBackupComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/NoteBookBackupComposer";
     private Uri mUri = Uri.parse(Constants.URI_NOTEBOOK);
     private int mIdx;
     private ArrayList<NoteBookXmlInfo> mRecordList;
@@ -45,7 +45,7 @@ public class NoteBookRestoreComposer extends Composer {
         if (mRecordList != null) {
             count = mRecordList.size();
         }
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(CLASS_TAG, "getCount():" + count);
         return count;
     }
 
@@ -74,7 +74,7 @@ public class NoteBookRestoreComposer extends Composer {
         }
         result = true;
 
-        MyLogger.logD(CLASS_TAG, "init():" + result + ",count:" + mRecordList.size());
+        Logger.d(CLASS_TAG, "init():" + result + ",count:" + mRecordList.size());
         return result;
     }
 
@@ -90,7 +90,7 @@ public class NoteBookRestoreComposer extends Composer {
             result = mIdx >= mRecordList.size();
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -112,14 +112,14 @@ public class NoteBookRestoreComposer extends Composer {
 
             try {
                 Uri tmpUri = mContext.getContentResolver().insert(mUri, v);
-                MyLogger.logD(CLASS_TAG, "tmpUri:" + tmpUri);
+                Logger.d(CLASS_TAG, "tmpUri:" + tmpUri);
                 result = true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        MyLogger.logD(CLASS_TAG, MyLogger.NOTEBOOK_TAG + "implementComposeOneEntity():" + result);
+        Logger.d(CLASS_TAG, Logger.NOTEBOOK_TAG + "implementComposeOneEntity():" + result);
         return result;
     }
 

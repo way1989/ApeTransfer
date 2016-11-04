@@ -7,8 +7,8 @@ import android.net.Uri;
 import android.provider.Telephony;
 
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,7 +24,7 @@ import java.util.Collections;
  * Created by android on 16-7-16.
  */
 public class SmsRestoreComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/SmsRestoreComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/SmsRestoreComposer";
     private static final String COLUMN_NAME_IMPORT_SMS = "import_sms";
     private static final Uri[] mSmsUriArray = {
             Telephony.Sms.Inbox.CONTENT_URI,
@@ -47,17 +47,17 @@ public class SmsRestoreComposer extends Composer {
     /*   private boolean deleteAllPhoneSms() {
            boolean result = false;
            if (mContext != null) {
-               MyLogger.logD(CLASS_TAG, "begin delete:" + System.currentTimeMillis());
+               Logger.d(CLASS_TAG, "begin delete:" + System.currentTimeMillis());
                int count = mContext.getContentResolver().delete(Uri.parse(Constants.URI_SMS),
                        "type <> ?", new String[] { Constants.MESSAGE_BOX_TYPE_INBOX });
                count += mContext.getContentResolver().delete(Uri.parse(Constants.URI_SMS), "date < ?",
                        new String[] { Long.toString(mTime) });
 
                int count2 = mContext.getContentResolver().delete(WapPush.CONTENT_URI, null, null);
-               MyLogger.logD(CLASS_TAG, "deleteAllPhoneSms():" + count + " sms deleted!" + count2
+               Logger.d(CLASS_TAG, "deleteAllPhoneSms():" + count + " sms deleted!" + count2
                        + "wappush deleted!");
                result = true;
-               MyLogger.logD(CLASS_TAG, "end delete:" + System.currentTimeMillis());
+               Logger.d(CLASS_TAG, "end delete:" + System.currentTimeMillis());
            }
 
            return result;
@@ -98,7 +98,7 @@ public class SmsRestoreComposer extends Composer {
             count = mVmessageList.size();
         }
 
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(CLASS_TAG, "getCount():" + count);
         return count;
     }
 
@@ -108,18 +108,18 @@ public class SmsRestoreComposer extends Composer {
     public boolean init() {
         boolean result = false;
 
-        MyLogger.logD(CLASS_TAG, "begin init:" + System.currentTimeMillis());
+        Logger.d(CLASS_TAG, "begin init:" + System.currentTimeMillis());
         mOperationList = new ArrayList<ContentProviderOperation>();
         try {
             mTime = System.currentTimeMillis();
             mVmessageList = getSmsRestoreEntry();
             result = true;
         } catch (Exception e) {
-            MyLogger.logD(CLASS_TAG, "init failed");
+            Logger.d(CLASS_TAG, "init failed");
         }
 
-        MyLogger.logD(CLASS_TAG, "end init:" + System.currentTimeMillis());
-        MyLogger.logD(CLASS_TAG, "init():" + result + ",count:" + mVmessageList.size());
+        Logger.d(CLASS_TAG, "end init:" + System.currentTimeMillis());
+        Logger.d(CLASS_TAG, "init():" + result + ",count:" + mVmessageList.size());
         return result;
     }
 
@@ -130,7 +130,7 @@ public class SmsRestoreComposer extends Composer {
             result = (mIndex >= mVmessageList.size()) ? true : false;
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -142,11 +142,11 @@ public class SmsRestoreComposer extends Composer {
         if (vMsgFileEntry != null) {
             ContentValues values = parsePdu(vMsgFileEntry);
             if (values == null) {
-                MyLogger.logD(CLASS_TAG, "parsePdu():values=null");
+                Logger.d(CLASS_TAG, "parsePdu():values=null");
             } else {
-                MyLogger.logD(CLASS_TAG, "begin restore:" + System.currentTimeMillis());
+                Logger.d(CLASS_TAG, "begin restore:" + System.currentTimeMillis());
                 int mboxType = vMsgFileEntry.getBoxType().equals("INBOX") ? 1 : 2;
-                MyLogger.logD(CLASS_TAG, "mboxType:" + mboxType);
+                Logger.d(CLASS_TAG, "mboxType:" + mboxType);
                 ContentProviderOperation.Builder builder = ContentProviderOperation
                         .newInsert(mSmsUriArray[mboxType - 1]);
                 builder.withValues(values);
@@ -163,15 +163,15 @@ public class SmsRestoreComposer extends Composer {
                     try {
                         mContext.getContentResolver().applyBatch("sms", mOperationList);
                     } catch (android.os.RemoteException e) {
-                        MyLogger.logD(CLASS_TAG, "RemoteException");
+                        Logger.d(CLASS_TAG, "RemoteException");
                     } catch (android.content.OperationApplicationException e) {
-                        MyLogger.logD(CLASS_TAG, "RemoteException");
+                        Logger.d(CLASS_TAG, "RemoteException");
                     } finally {
                         mOperationList.clear();
                     }
                 }
 
-                MyLogger.logD(CLASS_TAG, "end restore:" + System.currentTimeMillis());
+                Logger.d(CLASS_TAG, "end restore:" + System.currentTimeMillis());
                 result = true;
             }
         } else {
@@ -190,7 +190,7 @@ public class SmsRestoreComposer extends Composer {
         values.put(Telephony.Sms.ADDRESS, pdu.getSmsAddress());
         //       values.put(Sms.SUBJECT, null);
         values.put(Telephony.Sms.BODY, pdu.getBody());
-        MyLogger.logD(CLASS_TAG, "readorunread :" + pdu.getReadByte());
+        Logger.d(CLASS_TAG, "readorunread :" + pdu.getReadByte());
 
         values.put(Telephony.Sms.READ, (pdu.getReadByte().equals("UNREAD") ? 0 : 1));
         //values.put(Sms.SEEN, pdu.getSeen());
@@ -211,7 +211,7 @@ public class SmsRestoreComposer extends Composer {
         super.onStart();
         //deleteAllPhoneSms();
 
-        MyLogger.logD(CLASS_TAG, "onStart()");
+        Logger.d(CLASS_TAG, "onStart()");
     }
 
     @Override
@@ -225,7 +225,7 @@ public class SmsRestoreComposer extends Composer {
             mOperationList = null;
         }
 
-        MyLogger.logD(CLASS_TAG, "onEnd()");
+        Logger.d(CLASS_TAG, "onEnd()");
     }
 
     /**
@@ -247,42 +247,42 @@ public class SmsRestoreComposer extends Composer {
             while ((line = buffreader.readLine()) != null) {
                 if (line.startsWith(BEGIN_VMSG) && !appendbody) {
                     smsentry = new SmsRestoreEntry();
-                    MyLogger.logD(CLASS_TAG, "startsWith(BEGIN_VMSG)");
+                    Logger.d(CLASS_TAG, "startsWith(BEGIN_VMSG)");
                 }
                 if (line.startsWith(FROMTEL) && !appendbody && smsentry != null) {
                     smsentry.setSmsAddress(line.substring(FROMTEL.length()));
-                    MyLogger.logD(CLASS_TAG, "startsWith(FROMTEL)");
+                    Logger.d(CLASS_TAG, "startsWith(FROMTEL)");
                 }
                 if (line.startsWith(XBOX) && !appendbody && smsentry != null) {
                     smsentry.setBoxType(line.substring(XBOX.length()));
-                    MyLogger.logD(CLASS_TAG, "startsWith(XBOX)");
+                    Logger.d(CLASS_TAG, "startsWith(XBOX)");
                 }
                 if (line.startsWith(XREAD) && !appendbody && smsentry != null) {
                     smsentry.setReadByte(line.substring(XREAD.length()));
-                    MyLogger.logD(CLASS_TAG, "startsWith(XREAD)");
+                    Logger.d(CLASS_TAG, "startsWith(XREAD)");
                 }
                 if (line.startsWith(XSEEN) && !appendbody && smsentry != null) {
                     smsentry.setSeen(line.substring(XSEEN.length()));
-                    MyLogger.logD(CLASS_TAG, "startsWith(XSEEN)");
+                    Logger.d(CLASS_TAG, "startsWith(XSEEN)");
                 }
                 if (line.startsWith(XSIMID) && !appendbody && smsentry != null) {
                     smsentry.setSimCardid(Integer.parseInt(line
                             .substring(XSIMID.length())));
-                    MyLogger.logD(CLASS_TAG, "startsWith(XSIMID)");
+                    Logger.d(CLASS_TAG, "startsWith(XSIMID)");
                 }
                 if (line.startsWith(XLOCKED) && !appendbody && smsentry != null) {
                     smsentry.setLocked(line.substring(XLOCKED.length()));
-                    MyLogger.logD(CLASS_TAG, "startsWith(XLOCKED)");
+                    Logger.d(CLASS_TAG, "startsWith(XLOCKED)");
                 }
                 if (line.startsWith(DATE) && !appendbody && smsentry != null) {
                     long result = sd.parse(line.substring(DATE.length())).getTime();
                     smsentry.setTimeStamp(String.valueOf(result));
-                    MyLogger.logD(CLASS_TAG, "startsWith(DATE)");
+                    Logger.d(CLASS_TAG, "startsWith(DATE)");
                 }
                 if (line.startsWith(DATE_SENT) && !appendbody && smsentry != null) {
                     long result = sd.parse(line.substring(DATE_SENT.length())).getTime();
                     smsentry.setDateSent(String.valueOf(result));
-                    MyLogger.logD(CLASS_TAG, "startsWith(DATE_SENT)");
+                    Logger.d(CLASS_TAG, "startsWith(DATE_SENT)");
                 }
 
                 if (line.startsWith(SUBJECT) && !appendbody && smsentry != null) {
@@ -303,7 +303,7 @@ public class SmsRestoreComposer extends Composer {
 
                     tmpbody.append(bodySlash);
                     appendbody = true;
-                    MyLogger.logD(CLASS_TAG, "startsWith(SUBJECT)");
+                    Logger.d(CLASS_TAG, "startsWith(SUBJECT)");
                     continue;
                 }
                 if (line.startsWith(END_VBODY) && smsentry != null) {
@@ -311,7 +311,7 @@ public class SmsRestoreComposer extends Composer {
                     smsentry.setBody(tmpbody.toString());
                     smsEntryList.add(smsentry);
                     tmpbody.setLength(0);
-                    MyLogger.logD(CLASS_TAG, "startsWith(END_VBODY)");
+                    Logger.d(CLASS_TAG, "startsWith(END_VBODY)");
                     continue;
                 }
                 if (appendbody) {
@@ -330,14 +330,14 @@ public class SmsRestoreComposer extends Composer {
                         line = tempsub.toString();
                     }
                     tmpbody.append(line);
-                    MyLogger.logD(CLASS_TAG, "appendbody=true,tmpbody="
+                    Logger.d(CLASS_TAG, "appendbody=true,tmpbody="
                             + tmpbody.toString());
                 }
 
             }
             instream.close();
         } catch (Exception e) {
-            MyLogger.logE(CLASS_TAG, "init failed");
+            Logger.e(CLASS_TAG, "init failed");
         }
         if (smsEntryList != null && smsEntryList.size() > 0) {
             Collections.sort(smsEntryList);

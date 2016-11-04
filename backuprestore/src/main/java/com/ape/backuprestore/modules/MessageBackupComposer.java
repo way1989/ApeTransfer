@@ -3,8 +3,8 @@ package com.ape.backuprestore.modules;
 import android.content.Context;
 
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * Created by android on 16-7-16.
  */
 public class MessageBackupComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/MessageBackupComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/MessageBackupComposer";
     private List<Composer> mMessageComposers;
 
     public MessageBackupComposer(Context context) {
@@ -35,7 +35,7 @@ public class MessageBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(CLASS_TAG, "getCount():" + count);
         return count;
     }
 
@@ -50,7 +50,7 @@ public class MessageBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "init():" + result);
+        Logger.d(CLASS_TAG, "init():" + result);
         return result;
     }
 
@@ -64,7 +64,7 @@ public class MessageBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 

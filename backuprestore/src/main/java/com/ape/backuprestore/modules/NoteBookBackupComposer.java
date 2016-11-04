@@ -6,7 +6,7 @@ import android.net.Uri;
 
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
+import com.ape.backuprestore.utils.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,7 +16,7 @@ import java.io.IOException;
  * Created by android on 16-7-16.
  */
 public class NoteBookBackupComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/NoteBookBackupComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/NoteBookBackupComposer";
     private static final String COLUMN_NAME_TITLE = "title";
     private static final String COLUMN_NAME_NOTE = "note";
     private static final String COLUMN_NAME_CREATED = "created";
@@ -44,7 +44,7 @@ public class NoteBookBackupComposer extends Composer {
             result = true;
         }
 
-        MyLogger.logD(CLASS_TAG,
+        Logger.d(CLASS_TAG,
                 "init():" + result + ",count::" + (mCursor != null ? mCursor.getCount() : 0));
         return result;
     }
@@ -69,7 +69,7 @@ public class NoteBookBackupComposer extends Composer {
             count = mCursor.getCount();
         }
 
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(CLASS_TAG, "getCount():" + count);
         return count;
     }
 
@@ -84,7 +84,7 @@ public class NoteBookBackupComposer extends Composer {
             result = mCursor.isAfterLast();
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 

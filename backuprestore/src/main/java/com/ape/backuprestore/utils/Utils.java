@@ -56,9 +56,9 @@ public class Utils {
         ActivityManager am
                 = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
         if (am.isInLockTaskMode()) {
-            Log.d(MyLogger.LOG_TAG, "exitLockTaskModeIfNeeded: in lock mode");
+            Log.d(Logger.LOG_TAG, "exitLockTaskModeIfNeeded: in lock mode");
             activity.stopLockTask();
-            Log.d(MyLogger.LOG_TAG, "exitLockTaskModeIfNeeded: lock mode exited");
+            Log.d(Logger.LOG_TAG, "exitLockTaskModeIfNeeded: lock mode exited");
         }
     }
 
@@ -252,13 +252,13 @@ public class Utils {
         }
         List<String> unsatisfiedPermissions = new ArrayList<String>();
         for (String p : requestedPermissions) {
-            Log.d(MyLogger.LOG_TAG, "Checking: " + p);
+            Log.d(Logger.LOG_TAG, "Checking: " + p);
             int result = context.checkSelfPermission(p);
             if (result != PackageManager.PERMISSION_GRANTED) {
                 unsatisfiedPermissions.add(p);
-                Log.d(MyLogger.LOG_TAG, "Denied");
+                Log.d(Logger.LOG_TAG, "Denied");
             } else {
-                Log.d(MyLogger.LOG_TAG, "Granted");
+                Log.d(Logger.LOG_TAG, "Granted");
             }
         }
         if (unsatisfiedPermissions.size() == 0) {

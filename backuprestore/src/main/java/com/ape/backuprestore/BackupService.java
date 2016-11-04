@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.NotifyManager;
 import com.ape.backuprestore.utils.StorageUtils;
 
@@ -41,7 +41,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
 
     @Override
     public IBinder onBind(Intent intent) {
-        MyLogger.logI(TAG, "onBind");
+        Logger.i(TAG, "onBind");
         return mBinder;
     }
 
@@ -52,7 +52,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
      */
     public boolean onUnbind(Intent intent) {
         super.onUnbind(intent);
-        MyLogger.logI(TAG, "onUnbind");
+        Logger.i(TAG, "onUnbind");
         // If SD card removed or full, kill process
         StorageUtils.killProcessIfNecessary();
         return true;
@@ -62,7 +62,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     public void onCreate() {
         super.onCreate();
         mState = Constants.State.INIT;
-        MyLogger.logI(TAG, "onCreate");
+        Logger.i(TAG, "onCreate");
         mNotificationReceiver = new NewDataNotifyReceiver();
         IntentFilter filter = new IntentFilter(Constants.ACTION_NEW_DATA_DETECTED);
         filter.setPriority(1000);
@@ -71,7 +71,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
 
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        MyLogger.logI(TAG, "onStartCommand");
+        Logger.i(TAG, "onStartCommand");
         return START_NOT_STICKY;
     }
 
@@ -80,7 +80,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
      */
     public void onRebind(Intent intent) {
         super.onRebind(intent);
-        MyLogger.logI(TAG, "onRebind");
+        Logger.i(TAG, "onRebind");
     }
 
     /**
@@ -89,7 +89,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        MyLogger.logI(TAG, "onDestroy");
+        Logger.i(TAG, "onDestroy");
         if (mBackupEngine != null && mBackupEngine.isRunning()) {
             mBackupEngine.setOnBackupDoneListener(null);
             mBackupEngine.cancel();
@@ -143,7 +143,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
                 mComposerResult = false;
             }
         }
-        MyLogger.logD(TAG, "one Composer end: type = " + composer.getModuleType()
+        Logger.d(TAG, "one Composer end: type = " + composer.getModuleType()
                 + ", result = " + resultType);
         ResultDialog.ResultEntity item = new ResultDialog.ResultEntity(composer.getModuleType(), resultType);
         mResultList.add(item);
@@ -151,7 +151,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
 
     @Override
     public void onErr(IOException e) {
-        MyLogger.logD(TAG, "onErr " + e.getMessage());
+        Logger.d(TAG, "onErr " + e.getMessage());
         if (mStatusListener != null) {
             mStatusListener.onBackupErr(e);
         }
@@ -159,7 +159,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
 
     @Override
     public void onFinishBackup(BackupEngine.BackupResultType result) {
-        MyLogger.logD(TAG, "onFinishBackup result = " + result);
+        Logger.d(TAG, "onFinishBackup result = " + result);
         mResultType = result;
         if (mStatusListener != null) {
             if (mState == Constants.State.CANCELLING) {
@@ -202,7 +202,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        MyLogger.logD(TAG, "onConfigurationChanged: setRefreshFlag");
+        Logger.d(TAG, "onConfigurationChanged: setRefreshFlag");
         NotifyManager.getInstance(this).setRefreshFlag();
     }
 
@@ -250,7 +250,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
      */
     public class BackupBinder extends Binder {
         public int getState() {
-            MyLogger.logI(TAG, "getState: " + mState);
+            Logger.i(TAG, "getState: " + mState);
             return mState;
         }
 
@@ -270,7 +270,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
          * @param paraList list
          */
         public void setBackupItemParam(int itemType, ArrayList<String> paraList) {
-            MyLogger.logD(
+            Logger.d(
                     TAG,
                     "Param List Size is " + (paraList == null ? 0 : paraList.size()));
             mParasMap.put(itemType, paraList);
@@ -299,7 +299,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             } else {
                 mBackupEngine.setOnBackupDoneListener(null);
             }
-            MyLogger.logD(TAG, "startBackup: " + ret);
+            Logger.d(TAG, "startBackup: " + ret);
             return ret;
         }
 
@@ -308,7 +308,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
          */
         public void stopForeground() {
             BackupService.this.stopForeground(true);
-            MyLogger.logD(TAG, "stopFreground");
+            Logger.d(TAG, "stopFreground");
         }
 
         /**
@@ -319,7 +319,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             if (mBackupEngine != null) {
                 mBackupEngine.pause();
             }
-            MyLogger.logD(TAG, "pauseBackup");
+            Logger.d(TAG, "pauseBackup");
         }
 
         /**
@@ -330,7 +330,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             if (mBackupEngine != null) {
                 mBackupEngine.cancel();
             }
-            MyLogger.logD(TAG, "cancelBackup");
+            Logger.d(TAG, "cancelBackup");
         }
 
         /**
@@ -341,7 +341,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
             if (mBackupEngine != null) {
                 mBackupEngine.continueBackup();
             }
-            MyLogger.logD(TAG, "continueBackup");
+            Logger.d(TAG, "continueBackup");
         }
 
         /**
@@ -384,7 +384,7 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Constants.ACTION_NEW_DATA_DETECTED.equals(intent.getAction())) {
-                MyLogger.logD(CLASS_TAG, "BackupService ------>ACTION_NEW_DATA_DETECTED received");
+                Logger.d(CLASS_TAG, "BackupService ------>ACTION_NEW_DATA_DETECTED received");
                 int type = intent.getIntExtra(Constants.NOTIFY_TYPE, 0);
                 String folder = intent.getStringExtra(Constants.FILENAME);
                 if (mBackupEngine != null && mBackupEngine.isRunning()) {

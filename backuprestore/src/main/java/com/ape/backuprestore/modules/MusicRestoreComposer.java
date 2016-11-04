@@ -7,8 +7,8 @@ import android.provider.MediaStore;
 
 import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Created by android on 16-7-16.
  */
 public class MusicRestoreComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/MusicRestoreComposer";
+    private static final String TAG = "MusicRestoreComposer";
     private static final String[] mProjection = new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA};
     private int mIndex;
     private File[] mFileList;
@@ -27,7 +27,6 @@ public class MusicRestoreComposer extends Composer {
     private String mDestPath;
     private String mZipFileName;
     private boolean mImport;
-    private String mDestFileName;
 
     /**
      * Creates a new <code>MusicRestoreComposer</code> instance.
@@ -46,25 +45,19 @@ public class MusicRestoreComposer extends Composer {
     public final boolean init() {
         boolean result = false;
         String path = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_MUSIC;
-        mFileNameList = new ArrayList<String>();
+        mFileNameList = new ArrayList<>();
         File folder = new File(path);
         if (folder.exists() && folder.isDirectory()) {
             try {
                 mZipFileName = path + File.separator + Constants.ModulePath.NAME_MUSICZIP;
                 File file = new File(mZipFileName);
-                if (file != null && file.exists()) {
+                if (file.exists()) {
                     mFileNameList = (ArrayList<String>) BackupZip.getFileList(mZipFileName, true,
                             true, ".*");
                     String tmppath = (new File(mParentFolderPath)).getParent();
-                    if (tmppath == null) {
-                        return result;
-                    } else {
-                        mDestPath = tmppath.subSequence(0, tmppath.length() - 12)
-                                + File.separator
-                                + "Music"
-                                + mParentFolderPath.subSequence(
-                                mParentFolderPath.lastIndexOf(File.separator),
-                                mParentFolderPath.length());
+                    if (tmppath != null) {
+                        mDestPath = tmppath + File.separator + RESTORE
+                                + File.separator + Constants.ModulePath.FOLDER_MUSIC;
                     }
                     // mExistFileList = getExistFileList(mDestPath);
                     result = true;
@@ -84,7 +77,7 @@ public class MusicRestoreComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "init():" + result + ",count:" + getCount());
+        Logger.d(TAG, "init():" + result + ",count:" + getCount());
         return result;
     }
 
@@ -110,7 +103,7 @@ public class MusicRestoreComposer extends Composer {
         if (count == 0 && mFileList != null) {
             count = mFileList.length;
         }
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
@@ -122,12 +115,12 @@ public class MusicRestoreComposer extends Composer {
     public final boolean isAfterLast() {
         boolean result = true;
         if (mFileNameList != null && mFileNameList.size() > 0) {
-            result = (mIndex >= mFileNameList.size()) ? true : false;
+            result = (mIndex >= mFileNameList.size());
         } else if (mFileList != null) {
             // for old data
-            result = (mIndex >= mFileList.length) ? true : false;
+            result = (mIndex >= mFileList.length);
         }
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -147,21 +140,21 @@ public class MusicRestoreComposer extends Composer {
             }
             return result;
         }
-        MyLogger.logD(CLASS_TAG, "mDestPath:" + mDestPath);
+        Logger.d(TAG, "mDestPath:" + mDestPath);
         if (mFileNameList != null && mIndex < mFileNameList.size()) {
             // File file = mFileList[mIndex++];
             String musicName = mFileNameList.get(mIndex++);
-            mDestFileName = mDestPath + File.separator + musicName;
+            String destFileName = mDestPath + File.separator + musicName;
 
             if (mImport) {
-                File fileName = new File(mDestFileName);
+                File fileName = new File(destFileName);
                 if (fileName.exists()) {
-                    mDestFileName = rename(mDestFileName);
+                    destFileName = rename(destFileName);
                 }
             }
             try {
-                MyLogger.logD(CLASS_TAG, "mDestFileName:" + mDestFileName);
-                BackupZip.unZipFile(mZipFileName, musicName, mDestFileName);
+                Logger.d(TAG, "mDestFileName:" + destFileName);
+                BackupZip.unZipFile(mZipFileName, musicName, destFileName);
 //                Uri data = Uri.parse("file://" + mDestFileName);
 //                mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, data));
                 result = true;
@@ -169,10 +162,9 @@ public class MusicRestoreComposer extends Composer {
                 if (super.mReporter != null) {
                     super.mReporter.onErr(e);
                 }
-                MyLogger.logD(CLASS_TAG, "unzipfile failed");
+                Logger.d(TAG, "unzipfile failed");
             }
 
-            result = true;
         }
 
         return result;
@@ -197,7 +189,7 @@ public class MusicRestoreComposer extends Composer {
             mImport = true;
         }
 
-        MyLogger.logD(CLASS_TAG, "onStart()");
+        Logger.d(TAG, "onStart()");
     }
 
     /**
@@ -209,7 +201,7 @@ public class MusicRestoreComposer extends Composer {
             Uri data = Uri.parse("file://" + mDestPath);
             mContext.sendBroadcast(new Intent(
                     Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, data));
-            MyLogger.logD(CLASS_TAG, "onEnd mIndex = " + mIndex
+            Logger.d(TAG, "onEnd mIndex = " + mIndex
                     + "sendBroadcast " + "isAfterLast() = " + isAfterLast());
         }
     }
@@ -222,16 +214,16 @@ public class MusicRestoreComposer extends Composer {
                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                             MediaStore.Audio.Media.DATA + " like ?",
                             new String[]{file.getAbsolutePath()});
-                    MyLogger.logD(CLASS_TAG, "deleteFolder():" + count + ":"
+                    Logger.d(TAG, "deleteFolder():" + count + ":"
                             + file.getAbsolutePath());
                     file.delete();
                 } catch (NullPointerException e) {
-                    MyLogger.logD(CLASS_TAG, "deleteFolder: exception");
+                    Logger.d(TAG, "deleteFolder: exception");
                 }
             } else if (file.isDirectory()) {
                 File files[] = file.listFiles();
-                for (int i = 0; i < files.length; ++i) {
-                    this.deleteFolder(files[i]);
+                for (File file1 : files) {
+                    this.deleteFolder(file1);
                 }
             }
             file.delete();
@@ -244,9 +236,9 @@ public class MusicRestoreComposer extends Composer {
                 name.length()).toString();
         String path = name.subSequence(0, name.lastIndexOf(File.separator) + 1)
                 .toString();
-        MyLogger.logD(CLASS_TAG, " rename:tmpName:" + tmpName);
+        Logger.d(TAG, " rename:tmpName:" + tmpName);
         String rename = null;
-        File tmpFile = null;
+        File tmpFile;
         int id = tmpName.lastIndexOf(".");
         int id2;
         int leftLen;
@@ -258,11 +250,9 @@ public class MusicRestoreComposer extends Composer {
                     + tmpName.subSequence(id, tmpName.length());
             tmpFile = new File(path + rename);
             String tmpFileName = tmpFile.getAbsolutePath();
-            MyLogger.logD(CLASS_TAG, " rename:tmpFileName:" + tmpFileName);
-            if (tmpFile.exists()) {
-                continue;
-            } else {
-                MyLogger.logD(CLASS_TAG, " rename: rename:" + rename);
+            Logger.d(TAG, " rename:tmpFileName:" + tmpFileName);
+            if (!tmpFile.exists()) {
+                Logger.d(TAG, " rename: rename:" + rename);
                 break;
             }
         }

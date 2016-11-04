@@ -4,12 +4,13 @@ package com.ape.backuprestore.modules;
 import android.content.Context;
 
 import com.ape.backuprestore.ProgressReporter;
-import com.ape.backuprestore.utils.MyLogger;
+import com.ape.backuprestore.utils.Logger;
 
 import java.util.List;
 
 public abstract class Composer {
     private static final String TAG = "Composer";
+    protected static final String RESTORE = "Restore";
 
     protected Context mContext;
     protected ProgressReporter mReporter;
@@ -62,8 +63,8 @@ public abstract class Composer {
         if (mReporter != null) {
             boolean bResult = (getCount() == mComposeredCount && mComposeredCount > 0);
             mReporter.onEnd(this, bResult);
-            MyLogger.logD(TAG, "onEnd: result is " + bResult);
-            MyLogger.logD(TAG, "onEnd: getCount is " + getCount()
+            Logger.d(TAG, "onEnd: result is " + bResult);
+            Logger.d(TAG, "onEnd: getCount is " + getCount()
                     + ", and composed count is " + mComposeredCount);
         }
     }

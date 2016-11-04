@@ -37,7 +37,7 @@
 
 package com.ape.backuprestore.modules;
 
-import com.ape.backuprestore.utils.MyLogger;
+import com.ape.backuprestore.utils.Logger;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -48,7 +48,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 
 public class MmsXmlParser {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/MmsXmlParser";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/MmsXmlParser";
 
     public static ArrayList<MmsXmlInfo> parse(String mmsString) {
         MmsXmlInfo record = null;
@@ -89,7 +89,7 @@ public class MmsXmlParser {
                                     record.setIsLocked(value);
                                 }
 
-                                MyLogger.logD(CLASS_TAG, "name:" + name + ",value:" + value);
+                                Logger.d(CLASS_TAG, "name:" + name + ",value:" + value);
                             }
                         }
                         break;

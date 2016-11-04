@@ -2,7 +2,7 @@ package com.ape.backuprestore.utils;
 
 import android.util.Log;
 
-public class MyLogger {
+public class Logger {
     public static final String LOG_TAG = "ApeTransfer";
     public static final String BACKUP_ACTIVITY_TAG = "BackupActivity: ";
     public static final String BACKUP_SERVICE_TAG = "BackupService: ";
@@ -18,26 +18,26 @@ public class MyLogger {
     public static final String SETTINGS_TAG = "Settings: ";
     public static final String BOOKMARK_TAG = "Bookmark: ";
 
-    private MyLogger() {
+    private Logger() {
     }
 
-    public static void logV(String tag, String msg) {
+    public static void v(String tag, String msg) {
         Log.v(tag, msg);
     }
 
-    public static void logI(String tag, String msg) {
+    public static void i(String tag, String msg) {
         Log.i(tag, msg);
     }
 
-    public static void logD(String tag, String msg) {
+    public static void d(String tag, String msg) {
         Log.d(tag, msg);
     }
 
-    public static void logW(String tag, String msg) {
+    public static void w(String tag, String msg) {
         Log.w(tag, msg);
     }
 
-    public static void logE(String tag, String msg) {
+    public static void e(String tag, String msg) {
         Log.e(tag, msg);
     }
 }

@@ -4,9 +4,10 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
+import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,16 +24,17 @@ import java.util.List;
  * Created by android on 16-7-16.
  */
 public class AppBackupComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/AppBackupComposer";
+    private static final String TAG = "AppBackupComposer";
 
     private List<ApplicationInfo> mUserAppInfoList = null;
     private int mAppIndex = 0;
+    private BackupZip mZipFileHandler;
 
     public AppBackupComposer(Context context) {
         super(context);
     }
 
-    public static List<ApplicationInfo> getUserAppInfoList(final Context context) {
+    private static List<ApplicationInfo> getUserAppInfoList(final Context context) {
         List<ApplicationInfo> userAppInfoList = null;
         if (context != null) {
             List<ApplicationInfo> allAppInfoList = context.getPackageManager()
@@ -60,7 +62,7 @@ public class AppBackupComposer extends Composer {
             count = mUserAppInfoList.size();
         }
 
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
@@ -71,13 +73,12 @@ public class AppBackupComposer extends Composer {
             result = false;
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
     @Override
     public boolean init() {
-        boolean result = false;
         final PackageManager pm = mContext.getPackageManager();
         if (mParams != null) {
             List<ApplicationInfo> tmpList = getUserAppInfoList(mContext);
@@ -105,11 +106,9 @@ public class AppBackupComposer extends Composer {
                 }
             });
         }
-        result = true;
         mAppIndex = 0;
 
-        MyLogger.logD(CLASS_TAG, "init():" + result);
-        return result;
+        return true;
     }
 
     @Override
@@ -120,25 +119,32 @@ public class AppBackupComposer extends Composer {
             String appSrc = appInfo.publicSourceDir;
             String appDest = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_APP
                     + File.separator + appInfo.packageName + Constants.ModulePath.FILE_EXT_APP;
-            CharSequence tmpLable = "";
+            CharSequence tmpLabel;
             if (appInfo.uid == -1) {
-                tmpLable = getApkFileLabel(mContext, appInfo.sourceDir, appInfo);
+                tmpLabel = getApkFileLabel(mContext, appInfo.sourceDir, appInfo);
             } else {
-                tmpLable = appInfo.loadLabel(mContext.getPackageManager());
+                tmpLabel = appInfo.loadLabel(mContext.getPackageManager());
             }
-            String label = (tmpLable == null) ? appInfo.packageName : tmpLable.toString();
-            MyLogger.logD(CLASS_TAG, mAppIndex + ":" + appSrc + ",pacageName:" + appInfo.packageName
-                    + ",sourceDir:" + appInfo.sourceDir + ",dataDir:" + appInfo.dataDir
-                    + ",lable:" + label);
+            String label = (tmpLabel == null) ? appInfo.packageName : tmpLabel.toString();
+            Logger.d(TAG, mAppIndex + ":" + appSrc + ", packageName:" + appInfo.packageName
+                    + ", sourceDir:" + appInfo.sourceDir + ", dataDir:" + appInfo.dataDir
+                    + ", label:" + label);
             try {
-                copyFile(appSrc, appDest);
-                MyLogger.logD(CLASS_TAG, "addFile " + appSrc + "success");
+                //copyFile(appSrc, appDest);
+                mZipFileHandler.addFileByFileName(appSrc, label + Constants.ModulePath.FILE_EXT_APP);
+                Logger.d(TAG, "addFile " + appSrc + "success");
                 result = true;
             } catch (IOException e) {
+                try {
+                    Logger.e(TAG, "[implementComposeOneEntity] finish");
+                    mZipFileHandler.finish();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
                 if (super.mReporter != null) {
                     super.mReporter.onErr(e);
                 }
-                MyLogger.logD(CLASS_TAG, "addFile:" + appSrc + "fail");
+                Logger.d(TAG, "addFile:" + appSrc + "fail");
                 e.printStackTrace();
             }
 
@@ -170,7 +176,19 @@ public class AppBackupComposer extends Composer {
         if (mUserAppInfoList != null) {
             mUserAppInfoList.clear();
         }
-        MyLogger.logD(CLASS_TAG, "onEnd()");
+        if (mZipFileHandler != null) {
+            try {
+                mZipFileHandler.finish();
+            } catch (IOException e) {
+                e.printStackTrace();
+                if (super.mReporter != null) {
+                    super.mReporter.onErr(e);
+                }
+            } finally {
+                mZipFileHandler = null;
+            }
+        }
+        Logger.d(TAG, "onEnd()");
     }
 
     private void copyFile(String srcFile, String destFile) throws IOException {
@@ -199,8 +217,6 @@ public class AppBackupComposer extends Composer {
             if (inStream != null) {
                 inStream.close();
             }
-            outStream = null;
-            inStream = null;
         }
     }
 
@@ -213,6 +229,14 @@ public class AppBackupComposer extends Composer {
             File path = new File(mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_APP);
             if (!path.exists()) {
                 path.mkdirs();
+            }
+            try {
+                mZipFileHandler = new BackupZip(path + File.separator + Constants.ModulePath.NAME_APPZIP);
+            } catch (IOException e) {
+                if (super.mReporter != null) {
+                    super.mReporter.onErr(e);
+                }
+                e.printStackTrace();
             }
         }
     }

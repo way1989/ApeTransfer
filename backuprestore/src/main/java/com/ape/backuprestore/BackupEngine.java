@@ -16,8 +16,8 @@ import com.ape.backuprestore.modules.PictureBackupComposer;
 import com.ape.backuprestore.modules.SmsBackupComposer;
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.FileUtils;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 import com.ape.backuprestore.utils.Utils;
 
 import java.io.File;
@@ -70,7 +70,7 @@ public class BackupEngine {
     boolean startBackup(final String folderName) {
         boolean startSuccess = true;
         mBackupFolder = folderName;
-        MyLogger.logD(TAG, "startBackup():" + folderName);
+        Logger.d(TAG, "startBackup():" + folderName);
 
         Utils.isBackingUp = mIsRunning = true;
         if (setupComposer(mModuleList)) {
@@ -128,10 +128,10 @@ public class BackupEngine {
             int type = composer.getModuleType();
             ArrayList<String> params = mParasMap.get(type);
             if (params != null) {
-                MyLogger.logD(TAG, "Params size is " + params);
+                Logger.d(TAG, "Params size is " + params);
                 composer.setParams(params);
             } else {
-                MyLogger.logD(TAG, "Params is null");
+                Logger.d(TAG, "Params is null");
             }
             composer.setReporter(mProgressReporter);
             composer.setParentFolderPath(mBackupFolder);
@@ -153,16 +153,16 @@ public class BackupEngine {
     }
 
     private boolean setupComposer(final ArrayList<Integer> list) {
-        MyLogger.logD(TAG, "setupComposer begin...");
+        Logger.d(TAG, "setupComposer begin...");
 
         boolean result = true;
         File path = new File(mBackupFolder);
         if (!path.exists()) {
             result = path.mkdirs();
         }
-        MyLogger.logD(TAG, "makedir end...");
+        Logger.d(TAG, "makedir end...");
         if (result) {
-            MyLogger.logD(TAG, "create folder " + mBackupFolder + " success");
+            Logger.d(TAG, "create folder " + mBackupFolder + " success");
 
             for (int type : list) {
                 switch (type) {
@@ -212,9 +212,9 @@ public class BackupEngine {
                 }
             }
 
-            MyLogger.logD(TAG, "setupComposer finish");
+            Logger.d(TAG, "setupComposer finish");
         } else {
-            MyLogger.logE(TAG, "setupComposer failed");
+            Logger.e(TAG, "setupComposer failed");
             result = false;
         }
         return result;
@@ -256,21 +256,21 @@ public class BackupEngine {
             try {
                 BackupResultType result;
 
-                MyLogger.logD(TAG, "BackupThread begin...");
+                Logger.d(TAG, "BackupThread begin...");
                 for (Composer composer : mComposerList) {
-                    MyLogger.logD(TAG, "BackupThread->composer:" + composer.getModuleType()
+                    Logger.d(TAG, "BackupThread->composer:" + composer.getModuleType()
                             + " start...");
                     if (!composer.isCancel() && mId == mThreadIdentifier) {
                         composer.init();
                         composer.onStart();
-                        MyLogger.logD(TAG, "BackupThread->composer:" + composer.getModuleType()
+                        Logger.d(TAG, "BackupThread->composer:" + composer.getModuleType()
                                 + " init finish");
                         while (!composer.isAfterLast() && !composer.isCancel() &&
                                 mId == mThreadIdentifier) {
                             if (mIsPause) {
                                 synchronized (mLock) {
                                     try {
-                                        MyLogger.logD(TAG, "BackupThread wait...");
+                                        Logger.d(TAG, "BackupThread wait...");
                                         while (mIsPause) {
                                             mLock.wait();
                                         }
@@ -281,7 +281,7 @@ public class BackupEngine {
                             }
                             if (!composer.isCancel()) {
                                 composer.composeOneEntity();
-                                MyLogger.logD(TAG, "BackupThread->composer:"
+                                Logger.d(TAG, "BackupThread->composer:"
                                         + composer.getModuleType() + " compose one entiry");
                             }
                         }
@@ -300,7 +300,7 @@ public class BackupEngine {
 
                     // generateModleXmlInfo(composer);
 
-                    MyLogger.logD(TAG,
+                    Logger.d(TAG,
                             "BackupThread-> composer:" + composer.getModuleType() + " finish");
                 }
 
@@ -317,13 +317,13 @@ public class BackupEngine {
                 } else {
                     result = BackupResultType.Success;
                 }
-                MyLogger.logD(TAG, "BackupThread run finish, result:" + result);
+                Logger.d(TAG, "BackupThread run finish, result:" + result);
 
                 if (mBackupDoneListener != null) {
                     if (mIsPause) {
                         synchronized (mLock) {
                             try {
-                                MyLogger.logD(TAG, "BackupThread wait before end...");
+                                Logger.d(TAG, "BackupThread wait before end...");
                                 while (mIsPause) {
                                     mLock.wait();
                                 }

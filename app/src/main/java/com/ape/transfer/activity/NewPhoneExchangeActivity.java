@@ -28,8 +28,8 @@ import com.ape.backuprestore.ResultDialog;
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.utils.BackupFilePreview;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 import com.ape.backuprestore.utils.StorageUtils;
 import com.ape.backuprestore.utils.Utils;
 import com.ape.transfer.R;
@@ -72,7 +72,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
     ServiceConnection mServiceCon = new ServiceConnection() {
 
         public void onServiceConnected(ComponentName name, IBinder service) {
-            MyLogger.logI(TAG, " onServiceConnected");
+            Logger.i(TAG, " onServiceConnected");
             mRestoreService = (RestoreService.RestoreBinder) service;
             if (mRestoreService != null) {
                 mRestoreService.setOnRestoreChangedListner(NewPhoneExchangeActivity.this);
@@ -80,7 +80,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         }
 
         public void onServiceDisconnected(ComponentName name) {
-            MyLogger.logI(TAG, " onServiceDisconnected");
+            Logger.i(TAG, " onServiceDisconnected");
             if (mRestoreService != null) {
                 mRestoreService.setOnRestoreChangedListner(null);
             }
@@ -118,7 +118,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         mRestoreFolderPath = StorageUtils.getBackupPath();
 
         if (TextUtils.isEmpty(mRestoreFolderPath)) {
-            MyLogger.logD(TAG, "SDCard is removed");
+            Logger.d(TAG, "SDCard is removed");
             Toast.makeText(this, R.string.nosdcard_notice, Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -161,7 +161,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
     protected void onDestroy() {
         super.onDestroy();
         mIsDestroyed = true;
-        MyLogger.logI(TAG, " onDestroy");
+        Logger.i(TAG, " onDestroy");
 
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
@@ -186,7 +186,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             return;
         }
         startService();
-        MyLogger.logD(TAG, "startRestore");
+        Logger.d(TAG, "startRestore");
         if (restoreModeLists.size() == 0) {
             Toast.makeText(this, getString(R.string.no_item_selected), Toast.LENGTH_SHORT).show();
             return;
@@ -197,7 +197,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             String path = StorageUtils.getBackupPath();
             if (path == null) {
                 // no sdcard
-                MyLogger.logD(TAG, "SDCard is removed");
+                Logger.d(TAG, "SDCard is removed");
                 return;
             }
             int count = BackupFilePreview.getInstance().getItemCount(restoreModeLists.get(0));
@@ -220,18 +220,18 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             if (!mProgressDialog.isShowing())
                 mProgressDialog.show();
         } catch (WindowManager.BadTokenException e) {
-            MyLogger.logE(TAG, " BadTokenException :" + e.toString());
+            Logger.e(TAG, " BadTokenException :" + e.toString());
         }
     }
 
     protected boolean isCanStartRestore() {
         if (mRestoreService == null) {
-            MyLogger.logE(TAG, "isCanStartRestore(): mRestoreService is null");
+            Logger.e(TAG, "isCanStartRestore(): mRestoreService is null");
             return false;
         }
 
         if (mRestoreService.getState() != Constants.State.INIT) {
-            MyLogger.logE(TAG,
+            Logger.e(TAG,
                     "isCanStartRestore(): Can not to start Restore. Restore Service state is "
                             + mRestoreService.getState());
             return false;
@@ -324,7 +324,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             @Override
             public void run() {
                 if (mProgressDialog != null) {
-                    MyLogger.logI(TAG, "onProgressChange, setProgress = " + progress);
+                    Logger.i(TAG, "onProgressChange, setProgress = " + progress);
                     mProgressDialog.setProgress(progress);
                 }
             }
@@ -334,7 +334,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
     @Override
     public void onRestoreEnd(boolean bSuccess, ArrayList<ResultDialog.ResultEntity> resultRecord) {
         final ArrayList<ResultDialog.ResultEntity> iResultRecord = resultRecord;
-        MyLogger.logD(TAG, "onRestoreEnd");
+        Logger.d(TAG, "onRestoreEnd");
         boolean hasSuccess = false;
         for (ResultDialog.ResultEntity result : resultRecord) {
             if (ResultDialog.ResultEntity.SUCCESS == result.getResult()) {
@@ -377,7 +377,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                MyLogger.logD(TAG, " Restore show Result Dialog");
+                Logger.d(TAG, " Restore show Result Dialog");
                 int state = mRestoreService.getState();
                 if (mIsStoped && !TextUtils.isEmpty(mRestoreFolderPath) && state != Constants.State.FINISH) {
                     //mNeedUpdateResult = true;
@@ -392,7 +392,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
 
     @Override
     public void onRestoreErr(IOException e) {
-        MyLogger.logI(TAG, "onRestoreErr");
+        Logger.i(TAG, "onRestoreErr");
         if (!mIsStoped && errChecked()) {
             if (mRestoreService != null && mRestoreService.getState() != Constants.State.INIT
                     && mRestoreService.getState() != Constants.State.FINISH) {
@@ -408,16 +408,16 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
         String path = StorageUtils.getBackupPath();
 
         if (isStorageMissing) {
-            MyLogger.logI(TAG, "SDCard is removed");
+            Logger.i(TAG, "SDCard is removed");
             stopService(new Intent(this, RestoreService.class));
             Utils.exitLockTaskModeIfNeeded(this);
             finish();
         } else if (StorageUtils.getAvailableSize(path) <= StorageUtils.MINIMUM_SIZE) {
-            MyLogger.logI(TAG, "SDCard is full");
+            Logger.i(TAG, "SDCard is full");
             ret = true;
 
         } else {
-            MyLogger.logE(TAG, "Unkown error, don't pause.");
+            Logger.e(TAG, "Unkown error, don't pause.");
         }
         return ret;
     }
@@ -430,7 +430,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             Toast.makeText(getApplicationContext(), "scuessed!", Toast.LENGTH_SHORT).show();
             //showDialog(Constants.DialogID.DLG_RESULT, args);
         } catch (WindowManager.BadTokenException e) {
-            MyLogger.logE(TAG, "BadTokenException");
+            Logger.e(TAG, "BadTokenException");
         }
     }
 
@@ -441,7 +441,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
 
     @Override
     public void onLoadFinished(Loader<BaseLoader.Result> loader, BaseLoader.Result data) {
-        MyLogger.logD(TAG, "mIsDataInitialed is ok");
+        Logger.d(TAG, "mIsDataInitialed is ok");
         if (!data.lists.isEmpty()) {
             Log.i(TAG, "updateData... mBackupDataList.size = " + data.lists.size());
             updateData(data.lists);

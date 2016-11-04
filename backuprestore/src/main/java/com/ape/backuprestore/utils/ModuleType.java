@@ -21,7 +21,7 @@ public class ModuleType {
     public static final int TYPE_NOTEBOOK = 0x100;
     public static final int TYPE_BOOKMARK = 0x200;
     public static final int TYPE_CALL_LOG = 0x300;
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/ModuleType";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/ModuleType";
     //public static final int TYPE_SELECT = 0x400;
     public static Map<Integer, String> sModuleTypeFolderInfo = new HashMap<>();
 
@@ -88,7 +88,7 @@ public class ModuleType {
             default:
                 break;
         }
-        MyLogger.logD(CLASS_TAG, "getModuleStringFromType: resId = " + resId);
+        Logger.d(CLASS_TAG, "getModuleStringFromType: resId = " + resId);
         return context.getResources().getString(resId);
     }
 }

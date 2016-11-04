@@ -19,8 +19,8 @@ import com.android.vcard.exception.VCardNestedException;
 import com.android.vcard.exception.VCardNotSupportedException;
 import com.android.vcard.exception.VCardVersionException;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,7 +33,7 @@ import java.io.InputStreamReader;
  * Created by android on 16-7-16.
  */
 public class ContactRestoreComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/ContactRestoreComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/ContactRestoreComposer";
     private int mIndex;
     private int mCount;
     private InputStream mInputStream;
@@ -47,22 +47,22 @@ public class ContactRestoreComposer extends Composer {
     }
 
     public int getCount() {
-        MyLogger.logD(CLASS_TAG, "getCount():" + mCount);
+        Logger.d(CLASS_TAG, "getCount():" + mCount);
         return mCount;
     }
 
     public boolean init() {
         boolean result = false;
-        MyLogger.logD(CLASS_TAG, "begin init:" + System.currentTimeMillis());
+        Logger.d(CLASS_TAG, "begin init:" + System.currentTimeMillis());
         try {
             mCount = getContactCount();
             result = true;
         } catch (Exception e) {
-            MyLogger.logD(CLASS_TAG, "Exception");
+            Logger.d(CLASS_TAG, "Exception");
         }
 
-        MyLogger.logD(CLASS_TAG, "end init:" + System.currentTimeMillis());
-        MyLogger.logD(CLASS_TAG, "init():" + result + ",count:" + mCount);
+        Logger.d(CLASS_TAG, "end init:" + System.currentTimeMillis());
+        Logger.d(CLASS_TAG, "init():" + result + ",count:" + mCount);
         return result;
     }
 
@@ -71,7 +71,7 @@ public class ContactRestoreComposer extends Composer {
      */
     public boolean isAfterLast() {
         boolean result = (mIndex >= mCount) ? true : false;
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -112,22 +112,22 @@ public class ContactRestoreComposer extends Composer {
             result = true;
         }
 
-        MyLogger.logD(CLASS_TAG, "implementComposeOneEntity()" + ",result:" + result);
+        Logger.d(CLASS_TAG, "implementComposeOneEntity()" + ",result:" + result);
         return result;
     }
 
     private boolean deleteAllContact() {
         if (mContext != null) {
-            MyLogger.logD(CLASS_TAG, "begin delete:" + System.currentTimeMillis());
+            Logger.d(CLASS_TAG, "begin delete:" + System.currentTimeMillis());
 
             int count = mContext.getContentResolver().delete(
                     Uri.parse(ContactsContract.RawContacts.CONTENT_URI.toString() + "?"
                             + ContactsContract.CALLER_IS_SYNCADAPTER + "=true"),
                     ContactsContract.RawContacts._ID + ">0", null);
 
-            MyLogger.logD(CLASS_TAG, "end delete:" + System.currentTimeMillis());
+            Logger.d(CLASS_TAG, "end delete:" + System.currentTimeMillis());
 
-            MyLogger.logD(CLASS_TAG, "deleteAllContact()," + count + " records deleted!");
+            Logger.d(CLASS_TAG, "deleteAllContact()," + count + " records deleted!");
 
             return true;
         }
@@ -183,13 +183,13 @@ public class ContactRestoreComposer extends Composer {
                     try {
                         is.close();
                     } catch (IOException e) {
-                        MyLogger.logD(CLASS_TAG, "IOException");
+                        Logger.d(CLASS_TAG, "IOException");
                     }
                 }
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "readOneVCard() " + successful);
+        Logger.d(CLASS_TAG, "readOneVCard() " + successful);
         return successful;
     }
 
@@ -207,7 +207,7 @@ public class ContactRestoreComposer extends Composer {
             mInputStream = null;
         }
 
-        MyLogger.logD(CLASS_TAG, " onStart()");
+        Logger.d(CLASS_TAG, " onStart()");
     }
 
     /**
@@ -219,11 +219,11 @@ public class ContactRestoreComposer extends Composer {
             try {
                 mInputStream.close();
             } catch (IOException e) {
-                MyLogger.logD(CLASS_TAG, "IOException");
+                Logger.d(CLASS_TAG, "IOException");
             }
         }
 
-        MyLogger.logD(CLASS_TAG, " onEnd()");
+        Logger.d(CLASS_TAG, " onEnd()");
     }
 
     private int getContactCount() {
@@ -242,7 +242,7 @@ public class ContactRestoreComposer extends Composer {
             }
             instream.close();
         } catch (IOException e) {
-            MyLogger.logD(CLASS_TAG, "IOException");
+            Logger.d(CLASS_TAG, "IOException");
         }
 
         return count;
@@ -277,9 +277,9 @@ public class ContactRestoreComposer extends Composer {
             if (ContactRestoreComposer.this.isCancel()) {
                 if (mParser != null) {
                     mParser.cancel();
-                    MyLogger.logD(CLASS_TAG, "Cancel in RestoreVCardEntryCommitter");
+                    Logger.d(CLASS_TAG, "Cancel in RestoreVCardEntryCommitter");
                 } else {
-                    MyLogger.logD(
+                    Logger.d(
                             CLASS_TAG,
                             "mParser is null. Cannot cancel in RestoreVCardEntryCommitter");
                 }

@@ -51,8 +51,8 @@ import com.ape.backuprestore.modules.NoteBookRestoreComposer;
 import com.ape.backuprestore.modules.PictureRestoreComposer;
 import com.ape.backuprestore.modules.SmsRestoreComposer;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 import com.ape.backuprestore.utils.Utils;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ import java.util.List;
  * @author mtk81330
  */
 public class RestoreEngine {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/RestoreEngine";
+    private static final String TAG = Logger.LOG_TAG + "/RestoreEngine";
     private static RestoreEngine sSelfInstance;
     ArrayList<Integer> mModuleList;
     HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
@@ -73,7 +73,7 @@ public class RestoreEngine {
     private boolean mIsRunning = false;
     private long mThreadIdentifier = -1;
     private boolean mIsPause = false;
-    private Object mLock = new Object();
+    private final Object mLock = new Object();
     private ProgressReporter mReporter;
     private List<Composer> mComposerList;
 
@@ -136,7 +136,7 @@ public class RestoreEngine {
      */
     public void cancel() {
 
-        MyLogger.logE(CLASS_TAG, "cancel");
+        Logger.e(TAG, "cancel");
         if (mComposerList != null && mComposerList.size() > 0) {
             for (Composer composer : mComposerList) {
                 composer.setCancel(true);
@@ -284,7 +284,7 @@ public class RestoreEngine {
         @Override
         public void run() {
             try {
-                MyLogger.logD(CLASS_TAG, "RestoreThread begin...");
+                Logger.d(TAG, "RestoreThread begin...");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -293,16 +293,15 @@ public class RestoreEngine {
 
                 try {
                     for (Composer composer : mComposerList) {
-                        MyLogger.logD(CLASS_TAG,
+                        Logger.d(TAG,
                                 "RestoreThread composer: " + composer.getModuleType() + " start..");
-                        MyLogger.logD(CLASS_TAG, "begin restore:" + System.currentTimeMillis());
+                        Logger.d(TAG, "begin restore:" + System.currentTimeMillis());
                         if (!composer.isCancel() && mId == mThreadIdentifier) {
                             if (!composer.init()) {
                                 composer.onEnd();
                                 continue;
                             }
-                            MyLogger.logD(CLASS_TAG,
-                                    "RestoreThread composer: " + composer.getModuleType()
+                            Logger.d(TAG, "RestoreThread composer: " + composer.getModuleType()
                                             + " init finish");
                             composer.onStart();
                             while (!composer.isAfterLast() &&
@@ -311,7 +310,7 @@ public class RestoreEngine {
                                 if (mIsPause) {
                                     synchronized (mLock) {
                                         try {
-                                            MyLogger.logD(CLASS_TAG, "RestoreThread wait...");
+                                            Logger.d(TAG, "RestoreThread wait...");
                                             while (mIsPause) {
                                                 mLock.wait();
                                             }
@@ -322,8 +321,7 @@ public class RestoreEngine {
                                 }
 
                                 composer.composeOneEntity();
-                                MyLogger.logD(CLASS_TAG,
-                                        "RestoreThread composer: " + composer.getModuleType()
+                                Logger.d(TAG, "RestoreThread composer: " + composer.getModuleType()
                                                 + " compose one entiry");
                             }
                         }
@@ -335,16 +333,16 @@ public class RestoreEngine {
                         }
 
                         composer.onEnd();
-                        MyLogger.logD(CLASS_TAG, "End restore:" + System.currentTimeMillis());
-                        MyLogger.logD(CLASS_TAG,
+                        Logger.d(TAG, "End restore:" + System.currentTimeMillis());
+                        Logger.d(TAG,
                                 "RestoreThread composer: " + composer.getModuleType()
                                         + " compose finish");
                     }
                 } catch (java.util.ConcurrentModificationException e) {
-                    MyLogger.logE(CLASS_TAG, "ConcurrentModificationException");
+                    Logger.e(TAG, "ConcurrentModificationException");
                     e.fillInStackTrace();
                 }
-                MyLogger.logD(CLASS_TAG, "RestoreThread run finish");
+                Logger.d(TAG, "RestoreThread run finish");
                 Utils.isRestoring = mIsRunning = false;
 
                 if (mRestoreDoneListner != null && mId == mThreadIdentifier) {

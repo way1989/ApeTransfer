@@ -5,8 +5,8 @@ import android.content.Context;
 import com.android.vcard.VCardComposer;
 import com.android.vcard.VCardConfig;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +46,7 @@ public class ContactBackupComposer extends Composer {
             result = mVCardComposer.isAfterLast();
         }
 
-        MyLogger.logD(TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -56,7 +56,7 @@ public class ContactBackupComposer extends Composer {
         mCount = 0;
         mVCardComposer = new VCardComposer(mContext, VCardConfig.VCARD_TYPE_V21_GENERIC, true);
         String condition = getCondition();
-        MyLogger.logD(TAG, "condition:" + condition);
+        Logger.d(TAG, "condition:" + condition);
         if (mVCardComposer.init(condition, null)) {
             result = true;
             mCount = mVCardComposer.getCount();
@@ -64,7 +64,7 @@ public class ContactBackupComposer extends Composer {
             mVCardComposer = null;
         }
 
-        MyLogger.logD(TAG, "init():" + result + ",count:" + mCount);
+        Logger.d(TAG, "init():" + result + ",count:" + mCount);
 
         return result;
     }
@@ -85,13 +85,13 @@ public class ContactBackupComposer extends Composer {
                             super.mReporter.onErr(e);
                         }
                     } catch (Exception e) {
-                        MyLogger.logD(TAG, "Exception");
+                        Logger.d(TAG, "Exception");
                     }
                 }
             }
         }
 
-        MyLogger.logD(TAG, "add result:" + result);
+        Logger.d(TAG, "add result:" + result);
         return result;
     }
 
@@ -113,7 +113,7 @@ public class ContactBackupComposer extends Composer {
             } catch (IOException e) {
                 mOutStream = null;
             } catch (Exception e) {
-                MyLogger.logD(TAG, "Exception");
+                Logger.d(TAG, "Exception");
             }
 
         }
@@ -135,9 +135,9 @@ public class ContactBackupComposer extends Composer {
                 mOutStream.flush();
                 mOutStream.close();
             } catch (IOException e) {
-                MyLogger.logD(TAG, "IOException");
+                Logger.d(TAG, "IOException");
             } catch (Exception e) {
-                MyLogger.logD(TAG, "Exception");
+                Logger.d(TAG, "Exception");
             }
         }
 

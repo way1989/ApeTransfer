@@ -94,13 +94,13 @@ public class BackupFilePreview {
 
         File file = new File(path);
         if (FileUtils.isEmptyFolder(file)) {
-            MyLogger.logE(TAG, "constractor error! file is null");
+            Logger.e(TAG, "constractor error! file is null");
             return false;
         }
 
         mNumberMap.clear();
         mFolderName = file;
-        MyLogger.logI(TAG, "new BackupFilePreview: file is " + mFolderName.getAbsolutePath());
+        Logger.i(TAG, "new BackupFilePreview: file is " + mFolderName.getAbsolutePath());
         computeSize();
         checkRestored();
         return true;
@@ -108,7 +108,7 @@ public class BackupFilePreview {
 
     private void computeSize() {
         mSize = FileUtils.computeAllFileSizeInFolder(mFolderName);
-        MyLogger.logI(TAG, "new BackupFilePreview: size = " + mSize);
+        Logger.i(TAG, "new BackupFilePreview: size = " + mSize);
     }
 
     private void checkRestored() {
@@ -144,7 +144,7 @@ public class BackupFilePreview {
                 }
             }
         }
-        MyLogger.logI(TAG, "mIsRestored = " + mIsRestored + ", mIsOtherBackup = " + mIsOtherBackup
+        Logger.i(TAG, "mIsRestored = " + mIsRestored + ", mIsOtherBackup = " + mIsOtherBackup
                 + ", mIsSelfBackup = " + mIsSelfBackup);
     }
 
@@ -153,7 +153,7 @@ public class BackupFilePreview {
     }
 
     private void addToCurrentBackupHistory(String xmlFilePath) {
-        MyLogger.logD(TAG, "addToCurrentBackupHistory() xmlFilePath : " + xmlFilePath);
+        Logger.d(TAG, "addToCurrentBackupHistory() xmlFilePath : " + xmlFilePath);
         RecordXmlInfo backupInfo = new RecordXmlInfo();
         backupInfo.setRestore(false);
         backupInfo.setDevice(Utils.getPhoneSearialNumber());
@@ -193,7 +193,7 @@ public class BackupFilePreview {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        MyLogger.logI(TAG, "addCurrentSN() success : " + success);
+        Logger.i(TAG, "addCurrentSN() success : " + success);
         return success;
     }
 
@@ -202,7 +202,7 @@ public class BackupFilePreview {
     }
 
     public boolean isOtherDeviceBackup() {
-        MyLogger.logD(TAG, "isOtherDeviceBackup() : " + mIsOtherBackup);
+        Logger.d(TAG, "isOtherDeviceBackup() : " + mIsOtherBackup);
         return mIsOtherBackup;
     }
 
@@ -299,7 +299,7 @@ public class BackupFilePreview {
                 }
             }
         }
-        MyLogger.logI(TAG, "parseItemTypes: mTypes =  " + mTypes);
+        Logger.i(TAG, "parseItemTypes: mTypes =  " + mTypes);
         return mTypes;
     }
 
@@ -341,20 +341,20 @@ public class BackupFilePreview {
             composer.setParentFolderPath(mFolderName.getAbsolutePath());
             composer.init();
             int count = composer.getCount();
-            MyLogger.logD(TAG, "initNumByType: count = " + count);
+            Logger.d(TAG, "initNumByType: count = " + count);
             mNumberMap.put(type, count);
         }
     }
 
     public int getItemCount(int type) {
-        MyLogger.logD(TAG, "list.get(0).type = " + type);
-        MyLogger.logD(TAG, "mNumberMap.size() = " + mNumberMap.size());
+        Logger.d(TAG, "list.get(0).type = " + type);
+        Logger.d(TAG, "mNumberMap.size() = " + mNumberMap.size());
         int count = 0;
         if (mNumberMap.get(type) != null) {
             count = mNumberMap.get(type);
         }
 
-        MyLogger.logD(TAG, "getItemCount: type = " + type + ",count = " + count);
+        Logger.d(TAG, "getItemCount: type = " + type + ",count = " + count);
         return count;
     }
 }

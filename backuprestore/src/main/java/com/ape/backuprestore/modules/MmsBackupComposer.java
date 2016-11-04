@@ -7,8 +7,8 @@ import android.net.Uri;
 import android.provider.Telephony;
 
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 import com.google.android.mms.InvalidHeaderValueException;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.pdu.NotificationInd;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * Created by android on 16-7-16.
  */
 public class MmsBackupComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/MmsBackupComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/MmsBackupComposer";
     //private static final String MMS_SPECIAL_TYPE = "134";
     private static final String[] MMS_EXCLUDE_TYPE = {"134", "130"};
     private static final String COLUMN_NAME_ID = "_id";
@@ -68,7 +68,7 @@ public class MmsBackupComposer extends Composer {
                 count += cur.getCount();
             }
         }
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(CLASS_TAG, "getCount():" + count);
         return count;
     }
 
@@ -82,7 +82,7 @@ public class MmsBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -123,7 +123,7 @@ public class MmsBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "init():" + result + " count:" + getCount());
+        Logger.d(CLASS_TAG, "init():" + result + " count:" + getCount());
         return result;
     }
 
@@ -137,13 +137,13 @@ public class MmsBackupComposer extends Composer {
                 int id = mMmsCursorArray[i].getInt(
                         mMmsCursorArray[i].getColumnIndex(COLUMN_NAME_ID));
                 Uri realUri = ContentUris.withAppendedId(MMS_URI_LIST[i], id);
-                MyLogger.logD(CLASS_TAG, "id:" + id + ",realUri:" + realUri);
+                Logger.d(CLASS_TAG, "id:" + id + ",realUri:" + realUri);
                 PduPersister p = PduPersister.getPduPersister(mContext);
                 try {
                     if (MMS_URI_LIST[i].equals(Telephony.Mms.Inbox.CONTENT_URI)) {
                         int type = mMmsCursorArray[i].getInt(
                                 mMmsCursorArray[i].getColumnIndex(COLUMN_NAME_TYPE));
-                        MyLogger.logD(CLASS_TAG, "inbox, m_type:" + type);
+                        Logger.d(CLASS_TAG, "inbox, m_type:" + type);
                         if (type == PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND) {
                             NotificationInd nPdu = (NotificationInd) p.load(realUri);
                             pduMid = new PduComposer(mContext, nPdu).make(true);
@@ -171,7 +171,7 @@ public class MmsBackupComposer extends Composer {
                         String slotId = "0";
                         /*if (Utils.isGeminiSupport() && simId >= 0) {
                             int slot = SubscriptionManager.getSlotId((int) simId);
-                            MyLogger.logD(
+                            Logger.d(
                                     CLASS_TAG,
                                     "SubscriptionManager.getslot : " + slot);
                             slotId = String.valueOf(slot + 1);
@@ -202,14 +202,14 @@ public class MmsBackupComposer extends Composer {
                         while (mPduList != null) {
                             synchronized (mLock) {
                                 try {
-                                    MyLogger.logD(
+                                    Logger.d(
                                             CLASS_TAG,
-                                            MyLogger.MMS_TAG + "wait for WriteFileThread:");
+                                            Logger.MMS_TAG + "wait for WriteFileThread:");
                                     while (mPduList != null) {
                                         mLock.wait();
                                     }
                                 } catch (InterruptedException e) {
-                                    MyLogger.logD(CLASS_TAG, "InterruptedException");
+                                    Logger.d(CLASS_TAG, "InterruptedException");
                                 }
                             }
                         }
@@ -222,11 +222,11 @@ public class MmsBackupComposer extends Composer {
 
                     result = true;
                 } catch (InvalidHeaderValueException e) {
-                    MyLogger.logD(CLASS_TAG, "InvalidHeaderValueException");
+                    Logger.d(CLASS_TAG, "InvalidHeaderValueException");
                 } catch (MmsException e) {
-                    MyLogger.logD(CLASS_TAG, "MmsException");
+                    Logger.d(CLASS_TAG, "MmsException");
                 } finally {
-                    MyLogger.logD(CLASS_TAG, "in implementComposeOneEntity finally");
+                    Logger.d(CLASS_TAG, "in implementComposeOneEntity finally");
                 }
 
                 mMmsCursorArray[i].moveToNext();
@@ -234,7 +234,7 @@ public class MmsBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "implementComposeOneEntity:" + result);
+        Logger.d(CLASS_TAG, "implementComposeOneEntity:" + result);
         return result;
     }
 
@@ -270,12 +270,12 @@ public class MmsBackupComposer extends Composer {
         if (mPduList != null) {
             synchronized (mLock) {
                 try {
-                    MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG + "wait for WriteFileThread:");
+                    Logger.d(CLASS_TAG, Logger.MMS_TAG + "wait for WriteFileThread:");
                     while (mPduList != null) {
                         mLock.wait();
                     }
                 } catch (InterruptedException e) {
-                    MyLogger.logD(CLASS_TAG, "InterruptedException");
+                    Logger.d(CLASS_TAG, "InterruptedException");
                 }
             }
         }
@@ -335,7 +335,7 @@ public class MmsBackupComposer extends Composer {
 
                 try {
                     if (pduByteArray != null) {
-                        MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG
+                        Logger.d(CLASS_TAG, Logger.MMS_TAG
                                 + "WriteFileThread() pduMid.length:"
                                 + pduByteArray.length);
                         writeToFile(mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_MMS
@@ -345,16 +345,16 @@ public class MmsBackupComposer extends Composer {
                         }
 
                         increaseComposed(true);
-                        MyLogger.logD(CLASS_TAG, "WriteFileThread() addFile:"
+                        Logger.d(CLASS_TAG, "WriteFileThread() addFile:"
                                 + fileName + " success");
                     }
                 } catch (IOException e) {
                     if (mReporter != null) {
                         mReporter.onErr(e);
                     }
-                    MyLogger.logE(
+                    Logger.e(
                             CLASS_TAG,
-                            MyLogger.MMS_TAG + "WriteFileThread() addFile:" + fileName + " fail");
+                            Logger.MMS_TAG + "WriteFileThread() addFile:" + fileName + " fail");
                 }
             }
 

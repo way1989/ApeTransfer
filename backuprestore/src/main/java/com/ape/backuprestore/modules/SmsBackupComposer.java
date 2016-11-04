@@ -6,8 +6,8 @@ import android.net.Uri;
 import android.provider.Telephony;
 import android.text.format.DateFormat;
 
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +19,7 @@ import java.io.Writer;
  * Created by android on 16-7-16.
  */
 public class SmsBackupComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/SmsBackupComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/SmsBackupComposer";
     private static final String TRICKY_TO_GET_DRAFT_SMS_ADDRESS =
             "canonical_addresses.address from sms,threads,canonical_addresses " +
                     "where sms.thread_id=threads._id and threads.recipient_ids=canonical_addresses._id" +
@@ -160,7 +160,7 @@ public class SmsBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(CLASS_TAG, "getCount():" + count);
         return count;
     }
 
@@ -174,7 +174,7 @@ public class SmsBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -190,7 +190,7 @@ public class SmsBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "init():" + result + ",count:" + getCount());
+        Logger.d(CLASS_TAG, "init():" + result + ",count:" + getCount());
         return result;
     }
 
@@ -305,7 +305,7 @@ public class SmsBackupComposer extends Composer {
                         result = true;
                     }
                 } catch (Exception e) {
-                    MyLogger.logE(CLASS_TAG, "mWriter.write() failed");
+                    Logger.e(CLASS_TAG, "mWriter.write() failed");
                 } finally {
                     tmpCur.moveToNext();
                 }
@@ -321,7 +321,7 @@ public class SmsBackupComposer extends Composer {
      */
     public final void onStart() {
         super.onStart();
-        MyLogger.logE(CLASS_TAG, "onStart():mParentFolderPath:" + mParentFolderPath);
+        Logger.e(CLASS_TAG, "onStart():mParentFolderPath:" + mParentFolderPath);
 
         if (getCount() > 0) {
             File path = new File(mParentFolderPath + File.separator + mStoragePath);
@@ -334,15 +334,15 @@ public class SmsBackupComposer extends Composer {
                 try {
                     file.createNewFile();
                 } catch (Exception e) {
-                    MyLogger.logE(CLASS_TAG, "onStart():file:" + file.getAbsolutePath());
-                    MyLogger.logE(CLASS_TAG, "onStart():create file failed");
+                    Logger.e(CLASS_TAG, "onStart():file:" + file.getAbsolutePath());
+                    Logger.e(CLASS_TAG, "onStart():create file failed");
                 }
             }
 
             try {
                 mWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
             } catch (Exception e) {
-                MyLogger.logE(CLASS_TAG, "new BufferedWriter failed");
+                Logger.e(CLASS_TAG, "new BufferedWriter failed");
             }
         }
     }
@@ -353,13 +353,13 @@ public class SmsBackupComposer extends Composer {
     public final void onEnd() {
         super.onEnd();
         try {
-            MyLogger.logD(CLASS_TAG, "SmsBackupComposer onEnd");
+            Logger.d(CLASS_TAG, "SmsBackupComposer onEnd");
             if (mWriter != null) {
-                MyLogger.logE(CLASS_TAG, "mWriter.close()");
+                Logger.e(CLASS_TAG, "mWriter.close()");
                 mWriter.close();
             }
         } catch (Exception e) {
-            MyLogger.logE(CLASS_TAG, "mWriter.close() failed");
+            Logger.e(CLASS_TAG, "mWriter.close() failed");
         }
 
         for (Cursor cur : mSmsCursorArray) {

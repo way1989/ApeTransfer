@@ -134,13 +134,9 @@ public class OldPhonePickupActivity extends BaseTransferActivity implements Load
                 if (itemData.isSelected() && mIsShowWarning) {
                     showWarningDialog(itemData);
                 }
-                if (list.contains(ModuleType.TYPE_PICTURE) ||
+                mIsShowWarning = !(list.contains(ModuleType.TYPE_PICTURE) ||
                         list.contains(ModuleType.TYPE_APP) ||
-                        list.contains(ModuleType.TYPE_MUSIC)) {
-                    mIsShowWarning = false;
-                } else {
-                    mIsShowWarning = true;
-                }
+                        list.contains(ModuleType.TYPE_MUSIC));
                 break;
         }
     }

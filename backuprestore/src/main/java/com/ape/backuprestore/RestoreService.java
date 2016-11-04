@@ -46,8 +46,8 @@ import android.os.IBinder;
 
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 import com.ape.backuprestore.utils.NotifyManager;
 import com.ape.backuprestore.utils.StorageUtils;
 
@@ -60,7 +60,7 @@ import java.util.HashMap;
  * @author mtk81330
  */
 public class RestoreService extends Service implements ProgressReporter, RestoreEngine.OnRestoreDoneListner {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/RestoreService";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/RestoreService";
     HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<Integer, ArrayList<String>>();
     private RestoreBinder mBinder = new RestoreBinder();
     private int mState;
@@ -73,14 +73,14 @@ public class RestoreService extends Service implements ProgressReporter, Restore
 
     @Override
     public IBinder onBind(Intent intent) {
-        MyLogger.logI(CLASS_TAG, "onbind");
+        Logger.i(CLASS_TAG, "onbind");
         return mBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         super.onUnbind(intent);
-        MyLogger.logI(CLASS_TAG, "onUnbind");
+        Logger.i(CLASS_TAG, "onUnbind");
         // If SD card removed or full, kill process
         StorageUtils.killProcessIfNecessary();
         return true;
@@ -90,13 +90,13 @@ public class RestoreService extends Service implements ProgressReporter, Restore
     public void onCreate() {
         super.onCreate();
         moveToState(Constants.State.INIT);
-        MyLogger.logI(CLASS_TAG, "onCreate");
+        Logger.i(CLASS_TAG, "onCreate");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        MyLogger.logI(CLASS_TAG, "onStartCommand");
+        Logger.i(CLASS_TAG, "onStartCommand");
         return START_NOT_STICKY;
     }
 
@@ -104,7 +104,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        MyLogger.logI(CLASS_TAG, "onDestroy");
+        Logger.i(CLASS_TAG, "onDestroy");
         if (mRestoreEngine != null && mRestoreEngine.isRunning()) {
             mRestoreEngine.setOnRestoreEndListner(null);
             mRestoreEngine.cancel();
@@ -116,7 +116,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
      */
     public void moveToState(int state) {
         synchronized (this) {
-            MyLogger.logD(CLASS_TAG, "Move from " + mState + " to " + state);
+            Logger.d(CLASS_TAG, "Move from " + mState + " to " + state);
             mState = state;
         }
     }
@@ -165,7 +165,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
         }
 
         if (getRestoreState() != Constants.State.RUNNING) {
-            MyLogger.logW(CLASS_TAG, "onOneFinished: State is not Running " + getRestoreState());
+            Logger.w(CLASS_TAG, "onOneFinished: State is not Running " + getRestoreState());
             return;
         }
 
@@ -247,7 +247,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        MyLogger.logD(CLASS_TAG, "onConfigurationChanged: setRefreshFlag");
+        Logger.d(CLASS_TAG, "onConfigurationChanged: setRefreshFlag");
         NotifyManager.getInstance(this).setRefreshFlag();
     }
 
@@ -329,7 +329,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
         public boolean startRestore(String fileName) {
             stayForeground();
             if (mRestoreEngine == null) {
-                MyLogger.logE(CLASS_TAG, "startRestore Error: engine is not initialed");
+                Logger.e(CLASS_TAG, "startRestore Error: engine is not initialed");
                 return false;
             }
             mRestoreEngine.setOnRestoreEndListner(RestoreService.this);
@@ -347,7 +347,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
             if (mRestoreEngine != null) {
                 mRestoreEngine.pause();
             }
-            MyLogger.logD(CLASS_TAG, "pauseRestore");
+            Logger.d(CLASS_TAG, "pauseRestore");
         }
 
         /**
@@ -358,7 +358,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
             if (mRestoreEngine != null) {
                 mRestoreEngine.continueRestore();
             }
-            MyLogger.logD(CLASS_TAG, "continueRestore");
+            Logger.d(CLASS_TAG, "continueRestore");
         }
 
         public void cancelRestore() {
@@ -366,14 +366,14 @@ public class RestoreService extends Service implements ProgressReporter, Restore
             if (mRestoreEngine != null) {
                 mRestoreEngine.cancel();
             }
-            MyLogger.logD(CLASS_TAG, "cancelRestore");
+            Logger.d(CLASS_TAG, "cancelRestore");
         }
 
         /**
          * reset.
          */
         public void reset() {
-            MyLogger.logD(CLASS_TAG, "reset()");
+            Logger.d(CLASS_TAG, "reset()");
             moveToState(Constants.State.INIT);
             if (mResultList != null) {
                 mResultList.clear();

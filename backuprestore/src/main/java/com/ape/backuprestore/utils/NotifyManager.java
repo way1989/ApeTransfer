@@ -64,7 +64,7 @@ public class NotifyManager {
             "com.mediatek.backuprestore.intent.PersonalDataRestoreActivity";
     public static final String RESTORE_APPLICATION_INTENT =
             "com.mediatek.backuprestore.intent.AppRestoreActivity";
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/NotifyManager:";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/NotifyManager:";
     // SystemUi can't cover quick frequency notification.
     // So it requested update 2~3 item by second.
     // For this issue, we add workaround : update 2 item by second
@@ -118,14 +118,14 @@ public class NotifyManager {
                 : RESTORE_PERSONALDATA_INTENT);
         if (type == FP_NEW_DETECTION_NOTIFY_TYPE_DEAFAULT
                 && (folder == null || folder.trim().equals(""))) {
-            MyLogger.logD(CLASS_TAG,
+            Logger.d(CLASS_TAG,
                     "[showNewDetectionNotification] ERROR notification ! folder is null !");
             return;
         }
         Intent intent = new Intent(Constants.ACTION_NEW_DATA_DETECTED_TRANSFER);
         intent.putExtra(Constants.FILENAME, folder);
         intent.putExtra(Constants.NOTIFY_TYPE, type);
-        MyLogger.logD(CLASS_TAG, "[showNewDetectionNotification] Folder = " + folder + " Type = "
+        Logger.d(CLASS_TAG, "[showNewDetectionNotification] Folder = " + folder + " Type = "
                 + type);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mNotificationContext, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -144,7 +144,7 @@ public class NotifyManager {
      * @param currentProgress
      */
     public void showBackupNotification(String contentText, int type, int currentProgress) {
-        MyLogger.logD(CLASS_TAG, "[showBackupNotification] mMaxPercent : " + mMaxPercent);
+        Logger.d(CLASS_TAG, "[showBackupNotification] mMaxPercent : " + mMaxPercent);
         if (mMaxPercent == 0) {
             return;
         }
@@ -158,7 +158,7 @@ public class NotifyManager {
             intentFilter = BACKUP_PERSONALDATA_INTENT;
         }
         try {
-            MyLogger.logD(
+            Logger.d(
                     CLASS_TAG,
                     "[showBackupNotification] sLastNotiyTime : " + sLastNotifyTime);
             if (System.currentTimeMillis() - sLastNotifyTime > WAIT_TIME) {
@@ -172,13 +172,13 @@ public class NotifyManager {
                 sLastNotifyTime = System.currentTimeMillis();
             }
             if (System.currentTimeMillis() - sLastNotifyTime <= 0) {
-                MyLogger.logD(
+                Logger.d(
                         CLASS_TAG,
                         "[showBackupNotification] reset sLastNotiyTime : " + sLastNotifyTime);
                 sLastNotifyTime = System.currentTimeMillis();
             }
         } catch (NullPointerException e) {
-            MyLogger.logE(CLASS_TAG, "turn on the USB storage!");
+            Logger.e(CLASS_TAG, "turn on the USB storage!");
             e.printStackTrace();
         }
     }
@@ -256,7 +256,7 @@ public class NotifyManager {
                     currentProgress,
                     intentFilter);
         } catch (NullPointerException e) {
-            MyLogger.logE(CLASS_TAG, "turn on the USB storage!");
+            Logger.e(CLASS_TAG, "turn on the USB storage!");
             e.printStackTrace();
         }
     }
@@ -320,15 +320,15 @@ public class NotifyManager {
      * Clear current notification.
      */
     public void clearNotification() {
-        MyLogger.logD(CLASS_TAG, "clearNotification");
+        Logger.d(CLASS_TAG, "clearNotification");
         if (mNotification != null) {
             mNotification.setOngoing(false);
             if (mNotificationContext instanceof Service) {
                 ((Service) mNotificationContext).stopForeground(true);
-                MyLogger.logD(CLASS_TAG, "mNotificationContext instanceof Service");
+                Logger.d(CLASS_TAG, "mNotificationContext instanceof Service");
             }
             mNotificationManager.cancel(mNotificationType);
-            MyLogger.logD(CLASS_TAG, "clearNotification+mNotificationType = "
+            Logger.d(CLASS_TAG, "clearNotification+mNotificationType = "
                     + mNotificationType);
             mNotification = null;
         }

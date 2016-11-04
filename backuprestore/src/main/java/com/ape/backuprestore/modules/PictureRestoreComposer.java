@@ -8,8 +8,8 @@ import android.provider.MediaStore;
 import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.FileUtils;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,18 +19,16 @@ import java.util.ArrayList;
  * Created by android on 16-7-16.
  */
 public class PictureRestoreComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/PictureRestoreComposer";
+    private static final String TAG ="PictureRestoreComposer";
     private static final String[] PROJECTION = new String[]{
             MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
     private int mIndex;
-    private Object mLock = new Object();
+    private final Object mLock = new Object();
     private File[] mFileList;
     private ArrayList<String> mFileNameList;
     private String mDestPath;
     private String mZipFileName;
     private boolean mImport;
-    private String mDestFileName;
-    private MediaScannerConnection mMediaScannerConnection;
     private boolean mIsMediaScannerConnected;
 
 
@@ -55,31 +53,28 @@ public class PictureRestoreComposer extends Composer {
         if (count == 0 && mFileList != null) {
             count = mFileList.length;
         }
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
     public boolean init() {
         boolean result = false;
         String path = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_PICTURE;
-        mFileNameList = new ArrayList<String>();
+        mFileNameList = new ArrayList<>();
         File folder = new File(path);
         if (folder.exists() && folder.isDirectory()) {
             try {
                 mZipFileName = path + File.separator + Constants.ModulePath.NAME_PICTUREZIP;
                 File file = new File(mZipFileName);
-                if (file != null && file.exists()) {
+                if (file.exists()) {
                     mFileNameList = (ArrayList<String>) BackupZip.getFileList(mZipFileName, true,
                             true, ".*");
                     String tmppath = (new File(mParentFolderPath)).getParent();
                     if (tmppath != null) {
-                        mDestPath = tmppath.subSequence(0, tmppath.length() - 12)
-                                + File.separator
-                                + "Pictures"
-                                + mParentFolderPath.subSequence(
-                                mParentFolderPath.lastIndexOf(File.separator),
-                                mParentFolderPath.length());
-                        MyLogger.logD(CLASS_TAG, "mDestPath:" + mDestPath);
+                        mDestPath = tmppath + File.separator
+                                + RESTORE + File.separator
+                                + Constants.ModulePath.FOLDER_PICTURE;
+                        Logger.d(TAG, "mDestPath:" + mDestPath);
                         result = true;
                     }
                 } else {
@@ -97,20 +92,20 @@ public class PictureRestoreComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "init():" + result + ",count:" + getCount());
+        Logger.d(TAG, "init():" + result + ",count:" + getCount());
         return result;
     }
 
     public boolean isAfterLast() {
         boolean result = true;
         if (mFileNameList != null && mFileNameList.size() > 0) {
-            result = (mIndex >= mFileNameList.size()) ? true : false;
+            result = (mIndex >= mFileNameList.size());
         } else if (mFileList != null) {
             // for old data
-            result = (mIndex >= mFileList.length) ? true : false;
+            result = (mIndex >= mFileList.length);
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -136,18 +131,18 @@ public class PictureRestoreComposer extends Composer {
 
         if (mFileNameList != null && mIndex < mFileNameList.size()) {
             String picName = mFileNameList.get(mIndex++);
-            mDestFileName = mDestPath + picName;
+            String destFileName = mDestPath + picName;
             if (mImport) {
-                File fileName = new File(mDestFileName);
+                File fileName = new File(destFileName);
                 if (fileName.exists()) {
-                    mDestFileName = rename(mDestFileName);
+                    destFileName = rename(destFileName);
                 }
             }
             try {
-                BackupZip.unZipFile(mZipFileName, picName, mDestFileName);
-                MyLogger.logD(CLASS_TAG, " insert database mDestFileName ="
-                        + mDestFileName);
-                FileUtils.scanPathforMediaStore(mDestFileName, mContext);
+                BackupZip.unZipFile(mZipFileName, picName, destFileName);
+                Logger.d(TAG, " insert database mDestFileName ="
+                        + destFileName);
+                FileUtils.scanPathforMediaStore(destFileName, mContext);
                 result = true;
             } catch (IOException e) {
                 if (super.mReporter != null) {
@@ -158,7 +153,7 @@ public class PictureRestoreComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "implementComposeOneEntity:" + result);
+        Logger.d(TAG, "implementComposeOneEntity:" + result);
         return result;
     }
 
@@ -170,18 +165,18 @@ public class PictureRestoreComposer extends Composer {
                             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                             MediaStore.Images.Media.DATA + " like ?",
                             new String[]{file.getAbsolutePath()});
-                    MyLogger.logD(CLASS_TAG, "deleteFolder():" + count + ":"
+                    Logger.d(TAG, "deleteFolder():" + count + ":"
                             + file.getAbsolutePath());
                     file.delete();
                 } catch (NullPointerException e) {
-                    MyLogger.logD(CLASS_TAG, "deleteFolder: exception");
+                    Logger.d(TAG, "deleteFolder: exception");
                 }
 
             } else if (file.isDirectory()) {
                 File files[] = file.listFiles();
                 if (files != null) {
-                    for (int i = 0; i < files.length; ++i) {
-                        this.deleteFolder(files[i]);
+                    for (File f : files) {
+                        this.deleteFolder(f);
                     }
                 }
             }
@@ -194,9 +189,9 @@ public class PictureRestoreComposer extends Composer {
      */
     public void onStart() {
         super.onStart();
-        mMediaScannerConnection = new MediaScannerConnection(this.mContext,
+        MediaScannerConnection mediaScannerConnection = new MediaScannerConnection(this.mContext,
                 new ScanCompletedListener());
-        mMediaScannerConnection.connect();
+        mediaScannerConnection.connect();
         // && super.checkedCommand())
         if (mDestPath != null) {
             File tmpFolder = new File(mDestPath);
@@ -209,7 +204,7 @@ public class PictureRestoreComposer extends Composer {
             mImport = true;
         }
 
-        MyLogger.logD(CLASS_TAG, "onStart()");
+        Logger.d(TAG, "onStart()");
     }
 
     private String rename(String name) {
@@ -217,7 +212,7 @@ public class PictureRestoreComposer extends Composer {
                 name.length()).toString();
         String path = name.subSequence(0, name.lastIndexOf(File.separator) + 1)
                 .toString();
-        MyLogger.logD(CLASS_TAG, " rename:tmpName  ==== " + tmpName);
+        Logger.d(TAG, " rename:tmpName  ==== " + tmpName);
         String rename = null;
         File tmpFile = null;
         int id = tmpName.lastIndexOf(".");
@@ -231,11 +226,9 @@ public class PictureRestoreComposer extends Composer {
                     + tmpName.subSequence(id, tmpName.length());
             tmpFile = new File(path + rename);
             String tmpFileName = tmpFile.getAbsolutePath();
-            MyLogger.logD(CLASS_TAG, " rename:tmpFileName == " + tmpFileName);
-            if (tmpFile.exists()) {
-                continue;
-            } else {
-                MyLogger.logD(CLASS_TAG, " rename: rename === " + rename);
+            Logger.d(TAG, " rename:tmpFileName == " + tmpFileName);
+            if (!tmpFile.exists()) {
+                Logger.d(TAG, " rename: rename === " + rename);
                 break;
             }
         }
@@ -245,16 +238,16 @@ public class PictureRestoreComposer extends Composer {
     /**
      * Describe class <code>ScanCompletedListener</code> here.
      *
-     * @author 1
+     * @author way
      */
-    class ScanCompletedListener implements MediaScannerConnection.MediaScannerConnectionClient {
+    private class ScanCompletedListener implements MediaScannerConnection.MediaScannerConnectionClient {
         @Override
         public void onScanCompleted(String path, Uri uri) {
-            MyLogger.logD(CLASS_TAG, mIndex + "nScanCompleted");
+            Logger.d(TAG, mIndex + "nScanCompleted");
             if (uri != null) {
-                MyLogger.logD(CLASS_TAG, mIndex + path + "insert to db successed!");
+                Logger.d(TAG, mIndex + path + "insert to db successed!");
             } else {
-                MyLogger.logD(CLASS_TAG, mIndex + path + "insert to db fail");
+                Logger.d(TAG, mIndex + path + "insert to db fail");
             }
         }
 
@@ -262,7 +255,7 @@ public class PictureRestoreComposer extends Composer {
         public void onMediaScannerConnected() {
             synchronized (mLock) {
                 mIsMediaScannerConnected = true;
-                MyLogger.logD(CLASS_TAG, "MediaScannerConnected");
+                Logger.d(TAG, "MediaScannerConnected");
                 mLock.notifyAll();
             }
         }

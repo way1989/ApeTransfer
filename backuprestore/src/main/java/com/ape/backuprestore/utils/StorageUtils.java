@@ -16,7 +16,7 @@ public class StorageUtils {
     public static String getBackupPath() {
         String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "ApeTransfer" + File.separator + Constants.ModulePath.FOLDER_BACKUP;
-        MyLogger.logD(CLASS_TAG, "getStoragePath: path is " + storagePath);
+        Logger.d(CLASS_TAG, "getStoragePath: path is " + storagePath);
         File file = new File(storagePath);
         if (file.exists() && file.isDirectory()) {
             return storagePath;
@@ -32,7 +32,7 @@ public class StorageUtils {
         long count = stat.getAvailableBlocks();
         long size = stat.getBlockSize();
         long totalSize = count * size;
-        MyLogger.logD(CLASS_TAG, "file remain size = " + totalSize);
+        Logger.d(CLASS_TAG, "file remain size = " + totalSize);
         return totalSize;
     }
 
@@ -55,7 +55,7 @@ public class StorageUtils {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    MyLogger.logE(CLASS_TAG, "Cannot create temp file");
+                    Logger.e(CLASS_TAG, "Cannot create temp file");
                     isStorageMissing = true;
                 } finally {
                     temp.delete();

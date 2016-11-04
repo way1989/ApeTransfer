@@ -7,8 +7,8 @@ import android.provider.CallLog;
 import android.text.TextUtils;
 
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,7 +41,7 @@ public class CallLogRestoreComposer extends Composer {
         if (mRecordList != null) {
             count = mRecordList.size();
         }
-        MyLogger.logD(TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
@@ -53,7 +53,7 @@ public class CallLogRestoreComposer extends Composer {
             result = mIdx >= mRecordList.size();
         }
 
-        MyLogger.logD(TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -69,7 +69,7 @@ public class CallLogRestoreComposer extends Composer {
         }
         result = true;
 
-        MyLogger.logD(TAG, "init():" + result + ",count:" + mRecordList.size());
+        Logger.d(TAG, "init():" + result + ",count:" + mRecordList.size());
         return result;
     }
 
@@ -87,14 +87,14 @@ public class CallLogRestoreComposer extends Composer {
 
             try {
                 Uri tmpUri = mContext.getContentResolver().insert(CALL_LOG_URI, v);
-                MyLogger.logD(TAG, "tmpUri:" + tmpUri);
+                Logger.d(TAG, "tmpUri:" + tmpUri);
                 result = true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        MyLogger.logD(TAG, MyLogger.NOTEBOOK_TAG + "implementComposeOneEntity():" + result);
+        Logger.d(TAG, Logger.NOTEBOOK_TAG + "implementComposeOneEntity():" + result);
         return result;
     }
 

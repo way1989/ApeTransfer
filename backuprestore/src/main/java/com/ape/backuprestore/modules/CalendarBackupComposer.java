@@ -6,8 +6,8 @@ import android.net.Uri;
 import android.provider.CalendarContract;
 
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * Created by android on 16-7-16.
  */
 public class CalendarBackupComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/CalendarBackupComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/CalendarBackupComposer";
     private static final Uri CALANDER_EVENT_URI = CalendarContract.Events.CONTENT_URI;
     private BufferedWriter mOut;
     private Cursor mCursor;
@@ -44,7 +44,7 @@ public class CalendarBackupComposer extends Composer {
             }
         }
 
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(CLASS_TAG, "getCount():" + count);
         return count;
     }
 
@@ -55,7 +55,7 @@ public class CalendarBackupComposer extends Composer {
             result = mCursor.isAfterLast();
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -67,17 +67,17 @@ public class CalendarBackupComposer extends Composer {
 
         if (mCursor != null) {
             mCursor.moveToFirst();
-            MyLogger.logD(CLASS_TAG, "init() begin");
+            Logger.d(CLASS_TAG, "init() begin");
             for (int i = 0; i < mCursor.getCount(); i++) {
                 int id = 0;
                 try {
                     id = mCursor.getInt(mCursor.getColumnIndex("_id"));
-                    MyLogger.logD(CLASS_TAG, "init() id = " + id);
+                    Logger.d(CLASS_TAG, "init() id = " + id);
 
                     mCursor.moveToNext();
                 } catch (Exception e) {
                     mFailEvents.add(id);
-                    MyLogger.logD(CLASS_TAG, "VCAL: init() fail");
+                    Logger.d(CLASS_TAG, "VCAL: init() fail");
                 }
             }
             mCursor.moveToFirst();
@@ -85,7 +85,7 @@ public class CalendarBackupComposer extends Composer {
             result = false;
         }
 
-        MyLogger.logD(CLASS_TAG, "init(),result:" + result + ", count:"
+        Logger.d(CLASS_TAG, "init(),result:" + result + ", count:"
                 + (mCursor != null ? mCursor.getCount() : 0));
         return result;
     }
@@ -96,7 +96,7 @@ public class CalendarBackupComposer extends Composer {
 
         if (mCursor != null && !mCursor.isAfterLast()) {
             int id = mCursor.getInt(mCursor.getColumnIndex("_id"));
-            MyLogger.logD(CLASS_TAG, "implementComposeOneEntity id:" + id);
+            Logger.d(CLASS_TAG, "implementComposeOneEntity id:" + id);
             mCursor.moveToNext();
 
         }
@@ -119,7 +119,7 @@ public class CalendarBackupComposer extends Composer {
                 try {
                     file.createNewFile();
                 } catch (Exception e) {
-                    MyLogger.logE(CLASS_TAG, "onStart():create file failed");
+                    Logger.e(CLASS_TAG, "onStart():create file failed");
                 }
             }
 
@@ -127,7 +127,7 @@ public class CalendarBackupComposer extends Composer {
                 FileWriter fstream = new FileWriter(file);
                 mOut = new BufferedWriter(fstream);
             } catch (Exception e) {
-                MyLogger.logD(CLASS_TAG, "VCAL: onStart() write file failed");
+                Logger.d(CLASS_TAG, "VCAL: onStart() write file failed");
             }
         }
     }
@@ -142,16 +142,16 @@ public class CalendarBackupComposer extends Composer {
             mCursor = null;
         }
 
-        MyLogger.logD(CLASS_TAG, "onEnd");
+        Logger.d(CLASS_TAG, "onEnd");
         if (mOut != null) {
             try {
             } catch (Exception e) {
-                MyLogger.logD(CLASS_TAG, "VCAL: onEnd() write file failed");
+                Logger.d(CLASS_TAG, "VCAL: onEnd() write file failed");
             } finally {
                 try {
                     mOut.close();
                 } catch (IOException e) {
-                    MyLogger.logD(CLASS_TAG, "IOException");
+                    Logger.d(CLASS_TAG, "IOException");
                 }
             }
         }

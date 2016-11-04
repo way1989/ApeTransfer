@@ -7,8 +7,8 @@ import android.provider.Telephony;
 import android.telephony.SmsManager;
 
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 import com.google.android.mms.MmsException;
 import com.google.android.mms.pdu.NotificationInd;
 import com.google.android.mms.pdu.PduParser;
@@ -28,7 +28,7 @@ import java.util.HashMap;
  * Created by android on 16-7-16.
  */
 public class MmsRestoreComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/MmsRestoreComposer";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/MmsRestoreComposer";
     private ArrayList<MmsXmlInfo> mRecordList;
     private int mIndex;
     private long mTime;
@@ -57,7 +57,7 @@ public class MmsRestoreComposer extends Composer {
                         true);
             }
         } catch (NullPointerException e) {
-            MyLogger.logE(CLASS_TAG, "shouldParseContentDisposition : " + e.getMessage());
+            Logger.e(CLASS_TAG, "shouldParseContentDisposition : " + e.getMessage());
         }
         return result;
     }
@@ -82,7 +82,7 @@ public class MmsRestoreComposer extends Composer {
             count = mRecordList.size();
         }
 
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(CLASS_TAG, "getCount():" + count);
         return count;
     }
 
@@ -96,7 +96,7 @@ public class MmsRestoreComposer extends Composer {
         mTmpPduList = new ArrayList<MmsRestoreContent>();
         String path = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_MMS + File.separator
                 + Constants.ModulePath.MMS_XML;
-        MyLogger.logD(CLASS_TAG, "init():path:" + path);
+        Logger.d(CLASS_TAG, "init():path:" + path);
         String content = getXmlInfo(path);
         if (content != null) {
             mRecordList = MmsXmlParser.parse(content);
@@ -107,7 +107,7 @@ public class MmsRestoreComposer extends Composer {
         mIndex = 0;
         mTime = System.currentTimeMillis();
 
-        MyLogger.logD(CLASS_TAG, "init():" + result);
+        Logger.d(CLASS_TAG, "init():" + result);
         return result;
     }
 
@@ -122,7 +122,7 @@ public class MmsRestoreComposer extends Composer {
             result = (mIndex >= mRecordList.size()) ? true : false;
         }
 
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(CLASS_TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -148,7 +148,7 @@ public class MmsRestoreComposer extends Composer {
      * += mContext.getContentResolver().delete(Uri.parse(Constants.URI_MMS),
      * "date < ?", new String[] { Long.toString(mTime) });
      *
-     * MyLogger.logD(CLASS_TAG, "deleteAllPhoneMms():" + count +
+     * Logger.d(CLASS_TAG, "deleteAllPhoneMms():" + count +
      * " mms deleted!"); result = true; }
      *
      * return result; }
@@ -159,7 +159,7 @@ public class MmsRestoreComposer extends Composer {
     /*
      * public void onStart() { super.onStart(); deleteAllPhoneMms();
      *
-     * MyLogger.logD(CLASS_TAG, "onStart()"); }
+     * Logger.d(CLASS_TAG, "onStart()"); }
      */
 
     /**
@@ -176,20 +176,20 @@ public class MmsRestoreComposer extends Composer {
 
             String simId = "-1";
 
-            MyLogger.logD(CLASS_TAG, "mIdx:" + (mIndex) + ",mMsgUri:" + mMsgUri.toString()
+            Logger.d(CLASS_TAG, "mIdx:" + (mIndex) + ",mMsgUri:" + mMsgUri.toString()
                     + ",simId:" + simId);
 
             String pduFileName = record.getID();
             String fileName = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_MMS
                     + File.separator + pduFileName;
-            MyLogger.logD(CLASS_TAG, "fileName:" + fileName);
+            Logger.d(CLASS_TAG, "fileName:" + fileName);
             byte[] pduByteArray = readFileContent(fileName);
             if (pduByteArray != null) {
                 result = true;
             }
             if (result) {
-                MyLogger.logD(CLASS_TAG, "readFileContent finish, result:" + result);
-                MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG + "MmsRestoreThread parse begin");
+                Logger.d(CLASS_TAG, "readFileContent finish, result:" + result);
+                Logger.d(CLASS_TAG, Logger.MMS_TAG + "MmsRestoreThread parse begin");
                 MmsRestoreContent tmpContent = new MmsRestoreContent();
                 tmpContent.mMsgUri = mMsgUri;
                 tmpContent.mMsgInfo.put("locked", record.getIsLocked());
@@ -197,13 +197,13 @@ public class MmsRestoreComposer extends Composer {
                 tmpContent.mMsgInfo.put("sub_id", simId);
                 if (mIndex == mRecordList.size()) {
                     tmpContent.mMsgInfo.put("index", "0");
-                    MyLogger.logD(CLASS_TAG, "this is last mms");
+                    Logger.d(CLASS_TAG, "this is last mms");
                 } else {
                     tmpContent.mMsgInfo.put("index", "" + mIndex);
-                    MyLogger.logD(CLASS_TAG, "this is tmpContent.mNumber=" + mIndex);
+                    Logger.d(CLASS_TAG, "this is tmpContent.mNumber=" + mIndex);
                 }
 
-                MyLogger.logI(CLASS_TAG, "mMsgUri = " + mMsgUri);
+                Logger.i(CLASS_TAG, "mMsgUri = " + mMsgUri);
                 if (mMsgUri == Telephony.Mms.Inbox.CONTENT_URI) {
                     try {
                         tmpContent.mRetrieveConf = (RetrieveConf) new PduParser(pduByteArray,
@@ -223,7 +223,7 @@ public class MmsRestoreComposer extends Composer {
                         tmpContent.mSendConf = (SendReq) new PduParser(pduByteArray,
                                 shouldParseContentDisposition()).parse(true);
                     } catch (Exception e) {
-                        MyLogger.logI(CLASS_TAG, " error!!!");
+                        Logger.i(CLASS_TAG, " error!!!");
                         result = false;
                     }
                 }
@@ -234,7 +234,7 @@ public class MmsRestoreComposer extends Composer {
                 if (mPduList != null) {
                     synchronized (mLock) {
                         try {
-                            MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG +
+                            Logger.d(CLASS_TAG, Logger.MMS_TAG +
                                     "wait for MmsRestoreThread");
                             while (mPduList != null) {
                                 mLock.wait();
@@ -262,7 +262,7 @@ public class MmsRestoreComposer extends Composer {
         if (mPduList != null) {
             synchronized (mLock) {
                 try {
-                    MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG + "wait for MmsRestoreThread");
+                    Logger.d(CLASS_TAG, Logger.MMS_TAG + "wait for MmsRestoreThread");
                     while (mPduList != null) {
                         mLock.wait();
                     }
@@ -274,7 +274,7 @@ public class MmsRestoreComposer extends Composer {
 
         super.onEnd();
 
-        MyLogger.logD(CLASS_TAG, "onEnd()");
+        Logger.d(CLASS_TAG, "onEnd()");
     }
 
     /**
@@ -380,7 +380,7 @@ public class MmsRestoreComposer extends Composer {
                 SendReq sendConf = content.mSendConf;
 
                 if (retrieveConf != null || indConf != null || sendConf != null) {
-                    MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG + "MmsRestoreThread parse finish");
+                    Logger.d(CLASS_TAG, Logger.MMS_TAG + "MmsRestoreThread parse finish");
                     Uri tmpUri = null;
                     try {
                         if (mMsgUri == Telephony.Mms.Inbox.CONTENT_URI) {
@@ -388,24 +388,24 @@ public class MmsRestoreComposer extends Composer {
                                 tmpUri = persister.persistEx(retrieveConf != null ? retrieveConf
                                         : indConf, mMsgUri, true, msgInfo);
                             } else {
-                                MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG +
+                                Logger.d(CLASS_TAG, Logger.MMS_TAG +
                                         "retrieveConf and indConf is null");
                             }
                         } else {
                             if (sendConf != null) {
                                 tmpUri = persister.persistEx(sendConf, mMsgUri, msgInfo);
                             } else {
-                                MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG + "sendConf is null");
+                                Logger.d(CLASS_TAG, Logger.MMS_TAG + "sendConf is null");
                             }
                         }
-                        MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG +
+                        Logger.d(CLASS_TAG, Logger.MMS_TAG +
                                 "MmsRestoreThread persist finish");
                     } catch (MmsException e) {
-                        MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG +
+                        Logger.d(CLASS_TAG, Logger.MMS_TAG +
                                 "MmsRestoreThread MmsException");
                         e.printStackTrace();
                     } catch (Exception e) {
-                        MyLogger.logD(CLASS_TAG, MyLogger.MMS_TAG + "MmsRestoreThread Exception");
+                        Logger.d(CLASS_TAG, Logger.MMS_TAG + "MmsRestoreThread Exception");
                         e.printStackTrace();
                     } finally {
                         increaseComposed(tmpUri != null ? true : false);

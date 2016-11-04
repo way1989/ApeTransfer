@@ -7,30 +7,24 @@ import android.provider.MediaStore;
 
 import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
+import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
-import com.ape.backuprestore.utils.MyLogger;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
  * Created by android on 16-7-16.
  */
 public class MusicBackupComposer extends Composer {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/MusicBackupComposer";
-    private static final Uri[] mMusicUriArray = {
-            //Audio.Media.INTERNAL_CONTENT_URI,
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-    };
-    private static final String[] mProjection = new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.DATA};
+    private static final String TAG = "MusicBackupComposer";
+    private static final Uri MUSIC_URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+    private static final String[] MUSIC_PROJECTION = new String[]{MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.DATA};
     private ArrayList<String> mNameList;
-    private Cursor[] mMusicCursorArray = {
-            //null,
-            null};
+    private Cursor mMusicCursor;
     private BackupZip mZipFileHandler;
 
     public MusicBackupComposer(Context context) {
@@ -45,107 +39,79 @@ public class MusicBackupComposer extends Composer {
     @Override
     public int getCount() {
         int count = 0;
-        for (Cursor cur : mMusicCursorArray) {
-            if (cur != null && !cur.isClosed() && cur.getCount() > 0) {
-                count += cur.getCount();
-            }
+        if (mMusicCursor != null && !mMusicCursor.isClosed() && mMusicCursor.getCount() > 0) {
+            count = mMusicCursor.getCount();
         }
 
-        MyLogger.logD(CLASS_TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
     @Override
     public boolean isAfterLast() {
         boolean result = true;
-        for (Cursor cur : mMusicCursorArray) {
-            if (cur != null && !cur.isAfterLast()) {
-                result = false;
-                break;
-            }
+        if (mMusicCursor != null && !mMusicCursor.isAfterLast()) {
+            result = false;
         }
-
-        MyLogger.logD(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
     @Override
     public boolean init() {
         boolean result = false;
-        for (int i = 0; i < mMusicCursorArray.length; ++i) {
-//            if (mMusicUriArray[i] == MediaStore.Audio.Media.EXTERNAL_CONTENT_URI) {
-//                String path = StorageUtils.getStoragePath(mContext);
-//                if (path != null && !path.trim().equals("")) {
-//                    String externalSDPath = "%"
-//                            + path.subSequence(0, path.lastIndexOf(File.separator)) + "%";
-//                    mMusicCursorArray[i] = mContext.getContentResolver().query(mMusicUriArray[i],
-//                            mProjection, MediaStore.Audio.Media.DATA + " not like ?",
-//                            new String[]{
-//                                    externalSDPath
-//                            }, null);
-//                }
-//            } else {
-            mMusicCursorArray[i] = mContext.getContentResolver().query(mMusicUriArray[i],
-                    mProjection, null, null, null);
-//            }
-            if (mMusicCursorArray[i] != null) {
-                mMusicCursorArray[i].moveToFirst();
-                result = true;
-            }
+
+        mMusicCursor = mContext.getContentResolver().query(MUSIC_URI,
+                MUSIC_PROJECTION, null, null, null);
+        if (mMusicCursor != null) {
+            result = mMusicCursor.moveToFirst();
         }
 
         mNameList = new ArrayList<>();
-        MyLogger.logD(CLASS_TAG, "init():" + result + ",count:" + getCount());
+        Logger.d(TAG, "init():" + result + ",count:" + getCount());
         return result;
     }
 
     @Override
     protected boolean implementComposeOneEntity() {
         boolean result = false;
-        for (int i = 0; i < mMusicCursorArray.length; ++i) {
-            if (mMusicCursorArray[i] != null && !mMusicCursorArray[i].isAfterLast()) {
-                int dataColumn = mMusicCursorArray[i].getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-                String data = mMusicCursorArray[i].getString(dataColumn);
-                String destFileName = null;
-                try {
-                    String tmpName = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_MUSIC +
-                            data.subSequence(data.lastIndexOf(File.separator), data.length()).toString();
-                    destFileName = getDestinationName(tmpName);
-                    if (destFileName != null) {
+        if (mMusicCursor != null && !mMusicCursor.isAfterLast()) {
+            int dataColumn = mMusicCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+            String data = mMusicCursor.getString(dataColumn);
+            String destFileName;
+            try {
+                String tmpName = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_MUSIC +
+                        data.subSequence(data.lastIndexOf(File.separator), data.length()).toString();
+                destFileName = getDestinationName(tmpName);
+                if (destFileName != null) {
+                    try {
+                        mZipFileHandler.addFileByFileName(data, destFileName);
+                        mNameList.add(destFileName);
+                        result = true;
+                    } catch (IOException e) {
+                        Logger.d(TAG, Logger.MUSIC_TAG + "copy file fail");
                         try {
-                            //copyFile(data, destFileName);
-                            mZipFileHandler.addFileByFileName(data, destFileName);
-                            mNameList.add(destFileName);
-                            result = true;
-                        } catch (IOException e) {
-                            MyLogger.logD(CLASS_TAG, MyLogger.MUSIC_TAG + "copy file fail");
-                            try {
-                                MyLogger.logE(CLASS_TAG, "[implementComposeOneEntity] finish");
-                                mZipFileHandler.finish();
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
-                            }
-                            if (super.mReporter != null) {
-                                super.mReporter.onErr(e);
-                            }
+                            Logger.e(TAG, "[implementComposeOneEntity] finish");
+                            mZipFileHandler.finish();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                        if (super.mReporter != null) {
+                            super.mReporter.onErr(e);
                         }
                     }
-
-                    MyLogger.logD(CLASS_TAG, data + ",destFileName:" + destFileName);
-                } catch (StringIndexOutOfBoundsException e) {
-                    MyLogger.logE(CLASS_TAG, MyLogger.MUSIC_TAG
-                            + " StringIndexOutOfBoundsException");
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
 
-
-                mMusicCursorArray[i].moveToNext();
-                break;
+                Logger.d(TAG, data + ",destFileName:" + destFileName);
+            } catch (StringIndexOutOfBoundsException e) {
+                Logger.e(TAG, Logger.MUSIC_TAG
+                        + " StringIndexOutOfBoundsException");
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            mMusicCursor.moveToNext();
         }
-
         return result;
     }
 
@@ -183,11 +149,8 @@ public class MusicBackupComposer extends Composer {
             mNameList.clear();
         }
 
-        for (Cursor cur : mMusicCursorArray) {
-            if (cur != null) {
-                cur.close();
-                cur = null;
-            }
+        if (mMusicCursor != null) {
+            mMusicCursor.close();
         }
 
         if (mZipFileHandler != null) {
@@ -241,25 +204,4 @@ public class MusicBackupComposer extends Composer {
         return null;
     }
 
-    private void copyFile(String srcFile, String destFile) throws IOException {
-        try {
-            File f1 = new File(srcFile);
-            if (f1.exists() && f1.isFile()) {
-                InputStream inStream = new FileInputStream(srcFile);
-                FileOutputStream outStream = new FileOutputStream(destFile);
-                byte[] buf = new byte[1024];
-                int byteRead = 0;
-                while ((byteRead = inStream.read(buf)) != -1) {
-                    outStream.write(buf, 0, byteRead);
-                }
-                outStream.flush();
-                outStream.close();
-                inStream.close();
-            }
-        } catch (IOException e) {
-            throw e;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

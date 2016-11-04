@@ -56,7 +56,7 @@ import java.util.zip.ZipOutputStream;
  * @author mtk81330
  */
 public class BackupZip {
-    private static final String CLASS_TAG = MyLogger.LOG_TAG + "/BackupZip";
+    private static final String CLASS_TAG = Logger.LOG_TAG + "/BackupZip";
     ZipOutputStream mOutZip;
     private String mZipFile;
     private Boolean hasFinished = false;
@@ -80,7 +80,7 @@ public class BackupZip {
     public static List<String> getFileList(String zipFileString, boolean bContainFolder,
                                            boolean bContainFile) throws IOException {
 
-        MyLogger.logI(CLASS_TAG, "GetFileList");
+        Logger.i(CLASS_TAG, "GetFileList");
 
         List<String> fileList = new ArrayList<String>();
         ZipInputStream inZip = new ZipInputStream(new FileInputStream(zipFileString));
@@ -89,7 +89,7 @@ public class BackupZip {
 
         while ((zipEntry = inZip.getNextEntry()) != null) {
             szName = zipEntry.getName();
-            MyLogger.logD(CLASS_TAG, szName);
+            Logger.d(CLASS_TAG, szName);
 
             if (zipEntry.isDirectory()) {
 
@@ -125,7 +125,7 @@ public class BackupZip {
     public static List<String> getFileList(String zipFileString, boolean bContainFolder,
                                            boolean bContainFile, String tmpString) throws IOException {
 
-        MyLogger.logI(CLASS_TAG, "GetFileList");
+        Logger.i(CLASS_TAG, "GetFileList");
 
         List<String> fileList = new ArrayList<String>();
 
@@ -136,7 +136,7 @@ public class BackupZip {
         while (entries.hasMoreElements()) {
             zipEntry = entries.nextElement();
             szName = zipEntry.getName();
-            MyLogger.logD(CLASS_TAG, szName);
+            Logger.d(CLASS_TAG, szName);
 
             if (zipEntry.isDirectory()) {
 
@@ -175,7 +175,7 @@ public class BackupZip {
      * @return
      */
     public static String readFile(String zipFileString, String fileString) {
-        MyLogger.logI(CLASS_TAG, "getFile");
+        Logger.i(CLASS_TAG, "getFile");
         ByteArrayOutputStream baos = null;
         String content = null;
         try {
@@ -207,7 +207,7 @@ public class BackupZip {
      * @return
      */
     public static byte[] readFileContent(String zipFileString, String fileString) {
-        MyLogger.logI(CLASS_TAG, "getFile");
+        Logger.i(CLASS_TAG, "getFile");
         ByteArrayOutputStream baos = null;
         try {
             ZipFile zipFile = new ZipFile(zipFileString);
@@ -249,7 +249,7 @@ public class BackupZip {
      * @return
      */
     public static String readFile(ZipFile zipFile, String fileString) {
-        MyLogger.logI(CLASS_TAG, "getFile");
+        Logger.i(CLASS_TAG, "getFile");
         ByteArrayOutputStream baos = null;
         String content = null;
         try {
@@ -279,7 +279,7 @@ public class BackupZip {
      * @return
      */
     public static byte[] readFileContent(ZipFile zipFile, String fileString) {
-        MyLogger.logI(CLASS_TAG, "getFile");
+        Logger.i(CLASS_TAG, "getFile");
         ByteArrayOutputStream baos = null;
         try {
             ZipEntry zipEntry = zipFile.getEntry(fileString);
@@ -349,7 +349,7 @@ public class BackupZip {
      * @throws IOException IOException
      */
     public static void unZipFolder(String zipFileString, String outPathString) throws IOException {
-        // MyLogger.logI(CLASS_TAG, "UnZipFolder(String, String)");
+        // Logger.i(CLASS_TAG, "UnZipFolder(String, String)");
         ZipInputStream inZip = new ZipInputStream(new FileInputStream(zipFileString));
         ZipEntry zipEntry;
         String szName = "";
@@ -392,7 +392,7 @@ public class BackupZip {
      * @throws IOException
      */
     public static void zipFolder(String srcFileString, String zipFileString) throws IOException {
-        MyLogger.logI(CLASS_TAG, "zipFolder(String, String)");
+        Logger.i(CLASS_TAG, "zipFolder(String, String)");
 
         ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(zipFileString));
 
@@ -407,7 +407,7 @@ public class BackupZip {
 
     private static void zipFiles(String folderString, String fileString,
                                  ZipOutputStream zipOutputSteam) throws IOException {
-        MyLogger.logI(CLASS_TAG, "ZipFiles(String, String, ZipOutputStream)");
+        Logger.i(CLASS_TAG, "ZipFiles(String, String, ZipOutputStream)");
 
         if (zipOutputSteam == null) {
             return;
@@ -454,7 +454,7 @@ public class BackupZip {
      * @throws IOException
      */
     public static void zipOneFile(String srcFileString, String zipFileString) throws IOException {
-        MyLogger.logI(CLASS_TAG, "zipFolder(String, String)");
+        Logger.i(CLASS_TAG, "zipFolder(String, String)");
 
         ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(zipFileString));
 
@@ -476,7 +476,7 @@ public class BackupZip {
      */
     public void createZipFile(String zipFileString) throws IOException {
         mOutZip = new ZipOutputStream(new FileOutputStream(zipFileString));
-        MyLogger.logI(CLASS_TAG, "createZipFile zipFileString = " + zipFileString);
+        Logger.i(CLASS_TAG, "createZipFile zipFileString = " + zipFileString);
     }
 
     /**
@@ -510,7 +510,7 @@ public class BackupZip {
      * @throws IOException
      */
     public void addFileByFileName(String srcFileName, String desFileName) throws IOException {
-        MyLogger.logD(CLASS_TAG, "addFileByFileName:" + "srcFile:" + srcFileName + ",desFile:"
+        Logger.d(CLASS_TAG, "addFileByFileName:" + "srcFile:" + srcFileName + ",desFile:"
                 + desFileName);
 
         ZipEntry zipEntry = new ZipEntry(desFileName);
@@ -555,7 +555,7 @@ public class BackupZip {
             try {
                 addFileByFileName(srcPath, desPath);
             } catch (IOException e) {
-                MyLogger.logE(CLASS_TAG, "IOException in addFolder");
+                Logger.e(CLASS_TAG, "IOException in addFolder");
             }
         }
     }
@@ -565,12 +565,12 @@ public class BackupZip {
      */
     public void finish() throws IOException {
         if (!hasFinished) {
-            MyLogger.logE(CLASS_TAG, "Finish");
+            Logger.e(CLASS_TAG, "Finish");
             hasFinished = true;
             mOutZip.finish();
             mOutZip.close();
         } else {
-            MyLogger.logE(CLASS_TAG, "Already finish, do nothing");
+            Logger.e(CLASS_TAG, "Already finish, do nothing");
         }
     }
 }

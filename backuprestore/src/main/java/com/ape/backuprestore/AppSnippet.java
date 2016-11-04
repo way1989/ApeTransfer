@@ -26,7 +26,7 @@ public class AppSnippet {
         return mPackageName;
     }
 
-    public void SetFileName(String filename) {
+    public void setFileName(String filename) {
         mFileName = filename;
     }
 
