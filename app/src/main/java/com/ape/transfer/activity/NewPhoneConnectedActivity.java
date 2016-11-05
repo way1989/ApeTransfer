@@ -101,6 +101,7 @@ public class NewPhoneConnectedActivity extends BaseWifiConnectActivity {
             String ssid = WifiUtils.getInstance().getSSID();
             Log.d(TAG, "wifi connected ssid = " + ssid + ", mSSID = " + mSSID);
             if (TextUtils.equals(ssid, mSSID)) {
+                Log.d(TAG, "wifi connected ssid send to start p2p");
                 mHandler.removeMessages(MSG_START_P2P);
                 //不知道为什么连接上后又会断开,然后又连上,所以这里延迟久一点
                 mHandler.sendEmptyMessageDelayed(MSG_START_P2P, DELAY_START_P2P);

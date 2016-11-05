@@ -127,12 +127,12 @@ public class BackupZip {
 
         Logger.i(CLASS_TAG, "GetFileList");
 
-        List<String> fileList = new ArrayList<String>();
+        List<String> fileList = new ArrayList<>();
 
         ZipFile zf = new ZipFile(zipFileString);
         Enumeration<? extends ZipEntry> entries = zf.entries();
-        ZipEntry zipEntry = null;
-        String szName = null;
+        ZipEntry zipEntry;
+        String szName;
         while (entries.hasMoreElements()) {
             zipEntry = entries.nextElement();
             szName = zipEntry.getName();

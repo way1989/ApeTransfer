@@ -61,6 +61,24 @@ import java.util.List;
 
 public class BackupFilePreview {
     private static final String TAG = "BackupFilePreview";
+    private static final String[] MODULE_FOLDERS = new String[]{
+            Constants.ModulePath.FOLDER_CALENDAR,
+            Constants.ModulePath.FOLDER_CONTACT,
+            Constants.ModulePath.FOLDER_MMS,
+            Constants.ModulePath.FOLDER_MUSIC,
+            Constants.ModulePath.FOLDER_PICTURE,
+            Constants.ModulePath.FOLDER_SMS,
+            Constants.ModulePath.FOLDER_CALL_LOG
+    };
+    private static final int[] MODULE_TYPES = new int[]{
+            ModuleType.TYPE_CALENDAR,
+            ModuleType.TYPE_CONTACT,
+            ModuleType.TYPE_MESSAGE,
+            ModuleType.TYPE_MUSIC,
+            ModuleType.TYPE_PICTURE,
+            ModuleType.TYPE_MESSAGE,
+            ModuleType.TYPE_CALL_LOG
+    };
     private volatile static BackupFilePreview INSTANCE;
     private final int UN_PARSED_TYPE = -1;
     private File mFolderName = null;
@@ -127,7 +145,7 @@ public class BackupFilePreview {
         if (!TextUtils.isEmpty(content)) {
             recordList = RecordXmlParser.parse(content);
             if (recordList != null && recordList.size() > 0) {
-                if (recordList.size() > 1) {
+                if (recordList.size() == 1) {
                     mIsSelfBackup = false;
                 }
                 String currentDevice = Utils.getPhoneSearialNumber();
@@ -260,40 +278,21 @@ public class BackupFilePreview {
      * parse backup items.
      */
     private int peekBackupModules(Context context) {
-
         File[] files = mFolderName.listFiles();
         mTypes = 0;
-        if (files != null) {
-            for (File file : files) {
-                String[] moduleFolders = new String[]{
-                        Constants.ModulePath.FOLDER_CALENDAR,
-                        Constants.ModulePath.FOLDER_CONTACT,
-                        Constants.ModulePath.FOLDER_MMS,
-                        Constants.ModulePath.FOLDER_MUSIC,
-                        Constants.ModulePath.FOLDER_PICTURE,
-                        Constants.ModulePath.FOLDER_SMS,
-                        Constants.ModulePath.FOLDER_CALL_LOG
-                };
-
-                int[] moduleTypes = new int[]{
-                        ModuleType.TYPE_CALENDAR,
-                        ModuleType.TYPE_CONTACT,
-                        ModuleType.TYPE_MESSAGE,
-                        ModuleType.TYPE_MUSIC,
-                        ModuleType.TYPE_PICTURE,
-                        ModuleType.TYPE_MESSAGE,
-                        ModuleType.TYPE_CALL_LOG
-                };
-
-                if (file.isDirectory() && !FileUtils.isEmptyFolder(file)) {
-                    String name = file.getName();
-                    int count = moduleFolders.length;
-                    for (int index = 0; index < count; index++) {
-                        if (moduleFolders[index].equalsIgnoreCase(name)) {
-                            initNumByType(context, moduleTypes[index]);
-                            if (getItemCount(moduleTypes[index]) > 0) {
-                                mTypes |= moduleTypes[index];
-                            }
+        if (files == null || files.length < 1) {
+            Logger.i(TAG, "parseItemTypes: mTypes =  " + mTypes);
+            return mTypes;
+        }
+        for (File file : files) {
+            if (file.isDirectory() && !FileUtils.isEmptyFolder(file)) {
+                String name = file.getName();
+                int count = MODULE_FOLDERS.length;
+                for (int index = 0; index < count; index++) {
+                    if (MODULE_FOLDERS[index].equalsIgnoreCase(name)) {
+                        initNumByType(context, MODULE_TYPES[index]);
+                        if (getItemCount(MODULE_TYPES[index]) > 0) {
+                            mTypes |= MODULE_TYPES[index];
                         }
                     }
                 }

@@ -32,6 +32,7 @@ import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.StorageUtils;
 import com.ape.backuprestore.utils.Utils;
+import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.RestoreDataLoader;
@@ -136,7 +137,8 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
                         }
                     }
                 });
-
+        if(BuildConfig.LOG_DEBUG)//just for test
+        startLoadRestoreData();
     }
 
     private void startLoadRestoreData() {

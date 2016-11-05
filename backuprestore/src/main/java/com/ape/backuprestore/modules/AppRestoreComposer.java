@@ -6,6 +6,7 @@ import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
 import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
+import com.ape.backuprestore.utils.Utils;
 import com.ape.packagemanager.PackageManagerUtil;
 
 import java.io.File;
@@ -23,6 +24,7 @@ public class AppRestoreComposer extends Composer {
     private List<String> mFileNameList;
     private String mZipFileName;
     private String mDestPath;
+    private boolean isPlatformSigned;
 
     /**
      * @param context context
@@ -57,18 +59,17 @@ public class AppRestoreComposer extends Composer {
      */
     @Override
     public boolean init() {
-        boolean result = false;
         //get the app dest path
         String parentPath = (new File(mParentFolderPath)).getParent();
         if (parentPath == null) {
-            Logger.d(TAG, "init() parentPath == null result:" + result);
-            return result;
+            Logger.e(TAG, "init() parentPath == null");
+            return false;
         } else {
             mDestPath = parentPath + File.separator + RESTORE
                     + File.separator + Constants.ModulePath.FOLDER_APP;
         }
 
-
+        boolean result = false;
         mFileNameList = new ArrayList<>();
 
         String sourcePath = mParentFolderPath + File.separator + Constants.ModulePath.FOLDER_APP;
@@ -79,7 +80,7 @@ public class AppRestoreComposer extends Composer {
                 File file = new File(mZipFileName);
                 if (file.exists()) {
                     mFileNameList = BackupZip.getFileList(mZipFileName, false, true, ".apk");
-                    result = true;
+                    result = mFileNameList.size() > 0;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -88,8 +89,8 @@ public class AppRestoreComposer extends Composer {
                 }
             }
         }
-
-        Logger.d(TAG, "init():" + result + ", count:" + getCount());
+        isPlatformSigned = Utils.isPlatformSigned(mContext, mContext.getPackageName());
+        Logger.d(TAG, "init():" + result + ", count:" + getCount() + ", isPlatformSigned = " + isPlatformSigned);
         return result;
     }
 
@@ -98,10 +99,11 @@ public class AppRestoreComposer extends Composer {
      */
     @Override
     public boolean isAfterLast() {
-        boolean result = true;
         if (mDestPath == null) {
-            return result;
+            Logger.e(TAG, "isAfterLast... mDestPath == null");
+            return true;
         }
+        boolean result = true;
         if (mFileNameList != null) {
             result = (mIndex >= mFileNameList.size());
         }
@@ -115,22 +117,38 @@ public class AppRestoreComposer extends Composer {
      */
     @Override
     public boolean implementComposeOneEntity() {
+        if (mDestPath == null) {
+            Logger.e(TAG, "implementComposeOneEntity... mDestPath == null");
+            return false;
+        }
+
         boolean result = false;
 
         if (mFileNameList != null && mIndex < mFileNameList.size()) {
             String apkName = mFileNameList.get(mIndex++);
             String destFileName = mDestPath + File.separator + apkName;
+
+            File destFile = new File(destFileName);
+            if (destFile.exists()) {
+                installApk(destFile);
+                return true;
+            }
+
             try {
                 BackupZip.unZipFile(mZipFileName, apkName, destFileName);
-                //String apkFileName = mFileNameList.get(mIndex++);
                 File apkFile = new File(destFileName);
                 if (apkFile.exists()) {
-                    result = installApk(apkFile);
+                    installApk(apkFile);
+                    result = true;
                 } else {
                     Logger.d(TAG, "install failed");
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
+                if (super.mReporter != null) {
+                    super.mReporter.onErr(e);
+                }
+                Logger.d(TAG, "unZipFile failed");
             }
         }
 
@@ -139,25 +157,26 @@ public class AppRestoreComposer extends Composer {
 
     private boolean installApk(File apkFile) {
         boolean result = false;
-        PackageManagerUtil packageManagerUtil = new PackageManagerUtil(mContext, mLock);
+        if (isPlatformSigned) {
+            PackageManagerUtil packageManagerUtil = new PackageManagerUtil(mContext, mLock);
+            packageManagerUtil.installPackage(apkFile);
 
-        packageManagerUtil.installPackage(apkFile);
-
-        synchronized (mLock) {
-            while (!packageManagerUtil.isFinished()) {
-                try {
-                    mLock.wait();
-                } catch (InterruptedException e) {
-                    Logger.d(TAG, "InterruptedException");
+            synchronized (mLock) {
+                while (!packageManagerUtil.isFinished()) {
+                    try {
+                        mLock.wait();
+                    } catch (InterruptedException e) {
+                        Logger.d(TAG, "InterruptedException");
+                    }
                 }
-            }
 
-            if (packageManagerUtil.isSuccess()) {
-                apkFile.delete();
-                result = true;
-                Logger.d(TAG, "install success");
-            } else {
-                Logger.d(TAG, "install fail");
+                if (packageManagerUtil.isSuccess()) {
+                    apkFile.delete();
+                    result = true;
+                    Logger.d(TAG, "install success");
+                } else {
+                    Logger.d(TAG, "install fail");
+                }
             }
         }
         return result;

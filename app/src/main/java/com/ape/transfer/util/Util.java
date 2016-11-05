@@ -6,10 +6,14 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.text.TextUtils;
+
+import com.ape.transfer.App;
+import com.ape.transfer.BuildConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +29,7 @@ import java.util.Date;
  */
 public class Util {
     private static final String PACKAGE_URI_PREFIX = "package:";
+    private static Signature[] sSystemSignature;
 
     public static String formatDateString(long time) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-DD HH:mm");
@@ -135,4 +140,38 @@ public class Util {
         context.startActivity(intent);
     }
 
+    public static boolean isSystemPackage(PackageManager pm, PackageInfo pkg) {
+        if (sSystemSignature == null) {
+            sSystemSignature = new Signature[]{getSystemSignature(pm)};
+        }
+        return sSystemSignature[0] != null && sSystemSignature[0].equals(getFirstSignature(pkg));
+    }
+
+    private static Signature getFirstSignature(PackageInfo pkg) {
+        if (pkg != null && pkg.signatures != null && pkg.signatures.length > 0) {
+            return pkg.signatures[0];
+        }
+        return null;
+    }
+
+    private static Signature getSystemSignature(PackageManager pm) {
+        try {
+            final PackageInfo sys = pm.getPackageInfo("android", PackageManager.GET_SIGNATURES);
+            return getFirstSignature(sys);
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return null;
+    }
+
+    public boolean isPlatformSigned() {
+        PackageManager packageManager = App.getContext().getPackageManager();
+        try {
+            PackageInfo packageInfo = packageManager.getPackageInfo(BuildConfig.APPLICATION_ID,
+                    PackageManager.GET_SIGNATURES);
+            return isSystemPackage(packageManager, packageInfo);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
