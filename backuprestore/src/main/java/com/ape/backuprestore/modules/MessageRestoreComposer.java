@@ -15,7 +15,7 @@ import java.util.List;
  * Created by android on 16-7-16.
  */
 public class MessageRestoreComposer extends Composer {
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/MessageRestoreComposer";
+    private static final String TAG = "MessageRestoreComposer";
     private List<Composer> mMessageComposers;
     private long mTime;
 
@@ -48,7 +48,7 @@ public class MessageRestoreComposer extends Composer {
             }
         }
 
-        Logger.d(CLASS_TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
@@ -63,7 +63,7 @@ public class MessageRestoreComposer extends Composer {
             }
         }
 
-        Logger.d(CLASS_TAG, "init():" + result + ",count:" + getCount());
+        Logger.d(TAG, "init():" + result + ",count:" + getCount());
         return result;
     }
 
@@ -77,7 +77,7 @@ public class MessageRestoreComposer extends Composer {
             }
         }
 
-        Logger.d(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -96,15 +96,15 @@ public class MessageRestoreComposer extends Composer {
         boolean result = false;
         int count = 0;
         if (mContext != null) {
-            Logger.d(CLASS_TAG, "begin delete:" + System.currentTimeMillis());
+            Logger.d(TAG, "begin delete:" + System.currentTimeMillis());
             count = mContext.getContentResolver().delete(Uri.parse(Constants.URI_MMS_SMS),
                     "date < ?", new String[]{Long.toString(mTime)});
-            Logger.d(CLASS_TAG, "end delete:" + System.currentTimeMillis());
+            Logger.d(TAG, "end delete:" + System.currentTimeMillis());
 
             result = true;
         }
 
-        Logger.d(CLASS_TAG, "deleteAllMessage(),result" + result + "," + count + " deleted!");
+        Logger.d(TAG, "deleteAllMessage(),result" + result + "," + count + " deleted!");
         return result;
     }
 
@@ -112,7 +112,7 @@ public class MessageRestoreComposer extends Composer {
     public void onStart() {
         super.onStart();
 
-        Logger.d(CLASS_TAG, "onStart()");
+        Logger.d(TAG, "onStart()");
     }
 
     @Override
@@ -125,9 +125,9 @@ public class MessageRestoreComposer extends Composer {
         }
         Intent intent = new Intent();
         intent.setAction("com.mediatek.backuprestore.module.MessageRestoreComposer.RESTORE_END");
-        Logger.d(CLASS_TAG, "message restore end,sendBroadcast to updata UI ");
+        Logger.d(TAG, "message restore end,sendBroadcast to updata UI ");
         mContext.sendBroadcast(intent);
-        Logger.d(CLASS_TAG, "onEnd()");
+        Logger.d(TAG, "onEnd()");
     }
 
     /**

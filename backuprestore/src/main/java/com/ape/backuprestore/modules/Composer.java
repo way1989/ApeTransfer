@@ -9,9 +9,8 @@ import com.ape.backuprestore.utils.Logger;
 import java.util.List;
 
 public abstract class Composer {
-    private static final String TAG = "Composer";
     protected static final String RESTORE = "Restore";
-
+    private static final String TAG = "Composer";
     protected Context mContext;
     protected ProgressReporter mReporter;
     protected boolean mIsCancel = false;

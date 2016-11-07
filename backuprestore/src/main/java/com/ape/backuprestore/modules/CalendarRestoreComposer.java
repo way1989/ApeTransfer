@@ -5,8 +5,8 @@ import android.net.Uri;
 import android.provider.CalendarContract;
 
 import com.ape.backuprestore.utils.Constants;
-import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.Logger;
+import com.ape.backuprestore.utils.ModuleType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,7 +17,7 @@ import java.io.IOException;
  * Created by android on 16-7-16.
  */
 public class CalendarRestoreComposer extends Composer {
-    private static final String TAG = Logger.LOG_TAG + "/CalendarRestoreComposer";
+    private static final String TAG = "CalendarRestoreComposer";
     private static final String COLUMN_ID = "_id";
     private static final Uri CALANDER_EVENT_URI = CalendarContract.Events.CONTENT_URI;
     private int mIndex;

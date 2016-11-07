@@ -15,11 +15,12 @@ import java.util.ArrayList;
 public class RestoreDataLoader extends BaseLoader<PersonalItemData> {
     private static final String TAG = "BackupDataLoader";
     private static final int TYPES[] = new int[]{
+            ModuleType.TYPE_APP,
+            ModuleType.TYPE_CALENDAR,
             ModuleType.TYPE_CONTACT,
             ModuleType.TYPE_MESSAGE,
-            ModuleType.TYPE_PICTURE,
-            ModuleType.TYPE_CALENDAR,
             ModuleType.TYPE_MUSIC,
+            ModuleType.TYPE_PICTURE,
             ModuleType.TYPE_CALL_LOG,
     };
 

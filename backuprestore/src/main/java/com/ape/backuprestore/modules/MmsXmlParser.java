@@ -48,7 +48,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 
 public class MmsXmlParser {
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/MmsXmlParser";
+    private static final String TAG = "MmsXmlParser";
 
     public static ArrayList<MmsXmlInfo> parse(String mmsString) {
         MmsXmlInfo record = null;
@@ -89,7 +89,7 @@ public class MmsXmlParser {
                                     record.setIsLocked(value);
                                 }
 
-                                Logger.d(CLASS_TAG, "name:" + name + ",value:" + value);
+                                Logger.d(TAG, "name:" + name + ",value:" + value);
                             }
                         }
                         break;

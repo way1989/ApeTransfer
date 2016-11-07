@@ -3,7 +3,6 @@ package com.ape.backuprestore.utils;
 import android.util.Log;
 
 public class Logger {
-    public static final String LOG_TAG = "ApeTransfer";
     public static final String BACKUP_ACTIVITY_TAG = "BackupActivity: ";
     public static final String BACKUP_SERVICE_TAG = "BackupService: ";
     public static final String BACKUP_ENGINE_TAG = "BackupEngine: ";

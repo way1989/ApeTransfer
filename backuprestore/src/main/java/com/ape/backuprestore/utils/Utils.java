@@ -39,6 +39,7 @@ public class Utils {
             Manifest.permission.WRITE_CALENDAR,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    private static final String TAG = "Utils";
     public static boolean isRestoring;
     public static boolean isBackingUp;
     private static String[] sRequestedPermissions = null;
@@ -58,9 +59,9 @@ public class Utils {
         ActivityManager am
                 = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
         if (am.isInLockTaskMode()) {
-            Log.d(Logger.LOG_TAG, "exitLockTaskModeIfNeeded: in lock mode");
+            Log.d(TAG, "exitLockTaskModeIfNeeded: in lock mode");
             activity.stopLockTask();
-            Log.d(Logger.LOG_TAG, "exitLockTaskModeIfNeeded: lock mode exited");
+            Log.d(TAG, "exitLockTaskModeIfNeeded: lock mode exited");
         }
     }
 
@@ -254,13 +255,13 @@ public class Utils {
         }
         List<String> unsatisfiedPermissions = new ArrayList<String>();
         for (String p : requestedPermissions) {
-            Log.d(Logger.LOG_TAG, "Checking: " + p);
+            Log.d(TAG, "Checking: " + p);
             int result = context.checkSelfPermission(p);
             if (result != PackageManager.PERMISSION_GRANTED) {
                 unsatisfiedPermissions.add(p);
-                Log.d(Logger.LOG_TAG, "Denied");
+                Log.d(TAG, "Denied");
             } else {
-                Log.d(Logger.LOG_TAG, "Granted");
+                Log.d(TAG, "Granted");
             }
         }
         if (unsatisfiedPermissions.size() == 0) {

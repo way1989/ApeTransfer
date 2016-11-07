@@ -43,6 +43,7 @@ import android.text.TextUtils;
 import com.ape.backuprestore.RecordXmlComposer;
 import com.ape.backuprestore.RecordXmlInfo;
 import com.ape.backuprestore.RecordXmlParser;
+import com.ape.backuprestore.modules.AppRestoreComposer;
 import com.ape.backuprestore.modules.CalendarRestoreComposer;
 import com.ape.backuprestore.modules.CallLogRestoreComposer;
 import com.ape.backuprestore.modules.Composer;
@@ -62,6 +63,7 @@ import java.util.List;
 public class BackupFilePreview {
     private static final String TAG = "BackupFilePreview";
     private static final String[] MODULE_FOLDERS = new String[]{
+            Constants.ModulePath.FOLDER_APP,
             Constants.ModulePath.FOLDER_CALENDAR,
             Constants.ModulePath.FOLDER_CONTACT,
             Constants.ModulePath.FOLDER_MMS,
@@ -71,12 +73,12 @@ public class BackupFilePreview {
             Constants.ModulePath.FOLDER_CALL_LOG
     };
     private static final int[] MODULE_TYPES = new int[]{
+            ModuleType.TYPE_APP,
             ModuleType.TYPE_CALENDAR,
             ModuleType.TYPE_CONTACT,
             ModuleType.TYPE_MESSAGE,
             ModuleType.TYPE_MUSIC,
             ModuleType.TYPE_PICTURE,
-            ModuleType.TYPE_MESSAGE,
             ModuleType.TYPE_CALL_LOG
     };
     private volatile static BackupFilePreview INSTANCE;
@@ -145,7 +147,7 @@ public class BackupFilePreview {
         if (!TextUtils.isEmpty(content)) {
             recordList = RecordXmlParser.parse(content);
             if (recordList != null && recordList.size() > 0) {
-                if (recordList.size() == 1) {
+                if (recordList.size() > 1) {
                     mIsSelfBackup = false;
                 }
                 String currentDevice = Utils.getPhoneSearialNumber();
@@ -305,6 +307,9 @@ public class BackupFilePreview {
     private void initNumByType(Context context, final int type) {
         Composer composer = null;
         switch (type) {
+            case ModuleType.TYPE_APP:
+                composer = new AppRestoreComposer(context);
+                break;
             case ModuleType.TYPE_CONTACT:
                 composer = new ContactRestoreComposer(context);
                 break;

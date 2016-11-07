@@ -19,10 +19,8 @@ public class ModuleType {
     public static final int TYPE_MESSAGE = 0x40;
     public static final int TYPE_MUSIC = 0x80;
     public static final int TYPE_NOTEBOOK = 0x100;
-    public static final int TYPE_BOOKMARK = 0x200;
     public static final int TYPE_CALL_LOG = 0x300;
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/ModuleType";
-    //public static final int TYPE_SELECT = 0x400;
+    private static final String TAG = "ModuleType";
     public static Map<Integer, String> sModuleTypeFolderInfo = new HashMap<>();
 
     static {
@@ -35,7 +33,6 @@ public class ModuleType {
         sModuleTypeFolderInfo.put(TYPE_MUSIC, Constants.ModulePath.FOLDER_MUSIC);
         sModuleTypeFolderInfo.put(TYPE_NOTEBOOK, Constants.ModulePath.FOLDER_NOTEBOOK);
         sModuleTypeFolderInfo.put(TYPE_CALL_LOG, Constants.ModulePath.FOLDER_CALL_LOG);
-//        sModuleTypeFolderInfo.put(TYPE_BOOKMARK, ModulePath.FOLDER_BOOKMARK);
 
     }
 
@@ -45,10 +42,6 @@ public class ModuleType {
     public static String getModuleStringFromType(Context context, int type) {
         int resId = 0;
         switch (type) {
-//        case ModuleType.TYPE_SELECT:
-//            resId = R.string.contact_module;
-//            break;
-
             case ModuleType.TYPE_CONTACT:
                 resId = R.string.contact_module;
                 break;
@@ -81,14 +74,10 @@ public class ModuleType {
                 resId = R.string.calllog_module;
                 break;
 
-//        case ModuleType.TYPE_BOOKMARK:
-//            resId = R.string.bookmark_module;
-//            break;
-
             default:
                 break;
         }
-        Logger.d(CLASS_TAG, "getModuleStringFromType: resId = " + resId);
+        Logger.d(TAG, "getModuleStringFromType: resId = " + resId);
         return context.getResources().getString(resId);
     }
 }

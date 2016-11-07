@@ -1,40 +1,3 @@
-/* Copyright Statement:
- *
- * This software/firmware and related documentation ("MediaTek Software") are
- * protected under relevant copyright laws. The information contained herein is
- * confidential and proprietary to MediaTek Inc. and/or its licensors. Without
- * the prior written permission of MediaTek inc. and/or its licensors, any
- * reproduction, modification, use or disclosure of MediaTek Software, and
- * information contained herein, in whole or in part, shall be strictly
- * prohibited.
- *
- * MediaTek Inc. (C) 2010. All rights reserved.
- *
- * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
- * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE")
- * RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO RECEIVER
- * ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL
- * WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
- * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
- * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
- * INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND RECEIVER AGREES
- * TO LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
- * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
- * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
- * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
- * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
- * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
- * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO THE MEDIATEK SOFTWARE
- * RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, TO REVISE OR REPLACE THE
- * MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE FEES OR SERVICE
- * CHARGE PAID BY RECEIVER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
- *
- * The following software/firmware and/or related documentation ("MediaTek
- * Software") have been modified by MediaTek Inc. All revisions are subject to
- * any receiver's applicable license agreements with MediaTek Inc.
- */
-
 package com.ape.backuprestore;
 
 import android.app.Notification;
@@ -57,11 +20,11 @@ import java.util.HashMap;
 
 
 /**
- * @author mtk81330
+ * @author way
  */
 public class RestoreService extends Service implements ProgressReporter, RestoreEngine.OnRestoreDoneListner {
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/RestoreService";
-    HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<Integer, ArrayList<String>>();
+    private static final String TAG = "RestoreService";
+    private HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
     private RestoreBinder mBinder = new RestoreBinder();
     private int mState;
     private RestoreEngine mRestoreEngine;
@@ -73,14 +36,14 @@ public class RestoreService extends Service implements ProgressReporter, Restore
 
     @Override
     public IBinder onBind(Intent intent) {
-        Logger.i(CLASS_TAG, "onbind");
+        Logger.i(TAG, "onBind");
         return mBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         super.onUnbind(intent);
-        Logger.i(CLASS_TAG, "onUnbind");
+        Logger.i(TAG, "onUnbind");
         // If SD card removed or full, kill process
         StorageUtils.killProcessIfNecessary();
         return true;
@@ -90,13 +53,13 @@ public class RestoreService extends Service implements ProgressReporter, Restore
     public void onCreate() {
         super.onCreate();
         moveToState(Constants.State.INIT);
-        Logger.i(CLASS_TAG, "onCreate");
+        Logger.i(TAG, "onCreate");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        Logger.i(CLASS_TAG, "onStartCommand");
+        Logger.i(TAG, "onStartCommand");
         return START_NOT_STICKY;
     }
 
@@ -104,7 +67,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
     public void onDestroy() {
         super.onDestroy();
         stopForeground(true);
-        Logger.i(CLASS_TAG, "onDestroy");
+        Logger.i(TAG, "onDestroy");
         if (mRestoreEngine != null && mRestoreEngine.isRunning()) {
             mRestoreEngine.setOnRestoreEndListner(null);
             mRestoreEngine.cancel();
@@ -116,7 +79,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
      */
     public void moveToState(int state) {
         synchronized (this) {
-            Logger.d(CLASS_TAG, "Move from " + mState + " to " + state);
+            Logger.d(TAG, "Move from " + mState + " to " + state);
             mState = state;
         }
     }
@@ -153,7 +116,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
         mCurrentProgress.mCurNum++;
         if (composer.getModuleType() == ModuleType.TYPE_APP) {
             if (mAppResultList == null) {
-                mAppResultList = new ArrayList<ResultDialog.ResultEntity>();
+                mAppResultList = new ArrayList<>();
             }
             ResultDialog.ResultEntity entity = new ResultDialog.ResultEntity(ModuleType.TYPE_APP,
                     result ? ResultDialog.ResultEntity.SUCCESS : ResultDialog.ResultEntity.FAIL);
@@ -165,7 +128,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
         }
 
         if (getRestoreState() != Constants.State.RUNNING) {
-            Logger.w(CLASS_TAG, "onOneFinished: State is not Running " + getRestoreState());
+            Logger.w(TAG, "onOneFinished: State is not Running " + getRestoreState());
             return;
         }
 
@@ -190,7 +153,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
      */
     public void onEnd(Composer composer, boolean result) {
         if (mResultList == null) {
-            mResultList = new ArrayList<ResultDialog.ResultEntity>();
+            mResultList = new ArrayList<>();
         }
         ResultDialog.ResultEntity item = new ResultDialog.ResultEntity(
                 composer.getModuleType(),
@@ -247,7 +210,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Logger.d(CLASS_TAG, "onConfigurationChanged: setRefreshFlag");
+        Logger.d(TAG, "onConfigurationChanged: setRefreshFlag");
         NotifyManager.getInstance(this).setRefreshFlag();
     }
 
@@ -329,7 +292,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
         public boolean startRestore(String fileName) {
             stayForeground();
             if (mRestoreEngine == null) {
-                Logger.e(CLASS_TAG, "startRestore Error: engine is not initialed");
+                Logger.e(TAG, "startRestore Error: engine is not initialed");
                 return false;
             }
             mRestoreEngine.setOnRestoreEndListner(RestoreService.this);
@@ -347,7 +310,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
             if (mRestoreEngine != null) {
                 mRestoreEngine.pause();
             }
-            Logger.d(CLASS_TAG, "pauseRestore");
+            Logger.d(TAG, "pauseRestore");
         }
 
         /**
@@ -358,7 +321,7 @@ public class RestoreService extends Service implements ProgressReporter, Restore
             if (mRestoreEngine != null) {
                 mRestoreEngine.continueRestore();
             }
-            Logger.d(CLASS_TAG, "continueRestore");
+            Logger.d(TAG, "continueRestore");
         }
 
         public void cancelRestore() {
@@ -366,14 +329,14 @@ public class RestoreService extends Service implements ProgressReporter, Restore
             if (mRestoreEngine != null) {
                 mRestoreEngine.cancel();
             }
-            Logger.d(CLASS_TAG, "cancelRestore");
+            Logger.d(TAG, "cancelRestore");
         }
 
         /**
          * reset.
          */
         public void reset() {
-            Logger.d(CLASS_TAG, "reset()");
+            Logger.d(TAG, "reset()");
             moveToState(Constants.State.INIT);
             if (mResultList != null) {
                 mResultList.clear();

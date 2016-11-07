@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * Created by android on 16-7-16.
  */
 public class NoteBookRestoreComposer extends Composer {
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/NoteBookBackupComposer";
+    private static final String TAG = "NoteBookBackupComposer";
     private Uri mUri = Uri.parse(Constants.URI_NOTEBOOK);
     private int mIdx;
     private ArrayList<NoteBookXmlInfo> mRecordList;
@@ -45,7 +45,7 @@ public class NoteBookRestoreComposer extends Composer {
         if (mRecordList != null) {
             count = mRecordList.size();
         }
-        Logger.d(CLASS_TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
@@ -74,7 +74,7 @@ public class NoteBookRestoreComposer extends Composer {
         }
         result = true;
 
-        Logger.d(CLASS_TAG, "init():" + result + ",count:" + mRecordList.size());
+        Logger.d(TAG, "init():" + result + ",count:" + mRecordList.size());
         return result;
     }
 
@@ -90,7 +90,7 @@ public class NoteBookRestoreComposer extends Composer {
             result = mIdx >= mRecordList.size();
         }
 
-        Logger.d(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -112,14 +112,14 @@ public class NoteBookRestoreComposer extends Composer {
 
             try {
                 Uri tmpUri = mContext.getContentResolver().insert(mUri, v);
-                Logger.d(CLASS_TAG, "tmpUri:" + tmpUri);
+                Logger.d(TAG, "tmpUri:" + tmpUri);
                 result = true;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        Logger.d(CLASS_TAG, Logger.NOTEBOOK_TAG + "implementComposeOneEntity():" + result);
+        Logger.d(TAG, Logger.NOTEBOOK_TAG + "implementComposeOneEntity():" + result);
         return result;
     }
 

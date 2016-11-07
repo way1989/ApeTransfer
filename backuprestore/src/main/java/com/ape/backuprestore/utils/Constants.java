@@ -8,7 +8,6 @@ public class Constants {
     public static final String BACKUP_FOLDER_NAME = ".backup";
     public static final String RECORD_XML = "record.xml";
 
-    public static final String ACTION_NEW_DATA_DETECTED = "com.mediatek.datatransfer.newdata";
     public static final String ACTION_NEW_DATA_DETECTED_TRANSFER = "com.mediatek.datatransfer.newdata_transfer";
     public static final String ACTION_SCAN_DATA = "com.mediatek.datatransfer.scandata";
 

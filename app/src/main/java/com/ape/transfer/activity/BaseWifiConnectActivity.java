@@ -26,11 +26,26 @@ import rx.functions.Action1;
  */
 
 public abstract class BaseWifiConnectActivity extends BaseActivity {
-    private static final String TAG = "BaseWifiConnectActivity";
     protected static final int MSG_START_P2P = 0;
     protected static final int MSG_TIMEOUT = 1;
     protected static final long DURATION_TIMEOUT = 30000L;
     protected static final long DELAY_START_P2P = 500L;
+    private static final String TAG = "BaseWifiConnectActivity";
+    protected final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case MSG_START_P2P:
+                    startP2P();
+                    break;
+                case MSG_TIMEOUT:
+                    Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
+                    finish();
+                    break;
+            }
+        }
+    };
     private final BroadcastReceiver mWifiStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -44,21 +59,6 @@ public abstract class BaseWifiConnectActivity extends BaseActivity {
                 NetworkInfo networkInfo = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
                 NetworkInfo.State state = networkInfo.getState();
                 handleConnectState(state);
-            }
-        }
-    };
-    protected final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case MSG_START_P2P:
-                    startP2P();
-                    break;
-                case MSG_TIMEOUT:
-                    Toast.makeText(getApplicationContext(), R.string.text_connetion_tip, Toast.LENGTH_SHORT).show();
-                    finish();
-                    break;
             }
         }
     };

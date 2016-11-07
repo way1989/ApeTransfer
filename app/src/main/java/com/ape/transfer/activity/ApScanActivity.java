@@ -28,8 +28,6 @@ import java.util.List;
 
 import butterknife.BindView;
 
-import static com.tencent.bugly.crashreport.crash.c.e;
-
 public class ApScanActivity extends BaseWifiConnectActivity implements View.OnClickListener {
     private static final String TAG = "ApScanActivity";
     @BindView(R.id.iv_scan)

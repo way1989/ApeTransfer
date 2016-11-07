@@ -79,7 +79,7 @@ public class AppRestoreComposer extends Composer {
                 mZipFileName = sourcePath + File.separator + Constants.ModulePath.NAME_APPZIP;
                 File file = new File(mZipFileName);
                 if (file.exists()) {
-                    mFileNameList = BackupZip.getFileList(mZipFileName, false, true, ".apk");
+                    mFileNameList = BackupZip.getFileList(mZipFileName, false, true, ".*");
                     result = mFileNameList.size() > 0;
                 }
             } catch (IOException e) {

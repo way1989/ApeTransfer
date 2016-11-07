@@ -3,7 +3,6 @@ package com.ape.backuprestore.modules;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.provider.MediaStore;
 
 import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
@@ -139,7 +138,7 @@ public class MusicRestoreComposer extends Composer {
             String musicName = mFileNameList.get(mIndex++);
             String destFileName = mDestPath + File.separator + musicName;
             File destFile = new File(destFileName);
-            if(destFile.exists()){
+            if (destFile.exists()) {
                 return true;
             }
             try {

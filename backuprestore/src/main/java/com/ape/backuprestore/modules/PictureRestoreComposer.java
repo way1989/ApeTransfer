@@ -2,13 +2,10 @@ package com.ape.backuprestore.modules;
 
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.provider.MediaStore;
 
 import com.ape.backuprestore.utils.BackupZip;
 import com.ape.backuprestore.utils.Constants;
-import com.ape.backuprestore.utils.FileUtils;
 import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
 
@@ -113,7 +110,7 @@ public class PictureRestoreComposer extends Composer {
             String destFileName = mDestPath + picName;
 
             File destFile = new File(destFileName);
-            if(destFile.exists()){
+            if (destFile.exists()) {
                 return true;
             }
             try {
@@ -148,6 +145,7 @@ public class PictureRestoreComposer extends Composer {
 
         Logger.d(TAG, "onStart()");
     }
+
     /**
      * Describe <code>onEnd</code> method here.
      */

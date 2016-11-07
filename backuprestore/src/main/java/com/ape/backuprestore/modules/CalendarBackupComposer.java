@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * Created by android on 16-7-16.
  */
 public class CalendarBackupComposer extends Composer {
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/CalendarBackupComposer";
+    private static final String TAG = "CalendarBackupComposer";
     private static final Uri CALANDER_EVENT_URI = CalendarContract.Events.CONTENT_URI;
     private BufferedWriter mOut;
     private Cursor mCursor;
@@ -44,7 +44,7 @@ public class CalendarBackupComposer extends Composer {
             }
         }
 
-        Logger.d(CLASS_TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
@@ -55,7 +55,7 @@ public class CalendarBackupComposer extends Composer {
             result = mCursor.isAfterLast();
         }
 
-        Logger.d(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 
@@ -67,17 +67,17 @@ public class CalendarBackupComposer extends Composer {
 
         if (mCursor != null) {
             mCursor.moveToFirst();
-            Logger.d(CLASS_TAG, "init() begin");
+            Logger.d(TAG, "init() begin");
             for (int i = 0; i < mCursor.getCount(); i++) {
                 int id = 0;
                 try {
                     id = mCursor.getInt(mCursor.getColumnIndex("_id"));
-                    Logger.d(CLASS_TAG, "init() id = " + id);
+                    Logger.d(TAG, "init() id = " + id);
 
                     mCursor.moveToNext();
                 } catch (Exception e) {
                     mFailEvents.add(id);
-                    Logger.d(CLASS_TAG, "VCAL: init() fail");
+                    Logger.d(TAG, "VCAL: init() fail");
                 }
             }
             mCursor.moveToFirst();
@@ -85,7 +85,7 @@ public class CalendarBackupComposer extends Composer {
             result = false;
         }
 
-        Logger.d(CLASS_TAG, "init(),result:" + result + ", count:"
+        Logger.d(TAG, "init(),result:" + result + ", count:"
                 + (mCursor != null ? mCursor.getCount() : 0));
         return result;
     }
@@ -96,7 +96,7 @@ public class CalendarBackupComposer extends Composer {
 
         if (mCursor != null && !mCursor.isAfterLast()) {
             int id = mCursor.getInt(mCursor.getColumnIndex("_id"));
-            Logger.d(CLASS_TAG, "implementComposeOneEntity id:" + id);
+            Logger.d(TAG, "implementComposeOneEntity id:" + id);
             mCursor.moveToNext();
 
         }
@@ -119,7 +119,7 @@ public class CalendarBackupComposer extends Composer {
                 try {
                     file.createNewFile();
                 } catch (Exception e) {
-                    Logger.e(CLASS_TAG, "onStart():create file failed");
+                    Logger.e(TAG, "onStart():create file failed");
                 }
             }
 
@@ -127,7 +127,7 @@ public class CalendarBackupComposer extends Composer {
                 FileWriter fstream = new FileWriter(file);
                 mOut = new BufferedWriter(fstream);
             } catch (Exception e) {
-                Logger.d(CLASS_TAG, "VCAL: onStart() write file failed");
+                Logger.d(TAG, "VCAL: onStart() write file failed");
             }
         }
     }
@@ -142,16 +142,16 @@ public class CalendarBackupComposer extends Composer {
             mCursor = null;
         }
 
-        Logger.d(CLASS_TAG, "onEnd");
+        Logger.d(TAG, "onEnd");
         if (mOut != null) {
             try {
             } catch (Exception e) {
-                Logger.d(CLASS_TAG, "VCAL: onEnd() write file failed");
+                Logger.d(TAG, "VCAL: onEnd() write file failed");
             } finally {
                 try {
                     mOut.close();
                 } catch (IOException e) {
-                    Logger.d(CLASS_TAG, "IOException");
+                    Logger.d(TAG, "IOException");
                 }
             }
         }

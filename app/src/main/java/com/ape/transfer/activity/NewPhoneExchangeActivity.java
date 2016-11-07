@@ -78,6 +78,8 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             if (mRestoreService != null) {
                 mRestoreService.setOnRestoreChangedListner(NewPhoneExchangeActivity.this);
             }
+            if (BuildConfig.LOG_DEBUG)//just for test
+                startLoadRestoreData();
         }
 
         public void onServiceDisconnected(ComponentName name) {
@@ -137,8 +139,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
                         }
                     }
                 });
-        if(BuildConfig.LOG_DEBUG)//just for test
-        startLoadRestoreData();
+
     }
 
     private void startLoadRestoreData() {
@@ -443,7 +444,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
 
     @Override
     public void onLoadFinished(Loader<BaseLoader.Result> loader, BaseLoader.Result data) {
-        Logger.d(TAG, "mIsDataInitialed is ok");
+        Logger.d(TAG, "onLoadFinished... data.size = " + data.lists.size());
         if (!data.lists.isEmpty()) {
             Log.i(TAG, "updateData... mBackupDataList.size = " + data.lists.size());
             updateData(data.lists);

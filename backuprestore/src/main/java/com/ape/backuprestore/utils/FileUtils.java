@@ -21,7 +21,7 @@ import java.util.List;
 
 public class FileUtils {
 
-    public static final String CLASS_TAG = Logger.LOG_TAG + "/FileUtils";
+    public static final String TAG = "FileUtils";
     static final int MD5_MASK = 0xff;
     private static final int BUFF_SIZE = 1024 * 1024; // 1M Byte
 
@@ -49,7 +49,7 @@ public class FileUtils {
             builder.append("KB");
             displaySize = builder.toString();
         }
-        Logger.d(CLASS_TAG, "getDisplaySize:" + displaySize);
+        Logger.d(TAG, "getDisplaySize:" + displaySize);
         return displaySize;
     }
 
@@ -86,7 +86,7 @@ public class FileUtils {
                 }
             } catch (IOException e) {
                 success = false;
-                Logger.d(CLASS_TAG,
+                Logger.d(TAG,
                         "createFile() failed !cause:" + e.getMessage());
                 e.printStackTrace();
             }
@@ -187,7 +187,7 @@ public class FileUtils {
                 }
             } catch (NullPointerException e) {
                 size = 0;
-                Logger.e(CLASS_TAG, "computeAllFileSizeInFolder: sd card is out when ");
+                Logger.e(TAG, "computeAllFileSizeInFolder: sd card is out when ");
                 e.printStackTrace();
             }
         }
@@ -240,7 +240,7 @@ public class FileUtils {
                 }
                 // Bug Fix for CR ALPS01821649
             } catch (NullPointerException e) {
-                Logger.e(CLASS_TAG, "NullPointerException: sd card is error");
+                Logger.e(TAG, "NullPointerException: sd card is error");
             }
             if (!file.delete()) {
                 result = false;
@@ -280,7 +280,7 @@ public class FileUtils {
                 }
                 // Bug Fix for CR ALPS01821649
             } catch (NullPointerException e) {
-                Logger.e(CLASS_TAG, "NullPointerException: sd card is error");
+                Logger.e(TAG, "NullPointerException: sd card is error");
             }
             if (!file.delete()) {
                 result = false;
@@ -295,12 +295,12 @@ public class FileUtils {
      * @param mContext
      */
     public static void scanPathforMediaStore(String path, Context mContext) {
-        Logger.d(CLASS_TAG, "scanPathforMediaStore.path =" + path);
+        Logger.d(TAG, "scanPathforMediaStore.path =" + path);
         if (mContext != null && !TextUtils.isEmpty(path)) {
             String[] paths = {
                     path
             };
-            Logger.d(CLASS_TAG, "scanPathforMediaStore,scan file .");
+            Logger.d(TAG, "scanPathforMediaStore,scan file .");
             MediaScannerConnection.scanFile(mContext, paths, null, null);
         }
     }
@@ -310,11 +310,11 @@ public class FileUtils {
      * @param mContext
      */
     public static void scanPathforMediaStore(List<String> scanPaths, Context mContext) {
-        Logger.d(CLASS_TAG, "scanPathforMediaStore,scanPaths.");
+        Logger.d(TAG, "scanPathforMediaStore,scanPaths.");
         if (mContext != null && !scanPaths.isEmpty()) {
             String[] paths = new String[scanPaths.size()];
             scanPaths.toArray(paths);
-            Logger.d(CLASS_TAG, "scanPathforMediaStore,scan file.");
+            Logger.d(TAG, "scanPathforMediaStore,scan file.");
             MediaScannerConnection.scanFile(mContext, paths, null, null);
         }
     }
@@ -324,7 +324,7 @@ public class FileUtils {
      * @param mContext delete the record in MediaStore
      */
     public static void deleteFileInMediaStore(List<String> paths, Context mContext) {
-        Logger.d(CLASS_TAG, "deleteFileInMediaStore.");
+        Logger.d(TAG, "deleteFileInMediaStore.");
         Uri uri = MediaStore.Files.getContentUri("external");
         StringBuilder whereClause = new StringBuilder();
         whereClause.append("?");
@@ -337,12 +337,12 @@ public class FileUtils {
             ContentResolver cr = mContext.getContentResolver();
             String[] whereArgs = new String[paths.size()];
             paths.toArray(whereArgs);
-            Logger.d(CLASS_TAG, "deleteFileInMediaStore,delete.");
+            Logger.d(TAG, "deleteFileInMediaStore,delete.");
 
             try {
                 cr.delete(uri, where, whereArgs);
             } catch (UnsupportedOperationException e) {
-                Logger.d(CLASS_TAG, "Error, database is closed!!!");
+                Logger.d(TAG, "Error, database is closed!!!");
             }
         }
     }
@@ -381,7 +381,7 @@ public class FileUtils {
         File newestFile = files.get(0);
         long newest = newestFile.lastModified();
         for (File file : files) {
-            Logger.d(CLASS_TAG, "onStart() ---->" + file.getName() + "  lastModified = "
+            Logger.d(TAG, "onStart() ---->" + file.getName() + "  lastModified = "
                     + file.lastModified());
             newestFile = (file.lastModified() > newest ? file : newestFile);
         }
@@ -425,7 +425,7 @@ public class FileUtils {
                 }
                 buf.append(md5s);
             }
-            Logger.d(CLASS_TAG, "getFileMD5:GenMd5 success! spend the time: "
+            Logger.d(TAG, "getFileMD5:GenMd5 success! spend the time: "
                     + (System.currentTimeMillis() - s) + "ms");
             return buf.toString();
         } catch (Exception ex) {
@@ -471,7 +471,7 @@ public class FileUtils {
      */
     public static void combineFiles(List<File> files, String saveFileName) throws IOException {
         if (files == null || files.isEmpty()) {
-            Logger.d(CLASS_TAG, "no file need to be combined, return and do nothing");
+            Logger.d(TAG, "no file need to be combined, return and do nothing");
             return;
         }
 
@@ -492,7 +492,7 @@ public class FileUtils {
 
                 long position = 0;
                 long maxCount = inFileChannel.size();
-                Logger.d(CLASS_TAG,
+                Logger.d(TAG,
                         "[combineFiles] inFileChannel.size " + inFileChannel.size());
 
                 while (position < inFileChannel.size()) {
@@ -501,7 +501,7 @@ public class FileUtils {
                         position += count;
                         maxCount -= count;
                     }
-                    Logger.d(CLASS_TAG, "[combineFiles] count/pos is " + count + "/"
+                    Logger.d(TAG, "[combineFiles] count/pos is " + count + "/"
                             + position);
                 }
 
@@ -514,19 +514,19 @@ public class FileUtils {
 
         } finally {
             try {
-                Logger.d(CLASS_TAG, "Close the two file channel begin.");
+                Logger.d(TAG, "Close the two file channel begin.");
                 if (mFileChannel != null && mFileChannel.isOpen()) {
-                    Logger.d(CLASS_TAG, "Close mFileChannel");
+                    Logger.d(TAG, "Close mFileChannel");
                     mFileChannel.close();
                 }
                 if (inFileChannel != null && inFileChannel.isOpen()) {
-                    Logger.d(CLASS_TAG, "Close inFileChannel");
+                    Logger.d(TAG, "Close inFileChannel");
                     inFileChannel.close();
                 }
-                Logger.d(CLASS_TAG, "Close the two file channel end.");
+                Logger.d(TAG, "Close the two file channel end.");
             } catch (IOException e) {
                 e.printStackTrace();
-                Logger.d(CLASS_TAG, "Exception when close");
+                Logger.d(TAG, "Exception when close");
                 if (exception != null) {
                     exception = e;
                 }

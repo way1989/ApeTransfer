@@ -13,7 +13,7 @@ import java.util.List;
  * Created by android on 16-7-16.
  */
 public class MessageBackupComposer extends Composer {
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/MessageBackupComposer";
+    private static final String TAG = "MessageBackupComposer";
     private List<Composer> mMessageComposers;
 
     public MessageBackupComposer(Context context) {
@@ -35,7 +35,7 @@ public class MessageBackupComposer extends Composer {
             }
         }
 
-        Logger.d(CLASS_TAG, "getCount():" + count);
+        Logger.d(TAG, "getCount():" + count);
         return count;
     }
 
@@ -50,7 +50,7 @@ public class MessageBackupComposer extends Composer {
             }
         }
 
-        Logger.d(CLASS_TAG, "init():" + result);
+        Logger.d(TAG, "init():" + result);
         return result;
     }
 
@@ -64,7 +64,7 @@ public class MessageBackupComposer extends Composer {
             }
         }
 
-        Logger.d(CLASS_TAG, "isAfterLast():" + result);
+        Logger.d(TAG, "isAfterLast():" + result);
         return result;
     }
 

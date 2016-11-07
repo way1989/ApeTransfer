@@ -2,19 +2,15 @@ package com.ape.backuprestore;
 
 import android.app.Notification;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Binder;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import com.ape.backuprestore.modules.Composer;
 import com.ape.backuprestore.utils.Constants;
-import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.Logger;
+import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.NotifyManager;
 import com.ape.backuprestore.utils.StorageUtils;
 
@@ -29,7 +25,6 @@ import java.util.HashMap;
 public class BackupService extends Service implements ProgressReporter, BackupEngine.OnBackupDoneListener {
     private static final String TAG = "BackupService";
     HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
-    NewDataNotifyReceiver mNotificationReceiver = null;
     private BackupBinder mBinder = new BackupBinder();
     private int mState;
     private BackupEngine mBackupEngine;
@@ -63,10 +58,6 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
         super.onCreate();
         mState = Constants.State.INIT;
         Logger.i(TAG, "onCreate");
-        mNotificationReceiver = new NewDataNotifyReceiver();
-        IntentFilter filter = new IntentFilter(Constants.ACTION_NEW_DATA_DETECTED);
-        filter.setPriority(1000);
-        registerReceiver(mNotificationReceiver, filter);
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -93,11 +84,6 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
         if (mBackupEngine != null && mBackupEngine.isRunning()) {
             mBackupEngine.setOnBackupDoneListener(null);
             mBackupEngine.cancel();
-        }
-
-        if (mNotificationReceiver != null) {
-            unregisterReceiver(mNotificationReceiver);
-            mNotificationReceiver = null;
         }
     }
 
@@ -375,26 +361,4 @@ public class BackupService extends Service implements ProgressReporter, BackupEn
 
     }
 
-    /**
-     * @author way
-     */
-    class NewDataNotifyReceiver extends BroadcastReceiver {
-        public static final String CLASS_TAG = "NotificationReceiver";
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (Constants.ACTION_NEW_DATA_DETECTED.equals(intent.getAction())) {
-                Logger.d(CLASS_TAG, "BackupService ------>ACTION_NEW_DATA_DETECTED received");
-                int type = intent.getIntExtra(Constants.NOTIFY_TYPE, 0);
-                String folder = intent.getStringExtra(Constants.FILENAME);
-                if (mBackupEngine != null && mBackupEngine.isRunning()) {
-                    NotifyManager.getInstance(context).showNewDetectionNotification(type, folder);
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.backup_running_toast), Toast.LENGTH_SHORT).show();
-                    abortBroadcast();
-                }
-            }
-        }
-
-    }
 }

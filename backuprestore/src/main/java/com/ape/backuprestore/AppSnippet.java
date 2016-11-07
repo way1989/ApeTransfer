@@ -26,11 +26,11 @@ public class AppSnippet {
         return mPackageName;
     }
 
-    public void setFileName(String filename) {
-        mFileName = filename;
-    }
-
     public String getFileName() {
         return mFileName;
+    }
+
+    public void setFileName(String filename) {
+        mFileName = filename;
     }
 }

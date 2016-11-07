@@ -11,12 +11,12 @@ import java.io.IOException;
 public class StorageUtils {
 
     public final static int MINIMUM_SIZE = 512;
-    private static final String CLASS_TAG = "StorageUtils";
+    private static final String TAG = "StorageUtils";
 
     public static String getBackupPath() {
         String storagePath = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator + "ApeTransfer" + File.separator + Constants.ModulePath.FOLDER_BACKUP;
-        Logger.d(CLASS_TAG, "getStoragePath: path is " + storagePath);
+        Logger.d(TAG, "getStoragePath: path is " + storagePath);
         File file = new File(storagePath);
         if (file.exists() && file.isDirectory()) {
             return storagePath;
@@ -32,7 +32,7 @@ public class StorageUtils {
         long count = stat.getAvailableBlocks();
         long size = stat.getBlockSize();
         long totalSize = count * size;
-        Logger.d(CLASS_TAG, "file remain size = " + totalSize);
+        Logger.d(TAG, "file remain size = " + totalSize);
         return totalSize;
     }
 
@@ -55,7 +55,7 @@ public class StorageUtils {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Logger.e(CLASS_TAG, "Cannot create temp file");
+                    Logger.e(TAG, "Cannot create temp file");
                     isStorageMissing = true;
                 } finally {
                     temp.delete();
@@ -70,16 +70,16 @@ public class StorageUtils {
      */
     public static void killProcessIfNecessary() {
         if (isStorageMissing()) {
-            Log.i(CLASS_TAG, "SD card removed, kill process");
+            Log.i(TAG, "SD card removed, kill process");
             Utils.killMyProcess();
         } else {
             String path = getBackupPath();
             if (getAvailableSize(path) <= MINIMUM_SIZE) {
-                Log.i(CLASS_TAG, "SD full, kill process");
+                Log.i(TAG, "SD full, kill process");
                 Utils.killMyProcess();
             }
         }
-        Log.i(CLASS_TAG, "SD card OK, no need to kill process");
+        Log.i(TAG, "SD card OK, no need to kill process");
     }
 }
 

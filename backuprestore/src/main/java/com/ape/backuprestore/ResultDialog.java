@@ -63,7 +63,7 @@ public class ResultDialog {
 
     public static final int RESULT_TYPE_BACKUP = 1;
     public static final int RESULT_TYPE_RESTRORE = 2;
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/ResultDialog";
+    private static final String TAG = "ResultDialog";
 
     public static AlertDialog createResultDlg(final Context context, final int titleId,
                                               final Bundle args, final DialogInterface.OnClickListener listener) {
@@ -84,7 +84,7 @@ public class ResultDialog {
         List<Map<String, Object>> dataMapList = new ArrayList<Map<String, Object>>();
         List<ResultEntity> list = args.getParcelableArrayList(Constants.RESULT_KEY);
         if (list == null) {
-            Logger.e(CLASS_TAG, "ResultDialogAdapter: error: list is null");
+            Logger.e(TAG, "ResultDialogAdapter: error: list is null");
             return null;
         }
         for (ResultEntity item : list) {
@@ -109,7 +109,7 @@ public class ResultDialog {
         }
         String[] from = new String[]{Constants.ITEM_NAME, Constants.ITEM_RESULT};
         int[] to = new int[]{R.id.module_name, R.id.result};
-        Logger.i(CLASS_TAG, "createResultAdapter");
+        Logger.i(TAG, "createResultAdapter");
         return new ResultDialogAdapter(context, dataMapList, R.layout.result_list_item, from, to);
     }
 
@@ -118,7 +118,7 @@ public class ResultDialog {
         List<Map<String, Object>> dataMapList = new ArrayList<Map<String, Object>>();
         List<ResultEntity> list = args.getParcelableArrayList(Constants.RESULT_KEY);
         if (list == null) {
-            Logger.e(CLASS_TAG, "createAppResultAdapter: error: list is null");
+            Logger.e(TAG, "createAppResultAdapter: error: list is null");
             return null;
         }
         for (ResultEntity item : list) {
@@ -149,7 +149,7 @@ public class ResultDialog {
         }
         String[] from = new String[]{Constants.ITEM_NAME, Constants.ITEM_RESULT};
         int[] to = new int[]{R.id.module_name, R.id.result};
-        Logger.i(CLASS_TAG, "createAppResultAdapter");
+        Logger.i(TAG, "createAppResultAdapter");
         return new ResultDialogAdapter(context, dataMapList, R.layout.result_list_item, from, to);
     }
 

@@ -1,40 +1,3 @@
-/* Copyright Statement:
- *
- * This software/firmware and related documentation ("MediaTek Software") are
- * protected under relevant copyright laws. The information contained herein is
- * confidential and proprietary to MediaTek Inc. and/or its licensors. Without
- * the prior written permission of MediaTek inc. and/or its licensors, any
- * reproduction, modification, use or disclosure of MediaTek Software, and
- * information contained herein, in whole or in part, shall be strictly
- * prohibited.
- *
- * MediaTek Inc. (C) 2010. All rights reserved.
- *
- * BY OPENING THIS FILE, RECEIVER HEREBY UNEQUIVOCALLY ACKNOWLEDGES AND AGREES
- * THAT THE SOFTWARE/FIRMWARE AND ITS DOCUMENTATIONS ("MEDIATEK SOFTWARE")
- * RECEIVED FROM MEDIATEK AND/OR ITS REPRESENTATIVES ARE PROVIDED TO RECEIVER
- * ON AN "AS-IS" BASIS ONLY. MEDIATEK EXPRESSLY DISCLAIMS ANY AND ALL
- * WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR
- * NONINFRINGEMENT. NEITHER DOES MEDIATEK PROVIDE ANY WARRANTY WHATSOEVER WITH
- * RESPECT TO THE SOFTWARE OF ANY THIRD PARTY WHICH MAY BE USED BY,
- * INCORPORATED IN, OR SUPPLIED WITH THE MEDIATEK SOFTWARE, AND RECEIVER AGREES
- * TO LOOK ONLY TO SUCH THIRD PARTY FOR ANY WARRANTY CLAIM RELATING THERETO.
- * RECEIVER EXPRESSLY ACKNOWLEDGES THAT IT IS RECEIVER'S SOLE RESPONSIBILITY TO
- * OBTAIN FROM ANY THIRD PARTY ALL PROPER LICENSES CONTAINED IN MEDIATEK
- * SOFTWARE. MEDIATEK SHALL ALSO NOT BE RESPONSIBLE FOR ANY MEDIATEK SOFTWARE
- * RELEASES MADE TO RECEIVER'S SPECIFICATION OR TO CONFORM TO A PARTICULAR
- * STANDARD OR OPEN FORUM. RECEIVER'S SOLE AND EXCLUSIVE REMEDY AND MEDIATEK'S
- * ENTIRE AND CUMULATIVE LIABILITY WITH RESPECT TO THE MEDIATEK SOFTWARE
- * RELEASED HEREUNDER WILL BE, AT MEDIATEK'S OPTION, TO REVISE OR REPLACE THE
- * MEDIATEK SOFTWARE AT ISSUE, OR REFUND ANY SOFTWARE LICENSE FEES OR SERVICE
- * CHARGE PAID BY RECEIVER TO MEDIATEK FOR SUCH MEDIATEK SOFTWARE AT ISSUE.
- *
- * The following software/firmware and/or related documentation ("MediaTek
- * Software") have been modified by MediaTek Inc. All revisions are subject to
- * any receiver's applicable license agreements with MediaTek Inc.
- */
-
 package com.ape.backuprestore.utils;
 
 import java.io.ByteArrayOutputStream;
@@ -53,10 +16,10 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @author mtk81330
+ * @author way
  */
 public class BackupZip {
-    private static final String CLASS_TAG = Logger.LOG_TAG + "/BackupZip";
+    private static final String TAG = "BackupZip";
     ZipOutputStream mOutZip;
     private String mZipFile;
     private Boolean hasFinished = false;
@@ -80,16 +43,16 @@ public class BackupZip {
     public static List<String> getFileList(String zipFileString, boolean bContainFolder,
                                            boolean bContainFile) throws IOException {
 
-        Logger.i(CLASS_TAG, "GetFileList");
+        Logger.i(TAG, "GetFileList");
 
-        List<String> fileList = new ArrayList<String>();
+        List<String> fileList = new ArrayList<>();
         ZipInputStream inZip = new ZipInputStream(new FileInputStream(zipFileString));
         ZipEntry zipEntry;
-        String szName = "";
+        String szName;
 
         while ((zipEntry = inZip.getNextEntry()) != null) {
             szName = zipEntry.getName();
-            Logger.d(CLASS_TAG, szName);
+            Logger.d(TAG, szName);
 
             if (zipEntry.isDirectory()) {
 
@@ -125,7 +88,7 @@ public class BackupZip {
     public static List<String> getFileList(String zipFileString, boolean bContainFolder,
                                            boolean bContainFile, String tmpString) throws IOException {
 
-        Logger.i(CLASS_TAG, "GetFileList");
+        Logger.i(TAG, "GetFileList");
 
         List<String> fileList = new ArrayList<>();
 
@@ -136,7 +99,7 @@ public class BackupZip {
         while (entries.hasMoreElements()) {
             zipEntry = entries.nextElement();
             szName = zipEntry.getName();
-            Logger.d(CLASS_TAG, szName);
+            Logger.d(TAG, szName + ", zipEntry.isDirectory() = " + zipEntry.isDirectory());
 
             if (zipEntry.isDirectory()) {
 
@@ -175,8 +138,8 @@ public class BackupZip {
      * @return
      */
     public static String readFile(String zipFileString, String fileString) {
-        Logger.i(CLASS_TAG, "getFile");
-        ByteArrayOutputStream baos = null;
+        Logger.i(TAG, "getFile");
+        ByteArrayOutputStream baos;
         String content = null;
         try {
             ZipFile zipFile = new ZipFile(zipFileString);
@@ -184,7 +147,7 @@ public class BackupZip {
             if (zipEntry != null) {
                 InputStream is = zipFile.getInputStream(zipEntry);
                 baos = new ByteArrayOutputStream();
-                int len = -1;
+                int len;
                 byte[] buffer = new byte[512];
                 while ((len = is.read(buffer, 0, 512)) != -1) {
                     baos.write(buffer, 0, len);
@@ -207,7 +170,7 @@ public class BackupZip {
      * @return
      */
     public static byte[] readFileContent(String zipFileString, String fileString) {
-        Logger.i(CLASS_TAG, "getFile");
+        Logger.i(TAG, "getFile");
         ByteArrayOutputStream baos = null;
         try {
             ZipFile zipFile = new ZipFile(zipFileString);
@@ -215,7 +178,7 @@ public class BackupZip {
             if (zipEntry != null) {
                 InputStream is = zipFile.getInputStream(zipEntry);
                 baos = new ByteArrayOutputStream();
-                int len = -1;
+                int len;
                 byte[] buffer = new byte[512];
                 while ((len = is.read(buffer, 0, 512)) != -1) {
                     baos.write(buffer, 0, len);
@@ -249,8 +212,8 @@ public class BackupZip {
      * @return
      */
     public static String readFile(ZipFile zipFile, String fileString) {
-        Logger.i(CLASS_TAG, "getFile");
-        ByteArrayOutputStream baos = null;
+        Logger.i(TAG, "getFile");
+        ByteArrayOutputStream baos;
         String content = null;
         try {
             ZipEntry zipEntry = zipFile.getEntry(fileString);
@@ -279,14 +242,14 @@ public class BackupZip {
      * @return
      */
     public static byte[] readFileContent(ZipFile zipFile, String fileString) {
-        Logger.i(CLASS_TAG, "getFile");
+        Logger.i(TAG, "getFile");
         ByteArrayOutputStream baos = null;
         try {
             ZipEntry zipEntry = zipFile.getEntry(fileString);
             if (zipEntry != null) {
                 InputStream is = zipFile.getInputStream(zipEntry);
                 baos = new ByteArrayOutputStream();
-                int len = -1;
+                int len;
                 byte[] buffer = new byte[512];
                 while ((len = is.read(buffer, 0, 512)) != -1) {
                     baos.write(buffer, 0, len);
@@ -319,13 +282,12 @@ public class BackupZip {
             destFile.createNewFile();
         }
 
-        FileOutputStream out = new FileOutputStream(destFile);
-        try {
+        try (FileOutputStream out = new FileOutputStream(destFile)) {
             ZipFile zipFile = new ZipFile(zipFileName);
             ZipEntry zipEntry = zipFile.getEntry(srcFileName);
             if (zipEntry != null) {
                 InputStream is = zipFile.getInputStream(zipEntry);
-                int len = -1;
+                int len;
                 byte[] buffer = new byte[512];
                 while ((len = is.read(buffer, 0, 512)) != -1) {
                     out.write(buffer, 0, len);
@@ -338,8 +300,6 @@ public class BackupZip {
         } catch (IOException e) {
             // e.printStackTrace();
             throw e;
-        } finally {
-            out.close();
         }
     }
 
@@ -349,10 +309,10 @@ public class BackupZip {
      * @throws IOException IOException
      */
     public static void unZipFolder(String zipFileString, String outPathString) throws IOException {
-        // Logger.i(CLASS_TAG, "UnZipFolder(String, String)");
+        // Logger.i(TAG, "UnZipFolder(String, String)");
         ZipInputStream inZip = new ZipInputStream(new FileInputStream(zipFileString));
         ZipEntry zipEntry;
-        String szName = "";
+        String szName;
 
         while ((zipEntry = inZip.getNextEntry()) != null) {
             szName = zipEntry.getName();
@@ -392,7 +352,7 @@ public class BackupZip {
      * @throws IOException
      */
     public static void zipFolder(String srcFileString, String zipFileString) throws IOException {
-        Logger.i(CLASS_TAG, "zipFolder(String, String)");
+        Logger.i(TAG, "zipFolder(String, String)");
 
         ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(zipFileString));
 
@@ -407,7 +367,7 @@ public class BackupZip {
 
     private static void zipFiles(String folderString, String fileString,
                                  ZipOutputStream zipOutputSteam) throws IOException {
-        Logger.i(CLASS_TAG, "ZipFiles(String, String, ZipOutputStream)");
+        Logger.i(TAG, "ZipFiles(String, String, ZipOutputStream)");
 
         if (zipOutputSteam == null) {
             return;
@@ -454,7 +414,7 @@ public class BackupZip {
      * @throws IOException
      */
     public static void zipOneFile(String srcFileString, String zipFileString) throws IOException {
-        Logger.i(CLASS_TAG, "zipFolder(String, String)");
+        Logger.i(TAG, "zipFolder(String, String)");
 
         ZipOutputStream outZip = new ZipOutputStream(new FileOutputStream(zipFileString));
 
@@ -476,7 +436,7 @@ public class BackupZip {
      */
     public void createZipFile(String zipFileString) throws IOException {
         mOutZip = new ZipOutputStream(new FileOutputStream(zipFileString));
-        Logger.i(CLASS_TAG, "createZipFile zipFileString = " + zipFileString);
+        Logger.i(TAG, "createZipFile zipFileString = " + zipFileString);
     }
 
     /**
@@ -510,7 +470,7 @@ public class BackupZip {
      * @throws IOException
      */
     public void addFileByFileName(String srcFileName, String desFileName) throws IOException {
-        Logger.d(CLASS_TAG, "addFileByFileName:" + "srcFile:" + srcFileName + ",desFile:"
+        Logger.d(TAG, "addFileByFileName:" + "srcFile:" + srcFileName + ",desFile:"
                 + desFileName);
 
         ZipEntry zipEntry = new ZipEntry(desFileName);
@@ -555,7 +515,7 @@ public class BackupZip {
             try {
                 addFileByFileName(srcPath, desPath);
             } catch (IOException e) {
-                Logger.e(CLASS_TAG, "IOException in addFolder");
+                Logger.e(TAG, "IOException in addFolder");
             }
         }
     }
@@ -565,12 +525,12 @@ public class BackupZip {
      */
     public void finish() throws IOException {
         if (!hasFinished) {
-            Logger.e(CLASS_TAG, "Finish");
+            Logger.e(TAG, "Finish");
             hasFinished = true;
             mOutZip.finish();
             mOutZip.close();
         } else {
-            Logger.e(CLASS_TAG, "Already finish, do nothing");
+            Logger.e(TAG, "Already finish, do nothing");
         }
     }
 }

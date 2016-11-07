@@ -60,11 +60,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author mtk81330
+ * @author way
  */
 public class RestoreEngine {
-    private static final String TAG = Logger.LOG_TAG + "/RestoreEngine";
+    private static final String TAG = "RestoreEngine";
     private static RestoreEngine sSelfInstance;
+    private final Object mLock = new Object();
     ArrayList<Integer> mModuleList;
     HashMap<Integer, ArrayList<String>> mParasMap = new HashMap<>();
     private Context mContext;
@@ -73,7 +74,6 @@ public class RestoreEngine {
     private boolean mIsRunning = false;
     private long mThreadIdentifier = -1;
     private boolean mIsPause = false;
-    private final Object mLock = new Object();
     private ProgressReporter mReporter;
     private List<Composer> mComposerList;
 
@@ -302,7 +302,7 @@ public class RestoreEngine {
                                 continue;
                             }
                             Logger.d(TAG, "RestoreThread composer: " + composer.getModuleType()
-                                            + " init finish");
+                                    + " init finish");
                             composer.onStart();
                             while (!composer.isAfterLast() &&
                                     !composer.isCancel() &&
@@ -322,7 +322,7 @@ public class RestoreEngine {
 
                                 composer.composeOneEntity();
                                 Logger.d(TAG, "RestoreThread composer: " + composer.getModuleType()
-                                                + " compose one entiry");
+                                        + " compose one entiry");
                             }
                         }
 
