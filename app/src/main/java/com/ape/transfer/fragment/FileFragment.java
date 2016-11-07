@@ -22,7 +22,7 @@ import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
 import com.ape.transfer.widget.LoadingEmptyContainer;
-import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.ArrayList;

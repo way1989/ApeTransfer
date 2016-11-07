@@ -16,7 +16,7 @@ import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
-import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;

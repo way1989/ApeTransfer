@@ -40,7 +40,7 @@ import com.ape.transfer.model.TransferTaskFinishEvent;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
-import com.trello.rxlifecycle.ActivityEvent;
+import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.io.File;
 import java.io.IOException;

@@ -21,7 +21,7 @@ import com.ape.transfer.model.TransferEvent;
 import com.ape.transfer.model.TransferTaskStartEvent;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
-import com.trello.rxlifecycle.FragmentEvent;
+import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
 import butterknife.BindView;

@@ -11,6 +11,7 @@ import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -32,7 +33,12 @@ import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.RxBus;
+import com.ape.transfer.util.SendFloating;
 import com.ape.transfer.util.WifiApUtils;
+import com.mikepenz.actionitembadge.library.ActionItemBadge;
+import com.ufreedom.floatingview.Floating;
+import com.ufreedom.floatingview.FloatingBuilder;
+import com.ufreedom.floatingview.FloatingElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,11 +91,12 @@ public class MainTransferActivity extends BaseTransferActivity implements
     ImageView ivDirection;
     @BindView(R.id.root)
     RelativeLayout root;
-
+    private int badgeCount;
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
     private HashMap<String, Peer> mPeerHashMap = new HashMap<>();
+    private Floating mRocketAnimFloating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +105,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
         //标题栏下无阴影
         if (actionBar != null)
             actionBar.setElevation(0f);
+        mRocketAnimFloating = new Floating(this);
 
         tvMeName.setText(PreferenceUtil.getInstance().getAlias());
         ivMeAvatar.setImageResource(UserInfoActivity.HEAD[PreferenceUtil.getInstance().getHead()]);
@@ -125,7 +133,28 @@ public class MainTransferActivity extends BaseTransferActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem menuItem = menu.findItem(R.id.action_history);
+        //you can add some logic (hide it if the count == 0)
+        if (badgeCount > 0) {
+            ActionItemBadge.update(this, menuItem, getDrawable(R.drawable.ic_history_white),
+                    ActionItemBadge.BadgeStyles.RED, " ");
+        } else {
+            ActionItemBadge.update(this, menuItem, getDrawable(R.drawable.ic_history_white),
+                    ActionItemBadge.BadgeStyles.RED, null);
+        }
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_history);
+        if (item != null) {
+            if (badgeCount > 0)
+                ActionItemBadge.update(item, " ");
+            else
+                ActionItemBadge.update(item, null);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -211,23 +240,44 @@ public class MainTransferActivity extends BaseTransferActivity implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_send:
-                if (mPhoneItemAdapter.getItemCount() < 1) {
-                    return;
-                }
-                if (mTransferService != null)
-                    mTransferService.sendFile(mFileItems);
-
-                RxBus.getInstance().post(new FileEvent(mFileItems));//post message to fragment
-                mFileItems.clear();
-                updateSendUI();
+                sendFiles2Peer();
+                playSendAnim(view);
                 break;
             case R.id.bt_cancel:
-                onBackPressed();
-                break;
             case R.id.btnDisconnect:
                 onBackPressed();
                 break;
         }
+    }
+
+    private void playSendAnim(View view) {
+        ImageView imageView = new ImageView(MainTransferActivity.this);
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+        imageView.setImageResource(R.drawable.rocket);
+
+        FloatingElement floatingElement = new FloatingBuilder()
+                .anchorView(view)
+                .targetView(imageView)
+                .floatingTransition(new SendFloating())
+                .build();
+        mRocketAnimFloating.startFloating(floatingElement);
+    }
+
+    private void sendFiles2Peer() {
+        if (mPhoneItemAdapter.getItemCount() < 1) {
+            return;
+        }
+        if (mTransferService != null)
+            mTransferService.sendFile(mFileItems);
+
+        RxBus.getInstance().post(new FileEvent(mFileItems));//post message to fragment
+        //刷新menu脚标
+        badgeCount = mFileItems.size();
+        supportInvalidateOptionsMenu();//refresh menu item
+
+        mFileItems.clear();
+        updateSendUI();
     }
 
     @Override
@@ -239,6 +289,9 @@ public class MainTransferActivity extends BaseTransferActivity implements
             mFileItems.remove(item);
         }
         updateSendUI();
+//        //刷新menu脚标
+//        badgeCount = mFileItems.size();
+//        supportInvalidateOptionsMenu();//refresh menu item
     }
 
     private void updateSendUI() {

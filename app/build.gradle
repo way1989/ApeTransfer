@@ -79,9 +79,9 @@ dependencies {
     compile "org.nanohttpd:nanohttpd:$rootProject.nanohttpdVersion"
     compile "com.google.zxing:core:$rootProject.zxingVersion"
 
-    compile 'io.reactivex:rxjava:1.0.3'
-    compile 'com.trello:rxlifecycle:0.3.0'
-    compile 'com.trello:rxlifecycle-components:0.5.0'
+    compile 'io.reactivex:rxjava:1.2.1'
+    compile 'com.trello:rxlifecycle:0.8.0'
+    compile 'com.trello:rxlifecycle-components:0.8.0'
 
     compile 'com.daimajia.numberprogressbar:library:1.2@aar'//数字进度条
     //    compile project(':emoji')
@@ -96,4 +96,10 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+
+    compile 'com.ufreedom.uikit:FloatingViewLib:1.0.1'
+    compile 'com.mikepenz:actionitembadge:3.3.0@aar'
+    //SUB-DEPENDENCIES
+    //Android-Iconics - used to provide an easy API for icons
+    compile 'com.mikepenz:iconics-core:2.8.0@aar'
 }
