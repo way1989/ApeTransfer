@@ -85,32 +85,22 @@ public class SendManager {
             Sender sender = new Sender(mWorkHandler, this, peer, files);
 
             mSenderHashMap.put(neighbor.ip, sender);
-            //初始化发送服务
-            if (mSendServer == null) {
-                Log.d(TAG, "SendManager start send");
 
-                SendServerProxyProxy sendServerProxy = new SendServerProxyProxy(this);
-                mSendServer = new SendServer(sendServerProxy, Constant.FILE_TRANSFER_PORT);
-                mSendServer.start();
-            }
-
-            //通知界面开始发送
-            mWorkHandler.send2UI(Constant.Command.SEND_FILE_START, new ParamTCPNotify(neighbor, files));
             //通知对方，我要发送文件了
             mWorkHandler.send2Receiver(peer.inetAddress, Constant.Command.SEND_FILE_REQ, add);
         }
     }
 
-//    public void startSend(String peerIP, Sender fileSender) {
-//        if (mSendServer == null) {
-//            Log.d(TAG, "SendManager start send");
-//
-//            SendServerProxyProxy sendServerHandler = new SendServerProxyProxy(this);
-//            mSendServer = new SendServer(sendServerHandler, Constant.FILE_TRANSFER_PORT);
-//            mSendServer.start();
-//        }
-//        mSenderHashMap.put(fileSender.neighbor.ip, fileSender);
-//    }
+    public void startSend(Sender fileSender) {
+        if (mSendServer == null) {
+            Log.d(TAG, "SendManager start send");
+
+            SendServerProxyProxy sendServerHandler = new SendServerProxyProxy(this);
+            mSendServer = new SendServer(sendServerHandler, Constant.FILE_TRANSFER_PORT);
+            mSendServer.start();
+        }
+        mSenderHashMap.put(fileSender.neighbor.ip, fileSender);
+    }
 
     public void removeSender(String peerIP) {
         mSenderHashMap.remove(peerIP);

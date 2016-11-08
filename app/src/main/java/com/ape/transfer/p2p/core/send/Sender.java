@@ -22,26 +22,27 @@ public class Sender {
     Peer neighbor;
     Queue<TransferFile> mSendFileQueue = new LinkedList<>();
     private SendManager sendManager;
+    private TransferFile[] files;
 
     public Sender(WorkHandler handler, SendManager man, Peer n, TransferFile[] fs) {
         this.p2PHandler = handler;
         this.sendManager = man;
         this.neighbor = n;
+        this.files = fs;
         for (TransferFile fileInfo : fs)
             mSendFileQueue.offer(fileInfo);//新任务加入队列
     }
 
     public void dispatchCommMSG(int cmd, ParamIPMsg ipmsg) {
         switch (cmd) {
-//            case Constant.Command.RECEIVE_FILE_ACK:
-//                Log.i(TAG, "dispatchCommMSG RECEIVE_FILE_ACK");
-//                startSelf();
-//                //通知界面开始发送
-//                p2PHandler.send2UI(Constant.Command.SEND_FILE_START, null);
-//                //通知接收端 开始发送文件
-//                p2PHandler.send2Receiver(ipmsg.peerIAddress,
-//                        Constant.Command.SEND_FILE_START, null);
-//                break;
+            case Constant.Command.RECEIVE_FILE_ACK:
+                Log.i(TAG, "dispatchCommMSG RECEIVE_FILE_ACK");
+                startSelf();
+                //通知界面开始发送
+                p2PHandler.send2UI(Constant.Command.SEND_FILE_START, new ParamTCPNotify(neighbor, files));
+                //通知接收端 开始发送文件
+                p2PHandler.send2Receiver(ipmsg.peerIAddress, Constant.Command.SEND_FILE_START, null);
+                break;
             case Constant.Command.RECEIVE_ABORT_SELF: //接收者退出
                 Log.i(TAG, "dispatchCommMSG RECEIVE_ABORT_SELF");
                 clearSelf();
@@ -97,9 +98,9 @@ public class Sender {
 //        }
 //    }
 
-//    private void startSelf() {
-//        sendManager.startSend(neighbor.ip, this);
-//    }
+    private void startSelf() {
+        sendManager.startSend(this);
+    }
 
     public void clearSelf() {
         sendManager.removeSender(neighbor.ip);

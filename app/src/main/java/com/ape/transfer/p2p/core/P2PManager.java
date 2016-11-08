@@ -118,7 +118,10 @@ public class P2PManager {
         }
         mWorkHandler = null;
     }
-
+    public void ackReceive() {
+        mWorkHandler.send2Handler(Constant.Command.RECEIVE_FILE_ACK,
+                Constant.Src.MANAGER, Constant.Recipient.FILE_RECEIVE, null);
+    }
     public void cancelReceive() {
         mWorkHandler.send2Handler(Constant.Command.RECEIVE_ABORT_SELF,
                 Constant.Src.MANAGER, Constant.Recipient.FILE_RECEIVE, null);
@@ -153,10 +156,18 @@ public class P2PManager {
                     if (manager.mPeerCallback != null)
                         manager.mPeerCallback.onPeerRemoved((Peer) msg.obj);
                     break;
-                case Constant.Command.SEND_FILE_REQ: //收到请求发送文件
+                case Constant.UI.PRE_RECEIVE_FILE:
+                    Log.d(TAG, "handler ui PRE_RECEIVE_FILE...");
                     if (manager.mReceiveFileCallback != null) {
                         ParamReceiveFiles params = (ParamReceiveFiles) msg.obj;
                         manager.mReceiveFileCallback.onPreReceiving(params.peer,
+                                params.transferFiles);
+                    }
+                    break;
+                case Constant.Command.SEND_FILE_REQ: //收到请求发送文件
+                    if (manager.mReceiveFileCallback != null) {
+                        ParamReceiveFiles params = (ParamReceiveFiles) msg.obj;
+                        manager.mReceiveFileCallback.onQueryReceiving(params.peer,
                                 params.transferFiles);
                     }
                     break;

@@ -6,6 +6,8 @@ import android.util.Log;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.p2p.beans.param.ParamIPMsg;
+import com.ape.transfer.p2p.beans.param.ParamReceiveFiles;
+import com.ape.transfer.p2p.beans.param.ParamTCPNotify;
 import com.ape.transfer.p2p.core.WorkHandler;
 import com.ape.transfer.p2p.util.Constant;
 
@@ -33,6 +35,7 @@ public class Receiver {
             case Constant.Command.SEND_FILE_START: //接收端收到开始发送文件的消息
                 //开始tcp
                 Log.d(TAG, "start receiver task");
+                mWorkHandler.send2UI(Constant.UI.PRE_RECEIVE_FILE, new ParamReceiveFiles(mNeighbor, mReceiveFileInfos));
                 ReceiveTask receiveTask = new ReceiveTask(mWorkHandler, this);
                 receiveTask.start();
                 break;

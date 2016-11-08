@@ -51,9 +51,10 @@ public class Constant {
 
 
     public interface UI {
+        int STOP = 999;
         int ADD_NEIGHBOR = 1000;
         int REMOVE_NEIGHBOR = 1001;
-        int STOP = 1002;
+        int PRE_RECEIVE_FILE = 1003;
     }
 
     public interface Command {

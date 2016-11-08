@@ -34,6 +34,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import rx.Observable;
+
 public class TransferService extends Service {
     public static final String ACTION_START_P2P = "com.ape.transfer.startP2P";
     private static final String TAG = "TransferService";
@@ -106,6 +108,11 @@ public class TransferService extends Service {
         }
     };
     private ReceiveFileCallback mReceiveFileCallback = new ReceiveFileCallback() {
+        @Override
+        public void onQueryReceiving(Peer src, TransferFile[] files) {
+            mP2PManager.ackReceive();
+        }
+
         @Override
         public void onPreReceiving(Peer src, TransferFile[] files) {
             Log.i(TAG, "onPreReceiving....");

@@ -76,8 +76,8 @@ public class ReceiveManager {
         //通知UI,准备开始接收文件
         mWorkHandler.send2UI(Constant.Command.SEND_FILE_REQ, paramReceiveFiles);
         //开始接收
-        mWorkHandler.send2Handler(Constant.Command.SEND_FILE_START, Constant.Src.COMMUNICATE,
-                Constant.Recipient.FILE_RECEIVE, null);
+//        mWorkHandler.send2Handler(Constant.Command.SEND_FILE_START, Constant.Src.COMMUNICATE,
+//                Constant.Recipient.FILE_RECEIVE, null);
         //mReceiver.dispatchCommMSG(Constant.Command.SEND_FILE_START, null);
     }
 }

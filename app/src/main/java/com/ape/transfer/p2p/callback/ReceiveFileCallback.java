@@ -9,6 +9,8 @@ import com.ape.transfer.p2p.beans.TransferFile;
  * 我要接受实现的接收回掉
  */
 public interface ReceiveFileCallback {
+    void onQueryReceiving(Peer src, TransferFile files[]);
+
     void onPreReceiving(Peer src, TransferFile files[]);
 
     void onReceiving(Peer src, TransferFile files);

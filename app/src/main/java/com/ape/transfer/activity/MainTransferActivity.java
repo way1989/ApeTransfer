@@ -29,6 +29,7 @@ import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.model.FileEvent;
 import com.ape.transfer.model.FileItem;
 import com.ape.transfer.model.PeerEvent;
+import com.ape.transfer.model.TransferTaskFinishEvent;
 import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.PreferenceUtil;
@@ -36,6 +37,7 @@ import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.SendFloating;
 import com.ape.transfer.util.WifiApUtils;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
+import com.trello.rxlifecycle.android.ActivityEvent;
 import com.ufreedom.floatingview.Floating;
 import com.ufreedom.floatingview.FloatingBuilder;
 import com.ufreedom.floatingview.FloatingElement;
@@ -45,6 +47,8 @@ import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 public class MainTransferActivity extends BaseTransferActivity implements
         FileFragment.OnFileItemChangeListener {
@@ -91,6 +95,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
     ImageView ivDirection;
     @BindView(R.id.root)
     RelativeLayout root;
+    private static final String BADGE_NEW = "new";
     private int badgeCount;
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
@@ -120,6 +125,17 @@ public class MainTransferActivity extends BaseTransferActivity implements
         } else {
             startWifiAp();
         }
+        RxBus.getInstance().toObservable(TransferTaskFinishEvent.class)
+                .observeOn(AndroidSchedulers.mainThread())
+                .compose(this.<TransferTaskFinishEvent>bindUntilEvent(ActivityEvent.DESTROY))
+                .subscribe(new Action1<TransferTaskFinishEvent>() {
+                    @Override
+                    public void call(TransferTaskFinishEvent taskFinishEvent) {
+                        //do some thing
+                        badgeCount = 0;
+                        supportInvalidateOptionsMenu();
+                    }
+                });
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -135,13 +151,9 @@ public class MainTransferActivity extends BaseTransferActivity implements
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem menuItem = menu.findItem(R.id.action_history);
         //you can add some logic (hide it if the count == 0)
-        if (badgeCount > 0) {
-            ActionItemBadge.update(this, menuItem, getDrawable(R.drawable.ic_history_white),
-                    ActionItemBadge.BadgeStyles.RED, " ");
-        } else {
-            ActionItemBadge.update(this, menuItem, getDrawable(R.drawable.ic_history_white),
-                    ActionItemBadge.BadgeStyles.RED, null);
-        }
+        ActionItemBadge.update(this, menuItem, getDrawable(R.drawable.ic_history_white),
+                ActionItemBadge.BadgeStyles.RED, badgeCount > 0 ? BADGE_NEW : null);
+
         return true;
     }
 
@@ -149,10 +161,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_history);
         if (item != null) {
-            if (badgeCount > 0)
-                ActionItemBadge.update(item, " ");
-            else
-                ActionItemBadge.update(item, null);
+            ActionItemBadge.update(item, badgeCount > 0 ? BADGE_NEW : null);
         }
         return super.onPrepareOptionsMenu(menu);
     }
