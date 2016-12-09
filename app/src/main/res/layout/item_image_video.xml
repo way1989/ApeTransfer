@@ -1,50 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:clipToPadding="false"
-              android:gravity="center_horizontal"
-              android:orientation="vertical"
-              android:foreground="?selectableItemBackground"
-              android:paddingBottom="10.0dip"
-              android:paddingLeft="0.0dip"
-              android:paddingRight="5.0dip"
-              android:paddingTop="0.0dip">
+<com.ape.transfer.widget.SquareLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                      xmlns:app="http://schemas.android.com/apk/res-auto"
+                                      android:layout_width="match_parent"
+                                      android:layout_height="match_parent"
+                                      app:cardElevation="0.5dp">
 
-    <FrameLayout
+    <ImageView
+        android:id="@+id/iv_icon"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#dadada"
+        android:clickable="false"
+        android:contentDescription="@string/app_name"
+        android:focusable="false"
+        android:scaleType="centerInside"
+        android:src="@drawable/default_video"/>
 
-        <ImageView
-            android:id="@+id/iv_icon"
-            android:layout_width="@dimen/icon_width_height"
-            android:layout_height="@dimen/icon_width_height"
-            android:src="@drawable/default_video"/>
+    <View
+        android:id="@+id/lay_mask"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#50000000"
+        android:clickable="false"
+        android:focusable="false"
+        android:visibility="gone"/>
 
-        <TextView
-            android:id="@+id/tv_duration"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/video_duration_height"
-            android:layout_alignBottom="@id/iv_icon"
-            android:layout_alignLeft="@id/iv_icon"
-            android:layout_alignRight="@id/iv_icon"
-            android:layout_gravity="bottom"
-            android:alpha="0.5"
-            android:background="@color/black"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/textSize_h5"/>
 
-        <ImageView
-            android:id="@id/iv_selected"
-            android:layout_width="@dimen/selected_icon_width_height"
-            android:layout_height="@dimen/selected_icon_width_height"
-            android:layout_alignBottom="@id/iv_icon"
-            android:layout_alignRight="@id/iv_icon"
-            android:layout_gravity="bottom|center|right"
-            android:src="@drawable/selected"
-            android:visibility="gone"/>
-    </FrameLayout>
+    <TextView
+        android:id="@+id/tv_duration"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/video_duration_height"
+        android:layout_gravity="bottom"
+        android:alpha="0.5"
+        android:background="@color/black"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/textSize_h5"/>
+
+    <ImageView
+        android:id="@id/iv_selected"
+        android:layout_width="@dimen/selected_icon_width_height"
+        android:layout_height="@dimen/selected_icon_width_height"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="4dp"
+        android:clickable="false"
+        android:contentDescription="@string/app_name"
+        android:focusable="false"
+        android:scaleType="centerInside"
+        android:src="@drawable/selected"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv_name"
@@ -54,7 +59,8 @@
         android:layout_marginTop="2.0dip"
         android:ellipsize="end"
         android:gravity="center"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textColor="@color/gray_dark"
+        android:visibility="gone"
         android:textSize="@dimen/textSize_h5"/>
-</LinearLayout>
+</com.ape.transfer.widget.SquareLayout>

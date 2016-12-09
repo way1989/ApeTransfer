@@ -56,20 +56,15 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view;
         switch (mFileCategory) {
             case Constant.TYPE.APP:
-                view = mInflater.inflate(R.layout.item_app, parent, false);
-                break;
+                return new ViewHolder(mInflater.inflate(R.layout.item_app, parent, false));
             case Constant.TYPE.VIDEO:
             case Constant.TYPE.PIC:
-                view = mInflater.inflate(R.layout.item_image_video, parent, false);
-                break;
+                return new ViewHolder(mInflater.inflate(R.layout.item_image_video, parent, false));
             default:
-                view = mInflater.inflate(R.layout.item_normal, parent, false);
-                break;
+                return new ViewHolder(mInflater.inflate(R.layout.item_normal, parent, false));
         }
-        return new ViewHolder(view);
     }
 
     @Override
@@ -86,7 +81,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
             case Constant.TYPE.VIDEO:
             case Constant.TYPE.PIC:
                 GlideHelper.loadResource(item.path, holder.ivIcon);
-                holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
+                //holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
             case Constant.TYPE.ZIP:

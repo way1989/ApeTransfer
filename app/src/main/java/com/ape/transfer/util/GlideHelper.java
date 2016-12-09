@@ -51,11 +51,12 @@ public class GlideHelper {
     public static void loadResource(String path, @NonNull ImageView image) {
         Glide.with(image.getContext())
                 .load(path)
+                .asBitmap()
                 .error(R.drawable.his_icon_image)
                 .placeholder(R.drawable.his_icon_image)
                 .animate(ANIMATOR)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .fitCenter()
+                .centerCrop()
                 .into(image);
     }
 

@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:layout_height="@dimen/item_height"
-                android:foreground="?selectableItemBackground">
+                android:paddingStart="@dimen/selected_icon_margin_right"
+                android:paddingEnd="@dimen/selected_icon_margin_right"
+                android:layout_height="@dimen/item_height">
 
     <ImageView
         android:id="@+id/iv_icon"
         android:layout_width="@dimen/music_icon_width"
         android:layout_height="@dimen/music_icon_height"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/music_icon_marginRight"
         android:src="@drawable/file_icon_music"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/music_name_marginleft"
-        android:layout_toRightOf="@id/iv_icon"
+        android:layout_marginStart="@dimen/selected_icon_margin_right"
+        android:layout_toEndOf="@id/iv_icon"
         android:gravity="center_vertical">
 
         <TextView
@@ -28,19 +26,19 @@
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
             android:maxLines="1"
-            android:text="mutain top"
-            android:textColor="@color/black"
+            android:textColor="@android:color/black"
             android:textSize="@dimen/textSize_h4"/>
 
         <TextView
             android:id="@+id/tv_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/tv_name"
+            android:layout_alignStart="@id/tv_name"
             android:layout_below="@id/tv_name"
             android:layout_marginTop="2.0dip"
-            android:text="2:22"
+            android:layout_marginEnd="@dimen/music_size_marginleft"
             android:textColor="@color/gray_dark"
+            android:visibility="gone"
             android:textSize="@dimen/textSize_h6"/>
 
         <TextView
@@ -48,9 +46,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/tv_duration"
-            android:layout_marginLeft="@dimen/music_size_marginleft"
-            android:layout_toRightOf="@id/tv_duration"
-            android:text="4m"
+            android:layout_below="@id/tv_name"
+            android:layout_marginTop="2.0dip"
+            android:layout_toEndOf="@id/tv_duration"
             android:textColor="@color/gray_dark"
             android:textSize="@dimen/textSize_h6"/>
     </RelativeLayout>
@@ -59,8 +57,7 @@
         android:id="@id/iv_selected"
         android:layout_width="@dimen/selected_icon_width_height"
         android:layout_height="@dimen/selected_icon_width_height"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="@dimen/selected_icon_margin_right"
         android:src="@drawable/selected"/>
 </RelativeLayout>
