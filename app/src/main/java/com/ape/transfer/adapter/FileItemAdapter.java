@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * Created by android on 16-6-28.
  */
 public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHolder> {
-    private static FileIconLoader mFileIconLoader;
+    private FileIconLoader mFileIconLoader;
     private LayoutInflater mInflater;
     private ArrayList<FileItem> mFileItems;
     private OnItemClickListener mListener;
@@ -85,7 +85,7 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
                 break;
             case Constant.TYPE.VIDEO:
             case Constant.TYPE.PIC:
-                GlideHelper.loadCropResource(item.path, holder.ivIcon);
+                GlideHelper.loadResource(item.path, holder.ivIcon);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Formatter.formatFileSize(App.getContext(), item.size));
                 break;
@@ -137,14 +137,14 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         void onItemClick(View v);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public ImageView ivCheckBox;
-        public ImageView ivIcon;
-        public TextView tvName;
-        public TextView tvSize;
-        public TextView tvDuration;
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        ImageView ivCheckBox;
+        ImageView ivIcon;
+        TextView tvName;
+        TextView tvSize;
+        TextView tvDuration;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             ivCheckBox = (ImageView) itemView.findViewById(R.id.iv_selected);

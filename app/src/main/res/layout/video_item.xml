@@ -5,6 +5,7 @@
               android:clipToPadding="false"
               android:gravity="center_horizontal"
               android:orientation="vertical"
+              android:foreground="?selectableItemBackground"
               android:paddingBottom="10.0dip"
               android:paddingLeft="0.0dip"
               android:paddingRight="5.0dip"

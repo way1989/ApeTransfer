@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:layout_height="@dimen/item_height"
-                android:background="@drawable/list_item_selector">
+                android:foreground="?selectableItemBackground">
 
     <ImageView
         android:id="@+id/iv_icon"
@@ -25,7 +27,7 @@
             android:layout_width="200.0dip"
             android:layout_height="wrap_content"
             android:ellipsize="marquee"
-            android:singleLine="true"
+            android:maxLines="1"
             android:text="mutain top"
             android:textColor="@color/black"
             android:textSize="@dimen/textSize_h4"/>

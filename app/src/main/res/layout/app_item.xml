@@ -3,6 +3,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/app_item_im_marginTop"
+                android:foreground="?selectableItemBackground"
                 android:gravity="center">
 
     <ImageView
@@ -31,7 +32,7 @@
         android:ellipsize="end"
         android:gravity="center"
         android:maxWidth="@dimen/app_item_tv_width"
-        android:singleLine="true"
+        android:maxLines="1"
         android:text="QQ"
         android:textColor="@color/black"
         android:textSize="@dimen/textSize_h5"/>
@@ -43,7 +44,7 @@
         android:layout_below="@id/tv_name"
         android:layout_centerHorizontal="true"
         android:ellipsize="end"
-        android:singleLine="true"
+        android:maxLines="1"
         android:text="70M"
         android:textColor="@color/gray_dark"
         android:textSize="@dimen/textSize_h6"/>

@@ -24,6 +24,8 @@ import com.ape.transfer.util.RxBus;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
@@ -72,6 +74,7 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
         View rootView = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, rootView);
         RxBus.getInstance().toObservable(TransferEvent.class)
+                .sample(1000L, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .compose(this.<TransferEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
                 .subscribe(new Action1<TransferEvent>() {

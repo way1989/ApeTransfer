@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ape.transfer.App;
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.FileItemAdapter;
 import com.ape.transfer.fragment.loader.BaseLoader;
@@ -21,9 +23,12 @@ import com.ape.transfer.model.FileItem;
 import com.ape.transfer.p2p.util.Constant;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
-import com.ape.transfer.widget.LoadingEmptyContainer;
+import com.ape.transfer.util.Screen;
+import com.ape.transfer.widget.SimpleListDividerDecorator;
+import com.ape.transfer.widget.SpaceGridItemDecoration;
 import com.trello.rxlifecycle.android.FragmentEvent;
 import com.trello.rxlifecycle.components.support.RxFragment;
+import com.weavey.loading.lib.LoadingLayout;
 
 import java.util.ArrayList;
 
@@ -40,11 +45,11 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     private static final String FILE_CATEGORY = "fileCategory";
     private static final int LOADER_ID = 0;
     @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
-    @BindView(R.id.loading_empty_container)
-    LoadingEmptyContainer loadingEmptyContainer;
+    RecyclerView mRecyclerView;
+    @BindView(R.id.loading_layout)
+    LoadingLayout mLoadingLayout;
 
-    private FileItemAdapter mMusicItemAdapter;
+    private FileItemAdapter mAdapter;
     private int mFileCategory;
     private OnFileItemChangeListener mListener;
 
@@ -83,7 +88,7 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     public void onFileChange(FileEvent event) {
         Log.i(TAG, "onEventMainThread收到了消息：" + event.getFileItemList());
         ArrayList<FileItem> lists = event.getFileItemList();
-        mMusicItemAdapter.unChecked(lists);
+        mAdapter.unChecked(lists);
     }
 
     @Override
@@ -95,7 +100,6 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     private void loadData() {
         if (isAdded() && getUserVisibleHint()
                 && getLoaderManager().getLoader(LOADER_ID) == null) {
-            loadingEmptyContainer.showLoading();
             getLoaderManager().initLoader(0, null, FileFragment.this);
         }
     }
@@ -103,23 +107,25 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mMusicItemAdapter = new FileItemAdapter(getContext().getApplicationContext(),
-                mFileCategory, this);
-        recyclerView.setLayoutManager(getLayoutManager());
-        recyclerView.setAdapter(mMusicItemAdapter);
-        loadData();
-    }
-
-    private RecyclerView.LayoutManager getLayoutManager() {
+        mLoadingLayout.setStatus(LoadingLayout.Loading);
+        mAdapter = new FileItemAdapter(App.getContext(), mFileCategory, this);
         switch (mFileCategory) {
             case Constant.TYPE.APP:
             case Constant.TYPE.PIC:
             case Constant.TYPE.VIDEO:
-                return new GridLayoutManager(getContext(), 4);
+                mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 4));
+                mRecyclerView.addItemDecoration(new SpaceGridItemDecoration(Screen.dp(2)));
+                break;
             default:
-                return new LinearLayoutManager(getContext());
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                mRecyclerView.addItemDecoration(new SimpleListDividerDecorator(ContextCompat
+                        .getDrawable(getContext(), R.drawable.list_divider_h), true));
+                break;
         }
+        mRecyclerView.setAdapter(mAdapter);
+        loadData();
     }
+
 
     @Override
     public Loader<BaseLoader.Result> onCreateLoader(int id, Bundle args) {
@@ -129,17 +135,17 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     @Override
     public void onLoadFinished(Loader<BaseLoader.Result> loader, BaseLoader.Result data) {
         if (!data.lists.isEmpty()) {
-            loadingEmptyContainer.hideAll();
-            mMusicItemAdapter.setDatas(data.lists);
+            mLoadingLayout.setStatus(LoadingLayout.Success);
+            mAdapter.setDatas(data.lists);
         } else {
-            loadingEmptyContainer.showNoResults();
+            mLoadingLayout.setStatus(LoadingLayout.Empty);
         }
 
     }
 
     @Override
     public void onLoaderReset(Loader<BaseLoader.Result> loader) {
-        mMusicItemAdapter.reset();
+        mAdapter.reset();
     }
 
     @Override
@@ -147,7 +153,7 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
         FileItem item = (FileItem) v.getTag();
 //        boolean isSelected = item.selected;
 //        item.selected = !isSelected;
-//        mMusicItemAdapter.notifyDataSetChanged();
+//        mAdapter.notifyDataSetChanged();
         mListener.onFileItemChange(item);
     }
 

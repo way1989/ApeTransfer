@@ -115,7 +115,7 @@
                 android:layout_marginTop="@dimen/bottom_name_marginTop"
                 android:ellipsize="end"
                 android:gravity="center"
-                android:singleLine="true"
+                android:maxLines="1"
                 android:text="@string/main_me"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/textSize_h7"/>
@@ -192,7 +192,7 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="@string/waiting_create"
                     android:textColor="@color/green"
                     android:textSize="@dimen/textSize_h4"/>
@@ -208,7 +208,7 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:marqueeRepeatLimit="marquee_forever"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="@string/waiting_connect_info"
                     android:textColor="@color/green"
                     android:textSize="@dimen/textSize_h6"

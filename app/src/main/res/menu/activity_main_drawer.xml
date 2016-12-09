@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+<!--    <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_transfer"
             android:icon="@drawable/transfer_file_focus"
@@ -11,7 +11,7 @@
             android:icon="@drawable/exchange_phone_focus"
             android:title="@string/main_bottom_exchange"/>
 
-    </group>
+    </group>-->
 
 
     <item android:title="@string/advance_category">
@@ -25,7 +25,7 @@
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="@string/share"/>
-            <item
+<!--            <item
                 android:id="@+id/nav_feedback"
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/feedback"/>
@@ -34,7 +34,7 @@
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_menu_settings"
                 android:title="@string/action_settings"/>
-
+-->
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_info"

@@ -15,11 +15,11 @@
 
     <ImageView
         android:id="@+id/logo_icon"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="88dp"
-        android:src="@mipmap/ic_launcher"/>
+        android:src="@drawable/x_ic_connect_shape"/>
 
     <TextView
         android:id="@+id/logo_title"

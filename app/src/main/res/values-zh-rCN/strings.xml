@@ -110,7 +110,7 @@
     <string name="history_not_found">源文件已不存在</string>
     <string name="history_receive">我接收的</string>
     <string name="history_send">我发送的</string>
-    <string name="history_title">记录</string>
+    <string name="history_title">历史记录</string>
     <string name="main_receive">我要接受</string>
     <string name="music">音乐</string>
     <string name="format_from">接收自 %1$s</string>

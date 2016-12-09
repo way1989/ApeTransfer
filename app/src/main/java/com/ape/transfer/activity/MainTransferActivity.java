@@ -148,7 +148,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_transfer, menu);
         MenuItem menuItem = menu.findItem(R.id.action_history);
         //you can add some logic (hide it if the count == 0)
         ActionItemBadge.update(this, menuItem, getDrawable(R.drawable.ic_history_white),
