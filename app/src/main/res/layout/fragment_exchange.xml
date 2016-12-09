@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/main_function_introduce_height"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/main_invite_selector"
+                android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true">
 
@@ -50,7 +50,7 @@
                     android:layout_centerInParent="true"
                     android:gravity="center"
                     android:maxWidth="280.0dip"
-                    android:singleLine="true"
+                    android:maxLines="1"
                     android:text="@string/function_introduce_transfer"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/textSize_h4"/>

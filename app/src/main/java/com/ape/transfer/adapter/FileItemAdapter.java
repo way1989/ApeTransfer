@@ -59,14 +59,14 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
         View view;
         switch (mFileCategory) {
             case Constant.TYPE.APP:
-                view = mInflater.inflate(R.layout.app_item, parent, false);
+                view = mInflater.inflate(R.layout.item_app, parent, false);
                 break;
             case Constant.TYPE.VIDEO:
             case Constant.TYPE.PIC:
-                view = mInflater.inflate(R.layout.video_item, parent, false);
+                view = mInflater.inflate(R.layout.item_image_video, parent, false);
                 break;
             default:
-                view = mInflater.inflate(R.layout.music_item, parent, false);
+                view = mInflater.inflate(R.layout.item_normal, parent, false);
                 break;
         }
         return new ViewHolder(view);
