@@ -1,11 +1,12 @@
 package com.ape.filepicker.items;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.ape.filepicker.ExploreItemViewHolder;
 import com.ape.filepicker.R;

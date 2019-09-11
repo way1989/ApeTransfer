@@ -2,12 +2,13 @@ package com.ape.transfer.adapter;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ape.transfer.App;
 import com.ape.transfer.R;
@@ -114,13 +115,13 @@ public class HistoryHolder extends RecyclerView.ViewHolder implements View.OnCli
 
         updateThumb(ivThumb, item.transferFile);
         tvTitle.setText(item.transferFile.name);
-        tvInfo.setText(Formatter.formatFileSize(App.getContext(), item.transferFile.size));
+        tvInfo.setText(Formatter.formatFileSize(App.getApp(), item.transferFile.size));
         updateProgressUI(item.transferFile);
         ivAvatar.setImageResource(UserInfoActivity.HEAD[item.peer.avatar]);
         if (item.transferFile.direction == TransferFile.Direction.DIRECTION_SEND) {
-            tvTo.setText(App.getContext().getString(R.string.format_to, item.peer.alias));
+            tvTo.setText(App.getApp().getString(R.string.format_to, item.peer.alias));
         } else {
-            tvFrom.setText(App.getContext().getString(R.string.format_from, item.peer.alias));
+            tvFrom.setText(App.getApp().getString(R.string.format_from, item.peer.alias));
         }
         btnOperation.setVisibility(View.GONE);//取消功能暂未实现
     }

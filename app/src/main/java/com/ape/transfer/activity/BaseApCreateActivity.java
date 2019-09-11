@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
-import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;
 import com.ape.transfer.model.ApStatusEvent;
 import com.ape.transfer.util.Log;
@@ -92,9 +91,8 @@ public abstract class BaseApCreateActivity extends BaseActivity {
         if (!WifiApUtils.getInstance().isWifiApEnabled()) return;
         boolean isMobileNetConnected = TDevice.isMobileNetConnected();
         mobileDataWarning.setVisibility(isMobileNetConnected ? View.VISIBLE : View.GONE);
-        if (BuildConfig.LOG_DEBUG)//just for debug
-            Toast.makeText(getApplicationContext(), isMobileNetConnected ? "当前正在使用数据流量..."
-                    : "数据流量已关闭...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), isMobileNetConnected ? "当前正在使用数据流量..."
+                : "数据流量已关闭...", Toast.LENGTH_SHORT).show();
     }
 
     @Override

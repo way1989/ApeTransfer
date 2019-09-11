@@ -7,9 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ape.backuprestore.PersonalItemData;
 import com.ape.backuprestore.RecordXmlComposer;
@@ -32,7 +33,6 @@ import com.ape.backuprestore.utils.Logger;
 import com.ape.backuprestore.utils.ModuleType;
 import com.ape.backuprestore.utils.StorageUtils;
 import com.ape.backuprestore.utils.Utils;
-import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.loader.BaseLoader;
 import com.ape.transfer.fragment.loader.RestoreDataLoader;
@@ -40,7 +40,6 @@ import com.ape.transfer.model.TransferTaskFinishEvent;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
-import com.trello.rxlifecycle.android.ActivityEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,8 +47,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by android on 16-7-13.
@@ -78,8 +76,7 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             if (mRestoreService != null) {
                 mRestoreService.setOnRestoreChangedListner(NewPhoneExchangeActivity.this);
             }
-            if (BuildConfig.LOG_DEBUG)//just for test
-                startLoadRestoreData();
+            startLoadRestoreData();
         }
 
         public void onServiceDisconnected(ComponentName name) {
@@ -127,19 +124,14 @@ public class NewPhoneExchangeActivity extends BaseActivity implements
             return;
         }
 
-        RxBus.getInstance().toObservable(TransferTaskFinishEvent.class)
+        mDisposable.add(RxBus.getInstance().toObservable(TransferTaskFinishEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<TransferTaskFinishEvent>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribe(new Action1<TransferTaskFinishEvent>() {
-                    @Override
-                    public void call(TransferTaskFinishEvent finishEvent) {
-                        //do some thing
-                        if (finishEvent.getDirection() == TransferFile.Direction.DIRECTION_RECEIVE) {
-                            startLoadRestoreData();
-                        }
+                .subscribe(finishEvent -> {
+                    //do some thing
+                    if (finishEvent.getDirection() == TransferFile.Direction.DIRECTION_RECEIVE) {
+                        startLoadRestoreData();
                     }
-                });
-
+                }));
     }
 
     private void startLoadRestoreData() {

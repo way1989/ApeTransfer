@@ -106,7 +106,7 @@ public class InviteFriendActivity extends BaseActivity {
         HashMap<String, ActivityInfo> shareItems = new HashMap<>();
         try {
             intent.setAction(Intent.ACTION_SEND);
-            String filepath = App.getContext().getPackageManager()
+            String filepath = App.getApp().getPackageManager()
                     .getApplicationInfo(BuildConfig.APPLICATION_ID, 0).sourceDir;
             File file = new File(filepath);
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));

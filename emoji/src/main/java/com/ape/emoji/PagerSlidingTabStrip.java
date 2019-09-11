@@ -11,8 +11,6 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -23,6 +21,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import java.util.Locale;
 

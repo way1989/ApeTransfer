@@ -7,8 +7,6 @@ import android.animation.ValueAnimator;
 import android.graphics.Path;
 import android.view.animation.AccelerateInterpolator;
 
-import com.ufreedom.floatingview.spring.SimpleReboundListener;
-import com.ufreedom.floatingview.spring.SpringHelper;
 import com.ufreedom.floatingview.transition.BaseFloatingPathTransition;
 import com.ufreedom.floatingview.transition.FloatingPath;
 import com.ufreedom.floatingview.transition.PathPosition;

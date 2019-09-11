@@ -1,65 +1,71 @@
 package com.ape.transfer.fragment;
 
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.ape.transfer.R;
 import com.ape.transfer.activity.ApScanActivity;
 import com.ape.transfer.activity.InviteFriendActivity;
 import com.ape.transfer.activity.MainTransferActivity;
+import com.jakewharton.rxbinding3.view.RxView;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import java.util.concurrent.TimeUnit;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.functions.Consumer;
+import kotlin.Unit;
 
-public class TransferFragment extends Fragment {
+public class TransferFragment extends BaseFragment {
+
+    @BindView(R.id.iv_invite)
+    ImageView mIvInvite;
+    @BindView(R.id.mainSendBtn)
+    Button mMainSendBtn;
+    @BindView(R.id.mainReceiveBtn)
+    Button mMainReceiveBtn;
 
     public TransferFragment() {
         // Required empty public constructor
     }
 
     public static TransferFragment newInstance() {
-        TransferFragment fragment = new TransferFragment();
-        return fragment;
+        return new TransferFragment();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected int getLayoutId() {
+        return R.layout.fragment_transfer;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_transfer, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        RxPermissions rxPermissions = new RxPermissions(this);
+        mDisposable.add(RxView.clicks(mIvInvite)
+                .throttleFirst(1, TimeUnit.SECONDS)
+                .subscribe(unit -> startActivity(new Intent(getActivity(), InviteFriendActivity.class))));
+        mDisposable.add(RxView.clicks(mMainSendBtn)
+                .throttleFirst(1, TimeUnit.SECONDS)
+                .compose(rxPermissions.ensureEachCombined(Manifest.permission.ACCESS_COARSE_LOCATION))
+                .subscribe(unit -> startActivity(new Intent(getActivity(), MainTransferActivity.class))));
+        mDisposable.add(RxView.clicks(mMainReceiveBtn)
+                .throttleFirst(1, TimeUnit.SECONDS)
+                .compose(rxPermissions.ensureEachCombined(Manifest.permission.ACCESS_COARSE_LOCATION))
+                .subscribe(unit -> startActivity(new Intent(getActivity(), ApScanActivity.class))));
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @OnClick({R.id.rl_invite, R.id.mainSendBtn, R.id.mainReceiveBtn})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.rl_invite:
-                startActivity(new Intent(getActivity(), InviteFriendActivity.class));
-                break;
-            case R.id.mainSendBtn:
-                startActivity(new Intent(getActivity(), MainTransferActivity.class));
-
-                break;
-            case R.id.mainReceiveBtn:
-                startActivity(new Intent(getActivity(), ApScanActivity.class));
-                break;
-        }
-    }
 }

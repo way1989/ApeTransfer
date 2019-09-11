@@ -17,13 +17,14 @@
 package com.ape.emoji.keyboard.emoji;
 
 import android.app.Activity;
-import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
+
+import androidx.viewpager.widget.ViewPager;
 
 import com.ape.emoji.PagerSlidingTabStrip;
 import com.ape.emoji.R;

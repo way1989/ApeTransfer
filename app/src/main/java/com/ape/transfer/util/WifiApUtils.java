@@ -94,7 +94,7 @@ public class WifiApUtils {
     private WifiManager mWifiManager;
 
     private WifiApUtils() {
-        mWifiManager = (WifiManager) App.getContext().getSystemService(Context.WIFI_SERVICE);
+        mWifiManager = (WifiManager) App.getApp().getSystemService(Context.WIFI_SERVICE);
     }
 
     public static WifiApUtils getInstance() {

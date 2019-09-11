@@ -6,7 +6,7 @@ import com.ape.transfer.BuildConfig;
 public class Log {
 
     private static final String LOG_TAG = "ApeTransfer";
-    private static final boolean DEBUG = BuildConfig.LOG_DEBUG;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     public static void i(String TAG, String msg) {
         if (DEBUG)

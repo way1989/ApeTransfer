@@ -5,8 +5,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.ape.transfer.BuildConfig;
 import com.ape.transfer.model.FileItem;
@@ -33,8 +34,6 @@ import com.ape.transfer.util.WifiUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import rx.Observable;
 
 public class TransferService extends Service {
     public static final String ACTION_START_P2P = "com.ape.transfer.startP2P";

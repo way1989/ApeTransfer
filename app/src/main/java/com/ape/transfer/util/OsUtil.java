@@ -63,7 +63,7 @@ public class OsUtil {
             // cached as the process does not get killed if the user enables the permission setting.
             if (!sPermissions.containsKey(permission)
                     || sPermissions.get(permission) == PackageManager.PERMISSION_DENIED) {
-                final Context context = App.getContext();
+                final Context context = App.getApp();
                 final int permissionState = context.checkSelfPermission(permission);
                 sPermissions.put(permission, permissionState);
             }
@@ -98,7 +98,7 @@ public class OsUtil {
     }
 
     public static boolean redirectToPermissionCheckIfNeeded(final Activity activity) {
-        if (!OsUtil.hasRequiredPermissions() || !OsUtil.canWriteSystem(activity)) {
+        if (!OsUtil.hasRequiredPermissions()) {
             final Intent intent = new Intent(activity, PermissionCheckActivity.class);
             activity.startActivity(intent);
         } else {

@@ -90,7 +90,7 @@ public class BeepManager implements MediaPlayer.OnCompletionListener, MediaPlaye
     }
 
     private MediaPlayer buildMediaPlayer(Context activity) {
-        MediaPlayer mediaPlayer = new MediaPlayer();
+        /*MediaPlayer mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
@@ -108,7 +108,8 @@ public class BeepManager implements MediaPlayer.OnCompletionListener, MediaPlaye
             Log.w(TAG, ioe);
             mediaPlayer.release();
             return null;
-        }
+        }*/
+        return null;
     }
 
     @Override

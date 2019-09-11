@@ -7,7 +7,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v7.app.AlertDialog;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.ape.transfer.App;
 import com.ape.transfer.R;
@@ -16,10 +17,8 @@ import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
-import com.trello.rxlifecycle.android.ActivityEvent;
 
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by kui.xie on 16-8-5.
@@ -53,16 +52,10 @@ public abstract class BaseTransferActivity extends BaseApCreateActivity {
             mPeer = (Peer) (getIntent().getSerializableExtra(Peer.TAG));
         }
         bindTransferService();
-        RxBus.getInstance().toObservable(PeerEvent.class)
+        //do some thing
+        mDisposable.add(RxBus.getInstance().toObservable(PeerEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<PeerEvent>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribe(new Action1<PeerEvent>() {
-                    @Override
-                    public void call(PeerEvent peerEvent) {
-                        //do some thing
-                        onPeerChanged(peerEvent);
-                    }
-                });
+                .subscribe(this::onPeerChanged));
     }
 
     protected abstract void onPeerChanged(PeerEvent peerEvent);
@@ -117,7 +110,7 @@ public abstract class BaseTransferActivity extends BaseApCreateActivity {
             return;
         }
         startTransferService();//startP2P service first
-        Intent bindIntent = new Intent(App.getContext(), TransferService.class);
+        Intent bindIntent = new Intent(App.getApp(), TransferService.class);
         mIsBound = bindService(bindIntent, mServiceConnection,
                 Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
     }
@@ -143,13 +136,13 @@ public abstract class BaseTransferActivity extends BaseApCreateActivity {
      * startP2P service
      */
     public void startTransferService() {
-        startService(new Intent(App.getContext(), TransferService.class));
+        startService(new Intent(App.getApp(), TransferService.class));
     }
 
     /**
      * stopP2P service
      */
     public void stopTransferService() {
-        stopService(new Intent(App.getContext(), TransferService.class));
+        stopService(new Intent(App.getApp(), TransferService.class));
     }
 }

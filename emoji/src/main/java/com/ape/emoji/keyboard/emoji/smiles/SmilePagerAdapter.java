@@ -1,13 +1,14 @@
 package com.ape.emoji.keyboard.emoji.smiles;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+
+import androidx.viewpager.widget.PagerAdapter;
 
 import com.ape.emoji.PagerSlidingTabStrip;
 import com.ape.emoji.R;

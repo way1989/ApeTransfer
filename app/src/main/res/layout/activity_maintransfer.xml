@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/root"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fitsSystemWindows="true"
-                android:gravity="center_horizontal">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:gravity="center_horizontal">
 
-    <android.support.design.widget.TabLayout
+    <com.google.android.material.tabs.TabLayout
         android:id="@+id/indicator"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -15,21 +15,21 @@
         app:tabIndicatorColor="@android:color/white"
         app:tabMode="scrollable"
         app:tabSelectedTextColor="@android:color/white"
-        app:tabTextColor="@android:color/white"/>
+        app:tabTextColor="@android:color/white" />
 
     <include
         android:id="@+id/mobile_data_warning"
         layout="@layout/subtitle_mobile_data"
         android:layout_width="match_parent"
         android:layout_height="25dp"
-        android:layout_below="@id/indicator"/>
+        android:layout_below="@id/indicator" />
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/rl_send_file"
-        android:layout_below="@id/mobile_data_warning"/>
+        android:layout_below="@id/mobile_data_warning" />
 
     <RelativeLayout
         android:id="@+id/rl_send_file"
@@ -55,7 +55,7 @@
                 android:layout_height="@dimen/bt_send_height"
                 android:background="@drawable/bt_send_selector"
                 android:text="@string/operation_send"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/bt_cancel"
@@ -64,7 +64,7 @@
                 android:layout_toRightOf="@id/bt_send"
                 android:background="@drawable/bt_cancel_selector"
                 android:text="@android:string/cancel"
-                android:textColor="@color/black_dark"/>
+                android:textColor="@color/black_dark" />
         </LinearLayout>
 
         <TextView
@@ -79,7 +79,7 @@
             android:gravity="center"
             android:minWidth="@dimen/send_size_width"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/textSize_h6"/>
+            android:textSize="@dimen/textSize_h6" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -104,7 +104,7 @@
                 android:layout_height="@dimen/user_avatar_height"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/user_avatar_marginTop"
-                android:src="@drawable/head_default1"/>
+                android:src="@drawable/head_default1" />
 
             <TextView
                 android:id="@+id/tv_me_name"
@@ -118,7 +118,7 @@
                 android:maxLines="1"
                 android:text="@string/main_me"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/textSize_h7"/>
+                android:textSize="@dimen/textSize_h7" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -134,7 +134,7 @@
                 android:layout_height="@dimen/bottom_deliver_height"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:background="@color/bottom_divider_bg"/>
+                android:background="@color/bottom_divider_bg" />
 
             <Button
                 android:id="@+id/btnDisconnect"
@@ -146,10 +146,10 @@
                 android:drawableTop="@drawable/bt_disconnect_selector"
                 android:text="@string/bt_disconnect"
                 android:textColor="@color/disconnect"
-                android:textSize="@dimen/textSize_h6"/>
+                android:textSize="@dimen/textSize_h6" />
         </RelativeLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_phones"
             style="@style/myRecyclerViewStyle"
             android:layout_width="match_parent"
@@ -157,7 +157,7 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/rl_disconnect"
             android:layout_toRightOf="@id/rl_me"
-            android:background="@color/green_lighter"/>
+            android:background="@color/green_lighter" />
 
         <RelativeLayout
             android:id="@+id/rl_waiting_connect"
@@ -174,7 +174,7 @@
                 android:layout_width="@dimen/process_loading_height"
                 android:layout_height="@dimen/process_loading_height"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="@dimen/waiting_icon_marginLeft"/>
+                android:layout_marginLeft="@dimen/waiting_icon_marginLeft" />
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -195,7 +195,7 @@
                     android:maxLines="1"
                     android:text="@string/waiting_create"
                     android:textColor="@color/green"
-                    android:textSize="@dimen/textSize_h4"/>
+                    android:textSize="@dimen/textSize_h4" />
 
                 <TextView
                     android:id="@+id/tv_status_info"
@@ -212,7 +212,7 @@
                     android:text="@string/waiting_connect_info"
                     android:textColor="@color/green"
                     android:textSize="@dimen/textSize_h6"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
             </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
@@ -221,12 +221,12 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dividing_line_height"
         android:layout_above="@id/rl_device"
-        android:background="@color/divider_bg"/>
+        android:background="@color/divider_bg" />
 
     <ImageView
         android:id="@+id/iv_direction"
         android:layout_width="@dimen/main_user_width"
         android:layout_height="wrap_content"
         android:layout_above="@id/rl_device"
-        android:src="@drawable/me_direction"/>
+        android:src="@drawable/me_direction" />
 </RelativeLayout>

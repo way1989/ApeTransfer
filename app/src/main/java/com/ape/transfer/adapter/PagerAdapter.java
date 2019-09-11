@@ -1,9 +1,10 @@
 package com.ape.transfer.adapter;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.ape.transfer.App;
 import com.ape.transfer.fragment.FileFragment;
@@ -34,7 +35,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         int fileCategory = FileCategoryHelper.sCategories[position];
-        return App.getContext().getString(FileCategoryHelper.categoryNames.get(fileCategory));
+        return App.getApp().getString(FileCategoryHelper.categoryNames.get(fileCategory));
     }
 
     @Override

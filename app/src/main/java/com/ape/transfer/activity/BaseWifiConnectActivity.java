@@ -16,10 +16,8 @@ import com.ape.transfer.model.PeerEvent;
 import com.ape.transfer.service.TransferService;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
-import com.trello.rxlifecycle.android.ActivityEvent;
 
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by android on 16-11-3.
@@ -129,16 +127,10 @@ public abstract class BaseWifiConnectActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         registerReceiver();
-        RxBus.getInstance().toObservable(PeerEvent.class)
+        //do some thing
+        mDisposable.add(RxBus.getInstance().toObservable(PeerEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<PeerEvent>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribe(new Action1<PeerEvent>() {
-                    @Override
-                    public void call(PeerEvent peerEvent) {
-                        //do some thing
-                        onPeerChanged(peerEvent);
-                    }
-                });
+                .subscribe(this::onPeerChanged));
     }
 
     @Override

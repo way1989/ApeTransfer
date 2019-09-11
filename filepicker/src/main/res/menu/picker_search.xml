@@ -6,6 +6,6 @@
         android:id="@+id/menu_search"
         android:icon="@drawable/picker_bar_search"
         android:title="@string/picker_search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom" />
 </menu>

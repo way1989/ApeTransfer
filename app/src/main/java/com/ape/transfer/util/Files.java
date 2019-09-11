@@ -13,7 +13,7 @@ import java.io.OutputStream;
 public class Files {
 
     public static String getExternalTempFile(String prefix, String postfix) {
-        File externalFile = App.getContext().getExternalFilesDir(null);
+        File externalFile = App.getApp().getExternalFilesDir(null);
         if (externalFile == null) {
             return null;
         }
@@ -29,9 +29,9 @@ public class Files {
 
     public static String getInternalTempFile(String prefix, String postfix) {
         String externalPath;
-        File externalFile = App.getContext().getFilesDir();
+        File externalFile = App.getApp().getFilesDir();
         if (externalFile == null) {
-            externalPath = "data/data/".concat(App.getContext().getPackageName()).concat("/files");
+            externalPath = "data/data/".concat(App.getApp().getPackageName()).concat("/files");
         } else {
             externalPath = externalFile.getAbsolutePath();
         }

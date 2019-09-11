@@ -2,15 +2,16 @@ package com.ape.transfer.widget;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 
 import com.ape.transfer.R;
 

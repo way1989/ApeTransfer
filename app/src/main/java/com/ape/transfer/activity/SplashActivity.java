@@ -11,9 +11,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.widget.ImageView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.ape.transfer.R;
 

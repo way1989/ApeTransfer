@@ -21,7 +21,7 @@ public class TransferDB extends SQLiteOpenHelper {
 
     public static final synchronized TransferDB getInstance() {
         if (sInstance == null) {
-            sInstance = new TransferDB(App.getContext());
+            sInstance = new TransferDB(App.getApp());
         }
         return sInstance;
     }

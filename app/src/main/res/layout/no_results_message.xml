@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.ape.transfer.widget.NoResultsContainer xmlns:android="http://schemas.android.com/apk/res/android"
-                                            android:id="@+id/no_results_container"
-                                            android:layout_width="@dimen/no_results_width"
-                                            android:layout_height="wrap_content"
-                                            android:layout_centerInParent="true"
-                                            android:layout_gravity="center"
-                                            android:gravity="center"
-                                            android:orientation="vertical"
-                                            android:visibility="gone">
+    android:id="@+id/no_results_container"
+    android:layout_width="@dimen/no_results_width"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:visibility="gone">
 
     <ImageView
         android:id="@+id/no_results_logo"
@@ -16,7 +16,7 @@
         android:layout_gravity="center_horizontal"
         android:paddingBottom="@dimen/white_note_padding_bottom"
         android:scaleType="centerInside"
-        android:src="@drawable/x_ic_blank_file"/>
+        android:src="@drawable/x_ic_blank_file" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
             android:text="@string/empty"
             android:textAllCaps="true"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/no_results_main_highlight_text"
@@ -47,7 +47,7 @@
             android:maxLines="2"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold|italic"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 
     <TextView
@@ -58,5 +58,5 @@
         android:gravity="center_horizontal"
         android:text="@string/empty"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 </com.ape.transfer.widget.NoResultsContainer>

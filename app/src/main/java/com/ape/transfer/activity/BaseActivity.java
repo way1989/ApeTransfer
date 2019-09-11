@@ -1,15 +1,17 @@
 package com.ape.transfer.activity;
 
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
-import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
+import androidx.annotation.LayoutRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import butterknife.ButterKnife;
+import io.reactivex.disposables.CompositeDisposable;
 
-public abstract class BaseActivity extends RxAppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
+    protected CompositeDisposable mDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +21,13 @@ public abstract class BaseActivity extends RxAppCompatActivity {
         if (actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
         ButterKnife.bind(this);
+        mDisposable = new CompositeDisposable();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mDisposable.clear();
     }
 
     @Override

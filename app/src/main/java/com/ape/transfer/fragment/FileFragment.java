@@ -2,16 +2,18 @@ package com.ape.transfer.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ape.transfer.App;
 import com.ape.transfer.R;
@@ -26,21 +28,19 @@ import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.Screen;
 import com.ape.transfer.widget.SimpleListDividerDecorator;
 import com.ape.transfer.widget.SpaceGridItemDecoration;
-import com.trello.rxlifecycle.android.FragmentEvent;
-import com.trello.rxlifecycle.components.support.RxFragment;
 import com.weavey.loading.lib.LoadingLayout;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by android on 16-6-28.
  */
-public class FileFragment extends RxFragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>, FileItemAdapter.OnItemClickListener {
+public class FileFragment extends Fragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result>, FileItemAdapter.OnItemClickListener {
     private static final String TAG = "FileFragment";
     private static final String FILE_CATEGORY = "fileCategory";
     private static final int LOADER_ID = 0;
@@ -52,6 +52,7 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     private FileItemAdapter mAdapter;
     private int mFileCategory;
     private OnFileItemChangeListener mListener;
+    protected CompositeDisposable mDisposable = new CompositeDisposable();
 
     public static FileFragment newInstance(int fileCategory) {
         FileFragment fragment = new FileFragment();
@@ -72,17 +73,17 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_file, container, false);
         ButterKnife.bind(this, view);
-        RxBus.getInstance().toObservable(FileEvent.class)
+        //do some thing
+        mDisposable.add(RxBus.getInstance().toObservable(FileEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<FileEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .subscribe(new Action1<FileEvent>() {
-                    @Override
-                    public void call(FileEvent event) {
-                        //do some thing
-                        onFileChange(event);
-                    }
-                });
+                .subscribe(this::onFileChange));
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mDisposable.clear();
     }
 
     public void onFileChange(FileEvent event) {
@@ -108,7 +109,7 @@ public class FileFragment extends RxFragment implements LoaderManager.LoaderCall
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mLoadingLayout.setStatus(LoadingLayout.Loading);
-        mAdapter = new FileItemAdapter(App.getContext(), mFileCategory, this);
+        mAdapter = new FileItemAdapter(App.getApp(), mFileCategory, this);
         switch (mFileCategory) {
             case Constant.TYPE.APP:
             case Constant.TYPE.PIC:

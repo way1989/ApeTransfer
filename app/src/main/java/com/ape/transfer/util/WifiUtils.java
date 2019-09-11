@@ -30,7 +30,7 @@ public class WifiUtils {
     private WifiManager mWifiManager;
 
     private WifiUtils() {
-        mWifiManager = (WifiManager) App.getContext().getSystemService(Context.WIFI_SERVICE);
+        mWifiManager = (WifiManager) App.getApp().getSystemService(Context.WIFI_SERVICE);
     }
 
     public static WifiUtils getInstance() {

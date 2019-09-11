@@ -2,7 +2,6 @@ package com.ape.transfer.activity;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.TextInputEditText;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -14,6 +13,7 @@ import android.widget.RelativeLayout;
 
 import com.ape.transfer.R;
 import com.ape.transfer.util.PreferenceUtil;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.nio.charset.Charset;
 

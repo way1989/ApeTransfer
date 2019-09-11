@@ -45,7 +45,7 @@ public final class PreferenceUtil {
 
     public static final PreferenceUtil getInstance() {
         if (sInstance == null) {
-            sInstance = new PreferenceUtil(App.getContext());
+            sInstance = new PreferenceUtil(App.getApp());
         }
         return sInstance;
     }

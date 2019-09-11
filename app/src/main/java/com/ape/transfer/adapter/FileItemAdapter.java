@@ -1,13 +1,14 @@
 package com.ape.transfer.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ape.transfer.App;
 import com.ape.transfer.R;
@@ -76,31 +77,31 @@ public class FileItemAdapter extends RecyclerView.Adapter<FileItemAdapter.ViewHo
                 //holder.ivIcon.setImageResource(R.drawable.file_icon_apk);
                 mFileIconLoader.loadIcon(holder.ivIcon, item.path, item.id, Constant.TYPE.APP);
                 holder.tvName.setText(item.fileName);
-                holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                holder.tvSize.setText(Formatter.formatFileSize(App.getApp(), item.size));
                 break;
             case Constant.TYPE.VIDEO:
             case Constant.TYPE.PIC:
                 GlideHelper.loadResource(item.path, holder.ivIcon);
                 //holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
-                holder.tvDuration.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                holder.tvDuration.setText(Formatter.formatFileSize(App.getApp(), item.size));
                 break;
             case Constant.TYPE.ZIP:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_rar);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(item.dateModified));
-                holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                holder.tvSize.setText(Formatter.formatFileSize(App.getApp(), item.size));
                 break;
             case Constant.TYPE.DOC:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_default);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(item.dateModified));
-                holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                holder.tvSize.setText(Formatter.formatFileSize(App.getApp(), item.size));
                 break;
             case Constant.TYPE.MUSIC:
                 holder.ivIcon.setImageResource(R.drawable.file_icon_music);
                 holder.tvName.setText(Util.getNameFromFilename(Util.getNameFromFilepath(item.path)));
                 holder.tvDuration.setText(Util.formatDateString(item.dateModified));
-                holder.tvSize.setText(Formatter.formatFileSize(App.getContext(), item.size));
+                holder.tvSize.setText(Formatter.formatFileSize(App.getApp(), item.size));
                 break;
             default:
 

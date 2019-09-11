@@ -1,12 +1,13 @@
 package com.ape.transfer.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
 
 import com.ape.transfer.BuildConfig;
 import com.ape.transfer.R;

@@ -2,11 +2,6 @@ package com.ape.transfer.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.ape.transfer.App;
 import com.ape.transfer.R;
@@ -36,8 +36,8 @@ import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.RxBus;
 import com.ape.transfer.util.SendFloating;
 import com.ape.transfer.util.WifiApUtils;
+import com.google.android.material.tabs.TabLayout;
 import com.mikepenz.actionitembadge.library.ActionItemBadge;
-import com.trello.rxlifecycle.android.ActivityEvent;
 import com.ufreedom.floatingview.Floating;
 import com.ufreedom.floatingview.FloatingBuilder;
 import com.ufreedom.floatingview.FloatingElement;
@@ -47,10 +47,9 @@ import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class MainTransferActivity extends BaseTransferActivity implements
+public class MainTransferActivity extends BaseActivity implements
         FileFragment.OnFileItemChangeListener {
     private static final String TAG = "MainTransferActivity";
     @BindView(R.id.indicator)
@@ -100,7 +99,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
     private PhoneItemAdapter mPhoneItemAdapter;
     private ArrayList<FileItem> mFileItems = new ArrayList<>();
     private boolean isSendViewShow;
-    private HashMap<String, Peer> mPeerHashMap = new HashMap<>();
     private Floating mRocketAnimFloating;
 
     @Override
@@ -120,22 +118,18 @@ public class MainTransferActivity extends BaseTransferActivity implements
         setupWithNeighbor();
         setupWithViewPager();
 
-        if (mPeer != null) {
-            onPeerChanged(new PeerEvent(mPeer, PeerEvent.ADD));
-        } else {
-            startWifiAp();
-        }
-        RxBus.getInstance().toObservable(TransferTaskFinishEvent.class)
+//        if (mPeer != null) {
+//            onPeerChanged(new PeerEvent(mPeer, PeerEvent.ADD));
+//        } else {
+//            startWifiAp();
+//        }
+        mDisposable.add(RxBus.getInstance().toObservable(TransferTaskFinishEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<TransferTaskFinishEvent>bindUntilEvent(ActivityEvent.DESTROY))
-                .subscribe(new Action1<TransferTaskFinishEvent>() {
-                    @Override
-                    public void call(TransferTaskFinishEvent taskFinishEvent) {
-                        //do some thing
-                        badgeCount = 0;
-                        supportInvalidateOptionsMenu();
-                    }
-                });
+                .subscribe(taskFinishEvent -> {
+                    //do some thing
+                    badgeCount = 0;
+                    supportInvalidateOptionsMenu();
+                }));
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
@@ -195,39 +189,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
         indicator.setupWithViewPager(pager);
     }
 
-    @Override
-    protected String getSSID() {
-        return "ApeTransfer@" + PreferenceUtil.getInstance().getAlias();
-    }
-
-    @Override
-    protected void onWifiApStatusChanged(ApStatusEvent event) {
-        Log.i(TAG, "onWifiApStatusChanged isAp enabled = " + (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED));
-//        boolean hasInternet = TDevice.hasInternet();
-        if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_ENABLED) {
-            tvStatus.setText(R.string.waiting_connect);
-            tvStatusInfo.setVisibility(View.VISIBLE);
-            btnDisconnect.setEnabled(true);
-            startP2P();
-        } else if (event.getStatus() == WifiApUtils.WIFI_AP_STATE_FAILED
-                || event.getStatus() == WifiApUtils.WIFI_AP_STATE_DISABLED) {
-            finish();
-        }
-    }
-
-    @Override
-    protected void onPeerChanged(PeerEvent peerEvent) {
-        Log.i(TAG, "onPeerChanged... type = " + peerEvent.getType() + ", peer = " + peerEvent.getPeer());
-        if (peerEvent.getType() == PeerEvent.ADD) {
-            mPeerHashMap.put(peerEvent.getPeer().ip, peerEvent.getPeer());
-        } else {
-            mPeerHashMap.remove(peerEvent.getPeer().ip);
-        }
-        Log.d(TAG, "onPeerChanged... process result size = " + mPeerHashMap.size());
-        mPhoneItemAdapter.setData(mPeerHashMap.values());
-        updateUI(mPeerHashMap.size() > 0);
-    }
-
     private void updateUI(boolean hasNeighbor) {
         if (hasNeighbor) {
             rvPhones.setVisibility(View.VISIBLE);
@@ -235,10 +196,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
             btnDisconnect.setEnabled(true);
             btSend.setEnabled(true);
         } else {
-            if (mPeer != null) {
-                finish();
-                return;
-            }
             rvPhones.setVisibility(View.INVISIBLE);
             rlWaitingConnect.setVisibility(View.VISIBLE);
             btSend.setEnabled(false);
@@ -277,8 +234,6 @@ public class MainTransferActivity extends BaseTransferActivity implements
         if (mPhoneItemAdapter.getItemCount() < 1) {
             return;
         }
-        if (mTransferService != null)
-            mTransferService.sendFile(mFileItems);
 
         RxBus.getInstance().post(new FileEvent(mFileItems));//post message to fragment
         //刷新menu脚标
@@ -311,7 +266,7 @@ public class MainTransferActivity extends BaseTransferActivity implements
         Log.i(TAG, "updateSendUI... sumSize = " + sumSize);
         final float height = getResources().getDimension(R.dimen.send_layout_margin_bottom);
         final String sendText = getString(R.string.select_text, mFileItems.size(),
-                Formatter.formatFileSize(App.getContext(), sumSize));
+                Formatter.formatFileSize(App.getApp(), sumSize));
         if (mFileItems.isEmpty()) {
             if (isSendViewShow) {
                 rlSendFile.animate().translationYBy(Math.abs(height));

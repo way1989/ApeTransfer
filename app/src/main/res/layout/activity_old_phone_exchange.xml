@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:fitsSystemWindows="true"
-              android:orientation="vertical">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <!--    <LinearLayout
             android:id="@id/title"
@@ -23,7 +23,7 @@
 
     <include
         android:id="@+id/mobile_data_warning"
-        layout="@layout/subtitle_mobile_data"/>
+        layout="@layout/subtitle_mobile_data" />
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -41,12 +41,12 @@
                 android:id="@id/iv_complete"
                 android:layout_width="@dimen/process_loading_height"
                 android:layout_height="@dimen/process_loading_height"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <ProgressBar
                 android:id="@id/loading"
                 android:layout_width="@dimen/process_loading_height"
-                android:layout_height="@dimen/process_loading_height"/>
+                android:layout_height="@dimen/process_loading_height" />
 
             <TextView
                 android:id="@id/tv_process_title"
@@ -55,7 +55,7 @@
                 android:layout_marginLeft="10.0dip"
                 android:text="@string/sending"
                 android:textColor="@color/black"
-                android:textSize="@dimen/textSize_h1"/>
+                android:textSize="@dimen/textSize_h1" />
         </LinearLayout>
     </RelativeLayout>
 
@@ -65,7 +65,7 @@
         android:layout_height="@dimen/dividing_line_height"
         android:layout_marginLeft="@dimen/main_margin_left"
         android:layout_marginRight="@dimen/main_margin_left"
-        android:background="@color/divider_bg"/>
+        android:background="@color/divider_bg" />
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -73,13 +73,13 @@
         android:layout_weight="1.0"
         android:gravity="center">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@id/rv_process"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:paddingLeft="@dimen/main_margin_left"
-            android:paddingRight="@dimen/main_margin_left"/>
+            android:paddingRight="@dimen/main_margin_left" />
     </RelativeLayout>
 
-    <include layout="@layout/panel_process_activity"/>
+    <include layout="@layout/panel_process_activity" />
 </LinearLayout>

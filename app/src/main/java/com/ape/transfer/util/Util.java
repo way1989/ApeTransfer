@@ -164,7 +164,7 @@ public class Util {
     }
 
     public boolean isPlatformSigned() {
-        PackageManager packageManager = App.getContext().getPackageManager();
+        PackageManager packageManager = App.getApp().getPackageManager();
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(BuildConfig.APPLICATION_ID,
                     PackageManager.GET_SIGNATURES);

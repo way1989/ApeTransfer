@@ -36,9 +36,10 @@ import android.os.Message;
 import android.provider.MediaStore.Files.FileColumns;
 import android.provider.MediaStore.Images;
 import android.provider.MediaStore.Video;
-import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.widget.ImageView;
+
+import androidx.collection.LruCache;
 
 import com.ape.transfer.R;
 import com.ape.transfer.p2p.util.Constant;

@@ -1,16 +1,18 @@
 package com.ape.transfer.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ape.transfer.R;
 import com.ape.transfer.adapter.HistoryAdapter;
@@ -21,20 +23,18 @@ import com.ape.transfer.model.TransferEvent;
 import com.ape.transfer.model.TransferTaskStartEvent;
 import com.ape.transfer.util.Log;
 import com.ape.transfer.util.RxBus;
-import com.trello.rxlifecycle.android.FragmentEvent;
-import com.trello.rxlifecycle.components.support.RxFragment;
 
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by android on 16-7-5.
  */
-public class HistoryFragment extends RxFragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result> {
+public class HistoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<BaseLoader.Result> {
     private static final String TAG = "HistoryFragment";
     private static final String ARG_DIRECTION = "direction";
     private static final int LOAD_ID = 0x001;
@@ -46,6 +46,7 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
     RelativeLayout rlEmpty;
     private int mDirection;
     private HistoryAdapter mAdapter;
+    protected CompositeDisposable mDisposable = new CompositeDisposable();
 
     public HistoryFragment() {
     }
@@ -73,32 +74,27 @@ public class HistoryFragment extends RxFragment implements LoaderManager.LoaderC
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_history, container, false);
         ButterKnife.bind(this, rootView);
-        RxBus.getInstance().toObservable(TransferEvent.class)
+        //do some thing
+        mDisposable.add(RxBus.getInstance().toObservable(TransferEvent.class)
                 .sample(1000L, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<TransferEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .subscribe(new Action1<TransferEvent>() {
-                    @Override
-                    public void call(TransferEvent event) {
-                        //do some thing
-                        onTransferChange(event);
-                    }
-                });
-        RxBus.getInstance().toObservable(TransferTaskStartEvent.class)
+                .subscribe(this::onTransferChange));
+        mDisposable.add(RxBus.getInstance().toObservable(TransferTaskStartEvent.class)
                 .observeOn(AndroidSchedulers.mainThread())
-                .compose(this.<TransferTaskStartEvent>bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-                .subscribe(new Action1<TransferTaskStartEvent>() {
-                    @Override
-                    public void call(TransferTaskStartEvent event) {
-                        //do some thing
-                        if (event.getDirection() == mDirection) {
-                            getLoaderManager().restartLoader(LOAD_ID, null, HistoryFragment.this);
-                        }
+                .subscribe(event -> {
+                    //do some thing
+                    if (event.getDirection() == mDirection) {
+                        getLoaderManager().restartLoader(LOAD_ID, null, HistoryFragment.this);
                     }
-                });
+                }));
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mDisposable.clear();
+    }
 
     public void onTransferChange(TransferEvent event) {
         Log.i(TAG, "onEventMainThread收到了消息：" + event.getTransferFile());

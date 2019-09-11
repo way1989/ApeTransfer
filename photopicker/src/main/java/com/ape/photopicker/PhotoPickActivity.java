@@ -9,8 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +21,9 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

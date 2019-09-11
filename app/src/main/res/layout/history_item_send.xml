@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="wrap_content"
-              android:layout_gravity="top"
-              android:gravity="left"
-              android:orientation="vertical">
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:gravity="left"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_time"
@@ -13,7 +13,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/message_item_marginTop"
         android:gravity="center"
-        android:textColor="@color/gray_dark"/>
+        android:textColor="@color/gray_dark" />
 
     <RelativeLayout
         android:id="@+id/message_layout_container"
@@ -28,7 +28,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="@dimen/message_marginLeft"
             android:scaleType="fitXY"
-            android:src="@drawable/head_default"/>
+            android:src="@drawable/head_default" />
 
         <TextView
             android:id="@+id/tv_to"
@@ -40,7 +40,7 @@
             android:maxLines="1"
             android:text="@string/main_receive"
             android:textColor="@color/gray_dark"
-            android:textSize="@dimen/textSize_h6"/>
+            android:textSize="@dimen/textSize_h6" />
 
         <RelativeLayout
             android:layout_width="@dimen/message_layout_width"
@@ -60,11 +60,11 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:gravity="center_vertical"
-                android:src="@drawable/file_icon_default"/>
+                android:src="@drawable/file_icon_default" />
 
             <include
                 android:id="@id/rl_text"
-                layout="@layout/history_task_progress"/>
+                layout="@layout/history_task_progress" />
 
             <Button
                 android:id="@id/btn_operate"
@@ -79,7 +79,7 @@
                 android:text="@android:string/cancel"
                 android:textColor="@color/green"
                 android:textSize="@dimen/textSize_h6"
-                android:visibility="gone"/>
+                android:visibility="gone" />
         </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>

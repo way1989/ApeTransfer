@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +19,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.SearchView;
 
 import com.ape.filepicker.items.ExplorerItem;
 import com.ape.filepicker.search.IndexTask;

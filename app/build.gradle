@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -11,7 +10,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
-        multiDexEnabled true
+        buildConfigField "String", "BUGLY_APPID", BUGLY_APPID
+        buildConfigField "int", "FEEDBACK_APPKEY", FEEDBACK_APPKEY
     }
     signingConfigs {
         release {
@@ -29,21 +29,9 @@ android {
     }
     buildTypes {
         debug {
-            // 显示Log
-            buildConfigField "boolean", "LOG_DEBUG", "true"
-            //是否开启BUGLY
-            buildConfigField "boolean", "BUGLY_ENABLED", "false"
-            buildConfigField "int", "BUGLY_APPID", BUGLY_APPID
-            buildConfigField "int", "FEEDBACK_APPKEY", FEEDBACK_APPKEY
             signingConfig signingConfigs.release
         }
         release {
-            // 不显示Log
-            buildConfigField "boolean", "LOG_DEBUG", "false"
-            //是否开启ACRA
-            buildConfigField "boolean", "BUGLY_ENABLED", "true"
-            buildConfigField "int", "BUGLY_APPID", BUGLY_APPID
-            buildConfigField "int", "FEEDBACK_APPKEY", FEEDBACK_APPKEY
             signingConfig signingConfigs.release
             shrinkResources true
             minifyEnabled true
@@ -51,59 +39,69 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     applicationVariants.all { variant ->//获取 variant 参数，就是 productFlavor x buildType
-        variant.outputs.each { output ->//获取输出文件
-            def file = output.outputFile//修改实例
-            if (file != null && file.name.endsWith('release.apk')) {//变种名以release.apk结尾时才修改名字
-                //def fileName = file.name.replace(file.name, "ApeScreenshot_V" + versionName + "_${buildTime()}.apk")
-                def fileName = file.name.replace(file.name, "ApeTransfer" + "_V" + variant.versionName + ".apk")
-                output.outputFile = new File(file.parentFile, fileName)
+        variant.outputs.all {
+            if (outputFileName.endsWith('-release.apk')) {//变种名以release.apk结尾时才修改名字
+                outputFileName = outputFileName.replace(outputFileName, "ApeTransfer" + "_" + variant.versionName + ".apk")
+            } else if (outputFileName.endsWith('-debug.apk')) {
+                outputFileName = outputFileName.replace(outputFileName, "ApeTransfer-debug" + "_" + variant.versionName + ".apk")
             }
         }
     }
 
-    lintOptions {
-        abortOnError false
-    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile "junit:junit:$rootProject.junitVersion"
-    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    compile "com.android.support:design:$rootProject.supportLibraryVersion"
-    compile "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
-    compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
-    apt "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
     //bugly
-    compile "com.tencent.bugly:crashreport:$rootProject.buglyVersion"
-    compile "org.nanohttpd:nanohttpd:$rootProject.nanohttpdVersion"
-    compile "com.google.zxing:core:$rootProject.zxingVersion"
+    implementation "com.tencent.bugly:crashreport:$rootProject.buglyVersion"
+    implementation "org.nanohttpd:nanohttpd:$rootProject.nanohttpdVersion"
+    implementation "com.google.zxing:core:$rootProject.zxingVersion"
 
-    compile 'io.reactivex:rxjava:1.2.1'
-    compile 'com.trello:rxlifecycle:0.8.0'
-    compile 'com.trello:rxlifecycle-components:0.8.0'
+    //rxjava
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjavaVersion"
+    //rxandroid
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroidVersion"
+    //rxpermissions
+    implementation "com.github.tbruyelle:rxpermissions:$rootProject.rxpermissionsVersion"
+    //rxbinding
+    implementation "com.jakewharton.rxbinding3:rxbinding:$rootProject.rxbindingVersion"
+    implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:$rootProject.rxbindingVersion"
 
-    compile 'com.daimajia.numberprogressbar:library:1.2@aar'//数字进度条
+    implementation 'com.cantrowitz:rxbroadcast:2.0.0'
+    //RecyclerView Adapter Helper
+    implementation "com.github.CymChad:BaseRecyclerViewAdapterHelper:$rootProject.adapterHelperVersion"
+
+    implementation 'com.daimajia.numberprogressbar:library:1.2@aar'//数字进度条
     //    compile project(':emoji')
     //    compile project(':filepicker')
     //    compile project(':photopicker')
-    compile project(':backuprestore')
-    //compile 'org.greenrobot:eventbus:3.0.0'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.github.hotchemi:permissionsdispatcher:2.1.3'
-    apt 'com.github.hotchemi:permissionsdispatcher-processor:2.1.3'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
-    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    implementation project(':backuprestore')
+    //google Glide
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
+    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
 
-    compile 'com.ufreedom.uikit:FloatingViewLib:1.0.1'
-    compile 'com.mikepenz:actionitembadge:3.3.0@aar'
+    implementation 'com.ufreedom.uikit:FloatingViewLib:1.0.1'
+    implementation 'com.mikepenz:actionitembadge:3.3.0@aar'
     //SUB-DEPENDENCIES
     //Android-Iconics - used to provide an easy API for icons
-    compile 'com.mikepenz:iconics-core:2.8.0@aar'
+    implementation 'com.mikepenz:iconics-core:2.8.0@aar'
 
     //loading layout
-    compile 'com.lai.weavey:loadinglayout:1.2'
+    implementation 'com.lai.weavey:loadinglayout:1.2'
 }

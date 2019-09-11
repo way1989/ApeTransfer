@@ -7,7 +7,6 @@ import com.ape.transfer.p2p.beans.Peer;
 import com.ape.transfer.p2p.beans.TransferFile;
 import com.ape.transfer.p2p.beans.param.ParamIPMsg;
 import com.ape.transfer.p2p.beans.param.ParamSendFiles;
-import com.ape.transfer.p2p.beans.param.ParamTCPNotify;
 import com.ape.transfer.p2p.core.WorkHandler;
 import com.ape.transfer.p2p.util.Constant;
 

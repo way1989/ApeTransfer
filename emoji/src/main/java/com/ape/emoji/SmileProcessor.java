@@ -829,6 +829,7 @@ public class SmileProcessor {
 
         public long id;
         public int start, end;
+
         private SpanDescription(long id, int start, int end) {
             this.id = id;
             this.start = start;

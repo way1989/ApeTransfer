@@ -3,19 +3,19 @@ package com.ape.transfer.activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.ape.transfer.R;
 import com.ape.transfer.fragment.ExchangeFragment;
@@ -24,6 +24,7 @@ import com.ape.transfer.util.OsUtil;
 import com.ape.transfer.util.PreferenceUtil;
 import com.ape.transfer.util.Screen;
 import com.ape.transfer.util.WifiApUtils;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +42,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.container)
     ViewPager mViewPager;
 
-    View.OnClickListener headViewOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivityForResult(new Intent(MainActivity.this, UserInfoActivity.class), REQUEST_CODE);
-        }
-    };
+    View.OnClickListener headViewOnClick = v -> startActivityForResult(new Intent(MainActivity.this, UserInfoActivity.class), REQUEST_CODE);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -99,7 +99,7 @@ public class AndroidWebServer extends NanoHTTPD {
             return responseIndex();
         } else if (TextUtils.equals(fileName, "ApeTransfer.apk")) {
             try {
-                String filepath = App.getContext().getPackageManager()
+                String filepath = App.getApp().getPackageManager()
                         .getApplicationInfo(BuildConfig.APPLICATION_ID, 0).sourceDir;
                 File file = new File(filepath);
                 Log.d("Httpd", "apk patch = " + filepath);
@@ -115,7 +115,7 @@ public class AndroidWebServer extends NanoHTTPD {
 
         try {
             //通过AssetManager直接打开文件进行读取操作
-            InputStream inputStream = App.getContext().getAssets().open(fileName,
+            InputStream inputStream = App.getApp().getAssets().open(fileName,
                     AssetManager.ACCESS_BUFFER);
 
             byte[] buffer = new byte[inputStream.available()];
@@ -141,7 +141,7 @@ public class AndroidWebServer extends NanoHTTPD {
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html><html><head>");
         builder.append("<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>");
-        builder.append("<title>" + App.getContext().getString(R.string.saveTraffic_download_title) + "</title>");
+        builder.append("<title>" + App.getApp().getString(R.string.saveTraffic_download_title) + "</title>");
         builder.append("<meta name=viewport content=width=device-width, initial-scale=1.0," +
                 "          maximum-scale=1.0user-scalable=0>" +
                 "    <script type=text/javascript> function download(uri){window.location.href=uri;}</script>" +
@@ -158,11 +158,11 @@ public class AndroidWebServer extends NanoHTTPD {
                 "</head>" +
                 "<body>" +
                 "<div class='iwrap fix'>");
-        builder.append("<div class='logo' style='clear:both;'>" + App.getContext().getString(R.string.app_name) + "</div>");
-        builder.append("<div class='prompt' style='clear:both;'>" + App.getContext().getString(R.string.saveTraffic_download_prompt) + "</div>");
+        builder.append("<div class='logo' style='clear:both;'>" + App.getApp().getString(R.string.app_name) + "</div>");
+        builder.append("<div class='prompt' style='clear:both;'>" + App.getApp().getString(R.string.saveTraffic_download_prompt) + "</div>");
         builder.append("<div style=clear:both;></div>");
         builder.append("<button onclick=download('/ApeTransfer.apk');>");
-        builder.append("<div class='title'>" + App.getContext().getString(R.string.saveTraffic_download_text) + "</div>");
+        builder.append("<div class='title'>" + App.getApp().getString(R.string.saveTraffic_download_text) + "</div>");
         builder.append("<div class='version'>" + BuildConfig.VERSION_NAME + "</div>");
         builder.append("</button></div></body></html>");
         return newFixedLengthResponse(builder.toString());

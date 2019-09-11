@@ -118,10 +118,12 @@ public class P2PManager {
         }
         mWorkHandler = null;
     }
+
     public void ackReceive() {
         mWorkHandler.send2Handler(Constant.Command.RECEIVE_FILE_ACK,
                 Constant.Src.MANAGER, Constant.Recipient.FILE_RECEIVE, null);
     }
+
     public void cancelReceive() {
         mWorkHandler.send2Handler(Constant.Command.RECEIVE_ABORT_SELF,
                 Constant.Src.MANAGER, Constant.Recipient.FILE_RECEIVE, null);
